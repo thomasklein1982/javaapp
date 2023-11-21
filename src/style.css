@@ -1,0 +1,193 @@
+body,html{
+  touch-action: pan-y;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  font-size: 20px;
+}
+
+*{
+  overscroll-behavior: none;
+}
+
+/*code-mirror css falsche farben**/
+.ͼj2{
+  color: white;
+}
+
+.ͼi2{
+
+}
+
+.ͼo .cm-gutters{
+  border-right: 1pt solid;
+}
+
+.cm-panel-lint button, .cm-search button{
+  color: white;
+}
+
+/*button{
+  background-color: lightgray;
+  border-radius: 0;
+}*/
+
+.asset .p-card-title{
+  font-size: 100%;
+}
+
+.asset.p-card{
+  border: orange 1pt solid;
+}
+
+@media screen {
+  body,html{
+    position: fixed;
+    height: 100%;
+  }
+  .onlyprint{
+    display: none;
+  }
+}
+
+@media print {
+  .noprint{
+    display: none;
+  }
+}
+
+/*.cm-editor{
+  cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAACxCAYAAAAIwae7AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAACtJREFUWIXtyUENAAAIBCC1f+czgQHc4EsnlTrMFVJKKaWUUkoppZRSyne52TEEX6YBkucAAAAASUVORK5CYII=), auto;
+}*/
+
+.ͼo .cm-cursor{
+  border-left: 2px solid orange;
+}
+
+.cm-tooltip{
+  z-index: 1000;
+}
+
+.cm-completionInfo{
+  
+}
+
+.ͼo .cm-activeLine {
+  background-color: #ffd64f11;
+}
+
+.ͼo .cm-tooltip{
+  border: 4pt solid white;
+}
+
+.cm-tooltip-autocomplete, .ͼ1 .cm-completionInfo.cm-completionInfo-right-narrow,.ͼ1 .cm-completionInfo.cm-completionInfo-left-narrow{
+  /*border: 4pt solid white;*/
+}
+
+.p-panel div.p-panel-header{
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.p-inputgroup-addon{
+  background: none;
+  border: none;
+}
+
+.p-inputgroup-addon:last-child {
+  border: none;
+}
+
+.editor-tabs{
+  overflow: hidden;
+}
+
+.p-tabview.editor-tabs{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.p-tabview.editor-tabs .p-tabview-panels{
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  padding: 0;
+  flex-direction: column;
+}
+.p-tabview.editor-tabs .p-tabview-panel{
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.panel-full{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-full .p-toggleable-content{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-full .p-panel-content{
+  flex: 1;
+}
+
+.p-panel .p-panel-content{
+  padding: 0;
+}
+
+.project-explorer.p-tree .p-tree-container .p-treenode div.p-treenode-content.p-highlight{
+  background-color: gray;
+  color: white;
+}
+
+table{
+  border-collapse: collapse;
+}
+
+.datatable tr td{
+  border: 1pt solid black;
+  text-align: center;
+}
+
+.database-table td,th{
+  text-align: center;
+  border: 1pt solid black;
+}
+
+.p-dialog{
+  max-width: 100%;
+}
+
+.database-table{
+  max-width: 100%;
+  overflow: auto;
+}
+
+.inline-buttons>*{
+  margin-left: 0.2rem;
+}
+
+.ͼ1 .cm-lint-marker-error:before {
+  content: '⚠';
+  color: red;
+}
+
+.cm-diagnostic{
+  font-family: monospace;
+}
