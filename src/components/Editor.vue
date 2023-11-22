@@ -33,6 +33,7 @@
         @trash="trashCurrentClazz()"
         @play="resume()"
         @fullscreen="playInFullscreen()"
+        @play-window="playInNewWindow()"
       />
       <LinksDialog
         ref="dialogResources"
@@ -431,6 +432,13 @@ export default {
       this.clearRuntimeErrors();
       this.running=true;
       this.$refs.preview.runInFullscreen();
+    },
+    playInNewWindow(){
+      let code=this.project.getFullAppCode("console.hide();\n");
+      const blob = URL.createObjectURL(
+        new Blob([code], { type: "text/html" })
+      );
+      window.open(blob);
     },
     resume(){
       if(this.rightClosed){

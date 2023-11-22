@@ -131,6 +131,13 @@ export default {
               }
             },
             {
+              label: 'Ausführen (eigenes Fenster)',
+              icon: 'pi pi-fw pi-play',
+              command: (ev)=>{
+                this.$emit("play-window");
+              }
+            },
+            {
               label: 'Formatieren',
               icon: 'pi pi-fw pi-align-left',
               command: (ev)=>{
