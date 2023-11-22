@@ -414,6 +414,7 @@ export class UIClazz {
 
   parseInterpolatedString(scope,src){
     if(!src) return '""';
+    src=src.trim();
     let parts=[];
     let pos2=-1;
     let pos=src.indexOf("{{");
