@@ -55,7 +55,7 @@ export class Project{
     let t="";
     let referencedAssets={};
     for(let i=0;i<s.length;i++){
-      if(i%2===0){
+      if(i===0){
         t+=s[i];
       }else{
         let pos=s[i].indexOf(")");

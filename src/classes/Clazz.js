@@ -366,11 +366,7 @@ export class Clazz{
   }
 
   getPositionShift(){
-    if(!this.hasClazzDeclaration){
-      return -11;
-    }else{
-      return 0;
-    }
+    return 0;
   }
 
   generateSrcAndTree(src,withoutClazzDeclaration){
