@@ -14,6 +14,7 @@ export class Error{
       message="Syntax-Fehler";
     }
     this.message=message;
+    //console.error(this.message,this)
   }
   toString(){
     return this.line.number+":"+this.col+": "+this.message;

@@ -49,8 +49,8 @@ export function ObjectCreationExpression(node,source,scope,infos){
     }
   }
   node=node.nextSibling;
-  if(node.name!=='TypeName'){
-
+  if(node.name.indexOf("Type")<0){
+    throw source.createError("Datentyp erwartet",node);
   }
   let clazz,typename;
   let runtimeTypeArguments={$hideFromConsole: true};
@@ -106,10 +106,10 @@ export function ObjectCreationExpression(node,source,scope,infos){
   if(clazz instanceof PrimitiveType){
     throw source.createError("Zu dem primitiven Datentyp '"+clazz.name+"' kann kein Objekt erzeugt werden.",node);
   }
-  node=node.nextSibling;
-  if(!node){
-    throw source.createError("'(' erwartet.")
+  if(!node.nextSibling){
+    throw source.createError("'(' erwartet.", node)
   }
+  node=node.nextSibling;
   let al=ArgumentList(node,source,scope,clazz.getConstructorParameters());
   code="new "+typename.code;
   if(!clazz.isNative()){

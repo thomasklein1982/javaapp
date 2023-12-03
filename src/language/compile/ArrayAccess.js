@@ -7,6 +7,9 @@ export function ArrayAccess(node,source,scope){
   let code="";
   let f=CompileFunctions.get(node,source);
   let object=f(node,source,scope);
+  if(!object.type){
+    throw source.createError("Das Objekt hat keinen Typ.",node);
+  }
   if(object.type.dimension===0){
     throw source.createError("Dieser Ausdruck ist kein Array.",node);
   }

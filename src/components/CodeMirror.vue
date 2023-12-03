@@ -191,10 +191,12 @@ export default {
     let timer;
     this.size=this.clazz.src.length;
     const lint = linter((view) => {
+      //console.log("linter start");
       let errors=[];
       for(let i=0;i<this.clazz.errors.length;i++){
         let e=this.clazz.errors[i];
-        if(!e.line){
+        //console.log(e);
+        if(!e.line || e.from===undefined || e.to===undefined){
           console.error("Fehlerhafter Fehler: ",e);
           continue;
         }
@@ -205,6 +207,7 @@ export default {
           message: e.message
         });
       }
+      //console.log("linter end", errors);
       return errors;
     });
     let editorTheme=new Compartment();
@@ -244,6 +247,7 @@ export default {
               let delta=v.changedRanges[0].toB-v.changedRanges[0].fromB-(to-from);
               let method=this.clazz.getMethodByPosition(from,to);
               if(method){
+                //console.log("change in method",method);
                 for(let i=1;i<v.changedRanges.length;i++){
                   from=v.changedRanges[i].fromA;
                   to=v.changedRanges[i].toA;
@@ -334,8 +338,9 @@ export default {
         let t1=new Date();
         await this.clazz.recompileMethod(methodInformation,src,state.tree,this.settings.optimizeCompiler);
         let t2=new Date();
-        console.log("recompiled method '"+methodInformation.method.name+"' in "+(t2-t1)+"ms ("+this.clazz.name+")");
+        //console.log("recompiled method '"+methodInformation.method.name+"' in "+(t2-t1)+"ms ("+this.clazz.name+")");
       }else{
+        //console.log("recompile whole clazz",this.clazz);
         this.clazz.setSrcAndTree(src,state.tree);
         if(this.triggerRecompilation){
           this.project.compile(false,this.settings.optimizeCompiler);

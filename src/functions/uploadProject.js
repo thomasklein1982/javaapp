@@ -2,7 +2,7 @@ import {upload} from './helper.js';
 import { Project } from "../classes/Project.js";
 
 export async function uploadProject(){
-  let s=await upload({accept: "text/html"});
+  let s=await upload({accept: "text/html,text/htm"});
   if(!s) return null;
   let p=new Project();
   await p.fromSaveString(s.code);

@@ -324,10 +324,26 @@ function additionalJSCode(){
     try{
       var r=new RegExp(regexp,flags);
     }catch(e){
-
+      throw new Exception("Dieser reguläre Ausdruck ist syntaktisch nicht korrekt: \n"+e);
     }
     var res=r.exec(string);
     if(res){
+      if(flags.indexOf("g")>=0){
+        /**wiederhole, bis du alle matches hast */
+        var match=res;
+        while(match){
+          match=r.exec(string);
+          if(!match) break;
+          for(let i=0;i<match.length;i++){
+            res.push(match[i]);
+          }
+        }
+      }
+      for(let i=0;i<res.length;i++){
+        if(res[i]===undefined){
+          res[i]=null;
+        }
+      }
       return res;
     }else{
       return null;
