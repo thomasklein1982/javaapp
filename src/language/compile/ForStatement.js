@@ -7,10 +7,10 @@ export function ForStatement(node,source,scope){
   node=node.firstChild;
   node=node.nextSibling;
   let forSpec=node;
-  node=node.firstChild;
-  if(node.name!=="("){
-
+  if(!node.firstChild || node.firstChild.name!=="("){
+    throw source.createError("'(' erwartet",node);
   }
+  node=node.firstChild;
   node=node.nextSibling;
   scope.pushLayer();
   let p1=CompileFunctions.get(node,source)(node,source,scope);

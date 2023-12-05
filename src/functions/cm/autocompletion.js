@@ -94,7 +94,7 @@ export function createAutocompletion(){
       nodeBefore=nodeBefore.prevSibling;
     }
     if(nodeBefore.name==="new"){
-      console.log(context.pos);
+      //console.log(context.pos);
       if(context.pos===nodeBefore.to){
         return;
       }
@@ -107,6 +107,11 @@ export function createAutocompletion(){
         if(params) params=params.parameters;
         options.push(autocomplete.snippetCompletion(c.name+createParamsString(params,true),{
           label: c.name+"(...)",
+          type: "function",
+          info: c.comment
+        }));
+        options.push(autocomplete.snippetCompletion(c.name+"[]",{
+          label: c.name+"[]",
           type: "function",
           info: c.comment
         }));
@@ -240,6 +245,16 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
         let c=Java.clazzes[name];
         options.push({
           label: name,
+          type: "class",
+          info: c.comment
+        });
+      }
+      let clazzes=app.$refs.editor.project.clazzes;
+      for(let i=0;i<clazzes.length;i++){
+        let c=clazzes[i];
+        if(c.isUIClazz()) continue;
+        options.push({
+          label: c.name,
           type: "class",
           info: c.comment
         });

@@ -39,6 +39,9 @@ export function ArgumentList(node,source,scope,parameters){
     }
     i++;
   }
+  if(error){
+    throw error;
+  }
   if(!error && paramNodes.length!==minCount && paramNodes.length<pcount){
     if(minCount>=0){
       error=source.createError("Es müssen "+minCount+" oder "+pcount+" Argumente sein.",node);
