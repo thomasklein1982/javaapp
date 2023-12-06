@@ -1736,6 +1736,7 @@ function additionalJSCode(){
         }
       }
       this.elements.splice(index,1);
+      this.$size--;
       return true;
     }
     clear(){
