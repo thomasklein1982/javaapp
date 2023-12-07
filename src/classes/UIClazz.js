@@ -305,6 +305,7 @@ export class UIClazz {
       code+="\n"+a.getJavaScriptCode();
     }
     //code+="\n"+JSON.this.components
+    //code+="\n$App.canvas.addElement(this.$el,this.x,this.y,this.width,this.height);";
     code+="\n}";
     code+="\nasync $constructor(){";
     for(let i in this.attributes){

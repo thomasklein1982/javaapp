@@ -1308,6 +1308,9 @@ window.appJScode=function(){
         this.updateElementPosition(el,cx,cy,width,height);
         
       },
+      removeChild: function(el){
+        this.container.removeChild(el);
+      },
       add: function(el){
         if(el.parentNode){
           el.parentNode.removeChild(el);
@@ -4679,7 +4682,7 @@ window.appJScode=function(){
             c.style.top="0px";
           //}
           if(c.appJSData.parent){
-            c.appsJSData.parent.removeChild(c);
+            c.appJSData.parent.removeChild(c);
           }
           c.appJSData.parent=this;
           if((index===0 || index>0) && index<this.childNodes.length){

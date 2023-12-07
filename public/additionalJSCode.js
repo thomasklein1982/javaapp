@@ -725,6 +725,12 @@ function additionalJSCode(){
       this.$el=ui.button(label,x,y,width,height);
       this.$el.component=this;
       this.$triggerOnAction=true;
+      this.$el.onclick = function(ev) {
+        if (this.component.$triggerOnAction) {
+            ev.stopPropagation();
+            $main.onAction(this.component);
+        }
+      }
     }
   }
 
@@ -733,6 +739,12 @@ function additionalJSCode(){
       super(x,y,width,height);
       this.$el=ui.image(url,x,y,width,height);
       this.$el.component=this;
+      this.$el.onclick = function(ev) {
+        if (this.component.$triggerOnAction) {
+            ev.stopPropagation();
+            $main.onAction(this.component);
+        }
+      }
     }
   }
 
@@ -742,6 +754,12 @@ function additionalJSCode(){
       this.template=template;
       this.$el=ui.panel(template,x,y,width,height);
       this.$el.component=this;
+      this.$el.onclick = function(ev) {
+        if (this.component.$triggerOnAction) {
+            ev.stopPropagation();
+            $main.onAction(this.component);
+        }
+      }
     }
     add(comp,index){
       this.$el.add(comp.$el,index);
@@ -864,16 +882,28 @@ function additionalJSCode(){
       super(x,y,width,height);
       this.$el=ui.label(text,x,y,width,height);
       this.$el.component=this;
+      this.$el.onclick = function(ev) {
+        if (this.component.$triggerOnAction) {
+            ev.stopPropagation();
+            $main.onAction(this.component);
+        }
+      }
     }
   }
 
   class Canvas extends JPanel{
     constructor(minX,maxX,minY,maxY,x,y,width,height){
       super(x,y,width,height);
-      this.$el.parentNode.removeChild(this.$el);
+      if(this.$el && this.$el.parentNode) this.$el.parentNode.removeChild(this.$el);
       this.$el=ui.canvas(maxX-minX,maxY-minY,x,y,width,height);
       this.$el.component=this;
       this.setOrigin(-minX,-minY);
+      this.$el.onclick = function(ev) {
+        if (this.component.$triggerOnAction) {
+            ev.stopPropagation();
+            $main.onAction(this.component);
+        }
+      }
     }
     add(comp){
       this.$el.canvas.add(comp.$el);
@@ -989,6 +1019,12 @@ function additionalJSCode(){
       this.$el=ui.input(type,placeholder,x,y,width,height);
       this.$el.spellcheck=false;
       this.$el.component=this;
+      this.$el.onchange = function(ev) {
+        if (this.component.$triggerOnAction) {
+            ev.stopPropagation();
+            $main.onAction(this.component);
+        }
+      }
     }
     setPlaceholder(text){
       this.$el.placeholder=text;
@@ -1000,6 +1036,12 @@ function additionalJSCode(){
       super(x,y,width,height);
       this.$el=ui.select(options.values,x,y,width,height);
       this.$el.component=this;
+      this.$el.onchange = function(ev) {
+        if (this.component.$triggerOnAction) {
+            ev.stopPropagation();
+            $main.onAction(this.component);
+        }
+      }
     }
     getSelectedIndex(){
       return this.$el.selectedIndex;
@@ -1018,6 +1060,12 @@ function additionalJSCode(){
       super(x,y,width,height);
       this.$el=ui.input("checkbox",label,x,y,width,height);
       this.$el.component=this;
+      this.$el.onchange = function(ev) {
+        if (this.component.$triggerOnAction) {
+            ev.stopPropagation();
+            $main.onAction(this.component);
+        }
+      }
     }
   }
 
@@ -1027,6 +1075,12 @@ function additionalJSCode(){
       this.$el=ui.textarea(placeholder,x,y,width,height);
       this.$el.spellcheck=false;
       this.$el.component=this;
+      this.$el.onchange = function(ev) {
+        if (this.component.$triggerOnAction) {
+            ev.stopPropagation();
+            $main.onAction(this.component);
+        }
+      }
     }
     setPlaceholder(text){
       this.$el.placeholder=text;
