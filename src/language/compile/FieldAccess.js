@@ -32,9 +32,10 @@ export function FieldAccess(node,source,scope){
   }else if(node.name==="ArrayAccess"){
     let fa=ArrayAccess(node,source,scope);
     code+=fa.code;
-    if(fa.type.dimension>0){
-      throw source.createError("Ein Array hat keine Attribute.",node.node);
-    }
+    
+    // if(fa.type.dimension>0){
+    //   throw source.createError("Ein Array hat keine Attribute.",node.node);
+    // }
     owner={
       type: fa.type,
       static: false

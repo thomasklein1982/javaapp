@@ -348,6 +348,7 @@ export class UIClazz {
       name: this.name,
       components: this.components,
       cssClass: this.cssClass,
+      cssCode: this.cssCode,
       variablesRaw: this.variablesRaw,
       template: this.template,
       x: this.x,
@@ -358,7 +359,7 @@ export class UIClazz {
   }
 
   restoreFromSaveObject(obj){
-    let props=["name","components","variablesRaw","cssClass","template","x","y","width","height","onAction"];
+    let props=["name","components","variablesRaw","cssClass","template","x","y","width","height","onAction","cssCode"];
     for(let i=0;i<props.length;i++){
       let p=props[i];
       if(obj[p]!==undefined){
@@ -405,6 +406,25 @@ export class UIClazz {
     let codeObject={code: "let container0=this;\nwindow.$insertPosition=0;\n", nextUIControlStatementIndex:1};
     scope=new Scope(this.project,this.rerenderMethod,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
     codeObject.code+=this.generateJavaScriptCodeForComponent(scope,this,codeObject,0,null);
+
+    if(this.onAction===true){
+      console.log("on action");
+      codeObject.code+="\ncontainer0.setTriggerOnAction("+(c.onAction===true)+");";
+      newCode+="\n"+last+code;
+    }
+    if(this.actionCommand){
+      scope.clearReferencedVariables();
+      codeObject.code+="\ncontainer0.setActionCommand("+this.parseInterpolatedString(scope, this.actionCommand)+");";
+    }
+    if(this.cssClass){
+      scope.clearReferencedVariables();
+      codeObject.code+="\ncontainer0.setCSSClass("+this.parseInterpolatedString(scope,this.cssClass)+");";
+    }
+    if(this.cssCode){
+      scope.clearReferencedVariables();
+      codeObject.code+="\ncontainer0.$el.style="+this.parseInterpolatedString(scope,this.cssCode)+";";
+    }
+
     /**insertPosition: falls >=0: index des Einfuegens, ansonsten wird angehängt */
     this.componentCode=codeObject.code;
   }
