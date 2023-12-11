@@ -128,7 +128,7 @@ export class Type{
       if(this.isNumeric()){
         value.code="$v("+value.code+")";
       }else if(this.isBoolean()){
-        value.code="("+value.code+"==='true')";
+        value.code="("+value.code+"+''==='true')";
       }
       return true;
     }else if(this.isString()){
