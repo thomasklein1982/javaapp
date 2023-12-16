@@ -37,6 +37,15 @@ function defineJComponent(Clazz,Java){
     returnType: 'boolean'
   },Clazz,false,false);
   createMethod({
+    name: 'getScrollPosition',
+    args: [],
+    returnType: 'int'
+  },Clazz,false,false);
+  createMethod({
+    name: 'setScrollPosition',
+    args: [{name: 'pos', type: 'int'}]
+  },Clazz,false,false);
+  createMethod({
     name: 'show',
     args: [
     ]
@@ -567,5 +576,35 @@ function defineCanvas(Clazz,Java){
     name: 'setColor',
     args: [{name: 'farbe', type: 'String'}],
     info: 'Legt die Farbe für die nachfolgenden Zeichnungen fest.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'drawImage',
+    args: [
+      {name: 'image', type: 'String'},
+      {name: 'cx', type: 'double'},
+      {name: 'cy', type: 'double'},
+      {name: 'width', type: 'double'},
+      {name: 'height', type: 'double'},
+      {name: 'rotation', type: 'double'},
+      {name: 'mirrored', type: 'boolean'},
+    ],//image, cx, cy, width, height
+    info: 'Zeichnet ein Bild in den Canvas.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'drawImagePart',
+    args: [
+      {name: 'image', type: 'String'},
+      {name: 'cx', type: 'double'},
+      {name: 'cy', type: 'double'},
+      {name: 'width', type: 'double'},
+      {name: 'height', type: 'double'},
+      {name: 'sx', type: 'double'},
+      {name: 'sy', type: 'double'},
+      {name: 'swidth', type: 'double'},
+      {name: 'sheight', type: 'double'},
+      {name: 'rotation', type: 'double'},
+      {name: 'mirrored', type: 'boolean'}
+    ],//image, cx, cy, width, height
+    info: 'Zeichnet einen Bildausschnitt in den Canvas.'
   },Clazz,false,false,Java);
 }

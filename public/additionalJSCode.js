@@ -511,6 +511,12 @@ function additionalJSCode(){
       this.actionObject=null;
       this.$triggerOnAction=false;
     }
+    getScrollPosition(){
+      return this.$el.scrollTop;
+    }
+    setScrollPosition(top){
+      this.$el.scrollTop=top;
+    }
     setActionCommand(ac){
       this.actionCommand=ac;
     }
@@ -1009,7 +1015,7 @@ function additionalJSCode(){
       this.$el.canvas.drawImage(image,cx,cy,w,h,angle,mirrored);
     }
     drawImagePart(image,cx,cy,width,height,scx,scy,swidth,sheight,rotation,mirrored){
-      this.$el.canvas.drawImagePart(image,cx,cy,width,height,scx,scy,swidth,sheight,rotation,mirrored);
+      this.$el.canvas.drawImage(image,cx,cy,width,height,rotation,mirrored,{cx: scx, cy: scy, w: swidth, h: sheight});
     }
   }
 

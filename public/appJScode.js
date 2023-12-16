@@ -356,6 +356,7 @@ window.appJScode=function(){
     }
 
     $App.alignSelf=function(el,align){
+      if(!el || !el.style) return;
       if(align.h==="center"){
         el.style.marginLeft="auto";
         el.style.marginRight="auto";
@@ -412,24 +413,24 @@ window.appJScode=function(){
       el.updateAlignContent=function(v){
         var a=$App.Canvas.$getAlignment(v);
         this.appJSData.alignContent=a;
-        //TODO: Wenn der Inhalt zu groß ist, wird er abgeschnitten!
-        for(var i=0;i<this.childNodes.length;i++){
-          var c=this.childNodes[i];
-          $App.alignSelf(c,a);
-        }
+        // //TODO: Wenn der Inhalt zu groß ist, wird er abgeschnitten!
+        // for(var i=0;i<this.childNodes.length;i++){
+        //   var c=this.childNodes[i];
+        //   $App.alignSelf(c,a);
+        // }
         if(a.h==="center"){
-          this.style.textAlign="center";
+          this.style.justifyItems="center";
         }else if(a.h==="left"){
-          this.style.textAlign="left";
+          this.style.justifyItems="start";
         }else{
-          this.style.textAlign="right";
+          this.style.justifyItems="end";
         }
         if(a.v==="middle"){
           this.style.alignItems="center";
         }else if(a.v==="top"){
-          this.style.alignItems="flex-end";
+          this.style.alignItems="start";
         }else{
-          this.style.alignItems="flex-start";
+          this.style.alignItems="end";
         }
       };
       el.updateAlignContent();
@@ -4654,7 +4655,7 @@ window.appJScode=function(){
           b.style.gridAutoRows="minmax(0,1fr)";
           b.style.display="grid"; 
           b.style.alignItems="stretch";
-          b.style.justifyContent="stretch";
+          b.style.justifyItems="stretch";
           b.style.gridColumnGap=0;
           b.style.gridRowGap=0;
           b.style.columnGap=0;
@@ -4991,6 +4992,27 @@ window.appJScode=function(){
         return b;
       },
       label: function(text,cx,cy,width,height){
+        var b=$App.createElement("div");
+        b.style.overflow="auto";
+        b.style.display="grid";
+        b.$standardPositionValue="relative";
+        $App.canvas.addElement(b,cx,cy,width,height);
+        Object.defineProperty(b,'value', {
+          set: function(v){
+            this.appJSData.value=v;
+            this.innerHTML=v;
+            //this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height);
+          },
+          get: function(){
+            return this.appJSData.value;
+          }
+        });
+        b.value=text;
+        //b.updateAlignContent();
+        b.updatePosition();
+        return b;
+      },
+      label2: function(text,cx,cy,width,height){
         var b=$App.createElement("span");
         b.style.overflow="auto";
         b.style.display="flex";
