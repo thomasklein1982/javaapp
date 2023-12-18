@@ -300,6 +300,26 @@ function defineJTextArea(Clazz,Java){
     ],
     info: "Legt den Platzhalter-Text der Komponente fest."
   },Clazz,false,false,Java);
+  createMethod({
+    name: 'getSelectionStart',
+    args: [],
+    info: "Liefert die aktuelle Startposition des ausgewählten Texts zurück.",
+    returnType: "int"
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getSelectionEnd',
+    args: [],
+    info: "Liefert die aktuelle Endposition des ausgewählten Texts zurück.",
+    returnType: "int"
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setSelection',
+    args: [
+      {name: 'start', type: 'int', info: 'Die neue Startposition der Auswahl.'},
+      {name: 'end', type: 'int', info: 'Die neue Endposition der Auswahl.'}
+    ],
+    info: "Legt den ausgewählten Text fest."
+  },Clazz,false,false,Java);
 }
 
 function defineJComboBox(Clazz,Java){

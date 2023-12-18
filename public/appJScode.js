@@ -1,6 +1,7 @@
 window.appJScode=function(){
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
+  audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 
     window.onmessage=function(message){
       if(message && message.data && message.data.type==="update-shared-variables"){
@@ -3770,7 +3771,30 @@ window.appJScode=function(){
     },null,'Laedt HowlerJS, was du zum Abspielen von Sounds brauchst. Muss vor onStart aufgerufen werden.',
     [],
     '',"topLevel");
-  
+    
+    $App.addFunction(function beep(type, frequency, volume, duration){
+      var oscillator = audioCtx.createOscillator();
+      var gainNode = audioCtx.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      gainNode.gain.value = volume;
+      oscillator.frequency.value = frequency;
+      oscillator.type = type;
+
+      oscillator.start();
+
+      setTimeout(
+        function() {
+          oscillator.stop();
+        },
+        duration
+      );
+    },null,'Macht einen Beep.',
+    [{name: 'type', type: 'String', info: 'sine, square, triangle.'}, {name: 'frequency', type: 'int', info: 'Frequenz.'}, {name: 'volumne', type: 'double', info: 'Lautstärke.'}, {name: 'duration', type: 'int', info: 'Dauer in ms.'}],
+    '');
+
     $App.addFunction(function playSound(name, loop){
       if(!window.Howler){
         var m="Du musst zuerst HowlerJS laden (mittels loadHowlerJS()), bevor du Sounds abspielen kannst.";

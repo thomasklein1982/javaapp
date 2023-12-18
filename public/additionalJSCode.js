@@ -656,6 +656,9 @@ function additionalJSCode(){
     setTriggerOnAction(t){
       this.$triggerOnAction=t;
     }
+    focus(){
+      this.$el.focus();
+    }
   }
 
   class HTMLElement extends JComponent{
@@ -1087,6 +1090,16 @@ function additionalJSCode(){
             $main.onAction(this.component);
         }
       }
+    }
+    getSelectionStart(){
+      return this.$el.selectionStart;
+    }
+    getSelectionEnd(){
+      return this.$el.selectionEnd;
+    }
+    setSelection(start,end){
+      this.$el.setSelectionRange(start,end);
+      this.focus();
     }
     setPlaceholder(text){
       this.$el.placeholder=text;
