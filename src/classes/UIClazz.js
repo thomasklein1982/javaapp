@@ -422,7 +422,7 @@ export class UIClazz {
     }
     if(this.cssCode){
       scope.clearReferencedVariables();
-      codeObject.code+="\ncontainer0.$el.style="+this.parseInterpolatedString(scope,this.cssCode)+";";
+      codeObject.code+="\ncontainer0.$el.style.cssText=container0.$el.style.cssText+';'+"+this.parseInterpolatedString(scope,this.project.prepareCSS(this.cssCode))+";";
     }
 
     /**insertPosition: falls >=0: index des Einfuegens, ansonsten wird angehängt */
@@ -623,7 +623,7 @@ export class UIClazz {
       }
       if(c.cssCode){
         scope.clearReferencedVariables();
-        let code=".$el.style="+last+".$el.style+';'+"+this.parseInterpolatedString(scope,c.cssCode)+";";
+        let code=".$el.style.cssText="+last+".$el.style.cssText+';'+"+this.parseInterpolatedString(scope,this.project.prepareCSS(c.cssCode))+";";
         newCode+="\n"+last+code;
         if(scope.referencedVariablesCount>0){
           updateCode+="\ncomponent"+code;

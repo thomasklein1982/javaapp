@@ -56,6 +56,10 @@ function defineJComponent(Clazz,Java){
     ]
   },Clazz,false,false,Java);
   createMethod({
+    name: 'focus',
+    args: []
+  },Clazz,false,false,Java);
+  createMethod({
     name: 'setVisible',
     args: [
       {name: 'v', type: 'boolean'}
