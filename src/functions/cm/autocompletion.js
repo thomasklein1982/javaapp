@@ -189,6 +189,7 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
     let clazz=type.baseType;
     if(!(clazz instanceof PrimitiveType)){
       while(clazz){
+        //if(clazz.name==="nullType") continue;
         let attributeNames=clazz.getAllAttributeNames();
         for (let name in attributeNames) {
           let a=clazz.getAttribute(name,isStatic);
@@ -242,6 +243,7 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
         }
       }
       for(let name in Java.clazzes){
+        //if(name==="nullType") continue;
         let c=Java.clazzes[name];
         options.push({
           label: name,

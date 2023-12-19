@@ -5,6 +5,7 @@ import { createMethod } from "../helper/createMethod";
 
 export function defineUIClazzes(Java){
   defineJComponent(Java.datatypes.JComponent,Java);
+  defineJTextComponent(Java.datatypes.JTextComponent,Java);
   defineJButton(Java.datatypes.JButton,Java);
   defineJImage(Java.datatypes.JImage,Java);
   defineJLabel(Java.datatypes.JLabel,Java);
@@ -273,29 +274,7 @@ function defineJLabel(Clazz,Java){
   
 }
 
-function defineJTextField(Clazz,Java){
-  createConstructor ({
-    args: [
-      {type: 'String', name: 'type'}, {type: 'String', name: 'placeholder'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
-    ]
-  },Clazz,Java);
-  createMethod({
-    name: 'setPlaceholder',
-    args: [
-      {name: 'placeholder', type: 'String', info: 'Der neue Platzhalter-Text der Komponente.'}
-    ],
-    info: "Legt den Platzhalter-Text der Komponente fest."
-  },Clazz,false,false,Java);
-  Clazz.superClazz=Java.datatypes.JComponent;
-  
-}
-
-function defineJTextArea(Clazz,Java){
-  createConstructor ({
-    args: [
-      {type: 'String', name: 'placeholder'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
-    ]
-  },Clazz,Java);
+function defineJTextComponent(Clazz, Java){
   Clazz.superClazz=Java.datatypes.JComponent;
   createMethod({
     name: 'setPlaceholder',
@@ -324,6 +303,24 @@ function defineJTextArea(Clazz,Java){
     ],
     info: "Legt den ausgewählten Text fest."
   },Clazz,false,false,Java);
+}
+
+function defineJTextField(Clazz,Java){
+  createConstructor ({
+    args: [
+      {type: 'String', name: 'type'}, {type: 'String', name: 'placeholder'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+    ]
+  },Clazz,Java);
+  Clazz.superClazz=Java.datatypes.JTextComponent;
+}
+
+function defineJTextArea(Clazz, Java){
+  createConstructor ({
+    args: [
+      {type: 'String', name: 'placeholder'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+    ]
+  },Clazz,Java);
+  Clazz.superClazz=Java.datatypes.JTextComponent;
 }
 
 function defineJComboBox(Clazz,Java){

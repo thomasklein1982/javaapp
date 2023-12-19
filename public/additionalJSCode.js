@@ -661,11 +661,19 @@ function additionalJSCode(){
     }
   }
 
+  
+
   class HTMLElement extends JComponent{
     constructor(element){
       super(0,0,0,0);
       this.$el=element;
       this.$lastDisplayValue=this.$el.style.display;;
+    }
+    getAttribute(name){
+      return this.$el.getAttribute(name);
+    }
+    setAttribute(name, value){
+      this.$el.setAttribute(name,value);
     }
     getValue(){
       if(!this.$el) return null;
@@ -1022,24 +1030,6 @@ function additionalJSCode(){
     }
   }
 
-  class JTextField extends JComponent{
-    constructor(type,placeholder,x,y,width,height){
-      super(x,y,width,height);
-      this.$el=ui.input(type,placeholder,x,y,width,height);
-      this.$el.spellcheck=false;
-      this.$el.component=this;
-      this.$el.onchange = function(ev) {
-        if (this.component.$triggerOnAction) {
-            ev.stopPropagation();
-            $main.onAction(this.component);
-        }
-      }
-    }
-    setPlaceholder(text){
-      this.$el.placeholder=text;
-    }
-  }
-
   class JComboBox extends JComponent{
     constructor(options,x,y,width,height){
       super(x,y,width,height);
@@ -1078,18 +1068,9 @@ function additionalJSCode(){
     }
   }
 
-  class JTextArea extends JComponent{
-    constructor(placeholder,x,y,width,height){
+  class JTextComponent extends JComponent{
+    constructor(x,y,width,height){
       super(x,y,width,height);
-      this.$el=ui.textarea(placeholder,x,y,width,height);
-      this.$el.spellcheck=false;
-      this.$el.component=this;
-      this.$el.onchange = function(ev) {
-        if (this.component.$triggerOnAction) {
-            ev.stopPropagation();
-            $main.onAction(this.component);
-        }
-      }
     }
     getSelectionStart(){
       return this.$el.selectionStart;
@@ -1103,6 +1084,36 @@ function additionalJSCode(){
     }
     setPlaceholder(text){
       this.$el.placeholder=text;
+    }
+  }
+
+  class JTextField extends JTextComponent{
+    constructor(type,placeholder,x,y,width,height){
+      super(x,y,width,height);
+      this.$el=ui.input(type,placeholder,x,y,width,height);
+      this.$el.spellcheck=false;
+      this.$el.component=this;
+      this.$el.onchange = function(ev) {
+        if (this.component.$triggerOnAction) {
+            ev.stopPropagation();
+            $main.onAction(this.component);
+        }
+      }
+    }
+  }
+
+  class JTextArea extends JTextComponent{
+    constructor(placeholder,x,y,width,height){
+      super(x,y,width,height);
+      this.$el=ui.textarea(placeholder,x,y,width,height);
+      this.$el.spellcheck=false;
+      this.$el.component=this;
+      this.$el.onchange = function(ev) {
+        if (this.component.$triggerOnAction) {
+            ev.stopPropagation();
+            $main.onAction(this.component);
+        }
+      }
     }
   }
 
