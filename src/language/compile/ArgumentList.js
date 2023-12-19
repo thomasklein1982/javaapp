@@ -20,33 +20,35 @@ export function ArgumentList(node,source,scope,parameters){
   }
   let paramNodes=[];
   let i=0;
-  node=node.nextSibling;
-  let error=null;
-  while(node && node.name!==")"){
+  if(!node.nextSibling){
+    throw source.createError("')' oder Argument erwartet",node.nextSibling);
+  }
+  while(node.nextSibling && node.nextSibling.name!==")"){
+    node=node.nextSibling;
     if(!parameters || i>=pcount){
-      error=source.createError("Nur "+pcount+" Argumente erwartet. Zu viele Argumente!",node);
+      throw source.createError("Nur "+pcount+" Argumente erwartet. Zu viele Argumente!",node);
     }
     paramNodes.push(node);
-    node=node.nextSibling;
-    if(node.name===","){
-      if(!node.nextSibling || node.nextSibling.type.isError){
-        if(!error){
-          error=source.createError("Weiteres Argument erwartet.",node);
-        }
-        break;
+    i++;
+    if(!node.nextSibling){
+      throw source.createError("')' oder weiteres Argument erwartet",node.nextSibling);
+    }
+    if(node.nextSibling.name===","){
+      if(!node.nextSibling.nextSibling || node.nextSibling.nextSibling.type.isError){
+        throw source.createError("Weiteres Argument erwartet.",node);
       }
       node=node.nextSibling;
-    }
-    i++;
-  }
-  if(error){
-    throw error;
-  }
-  if(!error && paramNodes.length!==minCount && paramNodes.length<pcount){
-    if(minCount>=0){
-      error=source.createError("Es müssen "+minCount+" oder "+pcount+" Argumente sein.",node);
+    }else if(node.nextSibling.name===")"){
+      break;
     }else{
-      error=source.createError("Zu wenig Argumente! Es müssen "+pcount+" Argumente sein.",node);
+      throw source.createError("Unerwarteter Code",node);
+    }
+  }
+  if(paramNodes.length!==minCount && paramNodes.length<pcount){
+    if(minCount>=0){
+      throw source.createError("Es müssen "+minCount+" oder "+pcount+" Argumente sein.",node);
+    }else{
+      throw source.createError("Zu wenig Argumente! Es müssen "+pcount+" Argumente sein.",node);
     }
   }
   for(let i=0;i<paramNodes.length;i++){
@@ -63,8 +65,7 @@ export function ArgumentList(node,source,scope,parameters){
       updateLocalVariablesAfter=true;
     }
     if(arg.error){
-      if(error) throw error;
-      else throw source.createError(arg.error,pnode);
+      throw source.createError(arg.error,pnode);
     }
     
     p.type.autoCastValue(arg);
@@ -80,7 +81,6 @@ export function ArgumentList(node,source,scope,parameters){
     
     list.push(arg);
   }
-  if(error) throw error;
   code+=codeArgs.join(",");
   code+=")";
   return {

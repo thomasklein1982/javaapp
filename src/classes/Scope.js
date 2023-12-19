@@ -203,6 +203,11 @@ export class Scope{
         error: "Das null-Objekt kann keine Methode aufrufen."
       };
     }
+    if(c instanceof PrimitiveType){
+      return {
+        error: "Der primitive Datentyp '"+c.toString()+"' hat keine Methoden."
+      };
+    }
     let m=c.getMethod(name,isStatic);
     if(m.error){
       return m;

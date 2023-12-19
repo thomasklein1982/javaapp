@@ -197,15 +197,20 @@ export default {
         let e=this.clazz.errors[i];
         //console.log(e);
         if(!e.line || e.from===undefined || e.to===undefined){
-          console.error("Fehlerhafter Fehler: ",e);
-          continue;
+          errors.push({
+            from: 0,
+            to: 1,
+            severity: "error",
+            message: "Interner Fehler: "+e.stack
+          });
+        }else{
+          errors.push({
+            from: e.from,
+            to: e.to,
+            severity: "error",
+            message: e.message
+          });
         }
-        errors.push({
-          from: e.from,
-          to: e.to,
-          severity: "error",
-          message: e.message
-        });
       }
       //console.log("linter end", errors);
       return errors;
