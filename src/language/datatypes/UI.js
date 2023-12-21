@@ -30,6 +30,56 @@ function defineJComponent(Clazz,Java){
       {name: 'v', type: 'String'}
     ]
   },Clazz,false,false,Java);
+  // setCSSClass(className){
+  //   this.$el.className=className;
+  // }
+  // getCSSClass(){
+  //   return this.$el.className;
+  // }
+  // toggleCSSClass(className){
+  //   this.$el.classList.toggle(className);
+  // }
+  // addCSSClass(className){
+  //   this.$el.classList.add(className);
+  // }
+  // removeCSSClass(className){
+  //   this.$el.classList.remove(className);
+  // }
+  createMethod({
+    name: 'setCSSClass',
+    args: [
+      {name: 'className', type: 'String'}
+    ],
+    info: "Legt die CSS-Klassen der Komponente fest."
+  },Clazz,false,false);
+  createMethod({
+    name: 'getCSSClass',
+    args: [],
+    returnType: "String",
+    info: "Liefert einen String mit allen CSS-Klassen der Komponente zurück."
+  },Clazz,false,false);
+  createMethod({
+    name: 'toggleCSSClass',
+    args: [
+      {name: 'className', type: 'String'}
+    ],
+    returnType: "boolean",
+    info: "Falls die Komponente die Klasse besitzt: Klasse wird entfernt, false wird zurückgeben.\nAnsonsten: Klasse wird hinzugefügt, true wird zurückgegeben."
+  },Clazz,false,false);
+  createMethod({
+    name: 'addCSSClass',
+    args: [
+      {name: 'className', type: 'String'}
+    ],
+    info: "Fügt der Komponente die CSS-Klasse hinzu."
+  },Clazz,false,false);
+  createMethod({
+    name: 'removeCSSClass',
+    args: [
+      {name: 'className', type: 'String'}
+    ],
+    info: "Entfernt die CSS-Klasse von der Komponente."
+  },Clazz,false,false);
   createMethod({
     name: 'collides',
     args: [

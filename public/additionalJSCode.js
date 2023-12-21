@@ -217,10 +217,32 @@ function additionalJSCode(){
     }
   }
 
+  $handleAssetsInString=function(code){
+    let s=code.split("asset(");
+    let t="";
+    for(let i=0;i<s.length;i++){
+      if(i===0){
+        t+=s[i];
+      }else{
+        let pos=s[i].indexOf(")");
+        let assetName=s[i].substring(0,pos);
+        let asset=$App.assets[assetName];
+        if(asset){
+          //t+="var(--"+assetName+")";
+          t+=asset.url;
+        }else{
+          t+=assetName;
+        }
+        t+=s[i].substring(pos+1);
+      }
+    }
+    return t;
+  }
+
   $showDialog=function(message,input,footerAlert,footerPrompt,footerConfirm){
     $App.handleModalDialog();
     $App.customDialog.input.value=null;
-    $App.customDialog.content.innerHTML=message;
+    $App.customDialog.content.innerHTML=$handleAssetsInString(message);
     $App.customDialog.input.style.display=input;
     $App.customDialog.footerAlert.style.display=footerAlert;
     $App.customDialog.footerPrompt.style.display=footerPrompt;
@@ -511,6 +533,7 @@ function additionalJSCode(){
       this.actionObject=null;
       this.$triggerOnAction=false;
     }
+    
     getScrollPosition(){
       return this.$el.scrollTop;
     }
@@ -614,6 +637,15 @@ function additionalJSCode(){
     }
     getCSSClass(){
       return this.$el.className;
+    }
+    toggleCSSClass(className){
+      return this.$el.classList.toggle(className);
+    }
+    addCSSClass(className){
+      this.$el.classList.add(className);
+    }
+    removeCSSClass(className){
+      this.$el.classList.remove(className);
     }
     setAlign(a){
       this.$el.align=a;
