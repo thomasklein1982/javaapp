@@ -201,7 +201,7 @@ export default {
             from: 0,
             to: 1,
             severity: "error",
-            message: "Interner Fehler: "+e.stack
+            message: "Es ist ein unerwarteter Fehler an unbekannter Stelle aufgetreten.\nSende mir, falls möglich, bitte dein Programm zu,\ndann kann ich eine passendere Fehlermeldung einbauen.\n"+e.stack
           });
         }else{
           errors.push({
