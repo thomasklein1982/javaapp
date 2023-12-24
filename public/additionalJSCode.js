@@ -1942,4 +1942,39 @@ function additionalJSCode(){
       this.elements.sort(comparator);
     }
   }
+
+  class Sound{
+    constructor(url){
+      this.setSource(url);
+    }
+    setSource(url){
+      this.url=url;
+      this.audio=new Audio(this.url);
+    }
+    play(loop){
+      this.stop();
+      this.audio.loop=loop;
+      this.audio.play();
+    }
+    pause(){
+      if(!this.audio) return;
+      this.audio.pause();
+    }
+    stop(){
+      this.audio.pause();
+      this.audio.currentTime = 0;
+    }
+    getDuration(){
+      return this.audio.duration;
+    }
+    getCurrentTime(){
+      return this.audio.currentTime;
+    }
+    setCurrentTime(time){
+      this.audio.currentTime=time;
+    }
+    isEnded(){
+      return this.audio.ended;
+    }
+  }
 }
