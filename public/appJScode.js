@@ -717,6 +717,10 @@ window.appJScode=function(){
           }
           requestAnimationFrame(this.animationFrame);
         }
+        console.log("onAfterSetup",window.$onAfterSetup);
+        if(window.$onAfterSetup){
+          window.$onAfterSetup();
+        }
         if(window.onStart){
           var startFunc=async ()=>{
             if(!$App.debug.paused){  
@@ -3178,6 +3182,15 @@ window.appJScode=function(){
       this.$App.console.update($App.$sharedVariables);
     },200);
     
+    $App.loadEruda=function(){
+      var script = document.createElement('script'); 
+      script.src="https://cdn.jsdelivr.net/npm/eruda"; 
+      document.body.append(script); 
+      script.onload = function () { 
+        eruda.init(); 
+      };
+    }
+
     /**Help */
     $App.Help=function(){
       this.element=document.createElement("div");

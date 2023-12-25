@@ -10,6 +10,10 @@ body,html{
   overscroll-behavior: none;
 }
 
+.p-dialog-content>div#root{
+  height: 100%;
+}
+
 /*code-mirror css falsche farben**/
 .ͼj2{
   color: white;

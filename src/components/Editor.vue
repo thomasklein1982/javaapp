@@ -33,8 +33,8 @@
         @trash="trashCurrentClazz()"
         @play="resume()"
         @fullscreen="playInFullscreen()"
-        @play-window="playInNewWindow()"
-        @server="$refs.dialogServer.setVisible(true)"
+        @play-window="playInNewWindow(false)"
+        @play-dev="playInNewWindow(true)"
       />
       <LinksDialog
         ref="dialogResources"
@@ -48,10 +48,6 @@
         :font-size="fontSize"
         @changefontsize="changeFontSize"
         :settings="settings"
-      />
-      <ServerDialog
-        ref="dialogServer"
-        :project="project"
       />
       <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
       <AssetsDialog :project="project" ref="dialogAssets"/>
@@ -160,7 +156,6 @@ import UIPreview from "./UIPreview.vue";
 import SettingsDialog from "./SettingsDialog.vue";
 import { nextTick } from "vue";
 import PrintPreview from "./PrintPreview.vue";
-import ServerDialog from "./ServerDialog.vue";
 
 export default {
   props: {
@@ -438,9 +433,15 @@ export default {
       this.running=true;
       this.$refs.preview.runInFullscreen();
     },
-    playInNewWindow(){
+    playInNewWindow(includeDevTools){
       this.project.compile();
-      let code=this.project.getFullAppCode("console.hide();\n");
+      let precode;
+      if(includeDevTools){
+        precode="$onAfterSetup=function(){$App.loadEruda();};\n";
+      }else{
+        precode="console.hide();\n";
+      }
+      let code=this.project.getFullAppCode(precode);
       const blob = URL.createObjectURL(
         new Blob([code], { type: "text/html" })
       );
@@ -525,8 +526,7 @@ export default {
     CSSDialog,
     SettingsDialog,
     PrintPreview,
-    ProjectDetailsDialog,
-    ServerDialog
+    ProjectDetailsDialog
   }
 }
 </script>

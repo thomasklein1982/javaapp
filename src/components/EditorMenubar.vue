@@ -123,18 +123,25 @@ export default {
                 this.$emit("play");
               }
             },
-            {
-              label: 'Ausführen (Vollbild)',
-              icon: 'pi pi-fw pi-play',
-              command: (ev)=>{
-                this.$emit("fullscreen");
-              }
-            },
+            // {
+            //   label: 'Ausführen (Vollbild)',
+            //   icon: 'pi pi-fw pi-play',
+            //   command: (ev)=>{
+            //     this.$emit("fullscreen");
+            //   }
+            // },
             {
               label: 'Ausführen (eigenes Fenster)',
               icon: 'pi pi-fw pi-play',
               command: (ev)=>{
                 this.$emit("play-window");
+              }
+            },
+            {
+              label: 'Ausführen (mit DEV-Tools)',
+              icon: 'pi pi-fw pi-play',
+              command: (ev)=>{
+                this.$emit("play-dev");
               }
             },
             {
@@ -198,14 +205,7 @@ export default {
               command: (ev)=>{
                 this.$emit("settings");
               }
-            },
-            {
-              label: 'Server',
-              icon: 'pi pi-server',
-              command: (ev)=>{
-                this.$emit("server");
-              }
-            },
+            }
           ]
         }
       ];
