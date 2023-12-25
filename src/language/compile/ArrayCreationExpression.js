@@ -10,7 +10,7 @@ export function ArrayCreationExpression(node,source,scope){
   if(node.name!=="new"){
 
   }
-  code="new $App.Array(";
+  code="$createArray(";
   node=node.nextSibling;
   if(node.name!=="TypeName"){
 

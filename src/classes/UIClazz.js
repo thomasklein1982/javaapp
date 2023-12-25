@@ -569,7 +569,7 @@ export class UIClazz {
           }else if(p==="options"){
             try{
               let array=JSON.parse(c[p]);
-              args.push("new $App.Array('String',"+array.length+","+JSON.stringify(array)+")");
+              args.push("$createArray('String',"+array.length+","+JSON.stringify(array)+")");
             }catch(e){
 
             }

@@ -2764,7 +2764,7 @@ window.appJScode=function(){
           newDim.push(dim[i]);
         }
         for(var i=0;i<dim[0];i++){
-          var subArray=new $App.Array(type, newDim);
+          var subArray=$createArray(type, newDim);
           array.push(subArray);
         }
         return array;
@@ -3057,9 +3057,9 @@ window.appJScode=function(){
             this.button.textContent=this.expanded? "-": "+";
             this.expandable=true;
             item.line.style.cursor="pointer";
-            if(obj instanceof $App.Array){
-              v=obj.type+"["+obj.length+"]";
-              this.object=obj.values;
+            if(Array.isArray(obj)&& obj.$type){
+              v=obj.$type+"["+obj.length+"]";
+              this.object=obj;
             }else if(Array.isArray(obj)){
               v="Array ("+obj.length+")";
             }else{
@@ -4910,9 +4910,9 @@ window.appJScode=function(){
         Object.defineProperty(b, 'array', {
           set: function(array) {
             this.value=-1;
-            if(array instanceof $App.Array){
-              array=array.values;
-            } 
+            // if(array instanceof $App.Array){
+            //   array=array.values;
+            // } 
             while(this.table.firstChild){
               this.table.removeChild(this.table.firstChild);
             }

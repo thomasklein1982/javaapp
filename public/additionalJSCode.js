@@ -8,6 +8,66 @@ function additionalJSCode(){
   function $n(a){return a;}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
 
+  $arrayCheckBounds=function(array,index){
+    if(index>=array.length || index<0){
+      var m="Index "+index+" liegt ausserhalb der Array-Grenzen von 0 bis "+(array.length-1);
+      console.error(m);
+      throw m;
+    }
+    return this;
+  };
+  $arrayGet=function(array,index){
+    $arrayCheckBounds(array,index);
+    return array[index];//this.privateGet(index,this.values,0);
+  };
+  $arraySet=function(array,index,value){
+    $arrayCheckBounds(array,index);
+    array[index]=value;
+  }
+
+  $createArrayValues=function(type,dim){
+    if(dim.length===1){
+      var array=[];
+      for(var i=0;i<dim[0];i++){
+        array.push(type.initialValue!==undefined? type.initialValue:null);
+      }
+      return array;
+    }else{
+      var array=[];
+      var newDim=[];
+      for(let i=1;i<dim.length;i++){
+        newDim.push(dim[i]);
+      }
+      for(var i=0;i<dim[0];i++){
+        var subArray=$createArray(type, newDim);
+        array.push(subArray);
+      }
+      return array;
+    }
+  }
+
+  $createArray=function(type, dim, values){
+    let array;
+    if(Array.isArray(dim)){
+      array=$createArrayValues(type,dim);
+      array.$dim=dim;
+    }else{
+      array=values;
+      array.$dim=[];
+      var a=values;
+      while(a && Array.isArray(a)){
+        array.$dim.push(a.length);
+        a=a[0];
+      }
+    }
+    if(typeof type==="string"){
+      array.$type=type;
+    }else{
+      array.$type=type.name;
+    }
+    return array;
+  };
+
   function $getElementById(uiclazz, id){
     //return new HTMLElement(document.getElementById(uiclazz.constructor.name+"-"+id));
     let e=document.getElementById(id);
@@ -16,8 +76,8 @@ function additionalJSCode(){
   }
 
   function $getFromArray(array,index){
-    if(array.get){
-      return array.get(index);
+    if(array.$type){
+      return $arrayGet(array,index);
     }else{
       return array[index];
     }
@@ -35,8 +95,8 @@ function additionalJSCode(){
     }else if(assignOp==="%="){
       value=$getFromArray(array,index)%value;
     }
-    if(array.set){
-      array.set(index,value);
+    if(array.$type){
+      $arraySet(array,index,value);
     }else{
       array[index]=value;
     }
@@ -62,7 +122,7 @@ function additionalJSCode(){
         dim.push(v.values.length);
         v=v.values[0];
       }
-      let array=new $App.Array({name: destTypeName},dim);
+      let array=$createArray({name: destTypeName},dim);
       for(let i=0;i<object.values.length;i++){
         let v=object.values[i];
         array.values[i]=$castObject(v,destTypeName,destDimension-1);
@@ -366,7 +426,7 @@ function additionalJSCode(){
   function $StringSplit(string,regexp,limit){
     var r=new RegExp(regexp);
     var s=string.split(r,limit);
-    var a=new $App.Array("String",s.length,s);
+    var a=$createArray("String",s.length,s);
     return a;
   }
 
@@ -1243,7 +1303,7 @@ function additionalJSCode(){
       if(r<1 ||r>this.rowCount){
         throw new Exception("Diese Matrix hat keine "+r+"-te Zeile, sondern nur die Zeilen 1 bis "+this.rowCount+".");
       }
-      let array=new $App.Array("double",[this.colCount]);
+      let array=$createArray("double",[this.colCount]);
       let row=this.rows[r-1];
       for(let i=0;i<this.colCount;i++){
         array.set(i,row[i]);
@@ -1266,7 +1326,7 @@ function additionalJSCode(){
       if(c<1 ||c>this.colCount){
         throw new Exception("Diese Matrix hat keine "+c+"-te Spalte, sondern nur die Spalten 1 bis "+this.colCount+".");
       }
-      let col=new $App.Array("double",[this.rowCount]);
+      let col=$createArray("double",[this.rowCount]);
       for(let i=0;i<this.rowCount;i++){
         col.set(i,this.rows[i][c-1]);
       }
@@ -1417,7 +1477,7 @@ function additionalJSCode(){
       return this.components[pos-1];
     }
     getAsArray(){
-      let array=new $App.Array("double",[this.size]);
+      let array=$createArray("double",[this.size]);
       for(let i=0;i<this.size;i++){
         array.set(i,this.components[i]);
       }
@@ -1580,7 +1640,7 @@ function additionalJSCode(){
             records.push(r);
           }
         }
-        var a=new $App.Array("Record",records.length,records);
+        var a=$createArray("Record",records.length,records);
         return a;
       }catch(e){
         return null;
@@ -1931,7 +1991,7 @@ function additionalJSCode(){
       for(let i=0;i<this.$size;i++){
         array.push(this.elements[i]);
       }
-      return new $App.Array(this.$elementType,1,array);
+      return $createArray(this.$elementType,1,array);
     }
     size(){
       return this.$size;
