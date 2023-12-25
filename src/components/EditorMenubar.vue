@@ -198,7 +198,14 @@ export default {
               command: (ev)=>{
                 this.$emit("settings");
               }
-            }
+            },
+            {
+              label: 'Server',
+              icon: 'pi pi-server',
+              command: (ev)=>{
+                this.$emit("server");
+              }
+            },
           ]
         }
       ];

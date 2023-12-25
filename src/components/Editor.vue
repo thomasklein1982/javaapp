@@ -34,6 +34,7 @@
         @play="resume()"
         @fullscreen="playInFullscreen()"
         @play-window="playInNewWindow()"
+        @server="$refs.dialogServer.setVisible(true)"
       />
       <LinksDialog
         ref="dialogResources"
@@ -47,6 +48,10 @@
         :font-size="fontSize"
         @changefontsize="changeFontSize"
         :settings="settings"
+      />
+      <ServerDialog
+        ref="dialogServer"
+        :project="project"
       />
       <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
       <AssetsDialog :project="project" ref="dialogAssets"/>
@@ -155,7 +160,7 @@ import UIPreview from "./UIPreview.vue";
 import SettingsDialog from "./SettingsDialog.vue";
 import { nextTick } from "vue";
 import PrintPreview from "./PrintPreview.vue";
-
+import ServerDialog from "./ServerDialog.vue";
 
 export default {
   props: {
@@ -520,7 +525,8 @@ export default {
     CSSDialog,
     SettingsDialog,
     PrintPreview,
-    ProjectDetailsDialog
+    ProjectDetailsDialog,
+    ServerDialog
   }
 }
 </script>
