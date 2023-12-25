@@ -217,7 +217,45 @@ function additionalJSCode(){
     }
   }
 
-  $handleAssetsInString=function(code){
+  function $dataURLtoBlob(dataURL) {
+    var mime = dataURL.split(',')[0].split(':')[1].split(';')[0];
+    var binary = window.atob(dataURL.split(',')[1]);
+    var array = [];
+    for (var i = 0; i < binary.length; i++) {
+      array.push(binary.charCodeAt(i));
+    }
+    return new Blob([new Uint8Array(array)], {type: mime});
+  }
+
+  $getAssetObjectURL=function(assetName){
+    let asset=$App.assets[assetName];
+    if(!asset) return assetName;
+    if(!asset.objectURL){
+      asset.objectURL=URL.createObjectURL($dataURLtoBlob(asset.url));
+    }
+    return asset.objectURL;
+  }
+
+  $revokeAllAssetObjectURLs=function(){
+    for(let a in $App.assets){
+      let asset=$App.assets[a];
+      if(!asset.objectURL) continue;
+      URL.revokeObjectURL(asset.objectURL);
+    }
+    console.log("all revoked");
+  }
+
+  window.onbeforeunload=function(){
+    $revokeAllAssetObjectURLs();
+  }
+
+  $handleAssetsInCSSCode=function(cssCode){
+    return $handleAssetsInString(cssCode,"url(",")");
+  }
+
+  $handleAssetsInString=function(code,before,after){
+    if(!before) before="";
+    if(!after) after="";
     let s=code.split("asset(");
     let t="";
     for(let i=0;i<s.length;i++){
@@ -226,13 +264,8 @@ function additionalJSCode(){
       }else{
         let pos=s[i].indexOf(")");
         let assetName=s[i].substring(0,pos);
-        let asset=$App.assets[assetName];
-        if(asset){
-          //t+="var(--"+assetName+")";
-          t+=asset.url;
-        }else{
-          t+=assetName;
-        }
+        console.log(assetName);
+        t+=before+$getAssetObjectURL(assetName)+after;
         t+=s[i].substring(pos+1);
       }
     }
@@ -578,6 +611,7 @@ function additionalJSCode(){
     }
     setValue(v){
       this.value=v;
+      v=$handleAssetsInString(v);
       this.$el.value=v;
     }
     getValue(){
@@ -630,6 +664,7 @@ function additionalJSCode(){
       this.$el.style[name]=value;
     }
     setCSS(css){
+      css=$handleAssetsInCSSCode(css);
       this.$el.style=css;
     }
     setCSSClass(className){
@@ -786,6 +821,7 @@ function additionalJSCode(){
   class JImage extends JComponent{
     constructor(url,x,y,width,height){
       super(x,y,width,height);
+      url=$getAssetObjectURL(url);
       this.$el=ui.image(url,x,y,width,height);
       this.$el.component=this;
       this.$el.onclick = function(ev) {
@@ -1949,7 +1985,12 @@ function additionalJSCode(){
     }
     setSource(url){
       this.url=url;
-      this.audio=new Audio(this.url);
+      let asset=$App.assets[url];
+      if(asset){
+        this.audio=new Audio($getAssetObjectURL(url));
+      }else{
+        this.audio=new Audio(this.url);
+      }
     }
     play(loop){
       this.stop();

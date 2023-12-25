@@ -10,11 +10,11 @@
     <Asset :asset="editedAsset" style="margin: 0.8rem; text-align: center"/>
     <div style="margin: 0.4rem; text-align: center">
       <label for="name">Name: </label>
-      <InputText id="name" v-model="editedAsset.name" />
+      <InputText id="name" v-model.trim="editedAsset.name" />
     </div>
     <template #footer>
       <ConfirmPopup/>
-      <Button @click="trash($event)" icon="pi pi-trash"/>
+      <Button @click="trash($event)" icon="pi pi-trash" style="padding-left: 0.2rem; padding-right: 0.2rem"/>
       <Button @click="show=false" icon="pi pi-times" label="Abbrechen"/>
       <Button @click="confirm()" :disabled="!editedAsset.name" icon="pi pi-check" label="OK"/>
     </template>

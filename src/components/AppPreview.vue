@@ -67,6 +67,7 @@
         this.frame=null;
       },
       reload(noDebugging){
+        this.project.compile();
         let frame=document.createElement('iframe');
         frame.style="background-color: white; width: 100%; height: 100%;";
         if(this.$refs.wrapper.firstChild){
@@ -76,10 +77,16 @@
         console.log("start app",this.breakpoints);
         let prefix=noDebugging?"console.hide();":"$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");";
         let code=this.project.getFullAppCode(prefix);
-        let doc=frame.contentWindow.document;
-        doc.open();
-        doc.write(code);
-        doc.close();
+
+        const blob = URL.createObjectURL(
+          new Blob([code], { type: "text/html" })
+        );
+        frame.src=blob;
+        URL.revokeObjectURL(blob);
+        // let doc=frame.contentWindow.document;
+        // doc.open();
+        // doc.write(code);
+        // doc.close();
         this.frame=frame;
         this.focus();
       }

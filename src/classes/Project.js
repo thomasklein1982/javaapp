@@ -53,7 +53,7 @@ export class Project{
     if(!after) after="";
     let s=code.split("asset(");
     let t="";
-    let referencedAssets={};
+    //let referencedAssets={};
     for(let i=0;i<s.length;i++){
       if(i===0){
         t+=s[i];
@@ -62,7 +62,7 @@ export class Project{
         let assetName=s[i].substring(0,pos);
         let asset=this.getAssetByName(assetName);
         if(asset){
-          referencedAssets[assetName]=asset;
+          //referencedAssets[assetName]=asset;
           //t+="var(--"+assetName+")";
           t+=before+asset.file.code+after;
         }else{

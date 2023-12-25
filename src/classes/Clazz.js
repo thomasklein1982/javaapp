@@ -188,7 +188,7 @@ export class Clazz{
     if(!names) names={};
     for(let a in this.attributes){
       let at=this.attributes[a];
-      if(at.isStatic()) continue;
+      if(at.isStatic() || !at.type) continue;
       names[at.name]={
         baseType: at.type.baseType.name,
         dimension: at.type.dimension

@@ -623,7 +623,8 @@ export class UIClazz {
       }
       if(c.cssCode){
         scope.clearReferencedVariables();
-        let code=".$el.style.cssText="+last+".$el.style.cssText+';'+"+this.parseInterpolatedString(scope,this.project.prepareCSS(c.cssCode))+";";
+        //let code=".$el.style.cssText="+last+".$el.style.cssText+';'+"+this.parseInterpolatedString(scope,this.project.prepareCSS(c.cssCode))+";";
+        let code=".setCSS("+last+".$el.style.cssText+';'+"+this.parseInterpolatedString(scope,c.cssCode)+")";
         newCode+="\n"+last+code;
         if(scope.referencedVariablesCount>0){
           updateCode+="\ncomponent"+code;
@@ -639,7 +640,7 @@ export class UIClazz {
           code=".setValue("+c.value+");";
         }else{
           scope.clearReferencedVariables();
-          code=".setValue("+this.parseInterpolatedString(scope,this.project.handleAssetsInCode(c.value))+");";
+          code=".setValue("+this.parseInterpolatedString(scope,c.value)+");";
           if(scope.referencedVariablesCount>0){
             updateCode+="\ncomponent"+code;
           }

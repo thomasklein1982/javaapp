@@ -434,11 +434,13 @@ export default {
       this.$refs.preview.runInFullscreen();
     },
     playInNewWindow(){
+      this.project.compile();
       let code=this.project.getFullAppCode("console.hide();\n");
       const blob = URL.createObjectURL(
         new Blob([code], { type: "text/html" })
       );
       window.open(blob);
+      URL.revokeObjectURL(blob);
     },
     resume(){
       if(this.rightClosed){
