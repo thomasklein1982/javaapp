@@ -45,7 +45,12 @@
       <ColorPicker inline v-model="colorToTransparency.color"/>
       <div class="p-float-label">
         <InputText style="width: 100%" v-model="colorToTransparency.color"/>
-        <label>HEX-Wert:</label>
+        <label>HEX-Wert</label>
+      </div>
+      
+      <div style="margin-top: 1rem">
+        <div style="margin-bottom: 0.5rem;">Toleranz:</div>
+        <Slider v-model="colorToTransparency.tolerance" :min="0" :max="255"/>
       </div>
       <template #footer>
         <Button @click="colorToTransparency.show=false" icon="pi pi-times" label="Abbrechen"/>
@@ -94,7 +99,8 @@ export default{
       },
       colorToTransparency: {
         show: false,
-        color: "#fff"
+        color: "#fff",
+        tolerance: 0
       }
       
     };
@@ -133,6 +139,8 @@ export default{
     },
     confirmColorToTransparency(){
       let imageData=this.ctx.getImageData(0,0,this.width,this.height);
+      let tol=this.colorToTransparency.tolerance;
+      tol=tol*tol;
       let data=imageData.data;
       console.log(data);
       let color=this.colorToTransparency.color;
@@ -140,12 +148,10 @@ export default{
       color=hexToRGBA(color);
       console.log(color);
       for(let i=0;i<data.length/4;i++){
-        let r=data[i*4+0];
-        let g=data[i*4+1];
-        let b=data[i*4+2];
-        let a=data[i*4+3];
-        if(r===color.r && g===color.g && b===color.b){
-          console.log("treffer");
+        let dr=data[i*4+0]-color.r;
+        let dg=data[i*4+1]-color.g;
+        let db=data[i*4+2]-color.b;
+        if(dr*dr+dg*dg+db*db<=tol){
           data[i*4+3]=0;
         }
       }
@@ -195,6 +201,7 @@ export default{
     openColorToTransparency(){
       this.colorToTransparency.color="#fff";
       this.colorToTransparency.show=true;
+      this.colorToTransparency.tolerance=0;
     },
     openSettings(){
       this.settings.width=100;
