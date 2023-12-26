@@ -10,8 +10,56 @@ body,html{
   overscroll-behavior: none;
 }
 
+.flex-container{
+  display: flex;
+}
+.flex-container-vertical{
+  display: flex;
+  flex-direction: column;
+}
+
+.flex{
+  flex: 1
+}
+
+.p-buttonset-vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.p-buttonset-vertical .p-button {
+  margin: 0;
+}
+
+.p-buttonset-vertical .p-button:not(:last-child) {
+  border-bottom: 0 none;
+}
+
+.p-buttonset-vertical .p-button:not(:first-of-type):not(:last-of-type) {
+  border-radius: 0;
+}
+
+.p-buttonset-vertical .p-button:first-of-type {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.p-buttonset-vertical .p-button:last-of-type {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.p-buttonset-vertical .p-button:focus {
+  position: relative;
+  z-index: 1;
+}
+
 .p-dialog-content>div#root{
   height: 100%;
+}
+
+.p-float-label{
+  margin-top: 4ex;
 }
 
 /*code-mirror css falsche farben**/

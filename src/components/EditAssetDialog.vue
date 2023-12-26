@@ -7,7 +7,7 @@
         @click="uploadFile()"
       />
     </div>
-    <Asset :asset="editedAsset" style="margin: 0.8rem; text-align: center"/>
+    <Asset :asset="editedAsset" style="margin: 0.8rem; text-align: center" @open-image-editor="asset=>$emit('open-image-editor',asset)"/>
     <div style="margin: 0.4rem; text-align: center">
       <label for="name">Name: </label>
       <InputText id="name" v-model.trim="editedAsset.name" />
@@ -15,6 +15,7 @@
     <template #footer>
       <ConfirmPopup/>
       <Button @click="trash($event)" icon="pi pi-trash" style="padding-left: 0.2rem; padding-right: 0.2rem"/>
+      <Button @click="download" icon="pi pi-download" style="padding-left: 0.2rem; padding-right: 0.2rem"/>
       <Button @click="show=false" icon="pi pi-times" label="Abbrechen"/>
       <Button @click="confirm()" :disabled="!editedAsset.name" icon="pi pi-check" label="OK"/>
     </template>
@@ -23,10 +24,11 @@
   
 <script>
   import FileUpload from "primevue/fileupload";
-import { upload } from "../functions/helper";
+import { upload,download } from "../functions/helper";
 import Asset from "./Asset.vue";
-  
+
   export default{
+    emits: ["open-image-editor"],
     props: {
       asset: Object
     },
@@ -58,6 +60,11 @@ import Asset from "./Asset.vue";
       confirm(){
         this.show=false;
         this.$emit("confirm",this.editedAsset);
+      },
+      download(){
+        let data=this.editedAsset.file.code;
+        var mime = data.split(',')[0].split(':')[1].split(';')[0];
+        download(data,this.editedAsset.name,mime);
       },
       trash(event) {
         this.$confirm.require({

@@ -39,6 +39,7 @@
       <LinksDialog
         ref="dialogResources"
       />
+      <ImageEditorDialog ref="imageEditor"/>
       <ProjectDetailsDialog
         ref="dialogProjectDetails"
         :project="project"
@@ -50,7 +51,7 @@
         :settings="settings"
       />
       <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
-      <AssetsDialog :project="project" ref="dialogAssets"/>
+      <AssetsDialog :project="project" ref="dialogAssets" @open-image-editor="asset=>$refs.imageEditor.open(asset)"/>
       <DatabaseDialog :database="database" ref="dialogDatabase"/>
       <CSSDialog :project="project" ref="dialogCSS"/>
       <Splitter :gutter-size="splitterSize" ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
@@ -156,6 +157,7 @@ import UIPreview from "./UIPreview.vue";
 import SettingsDialog from "./SettingsDialog.vue";
 import { nextTick } from "vue";
 import PrintPreview from "./PrintPreview.vue";
+import ImageEditorDialog from "./ImageEditorDialog.vue";
 
 export default {
   props: {
@@ -526,7 +528,8 @@ export default {
     CSSDialog,
     SettingsDialog,
     PrintPreview,
-    ProjectDetailsDialog
+    ProjectDetailsDialog,
+    ImageEditorDialog
   }
 }
 </script>

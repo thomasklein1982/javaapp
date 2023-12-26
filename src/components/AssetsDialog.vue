@@ -8,6 +8,7 @@
       ref="editAssetDialog"
       @confirm="updateAsset"
       @delete="deleteAsset"
+      @open-image-editor="asset=>$emit('open-image-editor',asset)"
     />
     Assets sind statische Ressourcen wie Bilder oder Sounds. Dieses Projekt verwendet {{ assets.length }} Asset{{assets.length!==1? 's':''}} mit einer Gesamtgröße von {{ gesamtGroesse }}.
     <Paginator v-model:rows="rows" v-model:first="first" :totalRecords="assets.length" :rowsPerPageOptions="[10, 20, 30]">
@@ -28,6 +29,7 @@
   import Paginator from "primevue/paginator";
   import Asset from './Asset.vue';
   import EditAssetDialog from './EditAssetDialog.vue';
+  
 
   export default{
     props: {

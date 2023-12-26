@@ -38,6 +38,9 @@ export class Project{
     }
     this.clazzes[0].setAsFirstClazz();
     this.uiClazzCount=this.getUiClazzCount();
+    this.description="";
+    this.theme_color="black";
+    this.icon=null;
   }
   getUiClazzCount(){
     let count=0;
@@ -415,7 +418,10 @@ export class Project{
       database: db,
       css: this.css,
       assets: this.assets,
-      name: this.name
+      name: this.name,
+      description: this.description,
+      theme_color: this.theme_color,
+      icon: this.icon
     })+stop;
   }
   async fromSaveString(appcode){
@@ -441,6 +447,15 @@ export class Project{
       }
       if(o.name){
         this.name=o.name;
+      }
+      if(o.description){
+        this.description=o.description;
+      }
+      if(o.theme_color){
+        this.theme_color=o.theme_color;
+      }
+      if(o.icon){
+        this.icon=o.icon;
       }
     }catch(e){
       return;

@@ -1,5 +1,5 @@
 <template>
-  <Card class="asset" style="width: auto; display: inline-block" >
+  <Card @click="click()" class="asset" style="width: auto; display: inline-block" >
     <template #title>{{ name }} <Button v-if="editable" size="small" @click="$emit('edit')" icon="pi pi-pencil"/></template>
     <template #content>
       <template v-if="file.mime.indexOf('image')>=0">
@@ -14,10 +14,12 @@
       {{ fileSize }}
     </template>
   </Card>
+  
 </template>
 
 <script>
 import Card from "primevue/card";
+
 
 export default {
   props: {
@@ -57,8 +59,13 @@ export default {
     };
   },
   methods: {
-
+    click(){
+      if(!this.editable && this.file.mime.indexOf('image')>=0){
+        this.$emit("open-image-editor",this.asset);
+      }
+    }
   },
+  emits: ["edit","open-image-editor"],
   components: {
     Card
   }
