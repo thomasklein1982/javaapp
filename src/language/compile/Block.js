@@ -5,6 +5,7 @@ import { concatArrays } from "../../functions/helper";
 import { CompileFunctions } from "../CompileFunctions";
 
 function createUpdateLocalVariablesCode(scope){
+  if(scope.optimizeCompiler) return "";
   let locals=scope.getLocalVariableNames();
   return "var $locals="+JSON.stringify(locals)+";for(var $a in $locals){eval('$locals[$a]='+$a)};$App.console.updateLocalVariables($locals);";
 }
@@ -53,7 +54,12 @@ export function Block(node,source,scope){
         }
         if(!scope.optimizeCompiler){
           let line=source.getLineNumber(node.from);
-          code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);"+res.code;
+          if(!scope.optimizeCompiler){
+            code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);";
+          }else{
+            code+="\n";
+          }
+          code+=res.code;
           if(res.updateLocalVariablesAfter && scope.addLocalVariablesUpdates){
             let vnames;
             if(res.updateLocalVariablesAfter===true){
@@ -65,7 +71,7 @@ export function Block(node,source,scope){
             }else{
               vnames=res.updateLocalVariablesAfter;
             }
-            if(vnames){
+            if(!scope.optimizeCompiler && vnames){
               code+="eval('";
               for(let i=0;i<vnames.length;i++){
                 let name=vnames[i];

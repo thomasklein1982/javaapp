@@ -3,7 +3,7 @@ import { createAttribute } from "../helper/createAttribute";
 import { createConstructor } from "../helper/createConstructor";
 import { createMethod } from "../helper/createMethod";
 
-export function defineSound(Clazz,Java){
+export function defineInteger(Clazz,Java){
   createConstructor({
     args: [
       {name: 'source', type: 'String'}

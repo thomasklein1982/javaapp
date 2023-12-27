@@ -10,6 +10,10 @@ body,html{
   overscroll-behavior: none;
 }
 
+.nowrap{
+  white-space: nowrap;
+}
+
 .flex-container{
   display: flex;
 }

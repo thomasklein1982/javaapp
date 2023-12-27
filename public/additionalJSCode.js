@@ -314,6 +314,7 @@ function additionalJSCode(){
   }
 
   $handleAssetsInString=function(code,before,after){
+    if(!code.split) return code;
     if(!before) before="";
     if(!after) after="";
     let s=code.split("asset(");
@@ -357,10 +358,13 @@ function additionalJSCode(){
     $App.customDialog.backdrop.style.display="none";
   };
 
-  App.prompt=async function(message){
+  App.prompt=async function(message,defaultValue){
     $setupDialog();
     $App.customDialog.input.type="text";
     $showDialog(message,"","none","","none");
+    if(defaultValue!==undefined){
+      $App.customDialog.input.value=defaultValue;
+    }
     let p=new Promise((resolve,reject)=>{
       $App.customDialog.resolve=resolve;
     });
@@ -369,10 +373,13 @@ function additionalJSCode(){
     return q;
   };
 
-  App.promptNumber=async function(message){
+  App.promptNumber=async function(message,defaultValue){
     $setupDialog();
     $App.customDialog.input.type="number";
     $showDialog(message,"","none","","none");
+    if(defaultValue!==undefined){
+      $App.customDialog.input.value=defaultValue;
+    }
     let p=new Promise((resolve,reject)=>{
       $App.customDialog.resolve=resolve;
     });
@@ -1161,7 +1168,7 @@ function additionalJSCode(){
   class JComboBox extends JComponent{
     constructor(options,x,y,width,height){
       super(x,y,width,height);
-      this.$el=ui.select(options.values,x,y,width,height);
+      this.$el=ui.select(options,x,y,width,height);
       this.$el.component=this;
       this.$el.onchange = function(ev) {
         if (this.component.$triggerOnAction) {

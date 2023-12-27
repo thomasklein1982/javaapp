@@ -613,13 +613,6 @@ window.appJScode=function(){
       }
       
       if(!$App.headLoaded && document.head){
-        var meta=document.createElement("meta");
-        meta.setAttribute("charset","utf-8");
-        document.head.appendChild(meta);
-        meta=document.createElement("meta");
-        meta.setAttribute("name","viewport");
-        meta.setAttribute("content","width=device-width, initial-scale=1");
-        document.head.appendChild(meta);
         var style=document.createElement("style");
         document.head.appendChild(style);
         style=style.sheet;
@@ -717,7 +710,6 @@ window.appJScode=function(){
           }
           requestAnimationFrame(this.animationFrame);
         }
-        console.log("onAfterSetup",window.$onAfterSetup);
         if(window.$onAfterSetup){
           window.$onAfterSetup();
         }
@@ -3670,21 +3662,21 @@ window.appJScode=function(){
       $App.alert.call(window,text);
     },null,'Zeigt eine Messagebox mit einer Nachricht.',[{name: 'text', type: 'String', info: 'Der Text, der angezeigt werden soll.'}],'',"everywhere");
     
-    $App.addFunction(function prompt(text){
+    $App.addFunction(function prompt(text,defaultValue){
       $App.handleModalDialog();
-      return $App.prompt.call(window,text);
-    },'String','Zeigt eine Messagebox mit einer Nachricht und  einem Eingabefeld. Liefert den eingegebenen Text zurueck.',[{name: 'text', type: 'String',info: 'Der Text, der angezeigt werden soll.'}],'',"everywhere");
+      return $App.prompt.call(window,text,defaultValue);
+    },'String','Zeigt eine Messagebox mit einer Nachricht und  einem Eingabefeld. Liefert den eingegebenen Text zurueck.',[{name: 'text', type: 'String',info: 'Der Text, der angezeigt werden soll.'}, {name: 'defaultValue', type: 'String',info: 'Vorgegebener Eingabetext.', optional: true}],'',"everywhere");
     
-    $App.addFunction(function promptNumber(text){
+    $App.addFunction(function promptNumber(text,defaultValue){
       $App.handleModalDialog();
       let a;
       let zusatz="";
       do{
-        a=prompt(text+zusatz)*1;
+        a=prompt(text+zusatz,defaultValue)*1;
         zusatz="\n\nBitte eine Zahl eingeben.";
       }while(isNaN(a));
       return a;
-    },'double','Zeigt eine Messagebox mit einer Nachricht und einem Eingabefeld. Liefert die eingegebene Zahl zurueck.',[{name: 'text', type: 'String', info: 'Der Text, der angezeigt werden soll.'}],'',"everywhere");
+    },'double','Zeigt eine Messagebox mit einer Nachricht und einem Eingabefeld. Liefert die eingegebene Zahl zurueck.',[{name: 'text', type: 'String', info: 'Der Text, der angezeigt werden soll.'}, {name: 'defaultValue', type: 'String',info: 'Vorgegebener Eingabetext.', optional: true}],'',"everywhere");
     
     $App.addFunction(function confirm(text){
       $App.handleModalDialog();

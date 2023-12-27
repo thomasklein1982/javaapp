@@ -15,7 +15,7 @@ export function download(data,filename,mime,noDownload){
   }else{
     if(mime.substring(0,4).toLowerCase()!="text"){
       /*dataurl*/
-      var bin = atob(data.split(',')[1]);
+      var bin = window.atob(data.split(',')[1]);
       var arrayBuffer=new ArrayBuffer(bin.length),
       data=new Uint8Array(arrayBuffer);
       for(var i=0;i<bin.length;i++) data[i]=bin.charCodeAt(i);

@@ -329,7 +329,7 @@ export class UIClazz {
     code+="\n$update(){\nif(!this.$el) return;\n";
     code+="\nfor(var i=0;i<this.$el.childNodes.length;i++){";
     code+="\nvar c=this.$el.childNodes[i];";
-    code+="\nif(c.component.$update) c.component.$update.call(c.component.uiClazz,c.component);";
+    code+="\nif(c.component.$update) \nc.component.$update.call(c.component,c.component);";
     code+="\n}\n}";
     for(let i in this.methods){
       let m=this.methods[i];

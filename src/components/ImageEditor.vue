@@ -1,13 +1,38 @@
 <template>
   <div class="flex-container" style="overflow: hidden; height: 100%; width: 100%">
     <div style="padding-right: 0.5rem" class="flex-container-vertical" >
-      <div class="p-buttonset-vertical flex" style="overflow-y: auto;">
-        <Button icon="pi pi-wrench" @click="openSettings()"/>
-        <Button icon="pi pi-search-plus" @click="changeZoom(5)"/>
-        <Button icon="pi pi-search-minus" @click="changeZoom(-5)"/>
-        <Button icon="pi pi-ban" @click="openColorToTransparency()"/>
+      <div class="p-buttonset-vertical flex" style="align-items: center; overflow-y: auto;">
+        <Button icon="pi pi-search-plus" outlined @click="changeZoom(5)"/>
+        <Button icon="pi pi-search-minus" outlined @click="changeZoom(-5)"/>
+        <Button icon="pi pi-wrench" outlined @click="openSettings()"/>
+        <Button icon="pi pi-ban" outlined @click="openColorToTransparency()"/>
+        <Button icon="pi pi-arrows-alt" :outlined="currentTool!=='move'" @click="currentTool='move'"/>
+        <Button icon="pi pi-pencil" :outlined="currentTool!=='pen'" @click="currentTool='pen'"/>
+        <Button icon="pi pi-eraser" :outlined="currentTool!=='eraser'" @click="currentTool='eraser'"/>
       </div>
-      
+      <div class="flex-container-vertical">
+        <div style="position: relative;height: 2ex;"><span style="font-size: 50%; position: absolute">{{ width }}:{{ height }}</span></div>
+        <span @click="$refs.opColor.toggle" :style="{backgroundColor: fillColor}" style="margin-top: 0.2rem; border: 1pt solid #FFD54F; border-radius: 10px; display: inline-block; width: 2rem; height: 2rem"></span>
+        <OverlayPanel ref="opColor">
+          <ColorPicker inline v-model="pen.color"/>
+          <div class="p-float-label">
+            <InputText style="width: 100%" v-model="pen.color"/>
+            <label>Farbe</label>
+          </div>
+          <Divider/>
+          <Slider :min="0" :max="100" v-model="pen.opacity"/>
+          <div class="p-float-label">
+            <InputText style="width: 100%" v-model="pen.opacity"/>
+            <label>Deckkraft</label>
+          </div>
+          <Divider/>
+          <Slider :min="1" :max="200" v-model="pen.width"/>
+          <div class="p-float-label">
+            <InputText style="width: 100%" v-model="pen.width"/>
+            <label>Dicke</label>
+          </div>
+        </OverlayPanel>
+      </div>
     </div>
     <div ref="canvasWrapper" class="flex" style="overflow: auto">
       <canvas :style="canvasStyle" ref="canvas"/>
@@ -65,20 +90,39 @@ import { nextTick } from 'vue';
 import DatabaseDialog from './DatabaseDialog.vue';
 import ColorPicker from 'primevue/colorpicker';
 import {hexToRGBA} from '../functions/hexToRGBA';
+import OverlayPanel from 'primevue/overlaypanel';
+import Divider from 'primevue/divider';
 
 export default{
   components: {
-    ColorPicker
+    ColorPicker, OverlayPanel, Divider
   },
   watch: {
     asset(){
       this.image.src=this.asset.data;
+    },
+    currentTool(){
+      this.updateCanvasStyle();
+    },
+    penOpacity(){
+      this.ctx.globalAlpha=this.pen.opacity/100;
     }
   },
   computed: {
     ctx(){
       if(!this.$refs.canvas) return null;
-      return this.$refs.canvas.getContext("2d");
+      let ctx=this.$refs.canvas.getContext("2d");
+      //ctx.globalCompositeOperation="source-over";
+      return ctx;
+    },
+    penOpacity(){
+      return this.pen.opacity;
+    },
+    fillColor(){
+      return "#"+this.pen.color;
+      // let color=hexToRGBA(this.pen.color);
+      // let a=this.pen.opacity/100;
+      // return "rgba("+color.r+","+color.g+","+color.b+","+a+")";
     }
   },
   data(){
@@ -88,8 +132,14 @@ export default{
       height: 100,
       image: document.createElement("img"),
       asset: null,
+      currentTool: "pen",
       zoom: 100,
       canvasStyle: {},
+      pen: {
+        color: "000",
+        opacity: 100,
+        width: 10
+      },
       settings: {
         show: false,
         width: 100,
@@ -106,6 +156,28 @@ export default{
     };
   },
   mounted(){
+    let x,y;
+    let canvas=this.$refs.canvas;
+    let handler=(e) => {
+      if(this.currentTool==="pen"){
+        let br=canvas.getBoundingClientRect();
+        x = e.offsetX;
+        y = e.offsetY;
+        x*=this.width/br.width;
+        y*=this.height/br.height;
+        
+        this.ctx.fillStyle=this.fillColor;
+        let w=this.pen.width;
+        this.ctx.fillRect(x-w/2,y-w/2,w,w);
+      }
+    };
+    canvas.addEventListener('pointerdown', handler);
+    canvas.addEventListener('pointermove', (e)=>{
+      if(this.currentTool==="move") return;
+      e.preventDefault();
+      if(e.buttons!==1) return;
+      handler(e);
+    });
     this.image.onload=(ev)=>{
       this.width=this.image.width;
       this.height=this.image.height;
@@ -214,6 +286,9 @@ export default{
       if(!div) return {};
       let c=this.$refs.canvas;
       let style={};
+      if(this.currentTool!=="move"){
+        style.touchAction="none";
+      }
       if(div.offsetHeight/div.offsetWidth<=this.height/this.width){
         style.height=this.zoom+"%";
       }else{
@@ -227,7 +302,9 @@ export default{
     },
     paintImage(){
       if(!this.ctx) return;
+      //this.ctx.globalCompositeOperation="source-over";
       this.ctx.drawImage(this.image, 0, 0,this.width,this.height);
+      //this.ctx.globalCompositeOperation="destination-over";
     }
   }
 }

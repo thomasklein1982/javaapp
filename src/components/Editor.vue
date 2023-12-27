@@ -409,7 +409,12 @@ export default {
     },
     downloadProject(){
       if(this.project){
-        download(this.project.getFullAppCode("",true),this.project.getName(),"text/html");
+        try{
+          this.project.compile(false,true);
+        }catch(e){
+          console.error(e);
+        }
+        download(this.project.getFullAppCode("",true),this.project.getName()+".html","text/html");
       }
     },
     async uploadProject(){
@@ -436,7 +441,7 @@ export default {
       this.$refs.preview.runInFullscreen();
     },
     playInNewWindow(includeDevTools){
-      this.project.compile();
+      this.project.compile(false,true);
       let precode;
       if(includeDevTools){
         precode="$onAfterSetup=function(){$App.loadEruda();};\n";

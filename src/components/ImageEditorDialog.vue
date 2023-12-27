@@ -44,6 +44,7 @@ import ImageEditor from './ImageEditor.vue';
         this.show=false;
       },
       save(){
+        this.$refs.editor.saveChanges();
         this.asset.file.code=this.assetEdited.data;
         this.show=false;
       }

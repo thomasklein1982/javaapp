@@ -40,7 +40,9 @@ export class Project{
     this.uiClazzCount=this.getUiClazzCount();
     this.description="";
     this.theme_color="black";
+    this.background_color="black";
     this.icon=null;
+    this.urls=["./"];
   }
   getUiClazzCount(){
     let count=0;
@@ -154,8 +156,18 @@ export class Project{
     let code=`<!doctype html>
 <html>
     <head>
+      <title>${this.name}</title>
       <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
+      <link rel="manifest" href="./manifest.webmanifest">
       <script>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('./sw.js').then((r)=>{
+            console.log("Service Worker Registrierung erfolgreich");
+          }, (e)=>{
+            console.log("Service Worker Registrierung nicht erfolgreich",e);
+          });
+        }
         window.language="java";
         window.appJSdebugMode=true;
         ${window.appJScode}
@@ -421,7 +433,9 @@ export class Project{
       name: this.name,
       description: this.description,
       theme_color: this.theme_color,
-      icon: this.icon
+      background_color: this.background_color,
+      icon: this.icon,
+      urls: this.urls
     })+stop;
   }
   async fromSaveString(appcode){
@@ -454,8 +468,14 @@ export class Project{
       if(o.theme_color){
         this.theme_color=o.theme_color;
       }
+      if(o.background_color){
+        this.background_color=o.background_color;
+      }
       if(o.icon){
         this.icon=o.icon;
+      }
+      if(o.urls){
+        this.urls=o.urls;
       }
     }catch(e){
       return;
