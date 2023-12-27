@@ -653,7 +653,7 @@ export class UIClazz {
         updateCode+="\nif(!component || !component.$el) return;"
         updateCode+="\nfor(var i=0;i<component.$el.childNodes.length;i++){";
         updateCode+="\nvar c=component.$el.childNodes[i];";
-        updateCode+="\nif(c && c.component && c.component.$update){c.component.$update.call(c.component.uiClazz,c.component);}";
+        updateCode+="\nif(c && c.component && c.component.$update){\nc.component.$update.call(c.component,c.component);}";
         updateCode+="\n}";
         
       }
