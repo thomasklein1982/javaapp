@@ -41,6 +41,9 @@ import { LambdaExpression } from "./compile/LambdaExpression";
 import { FormalParameters } from "./compile/FormalParameters";
 import { InstanceofExpression } from "./compile/InstanceOfExpression";
 import { MethodReference } from "./compile/MethodReference.js";
+import { TryStatement } from "./compile/TryStatement.js";
+import { Definition } from "./compile/Definition.js";
+import { CatchType } from "./compile/CatchType.js";
 
 function doNothing(){}
 
@@ -60,6 +63,6 @@ export const CompileFunctions={
     return compile;
   },
   functions: {
-    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral,FloatingPointLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression, ArrayCreationExpression, Dimension, ArrayAccess, IfStatement, ArrayType, ForStatement, LineComment, ThisExpression, ReturnStatement, UpdateExpression, Null, WhileStatement, ArrayInitializer, UnaryExpression, Block, ScopedTypeName, ExplicitConstructorInvocation, CastExpression, BreakStatement, ContinueStatement, BlockComment, GenericType, LambdaExpression, FormalParameters, InstanceofExpression, MethodReference
+    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral,FloatingPointLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression, ArrayCreationExpression, Dimension, ArrayAccess, IfStatement, ArrayType, ForStatement, LineComment, ThisExpression, ReturnStatement, UpdateExpression, Null, WhileStatement, ArrayInitializer, UnaryExpression, Block, ScopedTypeName, ExplicitConstructorInvocation, CastExpression, BreakStatement, ContinueStatement, BlockComment, GenericType, LambdaExpression, FormalParameters, InstanceofExpression, MethodReference, TryStatement, Definition, CatchType
   }
 }

@@ -1,10 +1,10 @@
 function additionalJSCode(){
 
-  function $u(v){if(v===undefined){throw {message: "Undefinierter Wert."}} return v;}
+  function $u(v){if(v===undefined){throw new Exception("Undefinierter Wert.")} return v;}
   function $N(v,name){if(v===null){throw {message: "NullPointerException: Der Wert von '"+name+"' ist null, deshalb kannst du nicht auf Methoden oder Attribute zugreifen."}} return v;}
-  function $v(v){if(Number.isNaN(v*1)){throw {message: "'"+v+"' ist keine Zahl."}}else{return v*1;}}
-  function $i(v){if(Number.isNaN(v*1)){throw {message: "'"+v+"' ist keine Zahl."}}else{v*=1; return v>=0? Math.floor(v):Math.ceil(v);}}
-  function $m(v,message,line){if(v===undefined){throw {message: message, line: line}}else{return v;}}
+  function $v(v){if(Number.isNaN(v*1)){throw new Exception("'"+v+"' ist keine Zahl.")}else{return v*1;}}
+  function $i(v){if(Number.isNaN(v*1)){throw new Exception("'"+v+"' ist keine Zahl.")}else{v*=1; return v>=0? Math.floor(v):Math.ceil(v);}}
+  function $m(v,message,line){if(v===undefined){throw new Exception(message,line)}else{return v;}}
   function $n(a){return a;}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
 
@@ -1758,8 +1758,12 @@ function additionalJSCode(){
   }
 
   class Exception{
-    constructor(text){
-      this.text=text;
+    constructor(message,line){
+      this.message=message;
+      this.line=line;
+    }
+    toString(){
+      return this.message;
     }
   }
 

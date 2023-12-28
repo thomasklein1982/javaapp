@@ -4,7 +4,7 @@ import { VariableDeclarator } from "./VariableDeclarator";
 export function LocalVariableDeclaration(node,source,scope){
   let code;
   node=node.firstChild;
-  if(node.name!=="PrimitiveType" || node.name!=="TypeName"){
+  if(node.name!=="PrimitiveType" || node.name!=="TypeName" || node.name!=="CatchType"){
 
   }
   let type=CompileFunctions.get(node,source)(node,source,scope);
