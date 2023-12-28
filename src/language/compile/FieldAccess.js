@@ -101,6 +101,9 @@ export function FieldAccess(node,source,scope){
     code+=object.code;
     //throw (source.createError(null,node));
   }
+  if(!object){
+    throw source.createError("Name eines Attributs oder einer Methode erwartet.",node);
+  }
   let returnType=object.type.baseType;
   if(returnType.isGeneric && owner.object){
     let typeArguments=owner.object.type.typeArguments;

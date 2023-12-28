@@ -42,7 +42,6 @@ export default {
     },
     methods(){
       let methods=[];
-      console.log("get methods");
       for(let a in this.clazz.methods){
         let m=this.clazz.methods[a];
         if(!m) continue;

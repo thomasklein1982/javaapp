@@ -16,7 +16,8 @@ export function ExplicitConstructorInvocation(node,source,scope){
     //TODO: Generics beachten!
     code+="await $asyncFunctionCallVariableObject(this,new "+superclazz.name+"(),'$constructor',[null,"+al.code.substring(1,al.code.length-1)+"])";
   }else{
-    code+="super"+al.code+"";
+    code+="await $asyncFunctionCallVariableObject(this,new "+superclazz.name+"(),'$constructor',["+al.code.substring(1,al.code.length-1)+"])";
+    //code+="super"+al.code+"";
   }
   return {
     code

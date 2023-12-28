@@ -6,9 +6,7 @@ import { Scope } from "../../classes/Scope";
 import { CatchClause } from "./CatchClause";
 
 export function TryStatement(node,source,scope){
-  console.log(node);
   node=node.firstChild;
-  
   let code;
   if(node.name!=="try"){
     
@@ -25,7 +23,6 @@ export function TryStatement(node,source,scope){
     throw tryBlock.errors[0];
   }
   code+="{\n"+tryBlock.code+"\n}";
-  console.log("try",tryBlock.code);
   scope.popLayer();
   node=node.nextSibling;
   let catchCount=0;
@@ -51,7 +48,6 @@ export function TryStatement(node,source,scope){
     catchCount++;
   }
   code+="\n}";
-  console.log(code);
   return {
     code: code,
     type: null

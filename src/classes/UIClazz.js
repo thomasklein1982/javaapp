@@ -298,16 +298,17 @@ export class UIClazz {
   getJavaScriptCode(){
     let code="class "+this.name+" extends JPanel";
     code+="{";
-    code+="\nconstructor(){";
-    code+="super("+JSON.stringify(this.template)+","+this.x+","+this.y+","+this.width+","+this.height+");";
-    for(let i in this.attributes){
-      let a=this.attributes[i];
-      code+="\n"+a.getJavaScriptCode();
-    }
-    //code+="\n"+JSON.this.components
-    //code+="\n$App.canvas.addElement(this.$el,this.x,this.y,this.width,this.height);";
-    code+="\n}";
+    // code+="\n$constructor(){";
+    // code+="super("+JSON.stringify(this.template)+","+this.x+","+this.y+","+this.width+","+this.height+");";
+    // for(let i in this.attributes){
+    //   let a=this.attributes[i];
+    //   code+="\n"+a.getJavaScriptCode();
+    // }
+    // //code+="\n"+JSON.this.components
+    // //code+="\n$App.canvas.addElement(this.$el,this.x,this.y,this.width,this.height);";
+    // code+="\n}";
     code+="\nasync $constructor(){";
+    code+="super.$constructor("+JSON.stringify(this.template)+","+this.x+","+this.y+","+this.width+","+this.height+");";
     for(let i in this.attributes){
       let a=this.attributes[i];
       if(!a.isNamedComponent){
@@ -499,7 +500,7 @@ export class UIClazz {
         let updateCode;
         newCode+="\n{\n";
         let uiControlStatementIndex=codeObject.nextUIControlStatementIndex;
-        newCode+="\nlet uiControlStatement"+uiControlStatementIndex+"=new UIControlStatement("+JSON.stringify(c.type)+");";
+        newCode+="\nlet uiControlStatement"+uiControlStatementIndex+"=$new(UIControlStatement,"+JSON.stringify(c.type)+");";
         newCode+="\ncontainer"+containerIndex+".add(uiControlStatement"+codeObject.nextUIControlStatementIndex+",$insertPosition);";
         newCode+="\n$insertPosition++;if("+parentUIControlStatementIndex+"){uiControlStatement"+parentUIControlStatementIndex+".attachComponent(uiControlStatement"+uiControlStatementIndex+")}";
         codeObject.nextUIControlStatementIndex++;
@@ -537,7 +538,7 @@ export class UIClazz {
       newCode+="{\n";//Klammer für den Scope
       newCode+="\nlet "+last+"=";
       if(c.type==="UIClazz"){
-        newCode+="new "+c.componentName+"();";
+        newCode+="$new("+c.componentName+");";
         let uiClazz=this.project.getClazzByName(c.componentName);
         if(uiClazz){
           let variables=uiClazz.variables;
@@ -559,7 +560,7 @@ export class UIClazz {
         }
         newCode+="\n"+last+".rerender();";
       }else{
-        newCode+="new "+c.type+"(";
+        newCode+="$new("+c.type+",";
         let clazz=UIClazz.UIClazzes[c.type];
         let args=[];
         for(let j=0;j<clazz.params.length;j++){

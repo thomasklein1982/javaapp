@@ -1,12 +1,29 @@
+/**jede definierte Klasse benötigt eine $constructor-Methode anstelle des constructor!
+ * neue Objekte der definierten Klassen müssen mit $new(Klasse,Parameter,...) erzeugt werden 
+ * statt mit new Klasse(Parameter,...)*/
+
 function additionalJSCode(){
 
-  function $u(v){if(v===undefined){throw new Exception("Undefinierter Wert.")} return v;}
-  function $N(v,name){if(v===null){throw {message: "NullPointerException: Der Wert von '"+name+"' ist null, deshalb kannst du nicht auf Methoden oder Attribute zugreifen."}} return v;}
-  function $v(v){if(Number.isNaN(v*1)){throw new Exception("'"+v+"' ist keine Zahl.")}else{return v*1;}}
-  function $i(v){if(Number.isNaN(v*1)){throw new Exception("'"+v+"' ist keine Zahl.")}else{v*=1; return v>=0? Math.floor(v):Math.ceil(v);}}
-  function $m(v,message,line){if(v===undefined){throw new Exception(message,line)}else{return v;}}
+  function $u(v){if(v===undefined){throw $new(Exception,"Undefinierter Wert.")} return v;}
+  function $N(v,name){if(v===null){throw $new(Exception,"NullPointerException: Der Wert von '"+name+"' ist null, deshalb kannst du nicht auf Methoden oder Attribute zugreifen.")} return v;}
+  function $v(v){if(Number.isNaN(v*1)){throw $new(Exception,"'"+v+"' ist keine Zahl.")}else{return v*1;}}
+  function $i(v){if(Number.isNaN(v*1)){throw $new(Exception,"'"+v+"' ist keine Zahl.")}else{v*=1; return v>=0? Math.floor(v):Math.ceil(v);}}
+  function $m(v,message,line){if(v===undefined){throw $new(Exception,message,line)}else{return v;}}
   function $n(a){return a;}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
+
+  function $new(constructor){
+    let o=new constructor();
+    if(!o.$constructor){
+      console.error("error in $new!!!",constructor);
+    }
+    let args=[];
+    for(let i=1;i<arguments.length;i++){
+      args.push(arguments[i]);
+    }
+    o.$constructor.apply(o,args);
+    return o;
+  }
 
   $arrayCheckBounds=function(array,index){
     if(index>=array.length || index<0){
@@ -72,7 +89,7 @@ function additionalJSCode(){
     //return new HTMLElement(document.getElementById(uiclazz.constructor.name+"-"+id));
     let e=document.getElementById(id);
     if(!e) return null;
-    return new HTMLElement(e);
+    return $new(HTMLElement,e);
   }
 
   function $getFromArray(array,index){
@@ -446,6 +463,7 @@ function additionalJSCode(){
     try{
       var r=new RegExp(regexp,flags);
     }catch(e){
+      throw $new(Exception,"Dieser reguläre Ausdruck ist syntaktisch nicht korrekt: \n"+e);
       throw new Exception("Dieser reguläre Ausdruck ist syntaktisch nicht korrekt: \n"+e);
     }
     var res=r.exec(string);
@@ -611,19 +629,19 @@ function additionalJSCode(){
   }
 
   class PrintStream{
+    $constructor(){}
     println(text){
       console.log(text);
     }
   }
 
   class System{
-    static out=new PrintStream();
-    constructor(){
-    }
+    $constructor(){}
+    static out=$new(PrintStream);
   }
 
   class JComponent{
-    constructor(x,y,width,height){
+    $constructor(x,y,width,height){
       this.x=x;
       this.y=y;
       this.width=width;
@@ -798,8 +816,8 @@ function additionalJSCode(){
   
 
   class HTMLElement extends JComponent{
-    constructor(element){
-      super(0,0,0,0);
+    $constructor(element){
+      super.$constructor(0,0,0,0);
       this.$el=element;
       this.$lastDisplayValue=this.$el.style.display;;
     }
@@ -846,7 +864,7 @@ function additionalJSCode(){
   }
 
   class UIControlStatement{
-    constructor(type){
+    $constructor(type){
       this.type=type;
       this.$el=document.createElement("span");
       this.$el.style.display="none";
@@ -871,8 +889,8 @@ function additionalJSCode(){
   }
 
   class JButton extends JComponent{
-    constructor(label,x,y,width,height){
-      super(x,y,width,height);
+    $constructor(label,x,y,width,height){
+      super.$constructor(x,y,width,height);
       this.$el=ui.button(label,x,y,width,height);
       this.$el.component=this;
       this.$triggerOnAction=true;
@@ -886,8 +904,8 @@ function additionalJSCode(){
   }
 
   class JImage extends JComponent{
-    constructor(url,x,y,width,height){
-      super(x,y,width,height);
+    $constructor(url,x,y,width,height){
+      super.$constructor(x,y,width,height);
       url=$getAssetObjectURL(url);
       this.$el=ui.image(url,x,y,width,height);
       this.$el.component=this;
@@ -901,8 +919,8 @@ function additionalJSCode(){
   }
 
   class JPanel extends JComponent{
-    constructor(template,x,y,width,height){
-      super(x,y,width,height);
+    $constructor(template,x,y,width,height){
+      super.$constructor(x,y,width,height);
       this.template=template;
       this.$el=ui.panel(template,x,y,width,height);
       this.$el.component=this;
@@ -1030,8 +1048,8 @@ function additionalJSCode(){
   }
 
   class JLabel extends JComponent{
-    constructor(text,x,y,width,height){
-      super(x,y,width,height);
+    $constructor(text,x,y,width,height){
+      super.$constructor(x,y,width,height);
       this.$el=ui.label(text,x,y,width,height);
       this.$el.component=this;
       this.$el.onclick = function(ev) {
@@ -1044,8 +1062,8 @@ function additionalJSCode(){
   }
 
   class Canvas extends JPanel{
-    constructor(minX,maxX,minY,maxY,x,y,width,height){
-      super(x,y,width,height);
+    $constructor(minX,maxX,minY,maxY,x,y,width,height){
+      super.$constructor(x,y,width,height);
       if(this.$el && this.$el.parentNode) this.$el.parentNode.removeChild(this.$el);
       this.$el=ui.canvas(maxX-minX,maxY-minY,x,y,width,height);
       this.$el.component=this;
@@ -1166,8 +1184,8 @@ function additionalJSCode(){
   }
 
   class JComboBox extends JComponent{
-    constructor(options,x,y,width,height){
-      super(x,y,width,height);
+    $constructor(options,x,y,width,height){
+      super.$constructor(x,y,width,height);
       this.$el=ui.select(options,x,y,width,height);
       this.$el.component=this;
       this.$el.onchange = function(ev) {
@@ -1190,8 +1208,8 @@ function additionalJSCode(){
   }
 
   class JCheckBox extends JComponent{
-    constructor(label,x,y,width,height){
-      super(x,y,width,height);
+    $constructor(label,x,y,width,height){
+      super.$constructor(x,y,width,height);
       this.$el=ui.input("checkbox",label,x,y,width,height);
       this.$el.component=this;
       this.$el.onchange = function(ev) {
@@ -1204,8 +1222,8 @@ function additionalJSCode(){
   }
 
   class JTextComponent extends JComponent{
-    constructor(x,y,width,height){
-      super(x,y,width,height);
+    $constructor(x,y,width,height){
+      super.$constructor(x,y,width,height);
     }
     getSelectionStart(){
       return this.$el.selectionStart;
@@ -1223,8 +1241,8 @@ function additionalJSCode(){
   }
 
   class JTextField extends JTextComponent{
-    constructor(type,placeholder,x,y,width,height){
-      super(x,y,width,height);
+    $constructor(type,placeholder,x,y,width,height){
+      super.$constructor(x,y,width,height);
       this.$el=ui.input(type,placeholder,x,y,width,height);
       this.$el.spellcheck=false;
       this.$el.component=this;
@@ -1238,8 +1256,8 @@ function additionalJSCode(){
   }
 
   class JTextArea extends JTextComponent{
-    constructor(placeholder,x,y,width,height){
-      super(x,y,width,height);
+    $constructor(placeholder,x,y,width,height){
+      super.$constructor(x,y,width,height);
       this.$el=ui.textarea(placeholder,x,y,width,height);
       this.$el.spellcheck=false;
       this.$el.component=this;
@@ -1253,8 +1271,8 @@ function additionalJSCode(){
   }
 
   class DataTable extends JComponent{
-    constructor(x,y,width,height){
-      super(x,y,width,height);
+    $constructor(x,y,width,height){
+      super.$constructor(x,y,width,height);
       this.$el=ui.datatable(null,x,y,width,height);
       this.$el.component=this;
     }
@@ -1267,7 +1285,7 @@ function additionalJSCode(){
   }
 
   class Matrix{
-    constructor(rows,cols){
+    $constructor(rows,cols){
       this.rows=[];
       this.rowCount=rows;
       this.colCount=cols;
@@ -1287,19 +1305,19 @@ function additionalJSCode(){
     }
     set(r,c,value){
       if(r<1 ||r>this.rowCount){
-        throw new Exception("Diese Matrix hat keine "+r+"-te Zeile, sondern nur die Zeilen 1 bis "+this.rowCount+".");
+        throw $new(Exception,"Diese Matrix hat keine "+r+"-te Zeile, sondern nur die Zeilen 1 bis "+this.rowCount+".");
       }
       if(c<1 ||c>this.colCount){
-        throw new Exception("Diese Matrix hat keine "+c+"-te Spalte, sondern nur die Spalten 1 bis "+this.colCount+".");
+        throw $new(Exception,"Diese Matrix hat keine "+c+"-te Spalte, sondern nur die Spalten 1 bis "+this.colCount+".");
       }
       this.rows[r-1][c-1]=value;
     }
     get(r,c){
       if(r<1 ||r>this.rowCount){
-        throw new Exception("Diese Matrix hat keine "+r+"-te Zeile, sondern nur die Zeilen 1 bis "+this.rowCount+".");
+        throw $new(Exception,"Diese Matrix hat keine "+r+"-te Zeile, sondern nur die Zeilen 1 bis "+this.rowCount+".");
       }
       if(c<1 ||c>this.colCount){
-        throw new Exception("Diese Matrix hat keine "+c+"-te Spalte, sondern nur die Spalten 1 bis "+this.colCount+".");
+        throw $new(Exception,"Diese Matrix hat keine "+c+"-te Spalte, sondern nur die Spalten 1 bis "+this.colCount+".");
       }
       if(!this.rows[r-1]){
         console.log("fehler");
@@ -1308,7 +1326,7 @@ function additionalJSCode(){
     }
     getRow(r){
       if(r<1 ||r>this.rowCount){
-        throw new Exception("Diese Matrix hat keine "+r+"-te Zeile, sondern nur die Zeilen 1 bis "+this.rowCount+".");
+        throw $new(Exception,"Diese Matrix hat keine "+r+"-te Zeile, sondern nur die Zeilen 1 bis "+this.rowCount+".");
       }
       let array=$createArray("double",[this.colCount]);
       let row=this.rows[r-1];
@@ -1319,10 +1337,10 @@ function additionalJSCode(){
     }
     setRow(r,values){
       if(r<1 ||r>this.rowCount){
-        throw new Exception("Diese Matrix hat keine "+r+"-te Zeile, sondern nur die Zeilen 1 bis "+this.rowCount+".");
+        throw $new(Exception,"Diese Matrix hat keine "+r+"-te Zeile, sondern nur die Zeilen 1 bis "+this.rowCount+".");
       }
       if(values.length!==this.colCount){
-        throw new Exception("Die neue Zeile muss genau "+this.colCount+" Einträge haben. Sie hat aber "+values.length+".");
+        throw $new(Exception,"Die neue Zeile muss genau "+this.colCount+" Einträge haben. Sie hat aber "+values.length+".");
       }
       let row=this.rows[r-1];
       for(let i=0;i<this.colCount;i++){
@@ -1331,7 +1349,7 @@ function additionalJSCode(){
     }
     getColumn(c){
       if(c<1 ||c>this.colCount){
-        throw new Exception("Diese Matrix hat keine "+c+"-te Spalte, sondern nur die Spalten 1 bis "+this.colCount+".");
+        throw $new(Exception,"Diese Matrix hat keine "+c+"-te Spalte, sondern nur die Spalten 1 bis "+this.colCount+".");
       }
       let col=$createArray("double",[this.rowCount]);
       for(let i=0;i<this.rowCount;i++){
@@ -1341,10 +1359,10 @@ function additionalJSCode(){
     }
     setColumn(c,values){
       if(c<1 ||c>this.colCount){
-        throw new Exception("Diese Matrix hat keine "+c+"-te Spalte, sondern nur die Spalten 1 bis "+this.colCount+".");
+        throw $new(Exception,"Diese Matrix hat keine "+c+"-te Spalte, sondern nur die Spalten 1 bis "+this.colCount+".");
       }
       if(values.length!==this.rowCount){
-        throw new Exception("Die neue Spalte muss genau "+this.rowCount+" Einträge haben. Sie hat aber "+values.length+".");
+        throw $new(Exception,"Die neue Spalte muss genau "+this.rowCount+" Einträge haben. Sie hat aber "+values.length+".");
       }
       for(let i=0;i<this.rowCount;i++){
         this.rows[i][c-1]=values.get(i);
@@ -1352,9 +1370,9 @@ function additionalJSCode(){
     }
     multiply(m){
       if(m.rowCount!==this.colCount){
-        throw new Exception("Die Matrix hat "+m.rowCount+" Zeilen, sie muss aber "+this.colCount+" Zeilen haben.");
+        throw $new(Exception,"Die Matrix hat "+m.rowCount+" Zeilen, sie muss aber "+this.colCount+" Zeilen haben.");
       }
-      let res=new Matrix(this.rowCount,m.colCount);
+      let res=$new(Matrix,this.rowCount,m.colCount);
       for(let i=0;i<this.rowCount;i++){
         for(let j=0;j<m.colCount;j++){
           let e=0;
@@ -1368,9 +1386,9 @@ function additionalJSCode(){
     }
     multiplyVector(v){
       if(v.size!==this.colCount){
-        throw new Exception("Der Vektor hat "+v.rowCount+" Zeilen, er muss aber "+this.colCount+" Zeilen haben.");
+        throw $new(Exception,"Der Vektor hat "+v.rowCount+" Zeilen, er muss aber "+this.colCount+" Zeilen haben.");
       }
-      let res=new Vector(this.rowCount);
+      let res=$new(Vector,this.rowCount);
       for(let i=0;i<this.rowCount;i++){
         let e=0;
         let row=this.rows[i];
@@ -1383,9 +1401,9 @@ function additionalJSCode(){
     }
     add(m){
       if(m.rowCount!==this.rowCount || m.colCount!==this.colCount){
-        throw new Exception("Die Matrix hat "+m.rowCount+" Zeilen und "+m.colCount+" Spalten, sie muss aber "+this.rowCount+" Zeilen und "+this.colCount+" Spalten haben.");
+        throw $new(Exception,"Die Matrix hat "+m.rowCount+" Zeilen und "+m.colCount+" Spalten, sie muss aber "+this.rowCount+" Zeilen und "+this.colCount+" Spalten haben.");
       }
-      let res=new Matrix(this.rowCount,this.colCount);
+      let res=$new(Matrix,this.rowCount,this.colCount);
       for(let i=0;i<this.rowCount;i++){
         let row=this.rows[i];
         let row2=m.rows[i];
@@ -1397,9 +1415,9 @@ function additionalJSCode(){
     }
     sub(m){
       if(m.rowCount!==this.rowCount || m.colCount!==this.colCount){
-        throw new Exception("Die Matrix hat "+m.rowCount+" Zeilen und "+m.colCount+" Spalten, sie muss aber "+this.rowCount+" Zeilen und "+this.colCount+" Spalten haben.");
+        throw $new(Exception,"Die Matrix hat "+m.rowCount+" Zeilen und "+m.colCount+" Spalten, sie muss aber "+this.rowCount+" Zeilen und "+this.colCount+" Spalten haben.");
       }
-      let res=new Matrix(this.rowCount,this.colCount);
+      let res=$new(Matrix,this.rowCount,this.colCount);
       for(let i=0;i<this.rowCount;i++){
         let row=this.rows[i];
         let row2=m.rows[i];
@@ -1410,7 +1428,7 @@ function additionalJSCode(){
       return res;
     }
     scale(s){
-      let res=new Matrix(this.rowCount,this.colCount);
+      let res=$new(Matrix,this.rowCount,this.colCount);
       for(let i=0;i<this.rowCount;i++){
         for(let j=0;j<this.colCount;j++){
           res.rows[i][j]=s*this.rows[i][j];
@@ -1446,7 +1464,7 @@ function additionalJSCode(){
       return Math.sqrt(this.lengthSquared());
     }
     getCopy(){
-      let M=new Matrix(this.rowCount,this.colCount);
+      let M=$new(Matrix,this.rowCount,this.colCount);
       for(let i=0;i<this.rowCount;i++){
         let row=this.rows[i];
         for(let j=0;j<this.colCount;j++){
@@ -1458,9 +1476,9 @@ function additionalJSCode(){
   }
 
   class Vector{
-    constructor(size){
+    $constructor(size){
       if(size<1){
-        throw new Exception("Die Länge des neuen Vektors muss mindestens 1 betragen.");
+        throw $new(Exception,"Die Länge des neuen Vektors muss mindestens 1 betragen.");
       }
       this.components=[];
       this.size=size;
@@ -1473,13 +1491,13 @@ function additionalJSCode(){
     }
     set(pos,value){
       if(pos<1 || pos>this.size){
-        throw new Exception("Vector.set: Position "+pos+" gibt es nicht in einem Vektor der Länge "+this.size+".");
+        throw $new(Exception,"Vector.set: Position "+pos+" gibt es nicht in einem Vektor der Länge "+this.size+".");
       }
       this.components[pos-1]=value;
     }
     get(pos){
       if(pos<1 || pos>this.size){
-        throw new Exception("Vector.get: Position "+pos+" gibt es nicht in einem Vektor der Länge "+this.size+".");
+        throw $new(Exception,"Vector.get: Position "+pos+" gibt es nicht in einem Vektor der Länge "+this.size+".");
       }
       return this.components[pos-1];
     }
@@ -1492,7 +1510,7 @@ function additionalJSCode(){
     }
     setFromArray(array){
       if(array.length!==this.size){
-        throw new Exception("Das Array hat "+array.length+" Einträge, er muss aber "+this.size+" Einträge haben.");
+        throw $new(Exception,"Das Array hat "+array.length+" Einträge, er muss aber "+this.size+" Einträge haben.");
       }
       for(let i=0;i<array.length;i++){
         this.components[i]=array.get(i);
@@ -1510,7 +1528,7 @@ function additionalJSCode(){
       return t;
     }
     scale(s){
-      let res=new Vector(this.size);
+      let res=$new(Vector,this.size);
       for(let i=0;i<this.size;i++){
         res.components[i]=this.components[i]*s;
       }
@@ -1518,9 +1536,9 @@ function additionalJSCode(){
     }
     add(v){
       if(v.size!==this.size){
-        throw new Exception("Der Vektor hat "+v.size+" Zeilen, er muss aber "+this.size+" Zeilen haben.");
+        throw $new(Exception,"Der Vektor hat "+v.size+" Zeilen, er muss aber "+this.size+" Zeilen haben.");
       }
-      let res=new Vector(this.size);
+      let res=$new(Vector,this.size);
       for(let i=0;i<this.size;i++){
         res.components[i]=this.components[i]+v.components[i];
       }
@@ -1528,9 +1546,9 @@ function additionalJSCode(){
     }
     sub(v){
       if(v.size!==this.size){
-        throw new Exception("Der Vektor hat "+v.size+" Zeilen, er muss aber "+this.size+" Zeilen haben.");
+        throw $new(Exception,"Der Vektor hat "+v.size+" Zeilen, er muss aber "+this.size+" Zeilen haben.");
       }
-      let res=new Vector(this.size);
+      let res=$new(Vector,this.size);
       for(let i=0;i<this.size;i++){
         res.components[i]=this.components[i]-v.components[i];
       }
@@ -1547,7 +1565,7 @@ function additionalJSCode(){
       return Math.sqrt(this.lengthSquared());
     }
     getCopy(){
-      let v=new Vector(this.size);
+      let v=$new(Vector,this.size);
       for(let i=0;i<this.size;i++){
         v.components[i]=this.components[i];
       }
@@ -1556,9 +1574,7 @@ function additionalJSCode(){
   }
 
   class Database{
-    constructor(){
-
-    }
+    $constructor(){}
     prepareStatement(sqlSource){
       /**muss kopiert werden in additionalJScode! */
       let ast=alasql.parse(sqlSource);
@@ -1643,7 +1659,7 @@ function additionalJSCode(){
         var records=[];
         if(result){
           for(var i=0;i<result.length;i++){
-            var r=new Record(result[i]);
+            var r=$new(Record,result[i]);
             records.push(r);
           }
         }
@@ -1735,7 +1751,7 @@ function additionalJSCode(){
   }
 
   class Record{
-    constructor($data){
+    $constructor($data){
       this.$data=$data;
     }
     get(attribute){
@@ -1758,11 +1774,14 @@ function additionalJSCode(){
   }
 
   class Exception{
-    constructor(message,line){
+    $constructor(message,line){
       this.message=message;
       this.line=line;
     }
     toString(){
+      return this.message;
+    }
+    getMessage(){
       return this.message;
     }
   }
@@ -1771,7 +1790,7 @@ function additionalJSCode(){
     static CASE_INSENSITIVITY=1;
     static MULTI_LINE=2;
     static DOT_ALL=4;
-    constructor(regex, flags){
+    $constructor(regex, flags){
       if(!flags){
         flags=0;
       }
@@ -1793,7 +1812,7 @@ function additionalJSCode(){
       this._jsRegexpGlobal=new RegExp(regex,this._jsFlags+"g");
     }
     static compile(regex, flags){
-      let p=new Pattern(regex, flags);
+      let p=$new(Pattern,regex, flags);
       return p;
     }
     flags(){
@@ -1806,12 +1825,12 @@ function additionalJSCode(){
       return input.split(this._jsRegexp);
     }
     matcher(input){
-      return new Matcher(this,input)
+      return $new(Matcher,this,input)
     }
   }
 
   class Matcher{
-    constructor(pattern,input){
+    $constructor(pattern,input){
       this.usePattern(pattern);
       this.reset(input);
     }
@@ -1830,7 +1849,7 @@ function additionalJSCode(){
     group(group){
       if(!group) group=0;
       if(group<0 || !this._groups || group>=this._groups.length){
-        throw new Exception("Index außerhalb der Array-Grenzen");
+        throw $new(Exception,"Index außerhalb der Array-Grenzen");
       }
       return this._groups[group];
     }
@@ -1888,7 +1907,7 @@ function additionalJSCode(){
         group=0;
       }
       if(!this._groups || group>=this._groups.length){
-        throw new Exception("Diese Gruppe gibt es nicht.");
+        throw $new(Exception,"Diese Gruppe gibt es nicht.");
       }
       group=this._groups[group];
       let all=this._groups[0];
@@ -1912,7 +1931,7 @@ function additionalJSCode(){
   }
 
   class ArrayList{
-    constructor(typeArguments,initialCapacity){
+    $constructor(typeArguments,initialCapacity){
       this.$elementType=typeArguments["T"];
       if(initialCapacity===undefined){
         initialCapacity=10;
@@ -1925,7 +1944,7 @@ function additionalJSCode(){
       return (index<0 || index>this.$size);
     }
     $getIndexOutOfBoundsException(index){
-      return new Exception("IndexOutOfBoundsException: Der Index "+index+" liegt außerhalb der Grenzen von 0 bis "+this.$size+".");
+      return $new(Exception,"IndexOutOfBoundsException: Der Index "+index+" liegt außerhalb der Grenzen von 0 bis "+this.$size+".");
     }
     $grow(){
       if(this.$size>=this.capacity){
@@ -1973,7 +1992,7 @@ function additionalJSCode(){
         append=true;
       }
       if(collection===null){
-        throw new Exception("NullPointerException: Die übergebene Kollektion ist null.");
+        throw $new(Exception,"NullPointerException: Die übergebene Kollektion ist null.");
       }
       if(collection.elements.length===0) return false;
       this.$size+=collection.elements.length;
@@ -2027,7 +2046,7 @@ function additionalJSCode(){
         throw this.$getIndexOutOfBoundsException(toIndex);
       }
       if(fromIndex>toIndex){
-        throw new Exception("IndexOutOfBoundsException: Der erste Index darf nicht größer sein als der zweite.");
+        throw $new(Exception,"IndexOutOfBoundsException: Der erste Index darf nicht größer sein als der zweite.");
       }
       this.elements.splice(fromIndex,toIndex-fromIndex);
       this.$size-=toIndex-fromIndex;
@@ -2051,7 +2070,7 @@ function additionalJSCode(){
   }
 
   class Sound{
-    constructor(url){
+    $constructor(url){
       this.setSource(url);
     }
     setSource(url){

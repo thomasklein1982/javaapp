@@ -111,14 +111,15 @@ export function ObjectCreationExpression(node,source,scope,infos){
   }
   node=node.nextSibling;
   let al=ArgumentList(node,source,scope,clazz.getConstructorParameters());
-  code="new "+typename.code;
   if(!clazz.isNative()){
+    code="new "+typename.code;
     code="await $App.asyncFunctionCall("+code+"(),'$constructor',["+JSON.stringify(runtimeTypeArguments)+","+al.code.substring(1,al.code.length-1)+"])";
   }else{
+    code="$new("+typename.code+",";
     if(useTypeArguments){
-      code+="("+JSON.stringify(runtimeTypeArguments)+","+al.code.substring(1);
+      code+=JSON.stringify(runtimeTypeArguments)+","+al.code.substring(1);
     }else{
-      code+=al.code;
+      code+=al.code.substring(1);
     }
   }
   return {
