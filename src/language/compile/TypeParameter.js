@@ -3,6 +3,7 @@ import { Scope } from "../../classes/Scope";
 import { Type } from "../../classes/Type";
 import { CompileFunctions } from "../CompileFunctions";
 import { Java } from "../java";
+import { Definition } from "./Definition";
 import { TypeBound } from "./TypeBound";
 
 export function TypeParameter(node,source,scope){
@@ -10,9 +11,10 @@ export function TypeParameter(node,source,scope){
   let name;
   let superclazz;
   if(node.name==="Definition"){
-    name=source.getText(node);
+    let def=Definition(node,source,scope);
+    name=def.code;
     if(name.length===0){
-      throw source.createError("Du musst mindestens einen generischen Datentypen in die soitzen Klammern deklarieren.",node);
+      throw source.createError("Du musst mindestens einen generischen Datentypen in die spitzen Klammern deklarieren.",node);
     }
     node=node.nextSibling;
   }

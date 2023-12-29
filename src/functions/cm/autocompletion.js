@@ -161,13 +161,13 @@ export function createAutocompletion(){
       
     }
     if(annotation){
-      return completeProperties(from,annotation.type,annotation.isStatic,annotation.topLevel, method, annotation.scope);
+      return completeProperties(from,annotation.type,annotation.isStatic,annotation.topLevel, method, annotation.scope,clazz);
     }
     return null
   };
 }
 
-function completeProperties(from, type, isStatic, includeClasses, method, scope) {
+function completeProperties(from, type, isStatic, includeClasses, method, scope, currentClazz) {
   let options = [];
   if(type.dimension>0){
     options.push({
@@ -193,7 +193,7 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
         let attributeNames=clazz.getAllAttributeNames();
         for (let name in attributeNames) {
           let a=clazz.getAttribute(name,isStatic);
-          if(a && !a.error && a.isStatic()===isStatic){
+          if(a && !a.error && a.isStatic()===isStatic && (!a.isPrivate() || currentClazz.name===clazz.name)){
             options.push({
               label: name,
               type: "variable",
@@ -208,7 +208,7 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope)
         for (let name in clazz.methods) {
           let m=clazz.methods[name];
           if(m.isConstructor()) continue;
-          if(m.isStatic()===isStatic){
+          if(m.isStatic()===isStatic  && (!m.isPrivate() || currentClazz.name===clazz.name)){
             options.push(autocomplete.snippetCompletion(m.name+createParamsString(m,true),{
               label: m.name+"(...)",
               type: "function",

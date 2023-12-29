@@ -1,3 +1,5 @@
+import { Definition } from "../language/compile/Definition";
+import { Scope } from "./Scope";
 import { Type } from "./Type";
 
 export class ParameterList{
@@ -133,7 +135,12 @@ export class Parameter{
     }
     node=node.nextSibling;
     if(node.name==='Definition'){
-      this.name=source.getText(node);
+      try{
+        let def=Definition(node,source);
+        this.name=def.code;
+      }catch(e){
+        errors.push(e);
+      }
     }else{
       errors.push(source.createError("Parametername erwartet",node));
     }

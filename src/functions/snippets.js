@@ -99,6 +99,12 @@ function createSnippets(data){
     type: "keyword"
   }));
 
+  snippets.inMethod.push(autocomplete.snippetCompletion("instanceof", {
+    label: "instanceof",
+    info: "Prüft, ob ein Objekt eine Instanz einer bestimmten Klasse ist.",
+    type: "keyword"
+  }));
+
   snippets.inMethod.push(autocomplete.snippetCompletion("for (int i = 1; i <= max; i++) {\n\t${}\n}", {
       label: "for",
       info: "Eine for-Schleife wiederholt ihren Inhalt mehrere Male.",

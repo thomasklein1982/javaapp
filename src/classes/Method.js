@@ -10,6 +10,7 @@ import { Type } from "./Type";
 import { CompileFunctions } from "../language/CompileFunctions";
 import { FormalParameters } from "../language/compile/FormalParameters";
 import { concatArrays } from "../functions/helper";
+import { Definition } from "../language/compile/Definition";
 
 export class Method{
   constructor(clazz, isConstructorNode){
@@ -282,7 +283,8 @@ export class Method{
       node=node.nextSibling;
     }
     if(node.name==='Definition'){
-      this.name=source.getText(node);
+      let def=Definition(node,source);
+      this.name=def.code;
       if(!options.voidOptional && this.isConstructorNode && this.name!==this.clazz.name){
         errors.push(source.createError("Der Konstruktor muss genauso heißen wie die Klasse.",node));  
       }
