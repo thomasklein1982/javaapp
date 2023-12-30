@@ -25,6 +25,24 @@ function additionalJSCode(){
     return o;
   }
 
+  async function $handleOnAction(ev){
+    if (this.component.$triggerOnAction) {
+        ev.stopPropagation();
+        let panel=this.component.getPanel();
+        while(panel){
+          if(panel.onAction && panel.onAction.call){
+            let handled=await panel.onAction(this.component);
+            console.log("onAction ",handled);
+            if(handled!==false){
+              return;
+            }
+          }
+          panel=panel.getPanel();
+        }
+        $main.onAction(this.component);
+    }
+  }
+
   $arrayCheckBounds=function(array,index){
     if(index>=array.length || index<0){
       var m="Index "+index+" liegt ausserhalb der Array-Grenzen von 0 bis "+(array.length-1);
@@ -878,12 +896,7 @@ function additionalJSCode(){
       this.$el=ui.button(label,x,y,width,height);
       this.$el.component=this;
       this.$triggerOnAction=true;
-      this.$el.onclick = function(ev) {
-        if (this.component.$triggerOnAction) {
-            ev.stopPropagation();
-            $main.onAction(this.component);
-        }
-      }
+      this.$el.onclick = $handleOnAction;
     }
   }
 
@@ -893,12 +906,7 @@ function additionalJSCode(){
       url=$getAssetObjectURL(url);
       this.$el=ui.image(url,x,y,width,height);
       this.$el.component=this;
-      this.$el.onclick = function(ev) {
-        if (this.component.$triggerOnAction) {
-            ev.stopPropagation();
-            $main.onAction(this.component);
-        }
-      }
+      this.$el.onclick = $handleOnAction;
     }
   }
 
@@ -908,12 +916,7 @@ function additionalJSCode(){
       this.template=template;
       this.$el=ui.panel(template,x,y,width,height);
       this.$el.component=this;
-      this.$el.onclick = function(ev) {
-        if (this.component.$triggerOnAction) {
-            ev.stopPropagation();
-            $main.onAction(this.component);
-        }
-      }
+      this.$el.onclick = $handleOnAction;
     }
     add(comp,index){
       this.$el.add(comp.$el,index);
@@ -1037,12 +1040,7 @@ function additionalJSCode(){
       this.$el=ui.label(text,x,y,width,height);
       this.setValue(text);
       this.$el.component=this;
-      this.$el.onclick = function(ev) {
-        if (this.component.$triggerOnAction) {
-            ev.stopPropagation();
-            $main.onAction(this.component);
-        }
-      }
+      this.$el.onclick = $handleOnAction;
     }
   }
 
@@ -1057,19 +1055,9 @@ function additionalJSCode(){
       this.$lastDisplayValue=this.$el.style.display;
       this.$el.component=this;
       if('selectedIndex' in this.$el || 'checked' in this.$el || 'value' in this.$el){
-        this.$el.onchange = function(ev) {
-          if (this.component.$triggerOnAction) {
-              ev.stopPropagation();
-              $main.onAction(this.component);
-          }
-        }
+        this.$el.onchange = $handleOnAction;
       }else{
-        this.$el.onclick = function(ev) {
-          if (this.component.$triggerOnAction) {
-              ev.stopPropagation();
-              $main.onAction(this.component);
-          }
-        }
+        this.$el.onclick = $handleOnAction;
       }
       
     }
@@ -1125,12 +1113,7 @@ function additionalJSCode(){
       this.$el=ui.canvas(maxX-minX,maxY-minY,x,y,width,height);
       this.$el.component=this;
       this.setOrigin(-minX,-minY);
-      this.$el.onclick = function(ev) {
-        if (this.component.$triggerOnAction) {
-            ev.stopPropagation();
-            $main.onAction(this.component);
-        }
-      }
+      this.$el.onclick = $handleOnAction;
     }
     add(comp){
       this.$el.canvas.add(comp.$el);
@@ -1245,12 +1228,7 @@ function additionalJSCode(){
       super.$constructor(x,y,width,height);
       this.$el=ui.select(options,x,y,width,height);
       this.$el.component=this;
-      this.$el.onchange = function(ev) {
-        if (this.component.$triggerOnAction) {
-            ev.stopPropagation();
-            $main.onAction(this.component);
-        }
-      }
+      this.$el.onchange = $handleOnAction;
     }
     getSelectedIndex(){
       return this.$el.selectedIndex;
@@ -1269,12 +1247,7 @@ function additionalJSCode(){
       super.$constructor(x,y,width,height);
       this.$el=ui.input("checkbox",label,x,y,width,height);
       this.$el.component=this;
-      this.$el.onchange = function(ev) {
-        if (this.component.$triggerOnAction) {
-            ev.stopPropagation();
-            $main.onAction(this.component);
-        }
-      }
+      this.$el.onchange = $handleOnAction;
     }
   }
 
@@ -1303,12 +1276,7 @@ function additionalJSCode(){
       this.$el=ui.input(type,placeholder,x,y,width,height);
       this.$el.spellcheck=false;
       this.$el.component=this;
-      this.$el.onchange = function(ev) {
-        if (this.component.$triggerOnAction) {
-            ev.stopPropagation();
-            $main.onAction(this.component);
-        }
-      }
+      this.$el.onchange = $handleOnAction;
     }
   }
 
@@ -1318,12 +1286,7 @@ function additionalJSCode(){
       this.$el=ui.textarea(placeholder,x,y,width,height);
       this.$el.spellcheck=false;
       this.$el.component=this;
-      this.$el.onchange = function(ev) {
-        if (this.component.$triggerOnAction) {
-            ev.stopPropagation();
-            $main.onAction(this.component);
-        }
-      }
+      this.$el.onchange = $handleOnAction;
     }
   }
 

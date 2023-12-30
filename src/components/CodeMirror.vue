@@ -138,6 +138,11 @@ const errorGutter = [
   })
 ]
 
+const languageConf=new Compartment();
+
+const javaWithClazz=java();
+const javaWithoutClazz=new LanguageSupport(javaLanguage.configure({top: "ClassContent"}));
+
 const additionalCompletions=[];
 
 export default {
@@ -156,7 +161,19 @@ export default {
     }
   },
   watch: {
-    clazz(nv){
+    clazz(nv,ov){
+      if(!ov){
+        return;
+      }
+      if(ov.isUIClazz() && !nv.isUIClazz()){
+        if(!(nv.isFirstClazz && options.isEasyMode())){
+          console.log("wechsle zu java mit klasse");
+          this.setLanguage(javaWithClazz);
+        }
+      }else if(!ov.isUIClazz() && nv.isUIClazz()){
+        console.log("wechsle zu java ohne klasse");
+        this.setLanguage(javaWithoutClazz);
+      }
       this.setCode(nv.src);
     },
     current(nv,ov){
@@ -224,11 +241,10 @@ export default {
     let editorTheme=new Compartment();
     let language;
     if(this.clazz.isFirstClazz && options.isEasyMode() || this.clazz.isUIClazz()){
-      language=javaLanguage.configure({top: "ClassContent"});
-      language=new LanguageSupport(language);
-      console.log("easy mode first class parser");
+      console.log("use easy without clazz");
+      language=javaWithoutClazz;
     }else{
-      language=java();
+      language=javaWithClazz;
     }
     this.editor=new EditorView({
       state: EditorState.create({
@@ -242,7 +258,7 @@ export default {
           lintGutter(),
           editorTheme.of(oneDark),
           indentUnit.of("  "),
-          language,
+          languageConf.of(language),
           autocompletion({override: [createAutocompletion()]}),
           keymap.of([indentWithTab]),
           EditorView.updateListener.of((v) => {
@@ -326,6 +342,18 @@ export default {
     // this.emptyTransaction();
   },
   methods: {
+    setLanguage(language){
+      this.editor.dispatch({
+        effects: languageConf.reconfigure(language)
+      });
+    },
+    setClazzDeclarationMandatory(){
+      this.setLanguage(javaWithClazz);
+    },
+    setClazzDeclarationOptional(){
+      let l=new LanguageSupport(javaLanguage.configure({top: "ClassContent"}));
+      this.setLanguage(l);
+    },
     adaptLayout(){
       this.editor.requestMeasure();
     },

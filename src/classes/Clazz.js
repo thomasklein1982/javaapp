@@ -332,6 +332,9 @@ export class Clazz{
       if(type.name==="Object" || this.name===type.name){
         return true;
       }
+      if(this.superClazz && !this.superClazz.isSubtypeOf){
+        console.error("superklasse is subtype of",this,this.superClazz);
+      }
       return (this.superClazz && this.superClazz.isSubtypeOf(type));
     }
     return false;
@@ -390,12 +393,11 @@ export class Clazz{
     if(!keepState){
       if(!this.isUIClazz()){
         this.name=null;
+        this.superClazz=null;
       }
-      this.superClazz=null;
       this.attributes={};
       this.methods={};
     }
-    tree.topNode.clazz=this;
     this.source=new Source(src,tree,this);
   }
 

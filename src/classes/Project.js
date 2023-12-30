@@ -337,26 +337,24 @@ export class Project{
     let toCompile=[];
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
-      if(!(c instanceof UIClazz)){
-        if(fromSource){
-          c.generateSrcAndTree(c.src,c.isFirstClazz && options.isEasyMode());
-        }
-        toCompile.push(c);
+      if(fromSource){
+        c.generateSrcAndTree(c.src,c.isFirstClazz && options.isEasyMode()||c.isUIClazz());
       }
+      toCompile.push(c);
     }
     let loopCounter=0;
     while(toCompile.length>0 && loopCounter<=this.clazzes.length*this.clazzes.length){
       loopCounter++;
       let c=toCompile.pop();
       c.compileDeclaration();
-      if(c.superClazz){
+      if(c.superClazz && (c.superClazz.isBuiltIn && !c.superClazz.isBuiltIn())){
         /**ist die Oberklasse schon deklariert? wenn nein, wieder in die queue! */
         if(toCompile.length>0 && !this.getClazzByName(c.superClazz)){
           toCompile.splice(0,0,c);
         }
       }
     }
-    /**Methoden-Deklarationen: */
+    /**Member-Deklarationen: */
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
       c.compileDeclarationTypeParameters();
@@ -364,27 +362,12 @@ export class Project{
       c.resolveSuperClazz();
     }
 
-    /**UI-Klassen: Variablen*/
-    for(let i=0;i<this.clazzes.length;i++){
-      let c=this.clazzes[i];
-      if(c instanceof UIClazz){
-        c.compileVariables();
-      }
-    }
-
-    /**UI-Klassen: gesamt*/
-    for(let i=0;i<this.clazzes.length;i++){
-      let c=this.clazzes[i];
-      if(c instanceof UIClazz){
-        c.compile();
-      }
-    }
-
     /**Methoden: */
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
       c.compileMethods(optimizeCompiler);
     }
+
     let end=Date.now();
     console.log("parsing done in "+(end-start)+"ms");
   }
@@ -487,6 +470,7 @@ export class Project{
     this.deleteClazzes();
     for(var i=0;i<o.clazzesSourceCode.length;i++){
       var src=o.clazzesSourceCode[i];
+      if(!src) continue;
       if(src.components){
         var c=new UIClazz(null,this);
         c.restoreFromSaveObject(src);

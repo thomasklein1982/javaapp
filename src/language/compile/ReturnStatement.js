@@ -18,6 +18,9 @@ export function ReturnStatement(node,source,scope){
       let f=CompileFunctions.get(node,source);
       let v=f(node,source,scope);
       returnType.autoCastValue(v);
+      if(!v.type){
+        throw source.createError("Der Ausdruck '"+v.code+"' kann nicht zurückgegeben werden.",node);
+      }
       if(!v.type.isSubtypeOf(returnType)){
         throw source.createError("Diese Methode muss ein "+returnType.toString()+" zurückliefern, dies ist aber ein "+v.type.toString()+".",node);
       }

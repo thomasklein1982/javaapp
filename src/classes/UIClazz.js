@@ -123,10 +123,10 @@ export class UIClazz extends Clazz{
 
   getComponentObject(){
     let values={};
-    for(let i=0;i<this.variables.length;i++){
-      let v=this.variables[i];
-      values[v.name]=v.type.baseType.initialValue;
-    }
+    // for(let i=0;i<this.variables.length;i++){
+    //   let v=this.variables[i];
+    //   values[v.name]=v.type.baseType.initialValue;
+    // }
     return {
       type: "UIClazz",
       componentName: this.name,
@@ -271,10 +271,8 @@ export class UIClazz extends Clazz{
 
   getAllAttributeNames(names){
     if(!names) names={};
+    super.getAllAttributeNames(names);
     UIClazz.getAllAttributesFromComponent(this,names,true);
-    if(this.superClazz){
-      return this.superClazz.getAllAttributeNames(names);
-    }
     return names;
   }
 
@@ -353,32 +351,33 @@ export class UIClazz extends Clazz{
   }
 
   getSaveObject(){
-    return {
-      name: this.name,
-      components: this.components,
-      cssClass: this.cssClass,
-      cssCode: this.cssCode,
-      variablesRaw: this.variablesRaw,
-      template: this.template,
-      x: this.x,
-      y: this.y,
-      width: this.width,
-      height: this.height
-    };
+    let o={};
+    o.name=this.name;
+    o.src=this.src;
+    o.components=this.components;
+    o.cssClass=this.cssClass;
+    o.cssCode=this.cssCode;
+    o.template=this.template;
+    o.x=this.x;
+    o.y=this.y;
+    o.width=this.width;
+    o.height=this.height;
+    return o;
   }
 
   restoreFromSaveObject(obj){
-    let props=["name","components","variablesRaw","cssClass","template","x","y","width","height","onAction","cssCode"];
+    let props=["name","src","components","cssClass","template","x","y","width","height","cssCode"];
     for(let i=0;i<props.length;i++){
       let p=props[i];
       if(obj[p]!==undefined){
         this[p]=obj[p];
       }
     }
-    
   }
 
-  compile(){
+  compile(fromSource,optimizeCompiler){
+    super.compile(fromSource,optimizeCompiler);
+    
     let scope=new Scope(this.project,undefined,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
     this.attributes={};
     this.methods={};
@@ -430,6 +429,68 @@ export class UIClazz extends Clazz{
 
   compileDeclarationTypeParameters(){
     
+  }
+
+  compileDeclaration(){
+    this.errors=[];
+    this.clazzBody=this.source.tree.topNode.firstChild;
+  }
+
+  compileDeclarations(fromSource){
+    if(fromSource){
+      this.generateSrcAndTree(this.src);
+    }
+    this.compileMemberDeclarations();
+  }
+
+  compileMemberDeclarations(){
+    super.compileMemberDeclarations();
+
+    let scope=new Scope(this.project,undefined,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
+    //this.compileVariables(scope);
+    let namedComponents=UIClazz.getAllAttributesFromComponent(this,{},undefined);
+    for(let name in namedComponents){
+      let c=namedComponents[name];
+      let type;
+      if(c.type==="UIClazz"){
+        type=c.componentName;
+        type=this.project.getClazzByName(type);
+      }else{
+        type=c.type;
+      }
+      let a=createAttribute({
+        name,
+        type: c.array? {baseType: type, dimension: 1} : type
+      },this,false);
+      a.isNamedComponent=true;
+      this.attributes[name]=a;
+    }
+    
+    this.componentCode="";
+    let codeObject={code: "let container0=this;\nwindow.$insertPosition=0;\n", nextUIControlStatementIndex:1};
+    scope=new Scope(this.project,this.rerenderMethod,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
+    codeObject.code+=this.generateJavaScriptCodeForComponent(scope,this,codeObject,0,null);
+
+    if(this.onAction===true){
+      console.log("on action");
+      codeObject.code+="\ncontainer0.setTriggerOnAction("+(c.onAction===true)+");";
+      newCode+="\n"+last+code;
+    }
+    if(this.actionCommand){
+      scope.clearReferencedVariables();
+      codeObject.code+="\ncontainer0.setActionCommand("+this.parseInterpolatedString(scope, this.actionCommand)+");";
+    }
+    if(this.cssClass){
+      scope.clearReferencedVariables();
+      codeObject.code+="\ncontainer0.setCSSClass("+this.parseInterpolatedString(scope,this.cssClass)+");";
+    }
+    if(this.cssCode){
+      scope.clearReferencedVariables();
+      codeObject.code+="\ncontainer0.$el.style.cssText=container0.$el.style.cssText+';'+"+this.parseInterpolatedString(scope,this.project.prepareCSS(this.cssCode))+";";
+    }
+
+    /**insertPosition: falls >=0: index des Einfuegens, ansonsten wird angehängt */
+    this.componentCode=codeObject.code;
   }
 
   parseInterpolatedString(scope,src){
@@ -588,11 +649,11 @@ export class UIClazz extends Clazz{
       if(c.name){
         newCode+="\nthis."+c.name+"= "+last+";";
       }
-      if(c.type==="JCheckBox" || c.type==="JComboBox" || c.type==="JTextField"){
-        newCode+="\n"+last+".$el.onchange=function(){\nif(this.component.$triggerOnAction){$main.onAction(this.component);}}";
-      }else{
-        newCode+="\n"+last+".$el.onclick=function(ev){\nif(this.component.$triggerOnAction){ev.stopPropagation();$main.onAction(this.component);}}";
-      }
+      // if(c.type==="JCheckBox" || c.type==="JComboBox" || c.type==="JTextField"){
+      //   newCode+="\n"+last+".$el.onchange=function(){\nif(this.component.$triggerOnAction){$main.onAction(this.component);}}";
+      // }else{
+      //   newCode+="\n"+last+".$el.onclick=function(ev){\nif(this.component.$triggerOnAction){ev.stopPropagation();$main.onAction(this.component);}}";
+      // }
       if(c.onAction===true){
         console.log("on action");
         let code=".setTriggerOnAction("+(c.onAction===true)+");";
@@ -676,22 +737,6 @@ export class UIClazz extends Clazz{
   
   getRuntimeInfos(){
     
-  }
-
-  compileMethodDeclarations(){
-
-  }
-
-  compileAttributeDeclarations(){
-    
-  }
-
-  compileMemberDeclarations(){
-
-  }
-
-  compileMethods(){
-
   }
 
   resolveSuperClazz(){

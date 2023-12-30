@@ -59,11 +59,11 @@
             <Button icon="pi pi-copy" @click="clickDuplicateUIClazz()"/>
             <Button icon="pi pi-trash" @click="clickRemoveUIClazz($event)"/>
             <Button @click="$emit('recompile',true)" icon="pi pi-refresh"/>
-            <Button @click="this.component.showUIEditor=false" icon="pi pi-code"/>
+            
           </div>
-          <TextArea class="ui-clazz-variables" auto-resize style="width: 100%" v-model="component.variablesRaw" @change="emitRecompile()"/>
+          <Button @click="this.component.showUIEditor=false" icon="pi pi-code" label="Code ändern"/>
           <div style="font-family: monospace; color: red">
-            <div v-for="(e,i) in component.variablesErrors"><template v-if="e.line">Z{{ e.line.number }}: {{ e.message }}</template><template v-else>{{ e }}</template></div>
+            <div v-for="(e,i) in this.component.errors"><template v-if="e.line">Z{{ e.line.number }}: {{ e.message }}</template><template v-else>{{ e }}</template></div>
           </div>
         </template>
         <div v-else class="jpanel-color" :style="{display: 'flex'}">

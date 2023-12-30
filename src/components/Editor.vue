@@ -223,19 +223,7 @@ export default {
   },
   computed: {
     currentEditor(){
-      if(this.isCurrentClazzUIClazz) return null;
-      let index=-1;
-      for(let i=0;i<=this.activeTab;i++){
-        let c=this.project.clazzes[i];
-        if(!(c instanceof UIClazz)){
-          index++;
-        }
-      }
-      if(index>=0 && this.$refs && this.$refs.editor){
-        return this.$refs.editor[index];
-      }else{
-        return null;
-      }
+      return this.$refs.editor[this.activeTab];
     },
     splitterSize(){
       return 8;
