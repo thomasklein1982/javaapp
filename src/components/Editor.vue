@@ -62,7 +62,8 @@
                 <span v-if="c.isInterface" class="pi pi-info-circle" style="font-size: small; margin-right: 0.2rem"/>{{i!==activeTab && c?.name?.length>10? c?.name?.substring(0,10)+"...":c?.name}} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span>
               </template>
               <UIEditor 
-                v-if="isUIClazz(c)" 
+                v-if="isUIClazz(c)"
+                v-show="c.showUIEditor" 
                 :clazz="c"
                 :settings="settings"
                 @select="updateSelectedUIComponent"
@@ -72,7 +73,7 @@
               >
               </UIEditor>
               <CodeMirror
-                v-else
+                v-show="!c.showUIEditor"
                 :clazz="c"
                 :tab-index="i"
                 :project="project"

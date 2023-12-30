@@ -1,6 +1,6 @@
 <template>
-  <UIEditorCode ref="uiEditorCode" :ui-clazz="clazz"/>
   <div class="ui-editor-component-list" :style="{flex: 1, display: 'flex', 'flex-direction': 'row', overflow: 'hidden'}">
+    <UIEditorCode ref="uiEditorCode" :ui-clazz="clazz"/>
     <Sortable
       :list="allComponents"
       item-key="id"

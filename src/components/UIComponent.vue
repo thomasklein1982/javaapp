@@ -59,6 +59,7 @@
             <Button icon="pi pi-copy" @click="clickDuplicateUIClazz()"/>
             <Button icon="pi pi-trash" @click="clickRemoveUIClazz($event)"/>
             <Button @click="$emit('recompile',true)" icon="pi pi-refresh"/>
+            <Button @click="this.component.showUIEditor=false" icon="pi pi-code"/>
           </div>
           <TextArea class="ui-clazz-variables" auto-resize style="width: 100%" v-model="component.variablesRaw" @change="emitRecompile()"/>
           <div style="font-family: monospace; color: red">
@@ -177,6 +178,7 @@ import { nextTick } from "vue";
       customComponentName(){
         if(this.component.type==="UIClazz"){
           let name=this.component.componentName;
+          if(!name) name="Test123";
           if(name.length>13){
             name=name.substring(0,10)+"...";
           }

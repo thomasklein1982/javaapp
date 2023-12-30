@@ -24,7 +24,8 @@ function getRealNodeBefore(node,pos){
 
 export function createAutocompletion(){
   return (context)=>{
-    let clazz=getClazzFromState(context.state);
+    let clazz=app.$refs.editor.currentClazz;
+    //let clazz=getClazzFromState(context.state);
     if(!clazz) return;
     let pos=context.pos;
     let project=app.$refs.editor.project;

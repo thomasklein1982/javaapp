@@ -3,6 +3,7 @@ import { CompileFunctions } from "../language/CompileFunctions";
 import { createAttribute } from "../language/helper/createAttribute";
 import { createMethod } from "../language/helper/createMethod";
 import { Java } from "../language/java";
+import { Clazz } from "./Clazz";
 import { Scope } from "./Scope";
 import { Source } from "./Source";
 import { Type } from "./Type";
@@ -10,7 +11,7 @@ import { Type } from "./Type";
 /**
  * UIClazz ist eine Klasse, die von JPanel erbt
  */
-export class UIClazz {
+export class UIClazz extends Clazz{
   static UIClazzes={
     JButton: {
       params: ["value","x","y","width","height"],
@@ -72,17 +73,12 @@ export class UIClazz {
   };
 
   constructor(name,project){
-    this.name=name;
-    this.project=project;
-    this.methods={};
+    super(name,project,false);
     this.errors=[];
-    this.props=[];
-    this.variablesRaw="";
-    this.variables=[];
-    this.variablesErrors=[];
+    this.src="";
     this.components=[];
     this.componentCode="";
-    this.hasClazzDeclaration=true;
+    this.hasClazzDeclaration=false;
     this.rerenderMethod=createMethod({
       name: "rerender",
       params: []
@@ -97,6 +93,7 @@ export class UIClazz {
     this.cssCode="";
     this.superClazz=Java.clazzes.JPanel;
     this.attributes={};
+    this.showUIEditor=true;
     /**Komponente:
      * type
      * name
@@ -403,16 +400,6 @@ export class UIClazz {
       a.isNamedComponent=true;
       this.attributes[name]=a;
     }
-    this.methods.getElementByID=createMethod({
-      name: 'getElementByID',
-      args: [
-        {name: 'id', type: 'String'}
-      ],
-      info: 'Liefert das HTML-Element mit der angegebenen ID zurück',
-      returnType: 'HTMLElement',
-      jsName: "$getElementById",
-      isExtraFunction: true
-    },this,false,false);
     
     this.componentCode="";
     let codeObject={code: "let container0=this;\nwindow.$insertPosition=0;\n", nextUIControlStatementIndex:1};

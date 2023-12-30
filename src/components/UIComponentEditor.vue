@@ -216,8 +216,8 @@ import TemplateDialog from './TemplateDialog.vue';
     },
     emits: ["isolatedupdate","recompile"],
     components: {
-    TemplateDialog,
-    CodeMirrorEditor
-}
+      TemplateDialog,
+      CodeMirrorEditor
+  }
   }
 </script>

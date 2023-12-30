@@ -10,7 +10,6 @@ import { options } from "./Options";
 import { Scope } from "./Scope";
 import { Source } from "./Source";
 import { Type } from "./Type";
-import { UIClazz } from "./UIClazz";
 import  * as autocomplete  from "@codemirror/autocomplete";
 
 export class Clazz{
@@ -95,7 +94,7 @@ export class Clazz{
     if(this.isFirstClazz && options.instantiateUIClasses){
       for(var i=0;i<this.project.clazzes.length;i++){
         var c=this.project.clazzes[i];
-        if(!(c instanceof UIClazz)) continue;
+        if(!(c.isUIClazz())) continue;
         let name=c.name;
         onStartPrecode+="\nthis."+name+"=(await $App.asyncFunctionCall(new "+c.name+"(),'$constructor',[{$hideFromConsole:true},]));";
         if(this.project.getUiClazzCount()>1){
@@ -316,7 +315,7 @@ export class Clazz{
         return false;
       }
     }
-    if(type instanceof Clazz || type instanceof UIClazz){
+    if(type instanceof Clazz){
       if(type.isInterface){
         if(this.implementedInterfaces){
           for(let i=0;i<this.implementedInterfaces.length;i++){
@@ -389,11 +388,14 @@ export class Clazz{
   setSrcAndTree(src,tree,keepState){
     this.src=src;
     if(!keepState){
-      this.name=null;
+      if(!this.isUIClazz()){
+        this.name=null;
+      }
       this.superClazz=null;
       this.attributes={};
       this.methods={};
     }
+    tree.topNode.clazz=this;
     this.source=new Source(src,tree,this);
   }
 
@@ -673,7 +675,7 @@ export class Clazz{
     if(this.isFirstClazz && options.instantiateUIClasses){
       for(var i=0;i<this.project.clazzes.length;i++){
         var c=this.project.clazzes[i];
-        if(!(c instanceof UIClazz)) continue;
+        if(!(c.isUIClazz())) continue;
         let name=c.name;
         let a=createAttribute({
           name,

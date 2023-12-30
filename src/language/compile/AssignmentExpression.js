@@ -1,5 +1,4 @@
 import { Clazz } from "../../classes/Clazz";
-import { UIClazz } from "../../classes/UIClazz";
 import { CompileFunctions } from "../CompileFunctions";
 import { PrimitiveType } from "./PrimitiveType";
 
@@ -13,7 +12,7 @@ export function AssignmentExpression(node,source,scope){
   }
   let v=CompileFunctions.get(node,source)(node,source,scope);
   
-  if(v && v.object && (v.object instanceof Clazz || v.object instanceof PrimitiveType || v.object instanceof UIClazz)){
+  if(v && v.object && (v.object instanceof Clazz || v.object instanceof PrimitiveType)){
     throw source.createError("Du kannst dem Datentyp '"+v.name+"' keinen Wert zuweisen.",node);
   }
   if(!v || !v.type){

@@ -2,6 +2,7 @@
   <div id="root">
     <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px'}"></div>
     <Message v-if="displayedRuntimeError" severity="error" @close="dismissRuntimeError()">Z{{displayedRuntimeError.line}}: {{displayedRuntimeError.message}}</Message>
+    <Button outlined style="position: absolute; top: 0; right: 0" v-if="isUIClazz" icon="pi pi-table" @click="clazz.showUIEditor=true"/>
   </div>
   
 </template>
@@ -175,6 +176,11 @@ export default {
     }
 
   },
+  computed: {
+    isUIClazz(){
+      return this.clazz.isUIClazz();
+    }
+  },
   data(){
     return {
       runtimeErrors: [],
@@ -217,7 +223,7 @@ export default {
     });
     let editorTheme=new Compartment();
     let language;
-    if(this.clazz.isFirstClazz && options.isEasyMode()){
+    if(this.clazz.isFirstClazz && options.isEasyMode() || this.clazz.isUIClazz()){
       language=javaLanguage.configure({top: "ClassContent"});
       language=new LanguageSupport(language);
       console.log("easy mode first class parser");
