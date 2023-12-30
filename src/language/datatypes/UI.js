@@ -53,6 +53,14 @@ function defineJComponent(Clazz,Java){
     info: "Legt die CSS-Klassen der Komponente fest."
   },Clazz,false,false);
   createMethod({
+    name: 'hasCSSClass',
+    args: [
+      {name: 'className', type: 'String'}
+    ],
+    info: "Prüft, ob die Komponente diese CSS-Klasse besitzt.",
+    returnType: "boolean"
+  },Clazz,false,false);
+  createMethod({
     name: 'getCSSClass',
     args: [],
     returnType: "String",

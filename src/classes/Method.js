@@ -276,6 +276,9 @@ export class Method{
         this.type=Type.compile(node,source,this.clazz,errors);
       }else if(node.name==='void'){
         this.type=null;
+      }else{
+        errors.push(source.createError("Datentyp oder 'void' erwartet",node));
+        return errors;
       }
       if(this.type && !this.type.baseType){
         return errors;

@@ -2,7 +2,6 @@ import { Type } from "../../classes/Type";
 
 export function MethodReference(node,source,scope){
   let root=node;
-  console.log(node,source.getText(node));
   node=node.firstChild;
   while(node){
     if(node.type.isError){

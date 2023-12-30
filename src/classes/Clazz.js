@@ -68,7 +68,11 @@ export class Clazz{
   getJavaScriptCode(){
     let code="class "+this.name;
     if(this.superClazz){
-      code+=" extends "+this.superClazz.name;
+      if(this.superClazz.splice){
+        code+=" extends "+this.superClazz;
+      }else{
+        code+=" extends "+this.superClazz.name;
+      }
     }
     code+="{";
     code+="\nconstructor(){";
@@ -178,7 +182,7 @@ export class Clazz{
     for(let a in this.attributes){
       names[this.attributes[a].name]=true;
     }
-    if(this.superClazz){
+    if(this.superClazz && this.superClazz.getAllAttributeNames){
       return this.superClazz.getAllAttributeNames(names);
     }
     return names;
@@ -194,7 +198,7 @@ export class Clazz{
         dimension: at.type.dimension
       };
     }
-    if(this.superClazz){
+    if(this.superClazz && this.superClazz.getAllAttributeNames){
       return this.superClazz.getAllAttributeNames(names);
     }
     return names;
@@ -470,6 +474,8 @@ export class Clazz{
   compileDeclaration(){
     var errors=[];
     this.errors=errors;
+    this.superClazz=null;
+    this.superClazzNode=null;
     this.hasClazzDeclaration=true;
     this.typeParametersNode=null;
     this.implementedInterfaces=null;
@@ -509,6 +515,7 @@ export class Clazz{
         }else{
           subnode=subnode.nextSibling;
           this.superClazz=this.source.getText(subnode);
+          this.superClazzNode=subnode;
         }
         node=node.nextSibling;
       }
@@ -530,10 +537,13 @@ export class Clazz{
   }
 
   resolveSuperClazz(){
+    console.log("resolve superclass",this.name,this.superClazz);
     if(this.superClazz){
       let c=this.project.getClazzByName(this.superClazz);
       if(c){
         this.superClazz=c;
+      }else{
+        this.errors.push(this.source.createError("Unbekannte Klasse",this.superClazzNode));
       }
     }
   }

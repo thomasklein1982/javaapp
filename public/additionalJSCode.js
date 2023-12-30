@@ -767,6 +767,9 @@ function additionalJSCode(){
     removeCSSClass(className){
       this.$el.classList.remove(className);
     }
+    hasCSSClass(className){
+      return this.$el.classList.contains(className);
+    }
     setAlign(a){
       this.$el.align=a;
     }
@@ -815,53 +818,7 @@ function additionalJSCode(){
 
   
 
-  class HTMLElement extends JComponent{
-    $constructor(element){
-      super.$constructor(0,0,0,0);
-      this.$el=element;
-      this.$lastDisplayValue=this.$el.style.display;;
-    }
-    getAttribute(name){
-      return this.$el.getAttribute(name);
-    }
-    setAttribute(name, value){
-      this.$el.setAttribute(name,value);
-    }
-    getValue(){
-      if(!this.$el) return null;
-      if('selectedIndex' in this.$el){
-        return this.$el.selectedIndex;
-      }else if('checked' in this.$el){
-        return this.$el.checked; 
-      }else if('value' in this.$el){
-        return this.$el.value;
-      }
-      return this.$el.innerHTML;
-    }
-    setValue(v){
-      if(!this.$el) return;
-      if('selectedIndex' in this.$el){
-        this.$el.selectedIndex=v;
-      }else if('checked' in this.$el){
-        this.$el.checked=v;
-      }else if('value' in this.$el){
-        this.$el.value=v;
-      }else{
-        this.$el.innerHTML=v;
-      }
-    }
-    setVisible(v){
-      if(!v){
-        this.$lastDisplayValue=this.$el.style.display;
-        this.$el.style.display="none";
-      }else{
-        this.$el.style.display=this.$lastDisplayValue;
-      }
-    }
-    isVisible(){
-      return this.$el.style.display!=="none";
-    }
-  }
+  
 
   class UIControlStatement{
     $constructor(type){
@@ -1051,6 +1008,7 @@ function additionalJSCode(){
     $constructor(text,x,y,width,height){
       super.$constructor(x,y,width,height);
       this.$el=ui.label(text,x,y,width,height);
+      this.setValue(text);
       this.$el.component=this;
       this.$el.onclick = function(ev) {
         if (this.component.$triggerOnAction) {
@@ -1058,6 +1016,78 @@ function additionalJSCode(){
             $main.onAction(this.component);
         }
       }
+    }
+  }
+
+  class HTMLElement extends JPanel{
+    $constructor(tag){
+      //super.$constructor(0,0,0,0);
+      if(tag && tag.substring){
+        tag=document.createElement("tag");
+      }
+      this.$el=tag;
+      this.$el.appJSData={};
+      this.$lastDisplayValue=this.$el.style.display;
+      this.$el.component=this;
+      if('selectedIndex' in this.$el || 'checked' in this.$el || 'value' in this.$el){
+        this.$el.onchange = function(ev) {
+          if (this.component.$triggerOnAction) {
+              ev.stopPropagation();
+              $main.onAction(this.component);
+          }
+        }
+      }else{
+        this.$el.onclick = function(ev) {
+          if (this.component.$triggerOnAction) {
+              ev.stopPropagation();
+              $main.onAction(this.component);
+          }
+        }
+      }
+      
+    }
+    getAttribute(name){
+      return this.$el.getAttribute(name);
+    }
+    setAttribute(name, value){
+      this.$el.setAttribute(name,value);
+    }
+    getValue(){
+      if(!this.$el) return null;
+      if('selectedIndex' in this.$el){
+        return this.$el.selectedIndex;
+      }else if('checked' in this.$el){
+        return this.$el.checked; 
+      }else if('value' in this.$el){
+        return this.$el.value;
+      }
+      return this.$el.innerHTML;
+    }
+    setValue(v){
+      if(!this.$el) return;
+      if('selectedIndex' in this.$el){
+        this.$el.selectedIndex=v;
+      }else if('checked' in this.$el){
+        this.$el.checked=v;
+      }else{
+        v=$handleAssetsInString(v);
+        if('value' in this.$el){
+          this.$el.value=v;
+        }else{
+          this.$el.innerHTML=v;
+        }
+      }
+    }
+    setVisible(v){
+      if(!v){
+        this.$lastDisplayValue=this.$el.style.display;
+        this.$el.style.display="none";
+      }else{
+        this.$el.style.display=this.$lastDisplayValue;
+      }
+    }
+    isVisible(){
+      return this.$el.style.display!=="none";
     }
   }
 

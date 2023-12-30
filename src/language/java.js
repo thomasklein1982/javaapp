@@ -90,7 +90,6 @@ PrintStream.cannotBeInstantiated=true;
 
 let ArrayList=new Clazz("ArrayList");
 let HTMLElement=new Clazz("HTMLElement");
-HTMLElement.cannotBeInstantiated=true;
 
 let Sound=new Clazz("Sound");
 

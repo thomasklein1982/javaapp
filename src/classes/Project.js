@@ -253,10 +253,12 @@ export class Project{
       }
       remaining.push(c);
     }
-    while(remaining.length>0){
+    let loopCounter=0;
+    while(remaining.length>0 && loopCounter<=this.clazzes.length*this.clazzes.length){
+      loopCounter++;
       let c=remaining.pop();
       let finish=true;
-      if(c.superClazz && !c.superClazz.isBuiltIn()){
+      if(c.superClazz && c.superClazz.isBuiltIn && !c.superClazz.isBuiltIn()){
         /**ist die Oberklasse schon abgehandelt? wenn nein, wieder in die queue! */
         if(remaining.length>0 && !finished[c.superClazz.name]){
           remaining.splice(0,0,c);
@@ -342,7 +344,9 @@ export class Project{
         toCompile.push(c);
       }
     }
-    while(toCompile.length>0){
+    let loopCounter=0;
+    while(toCompile.length>0 && loopCounter<=this.clazzes.length*this.clazzes.length){
+      loopCounter++;
       let c=toCompile.pop();
       c.compileDeclaration();
       if(c.superClazz){
