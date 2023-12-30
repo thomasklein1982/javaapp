@@ -537,7 +537,6 @@ export class Clazz{
   }
 
   resolveSuperClazz(){
-    console.log("resolve superclass",this.name,this.superClazz);
     if(this.superClazz){
       let c=this.project.getClazzByName(this.superClazz);
       if(c){

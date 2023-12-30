@@ -50,7 +50,7 @@ export class Table{
           }
         }else{
           if(typ.id===Database.String.id){
-            code+=JSON.stringify(d);
+            code+=JSON.stringify(d+'');
           }else if(typ.id===Database.Time.id){
             if(/^\d\d(?:\:\d\d(?:\:\d\d)?)?$/.test(d)){
               code+="'"+d+"'";/*"new Date('"+d+"')";*/

@@ -153,6 +153,10 @@ export class UIClazz {
     return "set"+attributeName.charAt(0).toUpperCase()+attributeName.substring(1);
   }
 
+  getGetterMethodName(attributeName){
+    return "get"+attributeName.charAt(0).toUpperCase()+attributeName.substring(1);
+  }
+
   compileVariables(scope){
     if(!scope) scope=new Scope(this.project,undefined,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
     this.variables=[];
@@ -193,6 +197,13 @@ export class UIClazz {
                 }
               ],
               jscode: "this."+a.name+"="+a.name+";\nif(arguments[1]!==true){this.$update();}"
+            },this,false,false);
+            let getterMethodName=this.getGetterMethodName(a.name);
+            this.methods[getterMethodName]=createMethod({
+              name: getterMethodName,
+              args: [],
+              jscode: "return this."+a.name+";",
+              returnType: a.type
             },this,false,false);
           }
         }catch(e){
@@ -548,12 +559,14 @@ export class UIClazz {
           for(let vn in variables){
             let v=variables[vn];
             let setterName=this.getSetterMethodName(v.name);
-            if(!(v.name in c.variablesValues)){
-              c.variablesValues[v.name]=v.type.baseType.initialValue;
+            if(!(v.name in c.variablesValues) || c.variablesValues[v.name]===undefined){
+              c.variablesValues[v.name]=v.initialValue;
             }
             let value=c.variablesValues[v.name];
-            value=this.parseJavaStatement(scope,value);
-            newCode+="\n"+last+"."+setterName+"("+value.code+",true);";
+            if(value!=null){
+              value=this.parseJavaStatement(scope,value);
+            }
+            newCode+="\n"+last+"."+setterName+"("+value+",true);";
           }
         }else{
 

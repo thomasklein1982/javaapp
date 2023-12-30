@@ -67,6 +67,26 @@ function defineJComponent(Clazz,Java){
     info: "Liefert einen String mit allen CSS-Klassen der Komponente zurück."
   },Clazz,false,false);
   createMethod({
+    name: 'querySelector',
+    args: [
+      {
+        name: "selector", type: "String", info: "gültiger CSS-Selektor"
+      }
+    ],
+    returnType: "JComponent",
+    info: "Liefert das erste Kind-Element in dieser Komponente, das den CSS-Selektor erfüllt."
+  },Clazz,false,false);
+  createMethod({
+    name: 'querySelectorAll',
+    args: [
+      {
+        name: "selector", type: "String", info: "gültiger CSS-Selektor"
+      }
+    ],
+    returnType: {baseType: "JComponent", dimension: 1},
+    info: "Liefert ein Array aller Kind-Elemente in dieser Komponente, die den CSS-Selektor erfüllen."
+  },Clazz,false,false);
+  createMethod({
     name: 'toggleCSSClass',
     args: [
       {name: 'className', type: 'String'}

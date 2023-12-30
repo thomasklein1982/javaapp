@@ -651,7 +651,34 @@ function additionalJSCode(){
       this.actionObject=null;
       this.$triggerOnAction=false;
     }
-    
+    querySelector(selector){
+      try{
+        let e=this.$el.querySelector(selector);
+        if(!e) return null;
+        if(e.component) return e.component;
+        return $new(HTMLElement,e);
+      }catch(e){
+        throw $new(Exception,"Fehlerhafter Selektor\n"+e);
+      }
+    }
+    querySelectorAll(selector){
+      try{
+        let es=this.$el.querySelectorAll(selector);
+        if(!es) return null;
+        let comps=[];
+        for(let i=0;i<es.length;i++){
+          let e=es[i];
+          if(e.component){
+            comps.push(e.component);
+          }else{
+            comps.push($new(HTMLElement,e));
+          }
+        }
+        return comps;
+      }catch(e){
+        throw $new(Exception,"Fehlerhafter Selektor\n"+e);
+      }
+    }
     getScrollPosition(){
       return this.$el.scrollTop;
     }
