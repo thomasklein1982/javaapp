@@ -677,6 +677,18 @@ function defineCanvas(Clazz,Java){
     info: 'Legt die Farbe für die nachfolgenden Zeichnungen fest.'
   },Clazz,false,false,Java);
   createMethod({
+    name: 'getMouseX',
+    args: [],
+    info: 'Liefert die aktuelle x-Koordinate der Maus innerhalb dieses Canvas.',
+    returnType: 'double'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getMouseY',
+    args: [],
+    info: 'Liefert die aktuelle y-Koordinate der Maus innerhalb dieses Canvas.',
+    returnType: 'double'
+  },Clazz,false,false,Java);
+  createMethod({
     name: 'drawImage',
     args: [
       {name: 'image', type: 'String'},

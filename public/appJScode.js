@@ -3590,9 +3590,9 @@ window.appJScode=function(){
     $App.addEventHandler("onNextFrame",[],'Wird ca. 60 mal pro Sekunde ausgefuehrt.','');
     $App.addEventHandler("onKeyDown",[{name: 'keycode', type: 'int', info: 'Der Code der gedrueckten Taste, z. B. 65 fuer "A" oder 32 fuer die Leertaste.'}],'Wird ausgefuehrt, wenn eine Taste auf der Tastatur gedrueckt wird. ACHTUNG: Funktioniert nicht bei Geraeten ohne Tastatur! Verwende lieber das <a href="#help-gamepad">Gamepad</a>.','');
     $App.addEventHandler("onKeyUp",[{name: 'keycode', type: 'int', info: 'Der Code der losgelassenen Taste, z. B. 65 fuer "A" oder 32 fuer die Leertaste.'}],'Wird ausgefuehrt, wenn eine Taste auf der Tastatur losgelassen wird. ACHTUNG: Funktioniert nicht bei Geraeten ohne Tastatur! Verwende lieber das <a href="#help-gamepad">Gamepad</a>.','');
-    $App.addEventHandler("onMouseDown",[],'Wird ausgefuehrt, wenn der Benutzer eine Maustaste drueckt oder mit dem Finger den Touchscreen beruehrt.','');
-    $App.addEventHandler("onMouseMove",[],'Wird ausgefuehrt, wenn der Benutzer die Maus bewegt oder mit dem Finger ueber den Touchscreen streicht.','');
-    $App.addEventHandler("onMouseUp",[],'Wird ausgefuehrt, wenn der Benutzer die Maustaste loslaesst oder die Beruehrung des Touchscreens mit dem Finger beendet.','');
+    $App.addEventHandler("onMouseDown",[{name: "canvas", type: "Canvas", info: "Canvas, der das Ereignis ausgelöst hat."}],'Wird ausgefuehrt, wenn der Benutzer eine Maustaste drueckt oder mit dem Finger den Touchscreen beruehrt.','');
+    $App.addEventHandler("onMouseMove",[{name: "canvas", type: "Canvas", info: "Canvas, der die Bewegung ausgelöst hat."}, {name: "isDown", type: "boolean", info: "true, wenn die Maus-Taste gedrückt ist, andernfalls false."}],'Wird ausgefuehrt, wenn der Benutzer die Maus bewegt oder mit dem Finger ueber den Touchscreen streicht.','');
+    $App.addEventHandler("onMouseUp",[{name: "canvas", type: "Canvas", info: "Canvas, der das Ereignis ausgelöst hat."}],'Wird ausgefuehrt, wenn der Benutzer die Maustaste loslaesst oder die Beruehrung des Touchscreens mit dem Finger beendet.','');
     $App.addEventHandler("onGamepadDown",[{name: 'button', type: 'String', info: 'Der Name des Buttons, der gedrueckt wurde, also z. B. "A" oder "Y" oder "left".'}],'Wird ausgefuehrt, wenn der Benutzer einen Teil des Gamepads beruehrt oder die zugeordnete Taste auf der Tastatur drueckt.','');
     $App.addEventHandler("onGamepadUp",[{name: 'button', type: 'String', info: 'Der Name des Buttons, der losgelassen wurde, also z. B. "A" oder "Y" oder "left".'}],'Wird ausgefuehrt, wenn der Benutzer die Beruehrung des Gamepads beendet oder aufhoert, die zugeordnete Taste auf der Tastatur zu druecken.','');
     $App.addEventHandler("onTimeout",[{name: 'name',type: 'String', info: 'Der Name des Timers, der abgelaufen ist.'}],'Wird ausgefuehrt, wenn ein Timer ablaeuft. Du kannst mit time.start einen Timer starten.','');
@@ -3799,51 +3799,7 @@ window.appJScode=function(){
     },null,'Macht einen Beep.',
     [{name: 'type', type: 'String', info: 'sine, square, triangle.'}, {name: 'frequency', type: 'int', info: 'Frequenz.'}, {name: 'volumne', type: 'double', info: 'Lautstärke.'}, {name: 'duration', type: 'int', info: 'Dauer in ms.'}],
     '');
-
-    $App.addFunction(function playSound(name, loop){
-      if(!window.Howler){
-        var m="Du musst zuerst HowlerJS laden (mittels loadHowlerJS()), bevor du Sounds abspielen kannst.";
-        console.log(m);
-        throw m;
-      }
-      var asset=$App.assets[name];
-      if(!asset){
-        var m="Es gibt keinen Sound namens '"+name+"'. Du musst ihn vorher mittels loadAsset laden.";
-        console.log(m);
-        throw m;
-      }
-      if(loop!==true){
-        loop=false;
-      }
-      asset.sound.loop(loop);
-      asset.sound.play();  
-    },null,'Spielt den Sound mit dem angegebenen Namen ab.',
-    [{name: 'soundName', type: 'String', info: 'Name des Sounds, der abgespielt werden soll.'}, {name: 'loop', type: 'boolean', info: 'true, wenn der Sound in Dauerschleife gespielt werden soll.'}],
-    '');
-
-    $App.addFunction(function stopSound(name){
-      if(!window.Howler){
-        var m="Du musst zuerst HowlerJS laden (mittels loadHowlerJS()), bevor du Sounds abspielen kannst.";
-        console.log(m);
-        throw m;
-      }
-      if(!name){
-        Howler.stop();
-        return;
-      }
-      var asset=$App.assets[name];
-      if(!asset){
-        var m="Es gibt keinen Sound namens '"+name+"'. Du musst ihn vorher mittels loadAsset laden.";
-        console.log(m);
-        throw m;
-      }
-      asset.sound.stop();  
-    },null,'Spielt den Sound mit dem angegebenen Namen ab.',
-    [{name: 'soundName', type: 'String', info: 'Name des Sounds, der gestoppt werden soll. null, wenn alle Sound gestoppt werden sollen.'}],
-    '');
-
     
-
     $App.addFunction(function drawImage(image,cx,cy,width,height,rotation,mirrored){
       $App.canvas.drawImage(image,cx,cy,width,height,rotation,mirrored);
     },null,'Zeichnet ein Bild. Dieses musst du vorher mittels loadAsset laden.',
@@ -4046,45 +4002,6 @@ window.appJScode=function(){
         returnType: null,
         args: [{name: 'message', type: 'String', info: 'Nachricht, die versendet wird.'}],
         info: 'Sendet eine Nachricht an alle Teilnehmer der Netzwerksession.'
-      }
-    ]);
-
-    $App.addObject("mouse",false,{
-      get x(){
-        return $App.canvas? $App.canvas.getCanvasX($App.mouse.x):null;
-      },
-      get y(){
-        return $App.canvas? $App.canvas.getCanvasY($App.mouse.y):null;
-      },
-      get down(){
-        return $App.mouse.down;
-      },
-      inRect(cx,cy,width,height){
-        let x=this.x;
-        let y=this.y;
-        return (x>=cx-width/2 && x<=cx+width/2 && y>=cy-height/2 && y<=cy+height/2);
-      },
-      inCircle(cx,cy,r){
-        let x=this.x;
-        let y=this.y;
-        return ((x-cx)*(x-cx)+(y-cy)*(y-cy)<=r*r);
-      }
-    },'Liefert dir Informationen ueber den Mauszeiger / den Finger (bei Touchscreens).',
-    [
-      {name: 'x', type: 'double', info: 'Die aktuelle x-Koordinate der Maus.'},
-      {name: 'y', type: 'double', info: 'Die aktuelle y-Koordinate der Maus.'},
-      {name: 'down', type: 'boolean', info: 'Ist gerade die Maustaste gedrueckt / beruehrt der Finger gerade den Bildschirm?'}, 
-      {
-        name: 'inRect', 
-        returnType: 'boolean',
-        args: [{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts des Rechtecks'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts des Rechtecks'}, {name: 'width', type: 'double', info: 'Breite des Rechtecks'}, {name: 'height', type: 'double', info: 'Hoehe des Rechtecks'}],
-        info: 'Prueft, ob sich die Maus aktuell innerhalb des Rechtecks mit Mittelpunkt (cx|cy) und Breite width und Hoehe height befindet.'
-      }, 
-      {
-        name: 'inCircle',
-        returnType: 'boolean',
-        args: [{name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts des Kreises'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts des Kreises'}, {name: 'r', type: 'double', info: 'Radius des Kreises'}],
-        info: 'Prueft, ob sich die Maus aktuell innerhalb des Kreises mit Mittelpunkt (cx|cy) und Radius r befindet.'
       }
     ]);
     

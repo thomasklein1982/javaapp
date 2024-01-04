@@ -26,20 +26,54 @@ function additionalJSCode(){
   }
 
   async function $handleOnAction(ev){
-    if (this.component.$triggerOnAction) {
+    $handleEvent.call(this,"Action",ev);
+  }
+
+  async function $handleOnPointerMove(ev){
+    $handleEvent.call(this,"MouseMove",ev,(ev,comp)=>{
+      comp.$updateMousePosition(ev);
+      return [comp,ev.buttons>0];
+    });
+  }
+
+  async function $handleOnPointerDown(ev){
+    $handleEvent.call(this,"MouseDown",ev,(ev,comp)=>{
+      comp.$updateMousePosition(ev);
+      return [comp];
+    });
+  }
+
+  async function $handleOnPointerUp(ev){
+    $handleEvent.call(this,"MouseUp",ev,(ev,comp)=>{
+      comp.$updateMousePosition(ev);
+      return [comp];
+    });
+  }
+
+  async function $handleEvent(eventname,ev,argsFunc){
+    let comp=this.component||this.canvasComponent;
+    if (comp["$triggerOn"+eventname]) {
         ev.stopPropagation();
-        let panel=this.component.getPanel();
+        let args;
+        if(argsFunc){
+          args=argsFunc(ev,comp);
+        }else{
+          args=[comp];
+        }
+        let panel=comp.getPanel();
         while(panel){
-          if(panel.onAction && panel.onAction.call){
-            let handled=await panel.onAction(this.component);
-            console.log("onAction ",handled);
+          let handler=panel["on"+eventname];
+          if(handler && handler.call){
+            let handled=await handler.apply(panel,args);//panel["on"+eventname](comp);
             if(handled!==false){
               return;
             }
           }
           panel=panel.getPanel();
         }
-        $main.onAction(this.component);
+        if($main["on"+eventname]){
+          $main["on"+eventname].apply($main,args);
+        }
     }
   }
 
@@ -668,6 +702,7 @@ function additionalJSCode(){
       this.actionCommand="";
       this.actionObject=null;
       this.$triggerOnAction=false;
+      this.standardCSSClasses="";
     }
     querySelector(selector){
       try{
@@ -798,7 +833,7 @@ function additionalJSCode(){
       this.$el.style=css;
     }
     setCSSClass(className){
-      this.$el.className=className;
+      this.$el.className=this.standardCSSClasses+" "+className;
     }
     getCSSClass(){
       return this.$el.className;
@@ -1109,11 +1144,40 @@ function additionalJSCode(){
   class Canvas extends JPanel{
     $constructor(minX,maxX,minY,maxY,x,y,width,height){
       super.$constructor(x,y,width,height);
+      this.standardCSSClasses="_java-app-canvas";
       if(this.$el && this.$el.parentNode) this.$el.parentNode.removeChild(this.$el);
       this.$el=ui.canvas(maxX-minX,maxY-minY,x,y,width,height);
       this.$el.component=this;
+      this.setCSSClass("");
       this.setOrigin(-minX,-minY);
       this.$el.onclick = $handleOnAction;
+      this.$triggerOnMouseMove=true;
+      this.$triggerOnMouseDown=true;
+      this.$triggerOnMouseUp=true;
+      let canvasElement=this.$el.childNodes[0];
+      canvasElement.canvasComponent=this;
+      this.mouse={
+        x: -1,
+        y: -1
+      };
+      canvasElement.onpointermove=$handleOnPointerMove;
+      canvasElement.onpointerdown=$handleOnPointerDown;
+      canvasElement.onpointerup=$handleOnPointerUp;
+    }
+    $updateMousePosition(ev){
+      let canvas=this.$el.canvas;
+      let x = ev.offsetX;
+      let y = ev.offsetY;
+      x=canvas.getCanvasX(x);
+      y=canvas.getCanvasY(y);
+      this.mouse.x=x;
+      this.mouse.y=y;
+    }
+    getMouseX(){
+      return this.mouse.x;
+    }
+    getMouseY(){
+      return this.mouse.y;
     }
     add(comp){
       this.$el.canvas.add(comp.$el);
