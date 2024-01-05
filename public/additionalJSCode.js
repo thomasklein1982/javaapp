@@ -32,7 +32,7 @@ function additionalJSCode(){
   async function $handleOnPointerMove(ev){
     $handleEvent.call(this,"MouseMove",ev,(ev,comp)=>{
       comp.$updateMousePosition(ev);
-      return [comp,ev.buttons>0];
+      return [comp.getMouseX(),comp.getMouseY(),ev.buttons>0,comp];
     });
   }
 
@@ -702,8 +702,12 @@ function additionalJSCode(){
       this.actionCommand="";
       this.actionObject=null;
       this.$triggerOnAction=false;
+      this.$triggerOnMouseDown=false;
+      this.$triggerOnMouseUp=false;
+      this.$triggerOnMouseMove=false;
       this.standardCSSClasses="";
     }
+    $updateMousePosition(ev){}
     querySelector(selector){
       try{
         let e=this.$el.querySelector(selector);
@@ -890,6 +894,22 @@ function additionalJSCode(){
     }
     setTriggerOnAction(t){
       this.$triggerOnAction=t;
+    }
+    setTriggerOnMouseUp(t){
+      this.$triggerOnMouseUp=t;
+      if(t){
+        this.$el.onpointerup=$handleOnPointerUp;
+      }else{
+        this.$el.onpointerup=null;
+      }
+    }
+    setTriggerOnMouseDown(t){
+      this.$triggerOnMouseDown=t;
+      if(t){
+        this.$el.onpointerdown=$handleOnPointerDown;
+      }else{
+        this.$el.onpointerdown=null;
+      }
     }
     focus(){
       this.$el.focus();
@@ -1161,8 +1181,8 @@ function additionalJSCode(){
         y: -1
       };
       canvasElement.onpointermove=$handleOnPointerMove;
-      canvasElement.onpointerdown=$handleOnPointerDown;
-      canvasElement.onpointerup=$handleOnPointerUp;
+      this.setTriggerOnMouseDown(true);
+      this.setTriggerOnMouseUp(true);
     }
     $updateMousePosition(ev){
       let canvas=this.$el.canvas;
@@ -1178,6 +1198,22 @@ function additionalJSCode(){
     }
     getMouseY(){
       return this.mouse.y;
+    }
+    getChildAtPoint(x, y){
+      let br=this.$el.getBoundingClientRect();
+      let rx=this.$el.canvas.getRawX(x);
+      let ry=this.$el.canvas.getRawY(y);
+      rx+=br.left;
+      ry+=br.top;
+      let els=document.elementsFromPoint(rx,ry);
+      for(let i=0;i<els.length;i++){
+        let e=els[i];
+        if(e===this.$el || e===this.$el.canvas.el) return null;
+        if(this.$el.contains(e) && e.component){
+          return e.component;
+        }
+      }
+      return null;
     }
     add(comp){
       this.$el.canvas.add(comp.$el);

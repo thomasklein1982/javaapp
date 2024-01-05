@@ -406,8 +406,19 @@ export class UIClazz extends Clazz{
     codeObject.code+=this.generateJavaScriptCodeForComponent(scope,this,codeObject,0,null);
 
     if(this.onAction===true){
-      console.log("on action");
       codeObject.code+="\ncontainer0.setTriggerOnAction("+(c.onAction===true)+");";
+      newCode+="\n"+last+code;
+    }
+    if(this.onMouseUp===true){
+      codeObject.code+="\ncontainer0.setTriggerOnMouseUp("+(c.onMouseUp===true)+");";
+      newCode+="\n"+last+code;
+    }
+    if(this.onMouseDown===true){
+      codeObject.code+="\ncontainer0.setTriggerOnMouseDown("+(c.onMouseDown===true)+");";
+      newCode+="\n"+last+code;
+    }
+    if(this.onMouseMove===true){
+      codeObject.code+="\ncontainer0.setTriggerOnMouseMove("+(c.onMouseMove===true)+");";
       newCode+="\n"+last+code;
     }
     if(this.actionCommand){
@@ -654,9 +665,24 @@ export class UIClazz extends Clazz{
       // }else{
       //   newCode+="\n"+last+".$el.onclick=function(ev){\nif(this.component.$triggerOnAction){ev.stopPropagation();$main.onAction(this.component);}}";
       // }
-      if(c.onAction===true){
-        console.log("on action");
+      newCode+="\n"+last+".setX("+c.x+");";
+      newCode+="\n"+last+".setY("+c.y+");";
+      newCode+="\n"+last+".setWidth("+c.width+");";
+      newCode+="\n"+last+".setHeight("+c.height+");";
+      if(c.onAction===true || c.onAction===false){
         let code=".setTriggerOnAction("+(c.onAction===true)+");";
+        newCode+="\n"+last+code;
+      }
+      if(c.onMouseUp===true || c.onMouseUp===false){
+        let code=".setTriggerOnMouseUp("+(c.onMouseUp===true)+");";
+        newCode+="\n"+last+code;
+      }
+      if(c.onMouseDown===true || c.onMouseDown===false){
+        let code=".setTriggerOnMouseDown("+(c.onMouseDown===true)+");";
+        newCode+="\n"+last+code;
+      }
+      if(this.onMouseMove===true || this.onMouseMove===false){
+        let code=".setTriggerOnMouseMove("+(c.onMouseMove===true)+");";
         newCode+="\n"+last+code;
       }
       if(c.actionCommand){

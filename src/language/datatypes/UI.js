@@ -151,6 +151,18 @@ function defineJComponent(Clazz,Java){
     ]
   },Clazz,false,false,Java);
   createMethod({
+    name: 'setTriggerOnMouseDown',
+    args: [
+      {name: 't', type: 'boolean'}
+    ]
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setTriggerOnMouseUp',
+    args: [
+      {name: 't', type: 'boolean'}
+    ]
+  },Clazz,false,false,Java);
+  createMethod({
     name: 'getValue',
     returnType: 'String'
   },Clazz,false,false,Java);
@@ -687,6 +699,12 @@ function defineCanvas(Clazz,Java){
     args: [],
     info: 'Liefert die aktuelle y-Koordinate der Maus innerhalb dieses Canvas.',
     returnType: 'double'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getChildAtPoint',
+    args: [{name: "x", type: "double"}, {name: "y", type: "double"}],
+    info: 'Liefert die Komponente an dieser Stelle.',
+    returnType: 'JComponent'
   },Clazz,false,false,Java);
   createMethod({
     name: 'drawImage',
