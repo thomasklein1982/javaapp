@@ -1192,6 +1192,18 @@ function additionalJSCode(){
       let canvas=this.$el.canvas;
       let x = ev.offsetX;
       let y = ev.offsetY;
+      let el=ev.srcElement;
+      if(el.isCanvas) el=el.parentElement;
+      if(el && el!==$App.canvas.el && el!==this.$el){
+        x-=$App.canvas.container.getBoundingClientRect().left;
+      }
+      while(el && el!==$App.canvas.el && el!==this.$el){
+        let br=el.getBoundingClientRect();
+        x+=br.left;
+        y+=br.top;
+        el=el.parentElement;
+        if(el.isCanvas) el=el.parentElement;
+      }
       x=canvas.getCanvasX(x);
       y=canvas.getCanvasY(y);
       this.mouse.x=x;
