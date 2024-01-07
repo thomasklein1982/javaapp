@@ -39,19 +39,19 @@ function additionalJSCode(){
   async function $handleOnPointerDown(ev){
     $handleEvent.call(this,"MouseDown",ev,(ev,comp)=>{
       comp.$updateMousePosition(ev);
-      return [comp];
+      return [comp.getMouseX(),comp.getMouseY(),comp];
     });
   }
 
   async function $handleOnPointerUp(ev){
     $handleEvent.call(this,"MouseUp",ev,(ev,comp)=>{
       comp.$updateMousePosition(ev);
-      return [comp];
+      return [comp.getMouseX(), comp.getMouseY(), comp];
     });
   }
 
   async function $handleEvent(eventname,ev,argsFunc){
-    let comp=this.component||this.canvasComponent;
+    let comp=this.component;
     if (comp["$triggerOn"+eventname]) {
         ev.stopPropagation();
         let args;
@@ -707,6 +707,12 @@ function additionalJSCode(){
       this.$triggerOnMouseMove=false;
       this.standardCSSClasses="";
     }
+    getMouseX(){
+      return 0;
+    }
+    getMouseY(){
+      return 0;
+    }
     $updateMousePosition(ev){}
     querySelector(selector){
       try{
@@ -1174,13 +1180,11 @@ function additionalJSCode(){
       this.$triggerOnMouseMove=true;
       this.$triggerOnMouseDown=true;
       this.$triggerOnMouseUp=true;
-      let canvasElement=this.$el.childNodes[0];
-      canvasElement.canvasComponent=this;
       this.mouse={
         x: -1,
         y: -1
       };
-      canvasElement.onpointermove=$handleOnPointerMove;
+      this.$el.onpointermove=$handleOnPointerMove;
       this.setTriggerOnMouseDown(true);
       this.setTriggerOnMouseUp(true);
     }
@@ -1205,7 +1209,9 @@ function additionalJSCode(){
       let ry=this.$el.canvas.getRawY(y);
       rx+=br.left;
       ry+=br.top;
+      console.log(rx,ry);
       let els=document.elementsFromPoint(rx,ry);
+      console.log(els);
       for(let i=0;i<els.length;i++){
         let e=els[i];
         if(e===this.$el || e===this.$el.canvas.el) return null;

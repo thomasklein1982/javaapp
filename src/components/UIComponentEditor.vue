@@ -131,22 +131,24 @@
           <td>Absolute Position:</td>
           <td><InputSwitch @change="emitUpdate()" v-model="component.forceAbsolute"/></td>
         </tr> -->
-        <tr>
-          <td>x:</td>
-          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.x" style="width: 95%"/></td>
-        </tr>
-        <tr>
-          <td>y:</td>
-          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.y" style="width: 95%"/></td>
-        </tr>
-        <tr>
-          <td>Breite:</td>
-          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.width" style="width: 95%"/></td>
-        </tr>
-        <tr>
-          <td>Höhe:</td>
-          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.height" style="width: 95%"/></td>
-        </tr>
+        <template v-if="!isUIClazz">
+          <tr>
+            <td>x:</td>
+            <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.x" style="width: 95%"/></td>
+          </tr>
+          <tr>
+            <td>y:</td>
+            <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.y" style="width: 95%"/></td>
+          </tr>
+          <tr>
+            <td>Breite:</td>
+            <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.width" style="width: 95%"/></td>
+          </tr>
+          <tr>
+            <td>Höhe:</td>
+            <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.height" style="width: 95%"/></td>
+          </tr>
+        </template>
       </template>
     </table>
   </div>
