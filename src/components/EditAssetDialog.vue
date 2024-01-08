@@ -7,7 +7,7 @@
         @click="uploadFile()"
       />
     </div>
-    <Asset :asset="editedAsset" style="margin: 0.8rem; text-align: center" @open-image-editor="asset=>$emit('open-image-editor',asset)"/>
+    <Asset :asset="editedAsset" show-image-editor-button style="margin: 0.8rem; text-align: center" @open-image-editor="asset=>$emit('open-image-editor',asset)"/>
     <div style="margin: 0.4rem; text-align: center">
       <label for="name">Name: </label>
       <InputText id="name" v-model.trim="editedAsset.name" />

@@ -37,7 +37,8 @@
     <div ref="canvasWrapper" class="flex" style="overflow: auto">
       <canvas :style="canvasStyle" ref="canvas"/>
     </div>
-    <Dialog header="Bild-Größe" v-model:visible="settings.show" :modal="true">
+    <Dialog header="Bild-Eigenschaften" v-model:visible="settings.show" :modal="true">
+      <h2>Bild-Größe</h2>
       <div style="display: grid; grid-template-columns: auto auto 2rem auto; align-items: baseline">
         <span>Breite:</span>
         <span>
@@ -59,6 +60,16 @@
             @change="resetSize()"
           />
         </span>
+      </div>
+      <div>
+        <h2>Bild-Art</h2>
+        <p>Lege fest, ob das Bild als JPG pder als PNG gespeichert werden soll:</p>
+        <Dropdown v-model="settings.imageType" :options="['PNG','JPG']"/>
+        <div v-if="settings.imageType==='JPG'">
+          <p>Eine JPG-Datei ist kleiner als eine PNG-Datei. Sie kann aber keine Transparenz enthalten. Du kannst die Qualität des Bildes festlegen:</p>
+          <Slider v-model="settings.imageQuality"/>
+          <p>Je höher die Qualität, desto mehr Speicherplatz belegt die Datei.</p>
+        </div>
       </div>
       <template #footer>
         <Button @click="settings.show=false" icon="pi pi-times" label="Abbrechen"/>
@@ -132,6 +143,8 @@ export default{
       height: 100,
       image: document.createElement("img"),
       asset: null,
+      imageType: null,
+      imageQuality: 100,
       currentTool: "pen",
       zoom: 100,
       canvasStyle: {},
@@ -145,7 +158,9 @@ export default{
         width: 100,
         height: 100,
         lock: true,
-        unit: "%"
+        unit: "%",
+        imageType: null,
+        imageQuality: 100
       },
       colorToTransparency: {
         show: false,
@@ -191,6 +206,8 @@ export default{
   },
   methods: {
     confirmSettings(){
+      this.imageType=this.settings.imageType;
+      this.imageQuality=this.settings.imageQuality;
       let w=this.settings.width;
       let h=this.settings.height;
       if(this.settings.unit==="%"){
@@ -233,7 +250,13 @@ export default{
       this.colorToTransparency.show=false;
     },
     saveChanges(){
-      this.asset.data=this.$refs.canvas.toDataURL();
+      let types={
+        PNG: "image/png",
+        JPG: "image/jpeg"
+      };
+      let type=types[this.imageType];
+      if(!type) type="image/png";
+      this.asset.data=this.$refs.canvas.toDataURL(type,this.imageQuality*0.01);
       this.setAsset(this.asset);
     },
     onChangeWidth(){
@@ -279,7 +302,9 @@ export default{
       this.settings.width=100;
       this.settings.height=100;
       this.settings.unit="%";
-      this.settings.show=true
+      this.settings.imageType=this.imageType;
+      this.settings.imageQuality=this.imageQuality;
+      this.settings.show=true;
     },
     updateCanvasStyle(){
       let div=this.$refs.canvasWrapper;
@@ -299,6 +324,14 @@ export default{
     setAsset(asset){
       this.asset=asset;
       this.image.src=this.asset.data;
+      let type=this.asset.data.split(";",1)[0];
+      if(type.indexOf("image/jpeg")>=0 || type.indexOf("image/jpg")>=0){
+        this.imageType="JPG";
+      }else if(type.indexOf("image/png")>=0){
+        this.imageType="PNG";
+      }
+      this.settings.imageType=this.imageType;
+      this.settings.imageQuality=100;
     },
     paintImage(){
       if(!this.ctx) return;
