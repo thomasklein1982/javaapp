@@ -324,7 +324,7 @@ function additionalJSCode(){
     ui.frame.appendChild(ui.footerConfirm);
 
     ui.footerPrompt.id="dialog-footer-prompt";
-    ui.footerPrompt.className="dialog";
+    ui.footerPrompt.className="dialog-footer";
     button=document.createElement("button");
     button.className="dialog-footer-button";
     button.onclick=function(){$clickDialogButton('prompt')};
