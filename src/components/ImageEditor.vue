@@ -12,6 +12,7 @@
       </div>
       <div class="flex-container-vertical">
         <div style="position: relative;height: 2ex;"><span style="font-size: 50%; position: absolute">{{ width }}:{{ height }}</span></div>
+        <div style="position: relative;height: 2ex;"><span style="font-size: 50%; position: absolute">{{ imageZoom }}%</span></div>
         <span @click="$refs.opColor.toggle" :style="{backgroundColor: fillColor}" style="margin-top: 0.2rem; border: 1pt solid #FFD54F; border-radius: 10px; display: inline-block; width: 2rem; height: 2rem"></span>
         <OverlayPanel ref="opColor">
           <ColorPicker inline v-model="pen.color"/>
@@ -61,6 +62,9 @@
           />
         </span>
       </div>
+      <p style="font-size: small">
+        Breite &times; Höhe: {{ settingsWidthHeight.w }} &times; {{ settingsWidthHeight.h }}
+      </p>
       <div>
         <h2>Bild-Art</h2>
         <p>Lege fest, ob das Bild als JPG pder als PNG gespeichert werden soll:</p>
@@ -70,6 +74,9 @@
           <Slider v-model="settings.imageQuality"/>
           <p>Je höher die Qualität, desto mehr Speicherplatz belegt die Datei.</p>
         </div>
+        <p v-else-if="settings.imageType==='PNG'">
+          Ein PNG-Bild ist größer als eine JPG-Datei, sie kann aber Transparenz enthalten.
+        </p>
       </div>
       <template #footer>
         <Button @click="settings.show=false" icon="pi pi-times" label="Abbrechen"/>
@@ -134,6 +141,15 @@ export default{
       // let color=hexToRGBA(this.pen.color);
       // let a=this.pen.opacity/100;
       // return "rgba("+color.r+","+color.g+","+color.b+","+a+")";
+    },
+    settingsWidthHeight(){
+      let w=this.settings.width;
+      let h=this.settings.height;
+      if(this.settings.unit==="%"){
+        w=Math.round(this.width*w/100);
+        h=Math.round(this.height*h/100);
+      }
+      return {w,h};
     }
   },
   data(){
@@ -147,6 +163,7 @@ export default{
       imageQuality: 100,
       currentTool: "pen",
       zoom: 100,
+      imageZoom: 100,
       canvasStyle: {},
       pen: {
         color: "000",
@@ -316,8 +333,10 @@ export default{
       }
       if(div.offsetHeight/div.offsetWidth<=this.height/this.width){
         style.height=this.zoom+"%";
+        this.imageZoom=Math.round(div.offsetHeight*this.zoom/this.height);
       }else{
         style.width=this.zoom+"%";
+        this.imageZoom=Math.round(div.offsetWidth*this.zoom/this.width);
       }
       this.canvasStyle=style;
     },

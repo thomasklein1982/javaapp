@@ -71,7 +71,7 @@
         if(max>this.rows){
           return this.rows;
         }else{
-          return max;
+          return Math.max(0,max);
         }
       }
     },

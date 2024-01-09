@@ -1,3 +1,4 @@
+import { getMimeFromDataURL } from "../functions/getMimeFromDataURL.js";
 import { Java } from "../language/java.js";
 import { Clazz } from "./Clazz";
 import {database} from "./Database";
@@ -131,15 +132,16 @@ export class Project{
       }
       databaseCode+="}catch(e){console.log('** Datenbank-Fehler: **');console.log(e);console.log('**************')}\n";
     }
-    let assetsCode="";
+    let assetsCode="/****** ASSETS START ******/";
     for(let i=0;i<this.assets.length;i++){
       let a=this.assets[i];
       assetsCode+="loadAsset('"+a.file.code+"','"+a.name+"');";
     }
+    assetsCode+="\n/****** ASSETS END ******/"
     let js=this.getJavaScriptCode();
     let body="";
     if(includeSave){
-      let save=this.toSaveString();
+      let save=this.toSaveString(true);
       body=`<textarea style="display: none">${save}</textarea>`;
     }
     let mainClazz=this.getMainClazz();
@@ -401,7 +403,7 @@ export class Project{
   deleteAssetAt(index){
     this.assets.splice(index,1);
   }
-  toSaveString(){
+  toSaveString(excludeAssets){
     var t=[];
     for(var i=0;i<this.clazzes.length;i++){
       var c=this.clazzes[i];
@@ -416,7 +418,7 @@ export class Project{
       clazzesSourceCode: t,
       database: db,
       css: this.css,
-      assets: this.assets,
+      assets: !excludeAssets? this.assets: this.assets.length>0,
       name: this.name,
       description: this.description,
       theme_color: this.theme_color,
@@ -426,7 +428,8 @@ export class Project{
     })+stop;
   }
   async fromSaveString(appcode){
-    var pos=appcode.indexOf(start);
+    this.assets=[];
+    let pos=appcode.indexOf(start);
     let saveString;
     if(pos<0){
       saveString=appcode;
@@ -444,7 +447,36 @@ export class Project{
         this.css=o.css;
       }
       if(o.assets){
-        this.assets=o.assets;
+        if(o.assets.splice){
+          this.assets=o.assets;
+        }else if(o.assets===true){
+          let pos=appcode.indexOf("/****** ASSETS START ******/");
+          if(pos>=0){
+            let pos2=appcode.indexOf("/****** ASSETS END ******/",pos+12);
+            if(pos2>=0){
+              let assetsCode=appcode.substring(pos+28,pos2);
+              pos=assetsCode.indexOf("(");
+              while(pos>=0){
+                let sep=assetsCode.charAt(pos+1);
+                let pos2=assetsCode.indexOf(sep,pos+2);
+                if(pos2<0) break;
+                let pos3=assetsCode.indexOf(")",pos2);
+                if(pos3<0) break;
+                let data=assetsCode.substring(pos+2,pos2);
+                let name=assetsCode.substring(pos2+3,pos3-1);
+                let mime=getMimeFromDataURL(data);
+                this.assets.push({
+                  name,
+                  file: {
+                    code: data,
+                    mime
+                  }
+                });
+                pos=assetsCode.indexOf("(",pos3+1);
+              }
+            }
+          }
+        }
       }
       if(o.name){
         this.name=o.name;
