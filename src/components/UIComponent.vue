@@ -61,7 +61,7 @@
             <Button @click="$emit('recompile',true)" icon="pi pi-refresh"/>
             
           </div>
-          <Button class="noprint" @click="this.component.showUIEditor=false" icon="pi pi-code" label="Code ändern"/>
+          <Button class="noprint" @click="this.component.showUIEditor=false" icon="pi pi-code" :label="component.src.trim().length>0? 'Code ändern':'UI-Klasse programmieren'"/>
           <div style="font-family: monospace; color: red">
             <div v-for="(e,i) in this.component.errors"><template v-if="e.line">Z{{ e.line.number }}: {{ e.message }}</template><template v-else>{{ e }}</template></div>
           </div>

@@ -96,10 +96,14 @@ body,html{
   border: orange 1pt solid;
 }
 
-.print-editor{
-  font-family: monospace;
-  white-space: pre-wrap;
+
+/* div.cm-tooltip-hover{
+  width: inherit !important;
 }
+
+.cm-tooltip-lint{
+  width: calc( 100% - )
+} */
 
 @media screen {
   body,html{
@@ -126,7 +130,7 @@ body,html{
 }
 
 .cm-tooltip{
-  z-index: 1000;
+  z-index: 1000 !important;
 }
 
 .cm-completionInfo{

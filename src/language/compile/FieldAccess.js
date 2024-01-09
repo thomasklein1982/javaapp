@@ -43,8 +43,8 @@ export function FieldAccess(node,source,scope){
   }else if(node.name==="MethodInvocation"){
     let fa=MethodInvocation(node,source,scope);
     code+=fa.code;
-    if(fa.type.dimension>0){
-      throw source.createError("Ein Array hat keine Attribute.",node.node);
+    if(!fa.type){
+      throw source.createError("Die Methode '"+fa.method.name+"' liefert keine Rückgabe (void).",node)
     }
     owner={
       type: fa.type,
