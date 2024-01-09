@@ -96,6 +96,11 @@ body,html{
   border: orange 1pt solid;
 }
 
+.print-editor{
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
 @media screen {
   body,html{
     position: fixed;

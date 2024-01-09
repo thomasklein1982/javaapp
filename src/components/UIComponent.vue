@@ -61,7 +61,7 @@
             <Button @click="$emit('recompile',true)" icon="pi pi-refresh"/>
             
           </div>
-          <Button @click="this.component.showUIEditor=false" icon="pi pi-code" label="Code ändern"/>
+          <Button class="noprint" @click="this.component.showUIEditor=false" icon="pi pi-code" label="Code ändern"/>
           <div style="font-family: monospace; color: red">
             <div v-for="(e,i) in this.component.errors"><template v-if="e.line">Z{{ e.line.number }}: {{ e.message }}</template><template v-else>{{ e }}</template></div>
           </div>
@@ -431,8 +431,18 @@ import { nextTick } from "vue";
   .component{
     width: 100%;
     min-height: 1cm;
-    max-height: 2cm;
-    overflow: hidden;
+    white-space: pre-wrap;
+  }
+  @media screen {
+    .component{
+      overflow: hidden;
+      max-height: 2cm;
+    }
+  }
+  @media print{
+    .component{
+      max-width: 90%;
+    }
   }
   .jimage{
     min-height: 1cm;

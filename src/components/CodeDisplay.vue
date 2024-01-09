@@ -13,8 +13,11 @@ export default {
     code: String
   },
   computed: {
+    trimmedCode(){
+      return this.code.trim();
+    },
     lines(){
-      let s=this.code.split("\n");
+      let s=this.trimmedCode.split("\n");
       return s;
     },
     lineNumbers(){

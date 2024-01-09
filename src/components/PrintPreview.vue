@@ -5,6 +5,9 @@
       <template v-if="c.isUIClazz()">
         <h2>UI-Klasse {{c.name}}</h2>
         <UIComponent :component="c"/>
+        <CodeDisplay
+          :code="c.src"
+        />
       </template>
       <template v-else>
         <h2>Klasse {{c.name}}</h2>
