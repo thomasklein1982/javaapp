@@ -67,7 +67,7 @@
       </p>
       <div>
         <h2>Bild-Art</h2>
-        <p>Lege fest, ob das Bild als JPG pder als PNG gespeichert werden soll:</p>
+        <p>Lege fest, ob das Bild als JPG oder als PNG gespeichert werden soll:</p>
         <Dropdown v-model="settings.imageType" :options="['PNG','JPG']"/>
         <div v-if="settings.imageType==='JPG'">
           <p>Eine JPG-Datei ist kleiner als eine PNG-Datei. Sie kann aber keine Transparenz enthalten. Du kannst die Qualität des Bildes festlegen:</p>

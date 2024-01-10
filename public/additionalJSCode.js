@@ -383,7 +383,7 @@ function additionalJSCode(){
   }
 
   $handleAssetsInString=function(code,before,after){
-    if(!code.split) return code;
+    if(!code || !code.split) return code;
     if(!before) before="";
     if(!after) after="";
     let s=code.split("asset(");
@@ -1356,7 +1356,7 @@ function additionalJSCode(){
     }
     setOptions(options){
       console.log(options);
-      this.$el.options=options.values;
+      this.$el.options=options;
     }
   }
 
