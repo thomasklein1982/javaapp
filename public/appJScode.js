@@ -4628,8 +4628,8 @@ window.appJScode=function(){
             c.style.left="0px";
             c.style.top="0px";
           //}
-          if(c.appJSData.parent){
-            c.appJSData.parent.removeChild(c);
+          if(c.parentNode){
+            c.parentNode.removeChild(c);
           }
           c.appJSData.parent=this;
           if((index===0 || index>0) && index<this.childNodes.length){
