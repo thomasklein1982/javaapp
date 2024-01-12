@@ -57,6 +57,9 @@ export function Identifier(node,source,scope,infos){
     if(!scope || !scope.getLocalVariable){
       console.log("fehler scope");
     }
+    if(!scope.getLocalVariable){
+      console.log("kein scope");
+    }
     obj=scope.getLocalVariable(name);
     if(obj){
       local=true;

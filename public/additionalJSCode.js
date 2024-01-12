@@ -683,7 +683,7 @@ function additionalJSCode(){
   class PrintStream{
     $constructor(){}
     println(text){
-      console.log(text);
+      console.print(text);
     }
   }
 
@@ -978,6 +978,7 @@ function additionalJSCode(){
       this.$el=ui.panel(template,x,y,width,height);
       this.$el.component=this;
       this.$el.onclick = $handleOnAction;
+      this.lastRowAndColumnCount=null;
     }
     add(comp,index){
       this.$el.add(comp.$el,index);
@@ -1082,10 +1083,38 @@ function additionalJSCode(){
     }
     getRowAndColumnCount(){
       let cs=getComputedStyle(this.$el);
-      return {
-        rows: cs.getPropertyValue("grid-template-rows").split(" ").length,
-        cols: cs.getPropertyValue("grid-template-columns").split(" ").length
+      let values=[cs.getPropertyValue("grid-template-rows"), cs.getPropertyValue("grid-template-columns")];
+      if(values[0]==="none" || values[1]==="none"){
+        if(this.lastRowAndColumnCount){
+          return this.lastRowAndColumnCount;
+        }else{
+          throw $new(Exception,"Aus irgendeinem Grund kann die Zeilen- bzw. Spaltenanzahl nicht bestimmt werden.");
+        }
       }
+      /**ersetze repeats durch atomare werte; dürfte eigentlich gar nicht auftreten??? */
+      for(let i=0;i<values.length;i++){
+        let v=values[i];
+        let pos=v.indexOf("repeat");
+        if(pos<0) continue;
+        let newV=v.substring(0,pos);
+        while(pos>=0){
+          let pos2=v.indexOf(",",pos);
+          let pos3=v.indexOf(")",pos2);
+          let c=v.substring(pos+7,pos2)*1;
+          let array=[];
+          for(let j=0;j<c;j++){
+            array.push("1");
+          }
+          newV+=array.join(" ");
+          pos=v.indexOf("repeat",pos3);
+        }
+        values[i]=newV;
+      }
+      this.lastRowAndColumnCount={
+        rows: values[0].split(" ").length,
+        cols: values[1].split(" ").length
+      };
+      return this.lastRowAndColumnCount;
     }
     getRowCount(){
       return this.getRowAndColumnCount().rows;
@@ -1355,7 +1384,6 @@ function additionalJSCode(){
       this.$el.selectedIndex=index;
     }
     setOptions(options){
-      console.log(options);
       this.$el.options=options;
     }
   }

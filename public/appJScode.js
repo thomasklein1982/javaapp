@@ -5514,11 +5514,11 @@ window.appJScode=function(){
       }
     ],'');
   
-    console.realLog=console.log;
+    //console.realLog=console.log;
     console.realClear=console.clear;
     $App.addObject('console',true,{
-      log: function(){
-        console.realLog.apply(console,arguments);
+      print: function(){
+        console.log.apply(console,arguments);
         $App.console.log.apply($App.console,arguments);
       },
       clear: function(){

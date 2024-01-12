@@ -67,8 +67,11 @@ export function ArgumentList(node,source,scope,parameters){
     if(arg.error){
       throw source.createError(arg.error,pnode);
     }
-    if(!p.type){
+    if(!arg.type){
       throw source.createError("Der Datentyp von '"+arg.code+"' ist unbekannt.",pnode);
+    }
+    if(!p.type){
+      throw source.createError("Der "+(i+1)+"-te Parameter ' dieser Methode hat keinen Datentyp.",pnode);
     }
     p.type.autoCastValue(arg);
     if(!arg.type || !arg.type.isSubtypeOf(p.type)){

@@ -165,9 +165,9 @@ export class Project{
       <script>
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.register('./sw.js').then((r)=>{
-            console.realLog("Service Worker Registrierung erfolgreich");
+            console.log("Service Worker Registrierung erfolgreich");
           }, (e)=>{
-            console.realLog("Service Worker Registrierung nicht erfolgreich",e);
+            console.log("Service Worker Registrierung nicht erfolgreich",e);
           });
         }
         window.language="java";

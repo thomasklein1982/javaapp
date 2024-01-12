@@ -226,6 +226,7 @@ export class Method{
       }
       if(this.bodyErrors){
         for(let e of this.bodyErrors){
+          if(!e || !e.shift) continue;
           e.shift(source,delta);
         }
       }
