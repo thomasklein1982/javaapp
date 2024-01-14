@@ -162,6 +162,7 @@ export default {
   },
   watch: {
     clazz(nv,ov){
+      nv.editor=this;
       if(!ov){
         return;
       }

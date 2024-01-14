@@ -1,3 +1,4 @@
+import { nextTick } from "vue";
 import { concatArrays } from "../functions/helper";
 import { parseJava } from "../functions/parseJava";
 import { SuperInterfaces } from "../language/compile/SuperInterfaces";
@@ -31,7 +32,7 @@ export class Clazz{
       this.isInterface=false;
       this.src="class "+this.name+"{\n  \n}";
     }
-    
+    this.editor=null;
     /**der erste Kindknoten des ClassBody: */
     this.clazzBody=null;
     this.attributes={};
@@ -445,6 +446,10 @@ export class Clazz{
       }
       node=node.nextSibling;
     }
+    nextTick(()=>{
+      if(!this.editor) return;
+      this.editor.updateLinter();
+    });
   }
 
   compile(fromSource,optimizeCompiler){
