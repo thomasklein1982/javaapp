@@ -9,7 +9,7 @@
     </div>
     <div class="methods">
       <template v-for="(m,i) in methods" :key="'ms'+i">
-        <UmlMember :member="m"></UmlMember>
+        <UmlMember v-if="!m.hide" :member="m"></UmlMember>
       </template>
     </div>
   </div>

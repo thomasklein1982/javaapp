@@ -231,13 +231,74 @@ function additionalJSCode(){
     }
   }
 
+  function $array_deserialize(type,dimension,data){
+    //TODO: mehrdimensionale Arrays
+    if(!data) return null;
+    let array=$createArray(type, [data.length]);
+    let first=type.charAt(0);
+    let creator=null;
+    if(first!==first.toLowerCase()){
+      creator = Function("return new "+type+"();");
+    }
+    for(let i=0;i<data.length;i++){
+      if(creator){
+        let object=creator();
+        array[i]=$object_deserialize_internal(object,data[i]);
+      }else{
+        array[i]=data[i];
+      }
+    }
+    return array;
+  }
+
+  function $object_deserialize_internal(object,data){
+    if(data===null || data===undefined) return null;
+    try{
+      let infos=$clazzRuntimeInfos[object.constructor.prototype.constructor.name];
+      if(infos){
+        for(a in infos.attributes){
+          if(data[a]!==undefined){
+            let attr=infos.attributes[a];
+            if(attr.dimension>0){
+              object[a]=$array_deserialize(attr.baseType,attr.dimension,data[a]);
+            }else{
+              let type=attr.baseType;
+              let first=type.charAt(0);
+              if(type==="String" || first===first.toLowerCase()){
+                //primitiv oder string
+                object[a]=data[a];
+              }else{
+                let creator = Function("return new "+type+"();");
+                object[a]=creator();
+                object[a]=$object_deserialize_internal(object[a],data[a]);
+              }
+            }
+          }
+        }
+      }else{
+        //keine eigene Klasse
+        for(a in data){
+          if(data[a]!==undefined){
+            object[a]=data[a];
+          }
+        }
+      }
+      return object;
+    }catch(e){
+      throw {
+        message: "String konnte nicht deserialisiert werden\n"+e
+      }
+    }
+  }
+
   function $object_deserialize(obj,s){
     try{
       let data=JSON.parse(s);
-      return data;
+      let object=new obj();
+      return $object_deserialize_internal(object,data);
     }catch(e){
       throw {
-        message: "String konnte nicht deserialisiert werden"
+        message: "String konnte nicht deserialisiert werden\n"+e
       }
     }
   }
@@ -1670,7 +1731,7 @@ function additionalJSCode(){
     getAsArray(){
       let array=$createArray("double",[this.size]);
       for(let i=0;i<this.size;i++){
-        array.set(i,this.components[i]);
+        array[i]=this.components[i];
       }
       return array;
     }
@@ -1679,7 +1740,7 @@ function additionalJSCode(){
         throw $new(Exception,"Das Array hat "+array.length+" Einträge, er muss aber "+this.size+" Einträge haben.");
       }
       for(let i=0;i<array.length;i++){
-        this.components[i]=array.get(i);
+        this.components[i]=array[i];
       }
     }
     toString(){

@@ -10,14 +10,14 @@ export function defineObject(clazz){
     isExtraFunction: true,
     jsName: "$object_serialize"
   },clazz,false,false);
-  createMethod({
-    name: "deserialize",
-    info: "Erzeugt ein neues Objekt aus dem übergebenen String.",
-    args: [{name: "serializedObject", type: "String", info: "Ein String, der aus der Serialisierung eines Objekts entstanden ist."}],
-    returnType: 'Object',
-    isExtraFunction: true,
-    jsName: "$object_deserialize"
-  },clazz,true,false);
+  // createMethod({
+  //   name: "deserialize",
+  //   info: "Erzeugt ein neues Objekt aus dem übergebenen String.",
+  //   args: [{name: "serializedObject", type: "String", info: "Ein String, der aus der Serialisierung eines Objekts entstanden ist."}],
+  //   returnType: 'Object',
+  //   isExtraFunction: true,
+  //   jsName: "$object_deserialize"
+  // },clazz,true,false);
   createMethod({
     name: "toString",
     info: "Liefert eine String-Repräsentation dieses Objekts.",

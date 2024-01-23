@@ -29,6 +29,7 @@ export class Method{
     this.errors=null;
     this.bodyErrors=null;
     this.nodeOffset=0;
+    this.hide=false;
   }
   getFrom(){
     return this.node.from+this.nodeOffset;

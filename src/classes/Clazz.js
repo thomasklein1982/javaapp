@@ -12,6 +12,7 @@ import { Scope } from "./Scope";
 import { Source } from "./Source";
 import { Type } from "./Type";
 import  * as autocomplete  from "@codemirror/autocomplete";
+import { createMethod } from "../language/helper/createMethod";
 
 export class Clazz{
   constructor(name,project,isInterface){
@@ -692,6 +693,24 @@ export class Clazz{
       }
     }
     this.methods={};
+    if(!this.deserializeMethod){
+      if(!this.isInterface){ 
+        let m=createMethod({
+          name: "deserialize",
+          info: "Erzeugt ein neues Objekt aus dem übergebenen String.",
+          args: [{name: "serializedObject", type: "String", info: "Ein String, der aus der Serialisierung eines Objekts dieser Klasse entstanden ist."}],
+          returnType: new Type(this,0),
+          isExtraFunction: true,
+          jsName: "$object_deserialize"
+        },this,true,false);
+        m.hide=true;
+        this.deserializeMethod=m;
+      }
+    }
+    if(this.deserializeMethod){
+      this.methods.deserialize=this.deserializeMethod;
+    }
+
     var node=this.clazzBody;
     if(!node) return;
     /**Klassenkoerper parsen: */
