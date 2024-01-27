@@ -20,6 +20,7 @@ export class Clazz{
     this.cannotBeInstantiated=false;
     this.isAbstract=false;
     this.isInterface=isInterface===true;
+    this.wrappedPrimitiveType=null;
     this.description="";
     this.hasClazzDeclaration=true;
     this.project=project;
@@ -51,6 +52,9 @@ export class Clazz{
     }else{
       this.typeSnippet=null;
     }
+  }
+  setWrappedPrimitiveType(ptype){
+    this.wrappedPrimitiveType=ptype;
   }
   setAsFirstClazz(){
     this.isFirstClazz=true;

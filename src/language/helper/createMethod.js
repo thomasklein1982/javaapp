@@ -29,12 +29,27 @@ export function createMethod(data,clazz,isStatic,isConstructor){
       //   a=data.args[j];
       // }
       let p=new Parameter(m.params);
-      if(a.type instanceof Type){
-        p.type=a.type;
-      }else if(a.type.baseType){
-        p.type=new Type(Java.datatypes[a.type.baseType],a.type.dimension);
+      let types;
+      if(Array.isArray(a.type)){
+        console.log("array param");
+        types=a.type;
       }else{
-        p.type=new Type(Java.datatypes[a.type],0);
+        types=[a.type];
+      }
+      for(let i=0;i<types.length;i++){
+        let type=types[i];
+        if(type instanceof Type){
+        }else if(type.baseType){
+          type=new Type(Java.datatypes[type.baseType],type.dimension);
+        }else{
+          type=new Type(Java.datatypes[type],0);
+        }
+        types[i]=type;
+      }
+      if(types.length===1){
+        p.type=types[0];
+      }else{
+        p.type=types;
       }
       p.name=a.name;
       m.params.parameters.push(p);

@@ -73,10 +73,28 @@ export function ArgumentList(node,source,scope,parameters){
     if(!p.type){
       throw source.createError("Der "+(i+1)+"-te Parameter ' dieser Methode hat keinen Datentyp.",pnode);
     }
-    p.type.autoCastValue(arg);
-    if(!arg.type || !arg.type.isSubtypeOf(p.type)){
-      let text=source.getText(pnode);
-      throw source.createError( "Das "+(i+1)+"-te Argument '"+text+"' ist kein "+p.type+".",pnode);
+    if(Array.isArray(p.type)){
+      let found=false;
+      for(let i=0;i<p.type.length;i++){
+        let type=p.type[i];
+        type.applyAutoboxing(arg);
+        type.autoCastValue(arg);
+        if(arg.type && arg.type.isSubtypeOf(type)){
+          found=true;
+          break;
+        }
+      }
+      if(!found){
+        let text=source.getText(pnode);
+        throw source.createError( "Das "+(i+1)+"-te Argument '"+text+"' ist kein "+p.getTypeAsString()+".",pnode);
+      }
+    }else{
+      p.type.applyAutoboxing(arg);
+      p.type.autoCastValue(arg);
+      if(!arg.type || !arg.type.isSubtypeOf(p.type)){
+        let text=source.getText(pnode);
+        throw source.createError( "Das "+(i+1)+"-te Argument '"+text+"' ist kein "+p.type+".",pnode);
+      }
     }
     if(reverseOrder){
       codeArgs[paramNodes.length-1-i]=arg.code;

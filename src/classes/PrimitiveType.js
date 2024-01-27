@@ -8,12 +8,17 @@ export class PrimitiveType{
     this.supertype=supertype;
     this.initialValue=initialValue;
     this.info=info;
+    this.wrapperClass=null;
     this.isNumeric=(typeof initialValue)==="number";
     this.typeSnippet=autocomplete.snippetCompletion(this.name, {
       label: this.name,
       type: "function",
       info: info
-  });
+    });
+  }
+  setWrapperClass(clazz){
+    this.wrapperClass=clazz;
+    clazz.setWrappedPrimitiveType(this);
   }
   toString(){
     return this.name;

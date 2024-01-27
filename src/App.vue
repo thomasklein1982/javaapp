@@ -2,14 +2,14 @@
   <div style="width: 100%;overflow: hidden;" :style="{position: $root.printMode? '':'fixed', height: $root.printMode? '':'100%'}">
     <StartScreen 
       v-if="screen==='start'"
-      :is-easy="isEasy"
+      :difficulty="difficulty"
       @open-project="openProject"
     />
     <Editor
       v-show="screen==='editor'"
       :paused="paused"
       :current="current"
-      :is-easy="isEasy"
+      :difficulty="difficulty"
       ref="editor"
     />
     
@@ -30,7 +30,7 @@ export default{
       paused: false,
       printMode: false,
       current: {line: -1, name: null},
-      isEasy: options.isEasyMode()
+      difficulty: options.difficulty()
     };
   },
   methods: {

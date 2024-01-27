@@ -26,6 +26,7 @@ export function VariableDeclarator(node,source,scope,vType){
     if(!val.type){
       throw source.createError("Dieser Ausdruck hat keinen Wert, der zugewiesen werden könnte.",node);
     }
+    vType.applyAutoboxing(val);
     vType.autoCastValue(val);
     if(!val.type.isSubtypeOf(vType)){
       if(val.type.isString() && vType.isPrimitive()){

@@ -31,6 +31,9 @@ export function CastExpression(node,source,scope){
   }else{
     code=value.code;//"$castObject("+value.code+", "+JSON.stringify(destType.baseType.name)+", "+destType.dimension+")";
   }
+  if(destType.isChar()){
+    code="(new Char("+code+"))";
+  }
   return {
     code,
     type: destType

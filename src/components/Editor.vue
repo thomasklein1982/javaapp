@@ -7,7 +7,7 @@
     <template v-if="!$root.printMode">
       <EditorMenubar
         :right-closed="rightClosed"
-        :is-easy="isEasy"
+        :difficulty="difficulty"
         :allow-trash="activeTab>0"
         :current-clazz="currentClazz"
         :caret-position="settings.showCaretPosition? caretPosition: -1"
@@ -164,7 +164,7 @@ export default {
   props: {
     current: Object,
     paused: Boolean,
-    isEasy: Boolean
+    difficulty: Number
   },
   data(){
     return {

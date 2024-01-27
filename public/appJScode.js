@@ -1,4 +1,14 @@
 window.appJScode=function(){
+  class Char{
+    constructor(char){
+      if(!char.substring){
+        char=String.fromCodePoint(char);
+      }
+      this.char=char;
+      this.int=char.codePointAt(0);
+    }
+  }
+
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
   audioCtx = new(window.AudioContext || window.webkitAudioContext)();
@@ -3048,6 +3058,8 @@ window.appJScode=function(){
             v="undefiniert";
           }else if(obj===null){
             v="null";
+          }else if(obj instanceof Char){
+            v="'"+obj.char+"' ["+obj.int+"]";
           }else if(typeof obj==="object"){
             this.button.style.backgroundColor="gray";
             this.button.textContent=this.expanded? "-": "+";

@@ -13,18 +13,50 @@ function resolveTermOperations(term,operations,source){
       if(!left.type || !right.type){
         throw source.createError("Der Ausdruck '"+source.getText(left.node.parent)+"' ist fehlerhaft.",left.node.parent);
       }
+      if(left.type.isPrimitiveWrapper()){
+        left.code="("+left.code+".value)";
+        left.type=new Type(left.type.baseType.wrappedPrimitiveType,0);
+      }
+      if(right.type.isPrimitiveWrapper()){
+        right.code="("+right.code+".value)";
+        right.type=new Type(right.type.baseType.wrappedPrimitiveType,0);
+      }
       if(op==="+"){
         if(left.type.isNumeric() && right.type.isNumeric()){
+          if(left.type.isChar()){
+            left.code="("+left.code+".int)";
+            left.type=new Type(Java.datatypes.int,0);
+          }
+          if(right.type.isChar()){
+            right.code="("+right.code+".int)";
+            right.type=new Type(Java.datatypes.int,0);
+          }
           if(left.type.isSubtypeOf(right.type)){
             type=right.type;
           }else{
             type=left.type;
           }
         }else{
+          if(left.type.isChar()){
+            left.code=left.code+".char";
+            left.type=new Type(Java.datatypes.int,0);
+          }
+          if(right.type.isChar()){
+            right.code=right.code+".char";
+            right.type=new Type(Java.datatypes.int,0);
+          }
           type=new Type(Java.datatypes.String,0);
         }
         code=left.code+op+right.code;
       }else if(op==="*"||op==="-"||op==="/"||op==="%"){
+        if(left.type.isChar()){
+          left.code=left.code+".int";
+          left.type=new Type(Java.datatypes.int,0);
+        }
+        if(right.type.isChar()){
+          right.code=right.code+".int";
+          right.type=new Type(Java.datatypes.int,0);
+        }
         if(left.type.isNumeric() && right.type.isNumeric()){
           if(op==="/" && left.type===Java.datatypes.int && right.type===Java.datatypes.int){
             code="Math.floor("+left.code+op+right.code+")";

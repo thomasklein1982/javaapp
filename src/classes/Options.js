@@ -11,18 +11,28 @@ class Options{
    * @param {*} autocast primitive Typen und Strings werden automatisch implizit ineinander umgewandelt
    * @param {*} instantiateUIClasses für jede UI-Klasse wird automatisch ein Attribut in der Hauptklasse mit gleichem Namen erzeugt, das eine Instanz der UI-Klasse enthält. Alle diese UI-Klassen sind zu Beginn unsichtbar, außer, es gibt genau eine UI-Klasse.
    */
-  constructor(classOptional, voidOptional, mainOptional, autocast, instantiateUIClasses){
-    this.classOptional=classOptional;
-    this.voidOptional=voidOptional;
-    this.mainOptional=mainOptional;
-    this.autocast=autocast;
-    this.instantiateUIClasses=instantiateUIClasses;
+  constructor(){
+    this.classOptional=false;
+    this.voidOptional=false;
+    this.mainOptional=false;
+    this.autocast=false;
+    this.instantiateUIClasses=false;
+    this.stringCharAtDeliversString=false;
+    this.stringIsComparable=false;
   }
   isEasyMode(){
     return this.classOptional||this.voidOptional||this.mainOptional;
   }
+  isHardMode(){
+    return !this.classOptional && !this.voidOptional && !this.mainOptional && !this.autocast && !this.instantiateUIClasses && !this.stringCharAtDeliversString && !this.stringIsComparable;
+  }
+  difficulty(){
+    if(this.isEasyMode())return 0;
+    if(this.isHardMode())return 2;
+    return 1;
+  }
   static async createFromStorage(){
-    let options=new Options(false,false,false,false,false);
+    let options=new Options();
     let obj=await loadLocally(STORAGE_STRING);
     if(!obj){
       options.changeToNormal();   
@@ -33,57 +43,59 @@ class Options{
     }
     return options;
   }
-  async changeToEasy(){
+  async changeToEasy(dontSave){
     this.classOptional=true;
     this.voidOptional=true;
     this.mainOptional=true;
     this.autocast=true;
     this.instantiateUIClasses=true;
+    this.stringCharAtDeliversString=true;
+    this.stringIsComparable=true;
+    if(dontSave) return;
     await this.saveToStorage();
   }
-  async changeToNormal(){
+  async changeToNormal(dontSave){
     this.classOptional=false;
     this.voidOptional=false;
     this.mainOptional=false;
     this.autocast=true;
     this.instantiateUIClasses=false;
+    this.stringCharAtDeliversString=true;
+    this.stringIsComparable=true;
+    if(dontSave) return;
+    await this.saveToStorage();
+  }
+  async changeToHard(dontSave){
+    this.classOptional=false;
+    this.voidOptional=false;
+    this.mainOptional=false;
+    this.autocast=false;
+    this.instantiateUIClasses=false;
+    this.stringCharAtDeliversString=false;
+    this.stringIsComparable=false;
+    if(dontSave) return;
     await this.saveToStorage();
   }
   async saveToStorage(){
     await saveLocally(STORAGE_STRING, this);
   }
   static createFromHash(){
-    let options=new Options(false,false,false,false,false);
-    let hash=location.hash;
-    if(hash.length>0){
-      hash=hash.toLowerCase();
-      for(let a in options){
-        if(hash.indexOf(a.toLowerCase())>=0){
-          options[a]=true;
+    let options=new Options();
+    let hashes=[location.hash,location.search];
+    for(let i=0;i<hashes.length;i++){
+      let hash=hashes[i];
+      if(hash.length>0){
+        hash=hash.toLowerCase();
+        for(let a in options){
+          if(hash.indexOf(a.toLowerCase())>=0){
+            options[a]=true;
+          }
         }
-      }
-      if(hash.indexOf("easy")>=0){
-        options.classOptional=true;
-        options.voidOptional=true;
-        options.mainOptional=true;
-        options.autocast=true;
-        options.instantiateUIClasses=true;
-      }
-    }
-    hash=location.search;
-    if(hash.length>0){
-      hash=hash.toLowerCase();
-      for(let a in options){
-        if(hash.indexOf(a.toLowerCase())>=0){
-          options[a]=true;
+        if(hash.indexOf("easy")>=0){
+          options.changeToEasy(true);
+        }else if(hash.indexOf("hard")>=0){
+          options.changeToHard(true);
         }
-      }
-      if(hash.indexOf("easy")>=0){
-        options.classOptional=true;
-        options.voidOptional=true;
-        options.mainOptional=true;
-        options.autocast=true;
-        options.instantiateUIClasses=true;
       }
     }
     return options;

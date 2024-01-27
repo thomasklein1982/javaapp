@@ -29,6 +29,7 @@ export function AssignmentExpression(node,source,scope){
   if(!val.type){
     throw source.createError("Dieser Ausdruck hat keinen Wert, der zugewiesen werden könnte.",node);
   }
+  v.type.applyAutoboxing(val);
   v.type.autoCastValue(val);
   if(!val.type.isSubtypeOf(v.type)){
     throw source.createError("Einer Variablen vom Typ '"+v.type+"' kann kein Wert vom Typ '"+val.type+"' zugewiesen werden.",node);

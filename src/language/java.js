@@ -5,6 +5,7 @@ import { defineGenericClazz } from "./datatypes/GenericClazz";
 import { appjsdata } from "../functions/snippets";
 import { defineString } from "./datatypes/string";
 import { defineUIClazzes } from "./datatypes/UI";
+import { defineInteger } from "./datatypes/Integer.js";
 import { defineMath } from "./datatypes/Math";
 import {defineDatabaseClazzes} from "./datatypes/Database";
 import {definePattern} from "./datatypes/pattern";
@@ -30,6 +31,7 @@ let Object=new Clazz("Object",undefined,true);
 Object.cannotBeInstantiated=true;
 const String=new Clazz("String");
 String.cannotBeInstantiated=true;
+const Integer=new Clazz("Integer");
 let Math=new Clazz("Math");
 Math.cannotBeInstantiated=true;
 let Gamepad=new Clazz("Gamepad");
@@ -94,11 +96,11 @@ let Sound=new Clazz("Sound");
 let Exception=new Clazz("Exception");
 
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer
 }
 
 export const Java={
@@ -109,6 +111,9 @@ export const Java={
 defineObject(Object);
 defineException(Exception);
 defineString(String,Java);
+defineInteger(Integer,Java);
+Integer.cannotBeInstantiated=true;
+int.setWrapperClass(Integer);
 defineMath(Math,Java);
 definePrintStream(PrintStream);
 defineSystem(System);

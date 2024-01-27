@@ -4,56 +4,24 @@ import { createConstructor } from "../helper/createConstructor";
 import { createMethod } from "../helper/createMethod";
 
 export function defineInteger(Clazz,Java){
+  /*
   createConstructor({
     args: [
-      {name: 'source', type: 'String'}
+      {name: 'value', type: 'int'}
     ]
-  },Clazz);
+  },Clazz);*/
   createMethod({
-    name: 'setSource',
+    name: 'parseInt',
     args: [
-      {name: 'source', type: 'String'}
-    ]
-  },Clazz,false,false,Java);
-  createMethod({
-    name: 'play',
-    args: [
-      {name: 'loop', type: 'boolean'}
+      {name: 's', type: 'String'}, {name: 'radix', type: 'int', optional: true}
     ],
-    info: ""
-  },Clazz,false,false);
+    returnType: "int"
+  },Clazz,true,false,Java);
   createMethod({
-    name: 'pause',
+    name: 'valueOf',
     args: [
+      {name: 's', type: ['String','int']}
     ],
-    info: ""
-  },Clazz,false,false);
-  createMethod({
-    name: 'stop',
-    args: [],
-    info: ""
-  },Clazz,false,false);
-  createMethod({
-    name: 'getDuration',
-    args: [],
-    info: "",
     returnType: "int"
-  },Clazz,false,false);
-  createMethod({
-    name: 'getCurrentTime',
-    args: [],
-    info: "",
-    returnType: "int"
-  },Clazz,false,false);
-  createMethod({
-    name: 'setCurrentTime',
-    args: [{name: "time", type: "int"}],
-    info: ""
-  },Clazz,false,false);
-  createMethod({
-    name: 'isEnded',
-    args: [],
-    info: "",
-    returnType: "boolean"
-  },Clazz,false,false);
+  },Clazz,true,false,Java);
 }

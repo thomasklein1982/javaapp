@@ -741,6 +741,41 @@ function additionalJSCode(){
     this.right=keycode;
   }
 
+  class Integer{
+    constructor(v){
+      this.value=v;
+    }
+    static parseInt(s, radix){
+      if(!radix) radix=10;
+      let v=s*1;
+      if(v+""===s){
+        return parseInt(s,radix);
+      }else{
+        throw $new(Exception,"Dieser String kodiert keine ganze Zahl:\n"+s);
+      }
+    }
+    static valueOf(v){
+      return new Integer(v);
+    }
+  }
+
+  class Double{
+    constructor(v){
+      this.value=v;
+    }
+    static parseDouble(s){
+      let v=s*1;
+      if(v+""===s){
+        return v;
+      }else{
+        throw $new(Exception,"Dieser String kodiert keine Kommazahl:\n"+s);
+      }
+    }
+    static valueOf(v){
+      return new Double(v);
+    }
+  }
+
   class PrintStream{
     $constructor(){}
     println(text){

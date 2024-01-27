@@ -96,7 +96,7 @@ export class Parameter{
   getCopy(typeArguments,copyList){
     let p=new Parameter(copyList);
     p.name=this.name;
-    if(this.type && this.type.baseType.isGeneric){
+    if(this.type && this.type.baseType && this.type.baseType.isGeneric){
       for (let i = 0; i < typeArguments.length; i++) {
         let a = typeArguments[i];
         if(a.param.name===this.type.baseType.name){
@@ -114,9 +114,24 @@ export class Parameter{
     return this.name;
   }
 
-  toString(){
+  getTypeAsString(){
     if(!this.type) return "???";
-    return this.type.toString()+" "+this.name;
+    let t;
+    if(Array.isArray(this.type)){
+      t="";
+      for(let i=0;i<this.type.length;i++){
+        let type=this.type[i];
+        if(i>0) t+="|";
+        t+=type.toString();
+      }
+    }else{
+      t=this.type.toString();
+    }
+    return t;
+  }
+
+  toString(){
+    return this.getTypeAsString()+" "+this.name;
   };
 
   define(data){
