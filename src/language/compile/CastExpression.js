@@ -32,7 +32,7 @@ export function CastExpression(node,source,scope){
     code=value.code;//"$castObject("+value.code+", "+JSON.stringify(destType.baseType.name)+", "+destType.dimension+")";
   }
   if(destType.isChar()){
-    code="(new Char("+code+"))";
+    code="(new $Char("+code+"))";
   }
   return {
     code,

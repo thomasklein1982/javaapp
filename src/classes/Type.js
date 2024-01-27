@@ -121,19 +121,20 @@ export class Type{
   }
   applyAutoboxing(value){
     if(this.dimension!==value.type.dimension) return false;
-    if(this.baseType instanceof PrimitiveType && value.type.baseType.name===this.baseType.wrapperClass.name){
+    if(this.baseType instanceof PrimitiveType && this.baseType.wrapperClass && value.type.baseType.isSubtypeOf(this.baseType.wrapperClass)){ //&& value.type.baseType.name===this.baseType.wrapperClass.name){
       value.code="("+value.code+".value)";
-      value.type.baseType=this.baseType;
-    }else if(value.type.baseType instanceof PrimitiveType && this.baseType.name===value.type.baseType.wrapperClass.name){
+      value.type=new Type(this.baseType,0);//.baseType=this.baseType;
+    }else if(value.type.baseType instanceof PrimitiveType && value.type.baseType.wrapperClass && value.type.baseType.wrapperClass.isSubtypeOf(this.baseType)){
       value.code="("+value.type.baseType.wrapperClass.name+".valueOf("+value.code+"))";
-      value.type.baseType=this.baseType;
+      value.type=new Type(value.type.baseType.wrapperClass,0);
     }
-    
+    // this.baseType.name===value.type.baseType.wrapperClass.name
     return true;
   }
   autoCastValue(value){
     if(!value.type) return false;
     value.code="$u("+value.code+")";
+    //if(!options.autocast) return false;
     let castFromStringToPrimitive=false;
     if(value.type.isString() && this.isPrimitive()){
       if(!options.autocast) return false;
@@ -180,7 +181,7 @@ export class Type{
       };
     }
     if(type.baseType){
-      if(type.dimension===0 && type.baseType.name===Java.clazzes.Object.name){
+      if(type.dimension===0 && !(this.isPrimitive()) && type.baseType.name===Java.clazzes.Object.name){
         return true;
       }
       if(this.baseType===Java.datatypes.nullType){

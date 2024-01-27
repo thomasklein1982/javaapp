@@ -5,7 +5,7 @@ import { defineGenericClazz } from "./datatypes/GenericClazz";
 import { appjsdata } from "../functions/snippets";
 import { defineString } from "./datatypes/string";
 import { defineUIClazzes } from "./datatypes/UI";
-import { defineInteger } from "./datatypes/Integer.js";
+import { defineInteger, defineBoolean, defineChar, defineDouble } from "./datatypes/Wrapper.js";
 import { defineMath } from "./datatypes/Math";
 import {defineDatabaseClazzes} from "./datatypes/Database";
 import {definePattern} from "./datatypes/pattern";
@@ -32,6 +32,9 @@ Object.cannotBeInstantiated=true;
 const String=new Clazz("String");
 String.cannotBeInstantiated=true;
 const Integer=new Clazz("Integer");
+const Double=new Clazz("Double");
+const Boolean=new Clazz("Boolean");
+const Char=new Clazz("Char");
 let Math=new Clazz("Math");
 Math.cannotBeInstantiated=true;
 let Gamepad=new Clazz("Gamepad");
@@ -96,11 +99,11 @@ let Sound=new Clazz("Sound");
 let Exception=new Clazz("Exception");
 
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean
 }
 
 export const Java={
@@ -114,6 +117,15 @@ defineString(String,Java);
 defineInteger(Integer,Java);
 Integer.cannotBeInstantiated=true;
 int.setWrapperClass(Integer);
+defineDouble(Double,Java);
+Double.cannotBeInstantiated=true;
+double.setWrapperClass(Double);
+defineChar(Char,Java);
+Char.cannotBeInstantiated=true;
+char.setWrapperClass(Char);
+defineBoolean(Boolean,Java);
+Boolean.cannotBeInstantiated=true;
+boolean.setWrapperClass(Boolean);
 defineMath(Math,Java);
 definePrintStream(PrintStream);
 defineSystem(System);

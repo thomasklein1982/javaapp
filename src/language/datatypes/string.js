@@ -1,3 +1,4 @@
+import { options } from "../../classes/Options";
 import { createMethod } from "../helper/createMethod";
 
 export function defineString(StringClazz,Java){
@@ -23,9 +24,10 @@ export function defineString(StringClazz,Java){
   createMethod({
     name: "charAt",
     args: [{name: "index",type: "int"}],
+    isExtraFunction: true,
     info: "Liefert das Zeichen an der angegebenen Stelle zurück.",
-    returnType: 'String',
-    jsName: "charAt"
+    returnType: options.stringCharAtDeliversString? 'String':'char',
+    jsName: options.stringCharAtDeliversString?"$StringCharAtString":"$StringCharAtChar"
   },StringClazz,false,false,Java);
   createMethod({
     name: "codePointAt",

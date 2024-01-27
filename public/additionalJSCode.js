@@ -550,6 +550,16 @@ function additionalJSCode(){
     return format;
   }
 
+  function $StringCharAtChar(string,index){
+    let s=$StringCharAtString(string,index);
+    return new $Char(s);
+  }
+
+  function $StringCharAtString(string,index){
+    let s=string.charAt(index);
+    return s;
+  }
+
   function $StringReplaceAll(string,s,r){
     var regexp=new RegExp(s,"g");
     return string.replace(regexp,r);
@@ -773,6 +783,41 @@ function additionalJSCode(){
     }
     static valueOf(v){
       return new Double(v);
+    }
+  }
+
+  class Boolean{
+    constructor(v){
+      this.value=v;
+    }
+    static parseBoolean(s){
+      if(s==="true"){
+        this.value=true;
+      }else if(s==="false"){
+        this.value=false;
+      }else{
+        throw $new(Exception,"Dieser String kodiert keinen Wahrheitswert:\n"+s);
+      }
+    }
+    static valueOf(v){
+      return new Boolean(v);
+    }
+  }
+
+  class Char{
+    constructor(v){
+      this.value=v;
+    }
+    static parseChar(s){
+      let v=s+"";
+      if(v.length===1){
+        this.value=v;
+      }else{
+        throw $new(Exception,"Dieser String kodiert keinen Character:\n"+s);
+      }
+    }
+    static valueOf(v){
+      return new Char(v);
     }
   }
 

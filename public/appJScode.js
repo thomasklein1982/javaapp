@@ -1,5 +1,5 @@
 window.appJScode=function(){
-  class Char{
+  class $Char{
     constructor(char){
       if(!char.substring){
         char=String.fromCodePoint(char);
@@ -3058,7 +3058,7 @@ window.appJScode=function(){
             v="undefiniert";
           }else if(obj===null){
             v="null";
-          }else if(obj instanceof Char){
+          }else if(obj instanceof $Char){
             v="'"+obj.char+"' ["+obj.int+"]";
           }else if(typeof obj==="object"){
             this.button.style.backgroundColor="gray";

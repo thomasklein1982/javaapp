@@ -7,7 +7,7 @@ export function CharacterLiteral(node,source,scope){
     throw source.createError("Unerwarteter Code nach Abschluss des char-Literals:\n"+source.getText(node.nextSibling)+"",node.nextSibling);
   }
   return {
-    code: "(new Char("+source.getText(node)+"))",
+    code: "(new $Char("+source.getText(node)+"))",
     type: new Type(Java.datatypes.char,0)
   };
 }
