@@ -4579,7 +4579,7 @@ window.appJScode=function(){
           }
         }
         $App.resizeObserver.observe(b);
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         //canvas.resize();
         return b;
       },
@@ -4587,51 +4587,6 @@ window.appJScode=function(){
         var b=$App.createElement("div");
         b.className="panel";
         b.style.flexDirection="column";
-        if(!template){
-          b.noAbsolutePosition=true;
-          b.style.overflow="auto";
-        }else{
-          b.noAbsolutePosition=false;
-          template+="";
-        }
-        
-        if(!b.noAbsolutePosition){
-          var teile=template.split("/");
-          for(var i=0;i<teile.length;i++){
-            var t=teile[i].trim();
-            if(/^\d+$/.test(t)){
-              teile[i]="repeat("+t+",minmax(0,1fr))";
-              
-            }
-          }
-          if(teile.length===2){
-            b.style.gridTemplateRows=teile[0];
-            b.style.gridTemplateColumns=teile[1];
-          }else{
-            b.style.gridTemplateColumns=teile[0];
-          }
-          b.style.gridAutoRows="minmax(0,1fr)";
-          b.style.display="grid"; 
-          b.style.alignItems="stretch";
-          b.style.justifyItems="stretch";
-          b.style.gridColumnGap=0;
-          b.style.gridRowGap=0;
-          b.style.columnGap=0;
-          b.style.rowGap=0;
-          b.style.overflow="auto";
-          //$App.resizeObserver.observe(b);
-          // b.resize=function(w,h){
-          //   for(var i=0;i<this.childNodes.length;i++){
-          //     var c=this.childNodes[i];
-          //     if(c.resize){
-          //       c.resize();
-          //     }
-          //     if(c.updatePosition){
-          //       c.updatePosition();
-          //     }
-          //   }
-          // }
-        }
         b.add=function(c,index){
           //if(!this.noAbsolutePosition){
             c.style.position="relative";
@@ -4658,7 +4613,43 @@ window.appJScode=function(){
           this.removeChild(c);
           $App.canvas.addElement(c,c.appJSData.cx,c.appJSData.cy,c.appJSData.width,c.appJSData.height,c.appJSData.align);
         }
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
+        b.setTemplate=function(template){
+          if(!template){
+            b.noAbsolutePosition=true;
+            b.style.overflow="auto";
+          }else{
+            b.noAbsolutePosition=false;
+            template+="";
+          }
+          
+          if(!b.noAbsolutePosition){
+            var teile=template.split("/");
+            for(var i=0;i<teile.length;i++){
+              var t=teile[i].trim();
+              if(/^\d+$/.test(t)){
+                teile[i]="repeat("+t+",minmax(0,1fr))";
+                
+              }
+            }
+            if(teile.length===2){
+              b.style.gridTemplateRows=teile[0];
+              b.style.gridTemplateColumns=teile[1];
+            }else{
+              b.style.gridTemplateColumns=teile[0];
+            }
+            b.style.gridAutoRows="minmax(0,1fr)";
+            b.style.display="grid"; 
+            b.style.alignItems="stretch";
+            b.style.justifyItems="stretch";
+            b.style.gridColumnGap=0;
+            b.style.gridRowGap=0;
+            b.style.columnGap=0;
+            b.style.rowGap=0;
+            b.style.overflow="auto";
+          }
+        };
+        b.setTemplate(template);
         return b;
       },
       button: function (text,cx,cy,width,height){
@@ -4666,7 +4657,7 @@ window.appJScode=function(){
         b.value=text;
         //b.style.padding=0;
         //b.style.margin=0;
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         return b;
       },
       iframe: function(url,cx,cy,width,height){
@@ -4697,7 +4688,7 @@ window.appJScode=function(){
         div.iframe=frame;
         div.closeButton=button;
         div.value=url;
-        $App.canvas.addElement(div,cx,cy,width,height);
+        //$App.canvas.addElement(div,cx,cy,width,height);
         $App.$iframes.push(div);
         return div;
       },
@@ -4713,7 +4704,7 @@ window.appJScode=function(){
         }else{
           b.src=url;
         }
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         return b;
       },
       input: function (type,placeholdertext,cx,cy,width,height){
@@ -4813,7 +4804,7 @@ window.appJScode=function(){
         });
         b.placeholder=placeholdertext;
         b.style.textAlign="";
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         return b;
       },
       datatable: function(array,cx,cy,width,height){
@@ -4932,21 +4923,21 @@ window.appJScode=function(){
           }
         });
         b.array=array;
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         return b;
       },
       textarea: function (placeholdertext,cx,cy,width,height){
         var b=$App.createElement("textarea");
         b.placeholder=placeholdertext;
         b.style.resize="none";
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         b.style.textAlign="";
         return b;
       },
       select: function (options,cx,cy,width,height){
         var b=$App.createElement("select");
         b.options=options;
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         return b;
       },
       label: function(text,cx,cy,width,height){
@@ -4954,7 +4945,7 @@ window.appJScode=function(){
         b.style.overflow="auto";
         b.style.display="grid";
         b.$standardPositionValue="relative";
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         Object.defineProperty(b,'value', {
           set: function(v){
             this.appJSData.value=v;
@@ -4979,7 +4970,7 @@ window.appJScode=function(){
         b.innerDiv=innerDiv;
         b.appendChild(innerDiv);
         b.style.textAlign="center";
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         Object.defineProperty(b,'value', {
           set: function(v){
             this.appJSData.value=v;
@@ -4999,7 +4990,7 @@ window.appJScode=function(){
         var b=$App.createElement("div");
         b.style.overflow="auto";
         b.$standardPositionValue="relative";
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         Object.defineProperty(b,'value', {
           set: function(v){
             this.appJSData.value=v;
@@ -5018,25 +5009,25 @@ window.appJScode=function(){
       {
         name: 'iframe', 
         returnType: 'IFrame',
-        args: [{name: 'url', type: 'String', info: 'Webadresse der eingebetteten Webseite'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts'}, {name: 'width', type: 'double', info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}, {name: 'height', type: 'double', info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}],
+        args: [{name: 'url', type: 'String', info: 'Webadresse der eingebetteten Webseite'}],
         info: 'Erzeugt ein neues iFrame, mit dem man eine Website in die eigene App einbetten kann.'
       },
       {
         name: 'button', 
         returnType: 'JButton',
-        args: [{name: 'text', type: 'String', info: 'Aufschrift des Buttons'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts'}, {name: 'width', type: 'double', info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}, {name: 'height', type: 'double', info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}],
+        args: [{name: 'text', type: 'String', info: 'Aufschrift des Buttons'}],
         info: 'Erzeugt einen neuen Button mit der Aufschrift <code>text</code>, dem Mittelpunkt (<code>cx</code>|<code>cy</code>), der Breite <code>width</code> und der Hoehe <code>height</code>. Liefert den Button zurueck.'
       },
       {
         name: 'panel', 
         returnType: 'JPanel',
-        args: [{name: 'template', type: 'String', info: 'Definition der Zeilen und Spalten des Panels. "" oder null bedeutet, dass es keine Spalten und Zeilen gibt. "3" bedeutet "3 gleich breite Spalten", "2fr 1fr" bedeutet "2 Spalten, die erste doppelt so breit wie die zweite". Hier sind alle Werte moeglich, die auch fuer die CSS-Eigenschaften "grid-template" oder "grid-template-columns" verwendet werden koennen.'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts'}, {name: 'width', type: 'double', info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}, {name: 'height', type: 'double', info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}],
+        args: [{name: 'template', type: 'String', info: 'Definition der Zeilen und Spalten des Panels. "" oder null bedeutet, dass es keine Spalten und Zeilen gibt. "3" bedeutet "3 gleich breite Spalten", "2fr 1fr" bedeutet "2 Spalten, die erste doppelt so breit wie die zweite". Hier sind alle Werte moeglich, die auch fuer die CSS-Eigenschaften "grid-template" oder "grid-template-columns" verwendet werden koennen.'}],
         info: 'Erzeugt ein neues Panel, ein Container fuer andere Elemente.'
       },
       {
         name: 'image', 
         returnType: 'JImage',
-        args: [{name: 'url', type: 'String', info: 'URL zum Bild'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts'}, {name: 'width', type: 'double', info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}, {name: 'height', type: 'double', info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}],
+        args: [{name: 'url', type: 'String', info: 'URL zum Bild'}],
         info: 'Erzeugt ein neues Bild von der URL <code>url</code>, dem Mittelpunkt (<code>cx</code>|<code>cy</code>), der Breite <code>width</code> und der Hoehe <code>height</code>. Liefert das Bild zurueck.'
       },
       {
@@ -5053,26 +5044,6 @@ window.appJScode=function(){
             name: 'placeholdertext',
             type: 'String', 
             info: 'Text, der angezeigt wird, wenn das Element leer ist.'
-          }, 
-          {
-            name: 'cx', 
-            type: 'double', 
-            info: 'x-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'cy', 
-            type: 'double', 
-            info: 'y-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'width', 
-            type: 'double', 
-            info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
-          }, 
-          {
-            name: 'height', 
-            type: 'double', 
-            info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
           }
         ],
         info: 'Erzeugt ein neues Eingabefeld, in das der User etwas eingeben kann. Mit <code>type</code> legst du fest, was der User eingeben soll (normalerweise <code>"text"</code> oder <code>"number"</code>, es gibt aber <a href="https://www.w3schools.com/html/html_form_input_types.asp" target="_blank">noch viel mehr</a>). Du kannst ausserdem den Platzhaltertext <code>placeholdertext</code>, den Mittelpunkt (<code>cx</code>|<code>cy</code>), die Breite <code>width</code> und die Hoehe <code>height</code> festlegen. Liefert das Eingabefeld zurueck.'
@@ -5089,26 +5060,6 @@ window.appJScode=function(){
               dimension: 1
             }, 
             info: 'Array mit Objekten, die dargestellt werden sollen'
-          },
-          {
-            name: 'cx', 
-            type: 'double', 
-            info: 'x-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'cy', 
-            type: 'double', 
-            info: 'y-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'width', 
-            type: 'double', 
-            info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
-          }, 
-          {
-            name: 'height', 
-            type: 'double', 
-            info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
           }
         ],
         info: 'Erzeugt eine neue Datatable, mit der du die Elemente eines Arrays anzeigen kannst.'
@@ -5122,26 +5073,6 @@ window.appJScode=function(){
             name: 'placeholdertext',
             type: 'String', 
             info: 'Text, der angezeigt wird, wenn das Element leer ist.'
-          }, 
-          {
-            name: 'cx', 
-            type: 'double', 
-            info: 'x-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'cy', 
-            type: 'double', 
-            info: 'y-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'width', 
-            type: 'double', 
-            info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
-          }, 
-          {
-            name: 'height', 
-            type: 'double', 
-            info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
           }
         ],
         info: 'Erzeugt ein neues Eingabefeld, in das der User Text eingeben kann. Du kannst den Platzhaltertext <code>placeholdertext</code>, den Mittelpunkt (<code>cx</code>|<code>cy</code>), die Breite <code>width</code> und die Hoehe <code>height</code> festlegen. Liefert das Element zurueck.'
@@ -5154,26 +5085,6 @@ window.appJScode=function(){
             name: 'placeholdertext',
             type: 'String', 
             info: 'Text, der angezeigt wird, wenn das Element leer ist.'
-          }, 
-          {
-            name: 'cx', 
-            type: 'double', 
-            info: 'x-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'cy', 
-            type: 'double', 
-            info: 'y-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'width', 
-            type: 'double', 
-            info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
-          }, 
-          {
-            name: 'height', 
-            type: 'double', 
-            info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
           }
         ],
         info: 'Erzeugt eine neue TextArea mit dem Platzhaltertext <code>placeholdertext</code>, dem Mittelpunkt (<code>cx</code>|<code>cy</code>), der Breite <code>width</code> und der Hoehe <code>height</code>. Liefert die TextArea zurueck.'
@@ -5186,26 +5097,6 @@ window.appJScode=function(){
             name: 'options',
             type: 'String[]', 
             info: 'Optionen, die zur Auswahl stehen'
-          }, 
-          {
-            name: 'cx', 
-            type: 'double', 
-            info: 'x-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'cy', 
-            type: 'double', 
-            info: 'y-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'width', 
-            type: 'double', 
-            info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
-          }, 
-          {
-            name: 'height', 
-            type: 'double', 
-            info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
           }
         ],
         info: 'Erzeugt ein neues Select-Element mit den Auswahl-Optionen <code>options</code> (ein  Array), dem Mittelpunkt (<code>cx</code>|<code>cy</code>), der Breite <code>width</code> und der Hoehe <code>height</code>. Liefert das Select-Element zurueck.'
@@ -5218,26 +5109,6 @@ window.appJScode=function(){
             name: 'text',
             type: 'String', 
             info: 'Art des Inputs'
-          },
-          {
-            name: 'cx', 
-            type: 'double', 
-            info: 'x-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'cy', 
-            type: 'double', 
-            info: 'y-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'width', 
-            type: 'double', 
-            info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
-          }, 
-          {
-            name: 'height', 
-            type: 'double', 
-            info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
           }
         ], 
         info: 'Erzeugt ein neues Label mit dem Inhalt <code>text</code>, dem Mittelpunkt (<code>cx</code>|<code>cy</code>), der Breite <code>width</code> und der Hoehe <code>height</code>. Liefert das Label zurueck.'

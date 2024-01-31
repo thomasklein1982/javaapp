@@ -326,7 +326,7 @@ export class Clazz{
         if(this.implementedInterfaces){
           for(let i=0;i<this.implementedInterfaces.length;i++){
             let inter=this.implementedInterfaces[i];
-            if(inter===type){
+            if(inter.name===type.name){
               return true;
             }
           }
@@ -467,7 +467,12 @@ export class Clazz{
     if(this.implementedInterfaces){
       for(let i=0;i<this.implementedInterfaces.length;i++){
         let inter=this.implementedInterfaces[i];
-
+        for(let m in inter.methods){
+          if(!this.methods[m]){
+            this.errors.push(this.source.createError("Als "+inter.name+" muss diese Klasse eine Methode "+m+" implementieren.",inter.node));
+          }
+          console.log(m);
+        }
       }
     }
   }
@@ -738,5 +743,6 @@ export class Clazz{
       m.compileBody(this.source,optimizeCompiler);
       concatArrays(this.errors,m.getErrors());
     }
+    this.compileLastChecks();
   }
 }

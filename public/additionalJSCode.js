@@ -52,13 +52,19 @@ function additionalJSCode(){
 
   async function $handleEvent(eventname,ev,argsFunc){
     let comp=this.component;
-    if (comp["$triggerOn"+eventname]) {
+    let listener=comp["$triggerOn"+eventname];
+    if (listener) {
         ev.stopPropagation();
         let args;
         if(argsFunc){
           args=argsFunc(ev,comp);
         }else{
           args=[comp];
+        }
+        let handler=listener["on"+eventname];
+        if(handler && handler.apply){
+          await handler.apply(listener,args);
+          return;
         }
         let panel=comp.getPanel();
         while(panel){
@@ -71,7 +77,7 @@ function additionalJSCode(){
           }
           panel=panel.getPanel();
         }
-        if($main["on"+eventname]){
+        if($main && $main["on"+eventname]){
           $main["on"+eventname].apply($main,args);
         }
     }
@@ -751,6 +757,10 @@ function additionalJSCode(){
     this.right=keycode;
   }
 
+  class ActionListener{
+    onAction(){}
+  }
+
   class Integer{
     constructor(v){
       this.value=v;
@@ -842,6 +852,7 @@ function additionalJSCode(){
       this.$el=null;
       this.actionCommand="";
       this.actionObject=null;
+      this.$eventListeners={};
       this.$triggerOnAction=false;
       this.$triggerOnMouseDown=false;
       this.$triggerOnMouseUp=false;
@@ -1039,6 +1050,11 @@ function additionalJSCode(){
         return -1;
       }
     }
+    setOnAction(listener){
+      if(!listener) throw $new(Exception,"Das Listener-Objekt ist null.");
+      if(!listener.onAction) throw $new(Exception,"Das Listener-Objekt besitzt keine onAction-Methode.");
+      this.$triggerOnAction=listener;
+    }
     setTriggerOnAction(t){
       this.$triggerOnAction=t;
     }
@@ -1120,6 +1136,9 @@ function additionalJSCode(){
       this.$el.component=this;
       this.$el.onclick = $handleOnAction;
       this.lastRowAndColumnCount=null;
+    }
+    setLayout(layout){
+      this.$el.setTemplate(layout);
     }
     add(comp,index){
       this.$el.add(comp.$el,index);
@@ -1262,6 +1281,14 @@ function additionalJSCode(){
     }
     getColumnCount(){
       return this.getRowAndColumnCount().cols;
+    }
+  }
+
+  class JFrame extends JPanel{
+    $constructor(template){
+      super.$constructor(template);
+      this.$el.style="left: 0; right: 0; top: 0; bottom: 0; position: absolute; background-color: cyan; border: 1pt solid black;";
+      $App.canvas.addElement(this.$el,50,50,100,100);
     }
   }
 

@@ -31,7 +31,6 @@ export function createMethod(data,clazz,isStatic,isConstructor){
       let p=new Parameter(m.params);
       let types;
       if(Array.isArray(a.type)){
-        console.log("array param");
         types=a.type;
       }else{
         types=[a.type];

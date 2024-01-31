@@ -99,7 +99,7 @@ export class Project{
   }
   // let code="\<script\>window.language='java';"+window.appJScode+" "+window.additionalJSCode;
   //       code+='\n\</script\>\n\<script\>'+src+'\n\</script\>';
-  getFullAppCode(additionalCode, includeSave){
+  getFullAppCode(additionalCode, includeSave, dontCallMain){
     if(!additionalCode) additionalCode="";
     let databaseCode="";
     let cmds=database.createInMemory(true);
@@ -155,6 +155,10 @@ export class Project{
       }
     }
     let css=this.prepareCSS(this.css);
+    codeMainCall="window.addEventListener('DOMContentLoaded',async function(){"+codeMainCall+"});";
+    if(dontCallMain){
+      codeMainCall="";
+    }
     let code=`<!doctype html>
 <html>
     <head>

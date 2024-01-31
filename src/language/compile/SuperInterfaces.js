@@ -5,7 +5,6 @@ import { InterfaceTypeList } from "./InterfaceTypeList";
 
 export function SuperInterfaces(node,source,scope){
   node=node.firstChild;
-  console.log(node);
   if(node.name!=="implements"){
     return {
       error: source.createError("'implements' erwartet",node)

@@ -1,9 +1,21 @@
+import { parseJava } from "../../functions/parseJava";
 import { CompileFunctions } from "../CompileFunctions";
+import { Identifier } from "./Identifier";
 import { VariableDeclarator } from "./VariableDeclarator";
 
 export function LocalVariableDeclaration(node,source,scope){
   let code;
+  
+
   node=node.firstChild;
+  if(node.name==="ScopedTypeName"){
+    /**der compiler landet hier, wenn auf ein Attribut zugegriffen werden soll und dahinter Code steht. Das verhindert die Autocompletion, z.B.
+     * b.a
+     * weiterer Code
+     */
+    node=node.firstChild;
+    Identifier(node,source,scope);
+  }
   if(node.name!=="PrimitiveType" || node.name!=="TypeName" || node.name!=="CatchType"){
 
   }

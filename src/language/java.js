@@ -20,6 +20,7 @@ import { defineArrayList } from "./datatypes/ArrayList";
 import { defineHTMLElement } from "./datatypes/HTMLElement.js";
 import { defineSound } from "./datatypes/Sound.js";
 import { defineException } from "./datatypes/Exception.js";
+import { defineInterfaces } from "./datatypes/interfaces.js";
 
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
@@ -35,6 +36,9 @@ const Integer=new Clazz("Integer");
 const Double=new Clazz("Double");
 const Boolean=new Clazz("Boolean");
 const Char=new Clazz("Char");
+
+let ActionListener=new Clazz("ActionListener",undefined,true);
+
 let Math=new Clazz("Math");
 Math.cannotBeInstantiated=true;
 let Gamepad=new Clazz("Gamepad");
@@ -51,6 +55,7 @@ let Time=new Clazz("Time");
 Time.cannotBeInstantiated=true;
 let JComponent=new Clazz("JComponent");
 JComponent.cannotBeInstantiated=true;
+let JFrame=new Clazz("JFrame");
 let JButton=new Clazz("JButton");
 let JImage=new Clazz("JImage");
 let JTextComponent=new Clazz("JTextComponent");
@@ -99,16 +104,21 @@ let Sound=new Clazz("Sound");
 let Exception=new Clazz("Exception");
 
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, ActionListener
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame
+}
+
+let interfaces={
+  ActionListener
 }
 
 export const Java={
   datatypes,
-  clazzes
+  clazzes,
+  interfaces
 };
 
 defineObject(Object);
@@ -148,3 +158,5 @@ defineVector(Vector);
 defineArrayList(ArrayList);
 defineHTMLElement(HTMLElement);
 defineSound(Sound,Java);
+defineInterfaces();
+

@@ -16,6 +16,7 @@ export function InterfaceTypeList(node,source,scope){
         typeNames[type.code]=true;
         type.node=node;
         if(type.type){
+          type.type.baseType.node=node;
           types.push(type.type.baseType);
         }else{
           types.push({name: type.code});

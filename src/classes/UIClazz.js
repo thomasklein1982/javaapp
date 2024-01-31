@@ -297,12 +297,12 @@ export class UIClazz extends Clazz{
   }
 
   getUIPreviewCode(){
-    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;\nconsole.hide();\nasync function onStart(){\n\n(new "+this.name+"("+")).$constructor();}");
+    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;\nconsole.hide();\nasync function onStart(){\n\n(new "+this.name+"("+")).$constructor();}",false,true);
     return code;
   }
 
   getJavaScriptCode(){
-    let code="class "+this.name+" extends JPanel";
+    let code="class "+this.name+" extends JFrame";
     code+="{";
     // code+="\n$constructor(){";
     // code+="super("+JSON.stringify(this.template)+","+this.x+","+this.y+","+this.width+","+this.height+");";
