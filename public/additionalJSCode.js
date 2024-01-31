@@ -834,6 +834,9 @@ function additionalJSCode(){
   class PrintStream{
     $constructor(){}
     println(text){
+      console.println(text);
+    }
+    print(text){
       console.print(text);
     }
   }
@@ -841,6 +844,9 @@ function additionalJSCode(){
   class System{
     $constructor(){}
     static out=$new(PrintStream);
+    static console(){
+      return $App.console;
+    }
   }
 
   class JComponent{

@@ -662,6 +662,7 @@ window.appJScode=function(){
         left.style="font-family: monospace; position: absolute; width: 30%; height: 100%; left: 0; top: 0; display: none; z-index: 100;";
         let right=document.createElement("div");
         right.style="position: absolute; width: 100%; height: 100%; right: 0; top: 0; display: grid; box-sizing: border-box; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; padding: 1rem";
+        right.$canvas=this.canvas;
         this.body.right=right;
         root.appendChild(left);
         root.appendChild(right);
@@ -1310,6 +1311,9 @@ window.appJScode=function(){
         el.style.top=this.getRawY(y)+"px";
         el.style.width=this.getRawWidth(width)+"px";
         el.style.height=this.getRawHeight(height)+"px";
+      },
+      isEmpty: function(){
+        return (this.container.childNodes.length<=1);
       },
       addElement: function(el,cx,cy,width,height){
         this.container.appendChild(el);
@@ -2834,6 +2838,10 @@ window.appJScode=function(){
     /**Console */
     $App.Console=function(){
       this.element=document.createElement("div");
+      this.element.onclick=()=>{
+        if(!this.readInput) return;
+        this.readInput.focus();
+      };
       this.element.style="overscroll-behavior: none; width: 100%; height: 100%; background-color: #222222; color: white";
       this.element.className="console";
       this.items={};
@@ -2903,6 +2911,9 @@ window.appJScode=function(){
       this.element.appendChild(this.input);
       this.localVariables=null;
       this.loadHistory();
+      this.currentLineDiv=document.createElement("div");
+      this.currentLineDiv.style.whiteSpace="pre";
+      this.outputDiv.appendChild(this.currentLineDiv);
     };
     
     $App.Console.prototype={
@@ -2930,8 +2941,9 @@ window.appJScode=function(){
       addWatchedVariables: function(arrayWithVarNames){
         this.watchedVariables=this.watchedVariables.concat(arrayWithVarNames);
       },
+      /**println */
       log: function(){
-        let div=document.createElement("div");
+        let div=this.currentLineDiv;
         div.style.whiteSpace="pre";
         let args=[]
         for(let i=0;i<arguments.length;i++){
@@ -2943,13 +2955,69 @@ window.appJScode=function(){
             item=item.element;
           }else{
             item=document.createElement("span");
-            item.style.marginRight="1em";
+            //item.style.marginRight="1em";
             item.innerHTML=obj;
           }
           div.appendChild(item);
         }
-        this.outputDiv.appendChild(div);
+        this.currentLineDiv=document.createElement("div");
+        this.currentLineDiv.style.whiteSpace="pre";
+        this.outputDiv.appendChild(this.currentLineDiv);
+        //this.outputDiv.appendChild(div);
         this.outputDiv.scrollTop=this.outputDiv.scrollHeight;
+        this.outputDiv.scrollLeft=0;
+      },
+      print: function(){
+        let div=this.currentLineDiv;
+        for(let i=0;i<arguments.length;i++){
+          let obj=arguments[i];
+          let item;
+          if(typeof obj==="object"){
+            item=$App.console.createConsoleItem(null,false,true);
+            item.update(obj);
+            item=item.element;
+          }else{
+            item=document.createElement("span");
+            //item.style.marginRight="1em";
+            item.innerHTML=obj;
+          }
+          div.appendChild(item);
+        }
+        //this.outputDiv.appendChild(div);
+        this.outputDiv.scrollTop=this.outputDiv.scrollHeight;
+        this.outputDiv.scrollLeft=0;
+      },
+      readLine: async function(prompt){
+        if(prompt) this.print(prompt);
+        let inp=document.createElement("input");
+        this.readInput=inp;
+        inp.type="text";
+        inp.style="width: 2em; height: 0.8cm; background-color: #222222; outline: none;border: none; color: white; box-sizing: border-box;font-family: monospace; padding: 0; margin: 0;";
+        inp.currentPosition=-1;
+        inp.spellcheck=false;
+        inp.autocapitalize="none";
+        inp.autocorrect="off";
+        this.currentLineDiv.appendChild(inp);
+        setTimeout(()=>{
+          inp.focus();
+        },10);
+        inp.oninput=function(){
+          this.style.width=this.value.length+2+"em";
+        };
+        inp.onchange=function(){
+          this.disabled=true;
+          this.resolve(this.value);
+        };
+        let p=new Promise((resolve,reject)=>{
+          inp.resolve=resolve;
+        });
+        let q=await p;
+        this.currentLineDiv=document.createElement("div");
+        this.currentLineDiv.style.whiteSpace="pre";
+        this.outputDiv.appendChild(this.currentLineDiv);
+        this.outputDiv.scrollTop=this.outputDiv.scrollHeight;
+        this.outputDiv.scrollLeft=0;
+        return q;
       },
       clear: function(){
         this.element.removeChild(this.outputDiv);
@@ -3162,16 +3230,31 @@ window.appJScode=function(){
         }
         this.localItems=newItems;
       },
+      show: function(){
+        this.setVisible(true);
+      },
+      hide: function(){
+        this.setVisible(false);
+      },
       setVisible: function(v){
         this.visible=v;
         let parent=this.element.parentElement;
         if(parent){
           parent.style.display=v? "block": "none";
-          if(v){
-            parent.nextElementSibling.style.width="70%";
+          console.log("set visible",parent.nextElementSibling.$canvas);
+          let right=parent.nextElementSibling;
+          if(right.$canvas.isEmpty()){
+            right.style.width="0%";
+            parent.style.width="100%";
           }else{
-            parent.nextElementSibling.style.width="100%";
+            parent.style.width="30%";
+            if(v){
+              right.style.width="70%";
+            }else{
+              right.style.width="100%";
+            }
           }
+          
           setTimeout(function(){
             $App.onResize(true);
           },10);
@@ -5400,9 +5483,13 @@ window.appJScode=function(){
     //console.realLog=console.log;
     console.realClear=console.clear;
     $App.addObject('console',true,{
-      print: function(){
+      println: function(){
         console.log.apply(console,arguments);
         $App.console.log.apply($App.console,arguments);
+      },
+      print: function(){
+        console.log.apply(console,arguments);
+        $App.console.print.apply($App.console,arguments);
       },
       clear: function(){
         console.realClear();
@@ -5415,6 +5502,9 @@ window.appJScode=function(){
       hide: function(){
         $App.showConsoleOnStart=false;
         $App.console.setVisible(false);
+      },
+      readLine: function(text){
+        $App.console.readLine(text);
       }
     },'Erlaubt die Benutzung der Konsole.',
     [
@@ -5433,6 +5523,17 @@ window.appJScode=function(){
         name: 'hide', 
         returnType: null,
         info: 'Verbirgt die Konsole.'
+      },
+      {
+        name: 'clear', 
+        returnType: null,
+        info: 'Verbirgt die Konsole.'
+      },
+      {
+        name: "readLine",
+        args: [{name: "prompt", type: 'String', info: 'Text, der als Aufforderung angezeigt wird.', optional: true }],
+        returnType: "String",
+        info: "Fordert den User auf, eine Zeile Text einzugeben."
       }
     ],'',"everywhere");
     
