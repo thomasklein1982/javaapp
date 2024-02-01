@@ -128,6 +128,8 @@ window.onmessage=function(message){
   }else if(data.type==="debug-pause"){
     app.paused=true;
     app.current={line: data.line, name: data.name};
+  }else if(data.type==="getScope"){
+    app.current.$scope=data.data;
   }
 }
 

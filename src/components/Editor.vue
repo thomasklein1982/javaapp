@@ -100,8 +100,15 @@
               <AppPreview v-show="running || !isCurrentClazzUIClazz" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
             </SplitterPanel>
             <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
+              <Insights 
+                v-show="running"
+                :line="current.line"
+                :clazz-name="current.name"
+                :scope="current.$scope"
+                @update-scope="$refs.preview.askForScope()"
+              />
               <UIComponentEditor 
-                v-if="showUIEditor && selectedUIComponent" 
+                v-if="!running && showUIEditor && selectedUIComponent" 
                 :component="selectedUIComponent"
                 :project="project"
                 :maximized="false"
@@ -110,7 +117,7 @@
                 @isolatedupdate="compileUIClazzAndUpdatePreview()"
               />
               <Outline
-                v-else
+                v-else-if="!running"
                 @click="outlineClick"
                 :style="{flex: 1}" 
                 ref="outline"
@@ -159,6 +166,7 @@ import SettingsDialog from "./SettingsDialog.vue";
 import { nextTick } from "vue";
 import PrintPreview from "./PrintPreview.vue";
 import ImageEditorDialog from "./ImageEditorDialog.vue";
+import Insights from "./Insights.vue";
 
 export default {
   props: {
@@ -505,7 +513,7 @@ export default {
     }
   },
   components: {
-    EditorMenubar: EditorMenubar,
+    EditorMenubar,
     CodeMirror,
     BlockEditor,
     ProjectExplorer,
@@ -523,7 +531,8 @@ export default {
     SettingsDialog,
     PrintPreview,
     ProjectDetailsDialog,
-    ImageEditorDialog
+    ImageEditorDialog,
+    Insights
   }
 }
 </script>

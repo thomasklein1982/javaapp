@@ -29,7 +29,7 @@ export default{
       version: 290,
       paused: false,
       printMode: false,
-      current: {line: -1, name: null},
+      current: {line: -1, name: null, $scope: null},
       difficulty: options.difficulty()
     };
   },

@@ -91,21 +91,15 @@ window.appJScode=function(){
         lastLine: -1,
         lastName: true,
         object: null,
+        $scope: null,
         enabled: window.appJSdebugMode? window.appJSdebugMode: false,
         breakpoints: {},
         breakpointCount: 0,
         paused: false,
         resolve: null,
-        line: async function(line,name, object){
+        line: async function(line,name, $scope){
           if(window===window.top) return;
-          if(!name){
-            name=true;
-          }
-          if(object){
-            this.object=object;
-          }else{
-            this.object=null;
-          }
+          this.$scope=$scope;
           this.lastLine=line;
           this.lastName=name;
           if(this.paused || this.breakpoints[line]===name){
@@ -113,6 +107,7 @@ window.appJScode=function(){
             if($App.body.overlay){
               $App.body.overlay.style.display='';
             }
+            console.log("step",line,name);
             var p=new Promise((resolve,reject)=>{
               window.parent.postMessage({
                 type: "debug-pause",
@@ -145,6 +140,7 @@ window.appJScode=function(){
           }
         },
         onMessage: function(message){
+          if(!window.parent) return;
           var data=message.data;
           if(data.type==="breakpoints"){
             var bp=data.breakpoints;
@@ -154,6 +150,10 @@ window.appJScode=function(){
             this.resolve();
           }else if(data.type==="debug-step"){
             this.resolve();
+          }else if(data.type==="getScope"){
+            console.log(this.$scope);
+            let $scope=this.$scope.getData(data.template);
+            window.parent.postMessage({type: "getScope", data: $scope});
           }
           if(this.paused){
             if($App.body.overlay && $App.body.overlay.style.display==='none'){

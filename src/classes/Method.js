@@ -70,7 +70,11 @@ export class Method{
       code=this.modifiers.getJavaScriptCode()+" async "+this.name;
       code+=this.params.getJavaScriptCode()+"{";
     }
-    
+    code+="let $scope=new $Scope(this);";
+    for(let i=0;i<this.params.parameters.length;i++){
+      let p=this.params.parameters[i];
+      code+="$scope.pushVariable("+JSON.stringify(p.name)+","+JSON.stringify(p.type.baseType.name)+","+p.type.dimension+","+p.name+");";
+    }
     if(additionalJSCode) code+=additionalJSCode;
     if(this.block){
       code+="\n"+this.block.code;

@@ -19,7 +19,7 @@ function createUpdateLocalVariablesCode(scope){
  * @returns 
  */
 export function Block(node,source,scope){
-  let code="";
+  let code="$scope.pushLayer();";
   let errors=[];
   let blockNode=node;
   node=node.firstChild;
@@ -55,7 +55,7 @@ export function Block(node,source,scope){
         if(!scope.optimizeCompiler){
           let line=source.getLineNumber(node.from);
           if(!scope.optimizeCompiler){
-            code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);";
+            code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",$scope);";
           }else{
             code+="\n";
           }
@@ -94,9 +94,10 @@ export function Block(node,source,scope){
   //let line=source.state.doc.lineAt(blockNode.to).number;
   if(!scope.optimizeCompiler){
     let line=source.getLineNumber(blockNode.to-1);
-    code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);";
+    code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",$scope);";
   }
   scope.popLayer();
+  code+="\n$scope.popLayer();"
   if(!scope.optimizeCompiler){
     code+=createUpdateLocalVariablesCode(scope);
   }

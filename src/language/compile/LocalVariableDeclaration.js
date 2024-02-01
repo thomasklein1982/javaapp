@@ -26,12 +26,15 @@ export function LocalVariableDeclaration(node,source,scope){
   let weiter=true;
   let vnames=[];
   let initialValues=[];
+  let scopeCode="";
   while(weiter){
     let vdekl=VariableDeclarator(node,source,scope,type);
     try{
       scope.pushLocalVariable(vdekl.name,type);
+
       vnames.push(vdekl.name);
       initialValues.push(vdekl.initialValue);
+      scopeCode+="$scope.pushVariable("+JSON.stringify(vdekl.name)+","+JSON.stringify(type.baseType.name)+","+type.dimension+","+vdekl.name+");";
     }catch(e){
       throw (source.createError(e,node));
     }
@@ -54,6 +57,8 @@ export function LocalVariableDeclaration(node,source,scope){
     throw (source.createError("';' erwartet.",node));
   }
   code+=";";
+  console.log("scopeCode",scopeCode);
+  code+=scopeCode;
   //code+="eval('$locals["+JSON.stringify(vdekl.name)+"]='+"+vdekl.name+",$App.console.updateLocalVariables($locals));";
   return {
     code,

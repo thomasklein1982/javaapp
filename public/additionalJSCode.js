@@ -2448,4 +2448,64 @@ function additionalJSCode(){
       return this.audio.ended;
     }
   }
+
+  class $Scope{
+    constructor(object){
+      this.stack=[];
+      this.object=object;
+      this.pushLayer();
+    }
+    getData(template){
+      let data=[];
+      let names={};
+      if(!template || true){
+        for(let i=this.stack.length-1;i>=0;i--){
+          let layer=this.stack[i];
+          for(let a in layer){
+            if(a in names) continue;
+            names[a]=true;
+            let v=layer[a];
+            console.log("var "+a+":",v);
+            let d={
+              n: a,
+              t: v.type,
+              d: v.dimension
+            };
+            if(v.dimension===0 && v.type==="String" || v.type.charAt(0)===v.type.charAt(0).toLowerCase()){
+              d.v=v.value;
+            }
+            data.push(d);
+          }
+        }
+      }
+      return data;
+    }
+    pushLayer(){
+      let layer={};
+      this.stack.push(layer);
+    }
+    pushVariable(name, type, dimension, value){
+      let layer=this.stack[this.stack.length-1];
+      layer[name]={
+        type, dimension, value
+      }
+    }
+    popLayer(){
+      return this.stack.pop();
+    }
+    getVariable(name){
+      for(let i=this.stack.length-1;i>=0;i--){
+        let layer=this.stack[i];
+        if(layer[name]){
+          return layer[name];
+        }
+      }
+      return null;
+    }
+    setVariable(name,value){
+      let v=this.getVariable(name);
+      if(!v) return;
+      v.value=value;
+    }
+  }
 }

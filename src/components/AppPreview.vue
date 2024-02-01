@@ -35,6 +35,14 @@
           });
         }
       },
+      askForScope(template){
+        if(this.frame){
+          this.frame.contentWindow.postMessage({
+            type: "getScope",
+            template: JSON.stringify(template)
+          });
+        }
+      },
       runInFullscreen(){
         this.stop();
         this.reload(true);
