@@ -68,6 +68,12 @@
         });
         this.focus();
       },
+      stepAbove(){
+        this.frame.contentWindow.postMessage({
+          type: "debug-step-above"
+        });
+        this.focus();
+      },
       stop(){
         if(this.$refs.wrapper.firstChild){
           this.$refs.wrapper.removeChild(this.$refs.wrapper.firstChild);

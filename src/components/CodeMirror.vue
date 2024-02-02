@@ -3,6 +3,7 @@
     <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px'}"></div>
     <Message v-if="displayedRuntimeError" severity="error" @close="dismissRuntimeError()">Z{{displayedRuntimeError.line}}: {{displayedRuntimeError.message}}</Message>
     <Button outlined style="position: absolute; top: 0; right: 0" v-if="isUIClazz" icon="pi pi-table" @click="clazz.showUIEditor=true"/>
+    <div v-show="disabled" :style="disableDivStyle" id="disable-div"></div>
   </div>
   
 </template>
@@ -158,6 +159,10 @@ export default {
     tabIndex: {
       type: Number,
       default: 0
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
@@ -178,6 +183,8 @@ export default {
       this.setCode(nv.src);
     },
     current(nv,ov){
+      if(!this.clazz || !nv) return;
+      if(nv.name!==this.clazz.name) return;
       if(nv===null && ov!==null){
         this.setCursorToLine(ov.line);
       }else if(nv.line<1){
@@ -190,6 +197,16 @@ export default {
           this.setSelection(line.from,line.to);
         }
       // currentLineHighlighter.update()
+      }
+    },
+    disabled(nv){
+      if(nv){
+        let content=document.querySelector(".cm-content");
+        let parent=content.parentElement;
+        content=content.getBoundingClientRect();
+        parent=parent.getBoundingClientRect();
+        this.disableDivStyle.left=content.x-parent.x+"px";
+        this.disableDivStyle.width=content.x-parent.width+"px";
       }
     }
 
@@ -205,7 +222,10 @@ export default {
       displayedRuntimeError: null,
       errorID: 1,
       size: 0,
-      triggerRecompilation: true
+      triggerRecompilation: true,
+      disableDivStyle: {
+        left: "0px", width: "100px", top: "0px", height: "100%"
+      }
     };
   },
   mounted(){
@@ -592,6 +612,9 @@ export default {
   }
   #errors{
     color: red;
+  }
+  #disable-div{
+    position: absolute;
   }
 </style>
 

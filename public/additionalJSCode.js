@@ -2449,6 +2449,51 @@ function additionalJSCode(){
     }
   }
 
+  function $getData(vname,v,template){
+    let dim=[];
+    if(v.dimension>0){
+      if(v.value){
+        dim.push(v.value.length);
+      }else{
+        dim.push(0);
+      }
+    }
+    let d={
+      n: vname,
+      t: v.type,
+      d: dim
+    };
+    if(v.value===null||v.value===undefined || v.dimension===0 && v.type==="String" || v.type.charAt(0)===v.type.charAt(0).toLowerCase()){
+      d.v=v.value;
+    }else if(template){
+      if(v.dimension>0){
+
+      }else{
+        d.v={};
+        let infos=$clazzRuntimeInfos[d.t];
+        for(let name in v.value){
+          if(name.startsWith("$")) continue;
+          //name, dimension, type, value
+          let value=v.value[name];
+          let type=null;
+          let dimension=0;
+          if(infos){
+            let attr=infos.attributes[name];
+            console.log("infos liegen vor",infos.attributes,name,attr);
+            if(attr){
+              type=attr.baseType;
+              dimension=attr.dimension;
+            }
+          }else{
+          }
+          console.log("get data, template",name,template[name]);
+          d.v[name]=$getData(name,{dimension,type,value}, template[name]);
+        }
+      }
+    }
+    return d;
+  }
+  
   class $Scope{
     constructor(object){
       this.stack=[];
@@ -2456,25 +2501,16 @@ function additionalJSCode(){
       this.pushLayer();
     }
     getData(template){
-      let data=[];
-      let names={};
+      let data={};
       if(!template || true){
         for(let i=this.stack.length-1;i>=0;i--){
           let layer=this.stack[i];
           for(let a in layer){
-            if(a in names) continue;
-            names[a]=true;
+            if(a in data) continue;
             let v=layer[a];
-            console.log("var "+a+":",v);
-            let d={
-              n: a,
-              t: v.type,
-              d: v.dimension
-            };
-            if(v.dimension===0 && v.type==="String" || v.type.charAt(0)===v.type.charAt(0).toLowerCase()){
-              d.v=v.value;
-            }
-            data.push(d);
+            let d=$getData(a,v,template[a]);
+            
+            data[a]=d;
           }
         }
       }

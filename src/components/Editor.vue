@@ -76,6 +76,7 @@
                 v-show="!c.showUIEditor"
                 :clazz="c"
                 :tab-index="i"
+                :disabled="paused"
                 :project="project"
                 :settings="settings"
                 :font-size="fontSize"
@@ -101,11 +102,16 @@
             </SplitterPanel>
             <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
               <Insights 
-                v-show="running"
+                v-if="running"
                 :line="current.line"
                 :clazz-name="current.name"
                 :scope="current.$scope"
-                @update-scope="$refs.preview.askForScope()"
+                :paused="paused"
+                @update-scope="$refs.preview?.askForScope"
+                @resume="resume()"
+                @stop="stop()"
+                @step="step()"
+                @step-above="stepAbove()"
               />
               <UIComponentEditor 
                 v-if="!running && showUIEditor && selectedUIComponent" 
@@ -128,10 +134,8 @@
         </SplitterPanel>
       </Splitter>
       <span style="position: fixed; bottom: 0.5rem; right: 0.5rem; z-index: 101">
-        <span class="p-buttonset" v-if="running || !isCurrentClazzUIClazz">
+        <span class="p-buttonset" v-if="!running">
           <Button class="p-button-lg" v-if="!running || paused" @click="resume()" icon="pi pi-play" />
-          <Button class="p-button-lg" v-if="paused" @click="step()" icon="pi pi-arrow-right" />
-          <Button class="p-button-lg" v-if="running" @click="stop()" icon="pi pi-times" />
         </span>
       </span>
     </template>
@@ -474,6 +478,10 @@ export default {
     step(){
       this.$root.resetCurrent();
       this.$refs.preview.step();
+    },
+    stepAbove(){
+      this.$root.resetCurrent();
+      this.$refs.preview.stepAbove();
     },
     stop(){
       if(this.closeRightAfterStopping && !this.rightClosed){

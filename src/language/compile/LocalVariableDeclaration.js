@@ -57,7 +57,6 @@ export function LocalVariableDeclaration(node,source,scope){
     throw (source.createError("';' erwartet.",node));
   }
   code+=";";
-  console.log("scopeCode",scopeCode);
   code+=scopeCode;
   //code+="eval('$locals["+JSON.stringify(vdekl.name)+"]='+"+vdekl.name+",$App.console.updateLocalVariables($locals));";
   return {

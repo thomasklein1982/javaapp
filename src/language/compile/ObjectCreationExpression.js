@@ -122,6 +122,8 @@ export function ObjectCreationExpression(node,source,scope,infos){
       code+=al.code.substring(1);
     }
   }
+  //code="(($App.debug.callDepth++>0?null:null)|"+code+"|($App.debug.callDepth-->0?null:null))";
+  console.error(code);
   return {
     code,
     clazz: clazz,

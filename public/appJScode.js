@@ -96,18 +96,23 @@ window.appJScode=function(){
         breakpoints: {},
         breakpointCount: 0,
         paused: false,
+        stepAbove: false,
+        callDepth: 0,
         resolve: null,
         line: async function(line,name, $scope){
           if(window===window.top) return;
           this.$scope=$scope;
           this.lastLine=line;
           this.lastName=name;
-          if(this.paused || this.breakpoints[line]===name){
+          console.log("line",line,name,this.callDepth,"step-above",this.stepAbove,"paused",this.paused);
+          if(this.paused || this.breakpoints[line]===name || this.callDepth===0 && this.stepAbove){
+            console.log("pause!");
             this.paused=true;
+            this.stepAbove=false;
+            this.callDepth=0;
             if($App.body.overlay){
               $App.body.overlay.style.display='';
             }
-            console.log("step",line,name);
             var p=new Promise((resolve,reject)=>{
               window.parent.postMessage({
                 type: "debug-pause",
@@ -147,12 +152,20 @@ window.appJScode=function(){
             this.setBreakpoints(bp);
           }else if(data.type==="debug-resume"){
             this.paused=false;
+            this.stepAbove=false;
             this.resolve();
           }else if(data.type==="debug-step"){
+            this.stepAbove=false;
+            this.resolve();
+            $App.debug.callDepth=0;
+          }else if(data.type==="debug-step-above"){
+            console.log("step above");
+            this.paused=false;
+            this.stepAbove=true;
+            $App.debug.callDepth=0;
             this.resolve();
           }else if(data.type==="getScope"){
-            console.log(this.$scope);
-            let $scope=this.$scope.getData(data.template);
+            let $scope=this.$scope.getData(JSON.parse(data.template));
             window.parent.postMessage({type: "getScope", data: $scope});
           }
           if(this.paused){
@@ -3241,7 +3254,6 @@ window.appJScode=function(){
         let parent=this.element.parentElement;
         if(parent){
           parent.style.display=v? "block": "none";
-          console.log("set visible",parent.nextElementSibling.$canvas);
           let right=parent.nextElementSibling;
           if(right.$canvas.isEmpty()){
             right.style.width="0%";

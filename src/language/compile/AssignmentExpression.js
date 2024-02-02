@@ -42,8 +42,8 @@ export function AssignmentExpression(node,source,scope){
   }else{
     code=v.code+assignOp+val.code;
   }
-  code="(()=>{"+code+";$scope.setVariable("+JSON.stringify(v.name)+","+v.name+")})()";
-  console.log("assign",code);
+  code="(("+code+")|$scope.setVariable("+JSON.stringify(v.name)+","+v.code+"))";
+  //console.log("assign",code);
   //code+="$scope.setVariable("+JSON.stringify(v.name)+","+v.code+")";
   return {
     code,
