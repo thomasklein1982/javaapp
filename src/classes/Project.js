@@ -147,10 +147,9 @@ export class Project{
     let mainClazz=this.getMainClazz();
     let codeMainCall="";
     if(mainClazz){
-      codeMainCall="(async function(){await $App.setup();\nawait "+mainClazz.name+".main([]);})();";
-    }else{
-      if(options.mainOptional){
-        let mainClazz=this.clazzes[0];
+      if(mainClazz.hasStaticMainMethod()){
+        codeMainCall="(async function(){await $App.setup();\nawait "+mainClazz.name+".main([]);})();";
+      }else{
         codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.setup();\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);})();";
       }
     }
@@ -245,6 +244,9 @@ export class Project{
         return c;
       }
     }
+    if(options.mainOptional){
+      return this.clazzes[0];
+    }
     return null;
   }
   getJavaScriptCode(){
@@ -258,6 +260,10 @@ export class Project{
         mainClazz=c;
       }
       remaining.push(c);
+    }
+    if(!mainClazz && options.mainOptional){
+      mainClazz=this.clazzes[0];
+      mainClazz.superClazz=Java.clazzes.JavaApp;
     }
     let loopCounter=0;
     while(remaining.length>0 && loopCounter<=this.clazzes.length*this.clazzes.length){
