@@ -23,11 +23,16 @@ export function LambdaExpression(node,source,scope,infos){
   params=params(node,source,scope);
   console.log(params);
   
+  let plist;
+  try{
+    plist=method.getRenamedParameterList(params.params);
+  }catch(e){
+    throw source.createError(e,node);
+  }
+  scope.pushParameterList(plist);
   node=node.nextSibling;
   let block=CompileFunctions.get(node,source);
   scope.pushLayer();
-  let plist=method.getRenamedParameterList(params.params);
-  scope.pushParameterList(plist);
   block=block(node,source,scope);
   scope.popLayer();
   if(block.errors.length>0){

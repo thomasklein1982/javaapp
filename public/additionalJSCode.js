@@ -976,6 +976,12 @@ function additionalJSCode(){
     getY(){
       return this.$el.cy;
     }
+    setBounds(x,y,width,height){
+      this.setX(x);
+      this.setY(y);
+      this.setWidth(width);
+      this.setHeight(height);
+    }
     setWidth(v){
       this.width=v;
       this.$el.width=v;
@@ -990,6 +996,7 @@ function additionalJSCode(){
     getHeight(){
       return this.$el.height;
     }
+    
     changeWidth(dw){
       this.setWidth(this.getWidth()+dw);
     }
@@ -2524,6 +2531,9 @@ function additionalJSCode(){
       if(!window.$main){
         window.$main=this;
         JavaApp.setWatchedObject(this);
+        setTimeout(()=>{
+          $main.onStart();
+        },10);
       }else{
         throw $new(Exception,"Es darf nur eine Instanz einer JavaApp-Klasse existieren.");
       }

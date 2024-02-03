@@ -14,7 +14,7 @@ export function ExpressionStatement(node,source,scope){
     throw (source.createError("';' erwartet.",node.nextSibling));
   }
   if(a.local && scope.addLocalVariablesUpdates && !scope.optimizeCompiler){
-    a.code+=";eval('$locals["+JSON.stringify(a.name)+"]="+a.name+"');";
+    a.code+=";";//eval('$locals["+JSON.stringify(a.name)+"]="+a.name+"');";
   }else{
     a.code+=";";
   }

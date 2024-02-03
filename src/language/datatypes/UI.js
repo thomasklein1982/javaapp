@@ -227,6 +227,15 @@ function defineJComponent(Clazz,Java){
     ]
   },Clazz,false,false,Java);
   createMethod({
+    name: 'setBounds',
+    args: [
+      {name: 'x', type: 'double'},
+      {name: 'y', type: 'double'},
+      {name: 'width', type: 'double'},
+      {name: 'height', type: 'double'}
+    ]
+  },Clazz,false,false,Java);
+  createMethod({
     name: 'getX',
     returnType: 'double'
   },Clazz,false,false,Java);

@@ -3266,9 +3266,6 @@ window.appJScode=function(){
         if(parent){
           parent.style.display=v? "block": "none";
           this.adaptSize();
-          // setTimeout(function(){
-          //   $App.onResize(true);
-          // },10);
         }
       },
       adaptSize: function(){
@@ -3286,6 +3283,9 @@ window.appJScode=function(){
               right.style.width="100%";
             }
           }
+          setTimeout(function(){
+            $App.onResize(true);
+          },10);
         }
       }
     };

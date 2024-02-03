@@ -12,6 +12,7 @@ export function VariableDeclarator(node,source,scope,vType){
   if(/[^a-zA-Z_]/.test(name.charAt(0))){
     throw source.createError("Ein Variablenname muss mit einem Buchstaben oder einem Unterstrich beginnen.",node);
   }
+  let val;
   if(node.nextSibling){
     node=node.nextSibling;
     if(node.type.isError){
@@ -22,7 +23,7 @@ export function VariableDeclarator(node,source,scope,vType){
     }
     node=node.nextSibling;
     let f=CompileFunctions.get(node,source);
-    let val=f(node,source,scope);
+    val=f(node,source,scope);
     if(!val.type){
       throw source.createError("Dieser Ausdruck hat keinen Wert, der zugewiesen werden könnte.",node);
     }
@@ -43,6 +44,7 @@ export function VariableDeclarator(node,source,scope,vType){
   return {
     code,
     name,
+    value: val,
     type,
     initialValue
   }

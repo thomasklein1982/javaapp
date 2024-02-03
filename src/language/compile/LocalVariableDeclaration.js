@@ -38,7 +38,7 @@ export function LocalVariableDeclaration(node,source,scope){
 
       vnames.push(vdekl.name);
       initialValues.push(vdekl.initialValue);
-      scopeCode+="$scope.pushVariable("+JSON.stringify(vdekl.name)+","+JSON.stringify(type.baseType.name)+","+type.dimension+","+vdekl.name+");";
+      scopeCode="$scope.pushVariable("+JSON.stringify(vdekl.name)+","+JSON.stringify(type.baseType.name)+","+type.dimension+","+vdekl.name+");";
     }catch(e){
       throw (source.createError(e,node));
     }
@@ -48,7 +48,11 @@ export function LocalVariableDeclaration(node,source,scope){
         throw source.createError("Einer Variablen vom Typ '"+type+"' kann kein Wert vom Typ '"+vdekl.type+"' zugewiesen werden.",node);
       }
     }
-    code+=vdekl.code;
+    let innerCode="await (async ()=>{";
+    innerCode+="let "+vdekl.code+";"+scopeCode+"return "+vdekl.name+";";
+    innerCode+="})()";
+    code+=vdekl.name+"="+innerCode;
+    //console.log(innerCode,code);
     node=node.nextSibling;
     if(node.name!==","){
       weiter=false;
@@ -61,7 +65,7 @@ export function LocalVariableDeclaration(node,source,scope){
     throw (source.createError("';' erwartet.",node));
   }
   code+=";";
-  code+=scopeCode;
+  
   //code+="eval('$locals["+JSON.stringify(vdekl.name)+"]='+"+vdekl.name+",$App.console.updateLocalVariables($locals));";
   return {
     code,

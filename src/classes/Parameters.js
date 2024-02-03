@@ -21,6 +21,11 @@ export class ParameterList{
     return params;
   }
   getRenamedCopy(newNames){
+    if(this.parameters.length!==newNames.length){
+      let soll=this.parameters.length;
+      let ist=newNames.length;
+      throw "Zu "+(soll<ist? 'viele':'wenige')+ " Parameter, es müsste"+(soll===1?' ein': 'n '+soll)+" Parameter sein.";
+    }
     let params=new ParameterList(this.method);
     params.minCount=this.minCount;
     params.reverseOrder=this.reverseOrder;

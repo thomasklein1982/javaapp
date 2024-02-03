@@ -86,7 +86,7 @@ export class Method{
     code+="\n";
     code+="$App.debug.callDepth--;";
     if(this.isConstructor()){
-      code+="return this;\n}";
+      code+="\nreturn this;\n}";
     }else{
       code+="return undefined;\n}";
     }

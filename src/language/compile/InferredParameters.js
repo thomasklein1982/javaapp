@@ -9,12 +9,13 @@ export function InferredParameters(node,source,scope){
   while(node && !node.type.isError && node.name!==")"){
     if(node.name===","){
       code+=",";
-    }
-    let p=CompileFunctions.get(node,source);
-    if(p){
-      p=p(node,source,scope);
-      params.push(p.code);
-      code+=p.code;
+    }else{
+      let p=CompileFunctions.get(node,source);
+      if(p){
+        p=p(node,source,scope);
+        params.push(p.code);
+        code+=p.code;
+      }
     }
     node=node.nextSibling;
   }

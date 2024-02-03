@@ -5,6 +5,7 @@ import { concatArrays } from "../../functions/helper";
 import { CompileFunctions } from "../CompileFunctions";
 
 function createUpdateLocalVariablesCode(scope){
+  return "";
   if(scope.optimizeCompiler) return "";
   let locals=scope.getLocalVariableNames();
   return "var $locals="+JSON.stringify(locals)+";for(var $a in $locals){eval('$locals[$a]='+$a)};$App.console.updateLocalVariables($locals);";
@@ -60,26 +61,26 @@ export function Block(node,source,scope){
             code+="\n";
           }
           code+=res.code;
-          if(res.updateLocalVariablesAfter && scope.addLocalVariablesUpdates){
-            let vnames;
-            if(res.updateLocalVariablesAfter===true){
-              vnames=[];
-              let localVariables=scope.getLocalVariables();
-              for(let vname in localVariables){
-                vnames.push(localVariables[vname].name);
-              }
-            }else{
-              vnames=res.updateLocalVariablesAfter;
-            }
-            if(!scope.optimizeCompiler && vnames){
-              code+="eval('";
-              for(let i=0;i<vnames.length;i++){
-                let name=vnames[i];
-                code+="$locals["+JSON.stringify(name)+"]="+name+";";
-              }
-              code+="',$App.console.updateLocalVariables($locals));";
-            }
-          }
+          // if(res.updateLocalVariablesAfter && scope.addLocalVariablesUpdates){
+          //   let vnames;
+          //   if(res.updateLocalVariablesAfter===true){
+          //     vnames=[];
+          //     let localVariables=scope.getLocalVariables();
+          //     for(let vname in localVariables){
+          //       vnames.push(localVariables[vname].name);
+          //     }
+          //   }else{
+          //     vnames=res.updateLocalVariablesAfter;
+          //   }
+          //   if(!scope.optimizeCompiler && vnames){
+          //     code+="eval('";
+          //     for(let i=0;i<vnames.length;i++){
+          //       let name=vnames[i];
+          //       code+="$locals["+JSON.stringify(name)+"]="+name+";";
+          //     }
+          //     code+="',$App.console.updateLocalVariables($locals));";
+          //   }
+          // }
         }else{
           code+="\n"+res.code;
         }

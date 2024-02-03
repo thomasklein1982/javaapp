@@ -277,7 +277,7 @@ export class Project{
       }
     }
 
-    code+="\nasync function onStart(){if($main && $main.onStart){$main.onStart();}}\n";
+    //code+="\nasync function onStart(){if($main && $main.onStart){$main.onStart();}}\n";
     let clazzInfos={};
     /**Informationen zu allen Klassen anhaengen: Name, Attribute mit Datentyp, factory-Funktion */
     for(let i=0;i<this.clazzes.length;i++){
