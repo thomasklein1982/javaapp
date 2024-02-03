@@ -29,13 +29,15 @@ export default{
       version: 290,
       paused: false,
       printMode: false,
-      current: {line: -1, name: null, $scope: null},
+      current: {line: -1, name: null, $scope: {local: null, main: null, that: null}},
       difficulty: options.difficulty()
     };
   },
   methods: {
-    resetCurrent(){
-      this.current={line: -1, name: this.current.name};
+    resetCurrent(line,name){
+      if(!line) line=this.current.line;
+      if(!name) name=this.current.name;
+      this.current={line, name, $scope: this.current.$scope};
     },
     showScreen: function(name){
       this.screen=name;

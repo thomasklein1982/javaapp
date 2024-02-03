@@ -45,6 +45,7 @@ window.appJScode=function(){
       $sharedVariables: null,
       $iframes: [],
       resizeObserver: null,
+      watchedObject: null,
       dialog: {
         root: null,
         backdrop: null,
@@ -99,14 +100,13 @@ window.appJScode=function(){
         stepAbove: false,
         callDepth: 0,
         resolve: null,
+        mainTemplate: {},
         line: async function(line,name, $scope){
           if(window===window.top) return;
           this.$scope=$scope;
           this.lastLine=line;
           this.lastName=name;
-          console.log("line",line,name,this.callDepth,"step-above",this.stepAbove,"paused",this.paused);
           if(this.paused || this.breakpoints[line]===name || this.callDepth===0 && this.stepAbove){
-            console.log("pause!");
             this.paused=true;
             this.stepAbove=false;
             this.callDepth=0;
@@ -769,6 +769,10 @@ window.appJScode=function(){
       }
     }
     
+    $App.setWatchedObject=function(obj){
+      this.watchedObject=obj;
+    }
+
     $App.setupApp=function(title,favicon,width,height,backgroundColor){
       if(!this.body.element){
         this.setupData={
@@ -2861,69 +2865,66 @@ window.appJScode=function(){
       this.localItems={};
       this.watchedVariables=[];
       this.visible=false;
-      this.variablesDiv=document.createElement("div");
-      this.variablesDiv.style="height: calc(70% - 0.4cm); overflow: auto";
-      this.element.appendChild(this.variablesDiv);
       this.outputDiv=document.createElement("div");
-      this.outputDiv.style="height: calc(30% - 0.4cm); overflow: auto";
+      this.outputDiv.style="height: 100%; overflow: auto";
       this.element.appendChild(this.outputDiv);
-      this.input=document.createElement("input");
-      this.input.style="width: 100%; height: 0.8cm; background-color: #222222; outline: none;border: none; color: white; box-sizing: border-box;";
-      this.input.currentPosition=-1;
-      this.input.spellcheck=false;
-      this.input.autocapitalize="none";
-      this.input.autocorrect="off";
-      this.input.placeholder="gib einen Befehl ein...";
-      this.input.onchange=async ()=>{
-        var v=this.input.value;
-        if(v.trim().length===0) return;
-        if(!(this.history.length>0 && this.history[this.history.length-1]===v)){
-          this.history.push(v);
-          this.saveHistory();
-        }
-        //var w;
-        let func;
-        if(window.$main){
-          func="with($main){return "+v+";}";
-          //eval("with($main){w="+v+"}");
-        }else{
-          func="return "+v+";";
-          //eval("w="+v);
-        }
-        func=Function("return (async function anonym(){"+func+"}());");
-        var w=await func();
-        console.log(">",v);
-        if(w!==undefined){
-          console.log("<",w);
-        }
-        this.input.value="";
-        this.input.currentPosition=-1;
-      };
-      this.input.onkeydown=(ev)=>{
-        ev.stopPropagation();
-        if(ev.keyCode===40 || ev.keyCode===38 || ev.keyCode===13){
-          if(ev.keyCode===13){
-            this.input.onchange();
-          }else if(ev.keyCode===38){
+      // this.input=document.createElement("input");
+      // this.input.style="width: 100%; height: 0.8cm; background-color: #222222; outline: none;border: none; color: white; box-sizing: border-box;";
+      // this.input.currentPosition=-1;
+      // this.input.spellcheck=false;
+      // this.input.autocapitalize="none";
+      // this.input.autocorrect="off";
+      // this.input.placeholder="gib einen Befehl ein...";
+      // this.input.onchange=async ()=>{
+      //   var v=this.input.value;
+      //   if(v.trim().length===0) return;
+      //   if(!(this.history.length>0 && this.history[this.history.length-1]===v)){
+      //     this.history.push(v);
+      //     this.saveHistory();
+      //   }
+      //   //var w;
+      //   let func;
+      //   if(window.$main){
+      //     func="with($main){return "+v+";}";
+      //     //eval("with($main){w="+v+"}");
+      //   }else{
+      //     func="return "+v+";";
+      //     //eval("w="+v);
+      //   }
+      //   func=Function("return (async function anonym(){"+func+"}());");
+      //   var w=await func();
+      //   console.log(">",v);
+      //   if(w!==undefined){
+      //     console.log("<",w);
+      //   }
+      //   this.input.value="";
+      //   this.input.currentPosition=-1;
+      // };
+      // this.input.onkeydown=(ev)=>{
+      //   ev.stopPropagation();
+      //   if(ev.keyCode===40 || ev.keyCode===38 || ev.keyCode===13){
+      //     if(ev.keyCode===13){
+      //       this.input.onchange();
+      //     }else if(ev.keyCode===38){
             
-            if(this.input.currentPosition<this.history.length-1){
-              this.input.currentPosition++;
-            }
-          }else if(ev.keyCode===40){
-            if(this.input.currentPosition>=0){
-              this.input.currentPosition--;
-            }
-          }
-          if(this.input.currentPosition>=0){
-            this.input.value=this.history[this.history.length-this.input.currentPosition-1];
-          }else{
-            this.input.value="";
-          }
-        }
-      };
-      this.element.appendChild(this.input);
-      this.localVariables=null;
-      this.loadHistory();
+      //       if(this.input.currentPosition<this.history.length-1){
+      //         this.input.currentPosition++;
+      //       }
+      //     }else if(ev.keyCode===40){
+      //       if(this.input.currentPosition>=0){
+      //         this.input.currentPosition--;
+      //       }
+      //     }
+      //     if(this.input.currentPosition>=0){
+      //       this.input.value=this.history[this.history.length-this.input.currentPosition-1];
+      //     }else{
+      //       this.input.value="";
+      //     }
+      //   }
+      // };
+      // this.element.appendChild(this.input);
+      // this.localVariables=null;
+      // this.loadHistory();
       this.currentLineDiv=document.createElement("div");
       this.currentLineDiv.style.whiteSpace="pre";
       this.outputDiv.appendChild(this.currentLineDiv);
@@ -3038,18 +3039,28 @@ window.appJScode=function(){
         this.outputDiv.style="height: calc(30% - 0.4cm); overflow: auto";
         this.element.insertBefore(this.outputDiv,this.input);
       },
-      update: function(sharedVariables){
-        if($App.language==="js"){
-          this.updateFromObject(window,sharedVariables);
-        }else if($App.language==="java"){
-          this.updateFromObject($App.debug.object? $App.debug.object : $main,sharedVariables);
+      update: function(){
+        //console.log("update global 1");
+        if(window.parent!==window && !$App.debug.paused){
+          let data=$getMainData();
+          if(data){
+            window.parent.postMessage({
+              type: "update-scope-main",
+              data
+            },"*");
+          }
         }
-        if(window.parent!==window && sharedVariables){
-          window.parent.postMessage({
-            type: "update-shared-variables",
-            sharedVariables: sharedVariables
-          },"*");
-        }
+        // if($App.language==="js"){
+        //   this.updateFromObject(window,sharedVariables);
+        // }else if($App.language==="java"){
+        //   this.updateFromObject($App.debug.object? $App.debug.object : $main,sharedVariables);
+        // }
+        // if(window.parent!==window && sharedVariables){
+        //   window.parent.postMessage({
+        //     type: "update-shared-variables",
+        //     sharedVariables: sharedVariables
+        //   },"*");
+        // }
       },
       updateLocalVariables: function(variables){
         this.localVariables=variables;
@@ -3254,25 +3265,28 @@ window.appJScode=function(){
         let parent=this.element.parentElement;
         if(parent){
           parent.style.display=v? "block": "none";
+          this.adaptSize();
+          // setTimeout(function(){
+          //   $App.onResize(true);
+          // },10);
+        }
+      },
+      adaptSize: function(){
+        let parent=this.element.parentElement;
+        if(parent){
           let right=parent.nextElementSibling;
           if(right.$canvas.isEmpty()){
             right.style.width="0%";
             parent.style.width="100%";
           }else{
             parent.style.width="30%";
-            if(v){
+            if(this.visible){
               right.style.width="70%";
             }else{
               right.style.width="100%";
             }
           }
-          
-          setTimeout(function(){
-            $App.onResize(true);
-          },10);
         }
-        
-        
       }
     };
     
@@ -5550,8 +5564,6 @@ window.appJScode=function(){
     ],'',"everywhere");
     
     $App.help.compileScreen();
-    
-    $App.setup(true);
     
     if($App.language==="js"){
       /**Vordefinierte Variablennamen speichern:*/

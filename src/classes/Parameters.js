@@ -20,6 +20,17 @@ export class ParameterList{
     }
     return params;
   }
+  getRenamedCopy(newNames){
+    let params=new ParameterList(this.method);
+    params.minCount=this.minCount;
+    params.reverseOrder=this.reverseOrder;
+    for(let i=0;i<this.parameters.length;i++){
+      let p=this.parameters[i];
+      let n=p.getRenamedCopy(newNames[i],params);
+      params.parameters.push(n);
+    }
+    return params;
+  }
   get count(){
     return this.parameters.length;
   }
@@ -107,6 +118,13 @@ export class Parameter{
     }else{
       p.type=this.type;
     }
+    return p;
+  }
+
+  getRenamedCopy(newName,copyList){
+    let p=new Parameter(copyList);
+    p.name=newName;
+    p.type=this.type;
     return p;
   }
 

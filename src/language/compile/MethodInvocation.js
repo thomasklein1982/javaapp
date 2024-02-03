@@ -106,7 +106,7 @@ export function MethodInvocation(node,source,scope){
     code+=al.code;
   }
   code="await "+code;
-  code="(($App.debug.callDepth++>0?null:null)|"+code+"|($App.debug.callDepth-->0?null:null))";
+  //code="(($App.debug.callDepth++>0?null:null)|"+code+"|($App.debug.callDepth-->0?null:null))";
   let returnType=null;
   if(method.type){
     returnType=method.getRealReturnType(owner.typeArguments);

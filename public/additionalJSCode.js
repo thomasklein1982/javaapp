@@ -25,6 +25,12 @@ function additionalJSCode(){
     return o;
   }
 
+  function $createInterfaceInstance(name,methodname,func){
+    let o=new Object();
+    o[methodname]=func;
+    return o;
+  }
+
   async function $handleOnAction(ev){
     $handleEvent.call(this,"Action",ev);
   }
@@ -1293,8 +1299,9 @@ function additionalJSCode(){
   class JFrame extends JPanel{
     $constructor(template){
       super.$constructor(template);
-      this.$el.style="left: 0; right: 0; top: 0; bottom: 0; position: absolute; background-color: cyan; border: 1pt solid black;";
+      this.$el.style="left: 0; right: 0; top: 0; bottom: 0; position: absolute;";
       $App.canvas.addElement(this.$el,50,50,100,100);
+      $App.console.adaptSize();
     }
   }
 
@@ -2463,7 +2470,13 @@ function additionalJSCode(){
       t: v.type,
       d: dim
     };
-    if(v.value===null||v.value===undefined || v.dimension===0 && v.type==="String" || v.type.charAt(0)===v.type.charAt(0).toLowerCase()){
+    let isPrimitive=true;
+    if(v.type){
+      isPrimitive=v.type.charAt(0);
+      isPrimitive=isPrimitive===isPrimitive.toLowerCase();
+    }
+    let c=v.type;
+    if(v.value===null||v.value===undefined || v.dimension===0 && v.type==="String" || isPrimitive){
       d.v=v.value;
     }else if(template){
       if(v.dimension>0){
@@ -2479,14 +2492,12 @@ function additionalJSCode(){
           let dimension=0;
           if(infos){
             let attr=infos.attributes[name];
-            console.log("infos liegen vor",infos.attributes,name,attr);
             if(attr){
               type=attr.baseType;
               dimension=attr.dimension;
             }
           }else{
           }
-          console.log("get data, template",name,template[name]);
           d.v[name]=$getData(name,{dimension,type,value}, template[name]);
         }
       }
@@ -2494,27 +2505,70 @@ function additionalJSCode(){
     return d;
   }
   
+  function $getMainData(){
+    let obj=$App.watchedObject;
+    if(obj){
+      
+      let type=obj.constructor.name;
+      if(Array.isArray(obj)){
+
+      }
+      let global=$getData("main",{type: type,dimension: 0, value: obj}, $App.debug.mainTemplate);
+      return global;
+    }
+    return undefined;
+  }
+
+  class JavaApp{
+    constructor(){
+      if(!window.$main){
+        window.$main=this;
+        JavaApp.setWatchedObject(this);
+      }else{
+        throw $new(Exception,"Es darf nur eine Instanz einer JavaApp-Klasse existieren.");
+      }
+    }
+    static setWatchedObject(object){
+      $App.setWatchedObject(object);
+    }
+  }
+
   class $Scope{
-    constructor(object){
+    constructor(thisObject){
       this.stack=[];
-      this.object=object;
+      if(thisObject instanceof Function){
+        //static context
+        this.thisObject=null;
+      }else{
+        this.thisObject=thisObject;
+      }
       this.pushLayer();
     }
     getData(template){
-      let data={};
-      if(!template || true){
+      let local={};
+      if(template.local){
         for(let i=this.stack.length-1;i>=0;i--){
           let layer=this.stack[i];
           for(let a in layer){
-            if(a in data) continue;
+            if(a in local) continue;
             let v=layer[a];
-            let d=$getData(a,v,template[a]);
+            let d=$getData(a,v,template.local[a]);
             
-            data[a]=d;
+            local[a]=d;
           }
         }
       }
-      return data;
+      let that=undefined;
+      if(this.thisObject && template.that){
+        let type=this.thisObject.constructor.name;
+        that=$getData("this",{type: type,dimension: 0, value: this.thisObject}, template.that);
+      }
+      let main=$getMainData();
+      
+      let res={
+        local, that, main
+      };
+      return res;
     }
     pushLayer(){
       let layer={};

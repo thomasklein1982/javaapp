@@ -19,12 +19,13 @@ class Options{
     this.instantiateUIClasses=false;
     this.stringCharAtDeliversString=false;
     this.stringIsComparable=false;
+    this.autoextendJavaApp=false;
   }
   isEasyMode(){
     return this.classOptional||this.voidOptional||this.mainOptional;
   }
   isHardMode(){
-    return !this.classOptional && !this.voidOptional && !this.mainOptional && !this.autocast && !this.instantiateUIClasses && !this.stringCharAtDeliversString && !this.stringIsComparable;
+    return !this.classOptional && !this.voidOptional && !this.mainOptional && !this.autocast && !this.instantiateUIClasses && !this.stringCharAtDeliversString && !this.stringIsComparable && !this.autoextendJavaApp;
   }
   difficulty(){
     if(this.isEasyMode())return 0;
@@ -51,6 +52,7 @@ class Options{
     this.instantiateUIClasses=true;
     this.stringCharAtDeliversString=true;
     this.stringIsComparable=true;
+    this.autoextendJavaApp=true;
     if(dontSave) return;
     await this.saveToStorage();
   }
@@ -62,6 +64,7 @@ class Options{
     this.instantiateUIClasses=false;
     this.stringCharAtDeliversString=true;
     this.stringIsComparable=true;
+    this.autoextendJavaApp=true;
     if(dontSave) return;
     await this.saveToStorage();
   }
@@ -73,6 +76,7 @@ class Options{
     this.instantiateUIClasses=false;
     this.stringCharAtDeliversString=false;
     this.stringIsComparable=false;
+    this.autoextendJavaApp=false;
     if(dontSave) return;
     await this.saveToStorage();
   }

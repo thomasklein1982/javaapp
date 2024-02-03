@@ -47,13 +47,13 @@ export default {
         {
           name: "Leere App",
           description: "Eine normale, leere App. Bereit zu coden!",
-          code: "class NAME{\n  \n  public static void main(String[] args){\n    new NAME();\n  }\n}"
+          code: "class NAME extends JavaApp{\n  \n  public static void main(String[] args){\n    new NAME();\n  }\n}"
         },
         {
           name: "App mit UI",
           description: "Eine leere App mit einer UI-Klasse.",
           code: [
-            'class NAME {\n  Screen screen;\n  void onStart( ) {\n    screen = new Screen( );\n  }\n  \n  void onAction( JComponent trigger ) {\n    \n  }\n\n  public static void main(String[] args){\n    new NAME();\n  }\n}',
+            'class NAME extends JavaApp{\n  Screen screen;\n  void onStart( ) {\n    screen = new Screen( );\n  }\n  \n  void onAction( JComponent trigger ) {\n    \n  }\n\n  public static void main(String[] args){\n    new NAME();\n  }\n}',
             {
               type: "UI",
               code: '{"name":"Screen","components":[{"type":"JButton","value":"Klicken","x":50,"y":50,"width":100,"height":100,"name":""}]}'
@@ -110,11 +110,14 @@ export default {
         code=[this.template.code];
       }
       if(options.mainOptional){
-        code[0]=code[0].replace("\n\n  public static void main(String[] args){\n    new NAME();\n  }","");
+        code[0]=code[0].replace(/\n\s*\n\s*public static void main\(String\[\] args\)\{\s*new NAME\(\);\s*\}/,"");
       }
       code[0]=code[0].replace(/NAME/g,name);
       if(options.voidOptional){
         code[0]=code[0].replace(/void /g,"");
+      }
+      if(options.autoextendJavaApp){
+        code[0]=code[0].replace(" extends JavaApp","");
       }
       if(options.instantiateUIClasses){
         code[0]=code[0].replace("\n  Screen screen;","");

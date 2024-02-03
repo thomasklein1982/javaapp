@@ -147,11 +147,11 @@ export class Project{
     let mainClazz=this.getMainClazz();
     let codeMainCall="";
     if(mainClazz){
-      codeMainCall="(async function(){await "+mainClazz.name+".main([]);})();";
+      codeMainCall="(async function(){await $App.setup();\nawait "+mainClazz.name+".main([]);})();";
     }else{
       if(options.mainOptional){
         let mainClazz=this.clazzes[0];
-        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);})();";
+        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.setup();\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);})();";
       }
     }
     let css=this.prepareCSS(this.css);

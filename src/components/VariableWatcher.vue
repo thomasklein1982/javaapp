@@ -1,7 +1,7 @@
 <template>
   <div :style="{marginLeft: depth+'em'}">
     <div @click="clickExpand()" class="unselectable" style="cursor: pointer; display: flex; align-items: center;">
-      <span :style="{visibility: isExpandable? '':'hidden'}" :class="isExpanded? 'pi pi-angle-down':'pi pi-angle-right'"/>{{ variable.n }}: {{ value }}
+      <span :style="{visibility: isExpandable? '':'hidden'}" :class="isExpanded? 'pi pi-angle-down':'pi pi-angle-right'"/><slot name="header">{{ variable.n }}</slot>: {{ value }}
     </div>
     <template v-if="isExpanded">
       {{ depth>1? variable.v:'' }}

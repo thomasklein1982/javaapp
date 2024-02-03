@@ -1,9 +1,10 @@
 <template>
   <div id="root">
+    <Toast/>
     <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px'}"></div>
+    <div v-show="disabled" @click="clickDisabled()" style="cursor: not-allowed" :style="disableDivStyle" id="disable-div"></div>
     <Message v-if="displayedRuntimeError" severity="error" @close="dismissRuntimeError()">Z{{displayedRuntimeError.line}}: {{displayedRuntimeError.message}}</Message>
     <Button outlined style="position: absolute; top: 0; right: 0" v-if="isUIClazz" icon="pi pi-table" @click="clazz.showUIEditor=true"/>
-    <div v-show="disabled" :style="disableDivStyle" id="disable-div"></div>
   </div>
   
 </template>
@@ -206,7 +207,7 @@ export default {
         content=content.getBoundingClientRect();
         parent=parent.getBoundingClientRect();
         this.disableDivStyle.left=content.x-parent.x+"px";
-        this.disableDivStyle.width=content.x-parent.width+"px";
+        this.disableDivStyle.width=content.width+"px";
       }
     }
 
@@ -576,6 +577,9 @@ export default {
         }
       }
       return node;
+    },
+    clickDisabled(){
+      this.$toast.add({severity:'info', summary:'App läuft gerade', detail:'So lange die App läuft, kannst du den Code nicht ändern.', life: 3000});
     },
     setCursorToEnd(){
       this.setCursor(this.size-1);

@@ -84,9 +84,9 @@ export class Clazz{
     if(this.superClazz){
       code+="super();";
     }
-    if(this.hasStaticMainMethod()){
-      code+="if(!window.$main){window.$main=this;}";
-    }
+    // if(this.hasStaticMainMethod()){
+    //   code+="if(!window.$main){window.$main=this;}";
+    // }
     let attributesInitCode="";
     for(let i in this.attributes){
       let a=this.attributes[i];
@@ -322,7 +322,11 @@ export class Clazz{
       }
     }
     if(type instanceof Clazz){
+      if(type.name==="Object" || this.name===type.name){
+        return true;
+      }
       if(type.isInterface){
+        
         if(this.implementedInterfaces){
           for(let i=0;i<this.implementedInterfaces.length;i++){
             let inter=this.implementedInterfaces[i];
@@ -334,9 +338,6 @@ export class Clazz{
         }else{
           return false;
         }
-      }
-      if(type.name==="Object" || this.name===type.name){
-        return true;
       }
       if(this.superClazz && !this.superClazz.isSubtypeOf){
         console.error("superklasse is subtype of",this,this.superClazz);
@@ -719,13 +720,15 @@ export class Clazz{
     if(this.deserializeMethod){
       this.methods.deserialize=this.deserializeMethod;
     }
-
     var node=this.clazzBody;
     if(!node) return;
     /**Klassenkoerper parsen: */
     let scope=new Scope(this.project);
     this.compileMemberNodes(scope,node);
-    
+    if(options.autoextendJavaApp && !this.superClazz && this.hasStaticMainMethod()){
+      console.log("auto extend javaapp",this.name);
+      this.superClazz=Java.clazzes.JavaApp;
+    }
     return this.errors;
   }
 

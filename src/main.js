@@ -127,9 +127,13 @@ window.onmessage=function(message){
     app.$refs.editor.setRuntimeError(data);
   }else if(data.type==="debug-pause"){
     app.paused=true;
-    app.current={line: data.line, name: data.name};
+    app.resetCurrent(data.line,data.name);
   }else if(data.type==="getScope"){
-    app.current.$scope=data.data;
+    app.current.$scope.local=data.data.local;
+    app.current.$scope.that=data.data.that;
+    app.current.$scope.main=data.data.main;
+  }else if(data.type==="update-scope-main"){
+    app.current.$scope.main=data.data;
   }
 }
 

@@ -7,22 +7,35 @@
       <Button @click="$emit('stop')" icon="pi pi-times" />
     </div>
     <div style="overflow: auto; flex: 1;">
-      <Accordion class="accordion-packed" multiple :activeIndex="accordion">
-        <AccordionTab header="Global Scope">
-          Attribute der Hauptklasse
-        </AccordionTab>
-        <AccordionTab header="Local Scope">
-          <div  style="font-family: monospace">
-            <template v-for="(v,i) in scope">
-              <VariableWatcher  
-                :variable="v" 
-                :template="template"
-                @update-scope="this.updateScope()"
-              />
-            </template>
-          </div>
-        </AccordionTab>  
-      </Accordion>
+      <template v-if="scope && scope.main">
+        <VariableWatcher
+          :variable="scope.main"
+          :template="template.main"
+          @update-scope="this.updateScope"
+        >
+          <template #header>
+            Watched Object
+          </template>
+        </VariableWatcher>
+      </template>
+      <template v-else>
+      </template>
+      <div style="font-family: monospace" v-if="scope && paused">
+        <template v-if="scope && scope.that">
+          <VariableWatcher
+            :variable="scope.that"
+            :template="template.that"
+            @update-scope="this.updateScope"
+          />
+        </template>
+        <template v-for="(v,i) in scope.local">
+          <VariableWatcher  
+            :variable="v" 
+            :template="template.local"
+            @update-scope="this.updateScope()"
+          />
+        </template>
+      </div>
     </div>
   </div>
 </template>
@@ -48,13 +61,18 @@ export default{
       this.updateScope();
     },
     clazzName(nv,ov){
-      this.template={};
+      this.template.local={};
+      this.template.that={};
       this.updateScope();
     }
   },
   data(){
     return {
-      template: {},
+      template: {
+        local: {},
+        that: {},
+        main: {main: {}}
+      },
       accordion: [0],
       expandedRows: []
     };

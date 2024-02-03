@@ -51,6 +51,9 @@ export class Method{
     let params=this.params.getCopy(typeArguments);
     return params;
   }
+  getRenamedParameterList(newNames){
+    return this.params.getRenamedCopy(newNames);
+  }
   getRealReturnType(typeArguments){
     if(!this.type) return null;
     if(!this.type.baseType.isGeneric) return this.type;
@@ -71,6 +74,7 @@ export class Method{
       code+=this.params.getJavaScriptCode()+"{";
     }
     code+="let $scope=new $Scope(this);";
+    code+="$App.debug.callDepth++;";
     for(let i=0;i<this.params.parameters.length;i++){
       let p=this.params.parameters[i];
       code+="$scope.pushVariable("+JSON.stringify(p.name)+","+JSON.stringify(p.type.baseType.name)+","+p.type.dimension+","+p.name+");";
@@ -79,10 +83,12 @@ export class Method{
     if(this.block){
       code+="\n"+this.block.code;
     }
+    code+="\n";
+    code+="$App.debug.callDepth--;";
     if(this.isConstructor()){
-      code+="\nreturn this;\n}";
+      code+="return this;\n}";
     }else{
-      code+="\nreturn undefined;\n}";
+      code+="return undefined;\n}";
     }
     return code;
   }

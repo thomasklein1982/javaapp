@@ -60,7 +60,7 @@ export function ArgumentList(node,source,scope,parameters){
       pnode=paramNodes[i];
     }
     let f=CompileFunctions.get(pnode,source);
-    let arg=f(pnode,source,scope);
+    let arg=f(pnode,source,scope,{parameter: p});
     if(arg.updateLocalVariablesAfter){
       updateLocalVariablesAfter=true;
     }

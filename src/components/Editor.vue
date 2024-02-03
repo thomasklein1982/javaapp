@@ -76,7 +76,7 @@
                 v-show="!c.showUIEditor"
                 :clazz="c"
                 :tab-index="i"
-                :disabled="paused"
+                :disabled="running"
                 :project="project"
                 :settings="settings"
                 :font-size="fontSize"
@@ -436,7 +436,7 @@ export default {
       }
     },
     playInFullscreen(){
-      this.$root.resetCurrent();
+      this.$root.resetCurrent(-1);
       this.clearRuntimeErrors();
       this.running=true;
       this.$refs.preview.runInFullscreen();
@@ -463,24 +463,26 @@ export default {
       }else{
         this.closeRightAfterStopping=false;
       }
-      this.$root.resetCurrent();
-      
       if(this.paused){
+        this.$root.resetCurrent(-1);
         this.$root.paused=false;
         this.$refs.preview.resume();
         //this.$refs.controlArea.resume();
-      }else if(!this.running){
-        this.clearRuntimeErrors();
-        this.running=true;
-        this.$refs.preview.reload();
+      }else{
+        this.$root.resetCurrent(-1);
+        if(!this.running){
+          this.clearRuntimeErrors();
+          this.running=true;
+          this.$refs.preview.reload();
+        }
       }
     },
     step(){
-      this.$root.resetCurrent();
+      //this.$root.resetCurrent();
       this.$refs.preview.step();
     },
     stepAbove(){
-      this.$root.resetCurrent();
+      //this.$root.resetCurrent();
       this.$refs.preview.stepAbove();
     },
     stop(){
@@ -492,7 +494,7 @@ export default {
       }
       this.$root.paused=false;
       this.running=false;
-      this.$root.resetCurrent();
+      this.$root.resetCurrent(-1);
     },
     addNewClazz(clazzData){
       if(clazzData.type==='interface'){

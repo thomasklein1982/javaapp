@@ -2,6 +2,7 @@ import { parseJava } from "../../functions/parseJava";
 import { CompileFunctions } from "../CompileFunctions";
 import { Identifier } from "./Identifier";
 import { VariableDeclarator } from "./VariableDeclarator";
+import {FieldAccess} from "./FieldAccess";
 
 export function LocalVariableDeclaration(node,source,scope){
   let code;
@@ -13,8 +14,11 @@ export function LocalVariableDeclaration(node,source,scope){
      * b.a
      * weiterer Code
      */
-    node=node.firstChild;
-    Identifier(node,source,scope);
+    if(node.firstChild!==node.lastChild){
+      FieldAccess(node.parent, source, scope);
+    }else{
+      Identifier(node.firstChild,source,scope);
+    }
   }
   if(node.name!=="PrimitiveType" || node.name!=="TypeName" || node.name!=="CatchType"){
 

@@ -6,7 +6,7 @@ export function definePrintStream(clazz){
     args: [
       {
         name: "text",
-        type: "Object",
+        type: ["double","int","boolean","char","String","Object"],
         info: "Der Wert, der ausgegeben werden soll."
       }
     ],
@@ -17,7 +17,7 @@ export function definePrintStream(clazz){
     args: [
       {
         name: "text",
-        type: "Object",
+        type: ["int","double","boolean","char","String","Object"],
         info: "Der Wert, der ausgegeben werden soll."
       }
     ],
