@@ -54,7 +54,7 @@
         this.frame.style.bottom="0";
         this.frame.focus();
       },
-      resume(){
+      resume(args){
         if(this.frame){
           this.frame.contentWindow.postMessage({
             type: "debug-resume"
@@ -80,7 +80,7 @@
         }
         this.frame=null;
       },
-      reload(noDebugging){
+      reload(noDebugging, args){
         this.project.compile();
         let frame=document.createElement('iframe');
         frame.style="background-color: white; width: 100%; height: 100%;";
@@ -90,7 +90,7 @@
         this.$refs.wrapper.appendChild(frame);
         console.log("start app",this.breakpoints);
         let prefix=noDebugging?"console.hide();":"$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");";
-        let code=this.project.getFullAppCode(prefix);
+        let code=this.project.getFullAppCode(prefix,false,false,args);
 
         const blob = URL.createObjectURL(
           new Blob([code], { type: "text/html" })

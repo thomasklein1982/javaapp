@@ -117,3 +117,37 @@ export function concatArrays(array,array2){
     array.push(a);
   }
 }
+
+export function splitValues(s,sep,allowEmptyValues){
+  let inString=false;
+  let v="";
+  let values=[];
+  for(let i=0;i<s.length;i++){
+    let c=s.charAt(i);
+    if(c===sep){
+      if(inString){
+        v+=c;
+      }else{ 
+        if(allowEmptyValues || v.length>0){
+          values.push(v);
+          v="";
+        }
+      }
+    }else if(c=='"'){
+      if(inString){
+        values.push(v);
+        v="";
+      }
+      inString=!inString;
+    }else{
+      v+=c;
+    }
+  }
+  if(v){
+    if(inString){
+      throw "\" erwartet";
+    }
+    values.push(v);
+  }
+  return values;
+}

@@ -212,6 +212,13 @@ export default {
               }
             },
             {
+              label: 'Terminal',
+              icon: 'pi pi-hashtag',
+              command: (ev)=>{
+                this.$emit("terminal");
+              }
+            },
+            {
               label: 'Einstellungen',
               icon: 'pi pi-cog',
               command: (ev)=>{

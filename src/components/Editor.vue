@@ -35,6 +35,7 @@
         @fullscreen="playInFullscreen()"
         @play-window="playInNewWindow(false)"
         @play-dev="playInNewWindow(true)"
+        @terminal="$refs.dialogTerminal.setVisible(true)"
       />
       <LinksDialog
         ref="dialogResources"
@@ -54,6 +55,7 @@
       <AssetsDialog :project="project" ref="dialogAssets" @open-image-editor="asset=>$refs.imageEditor.open(asset)"/>
       <DatabaseDialog :database="database" ref="dialogDatabase"/>
       <CSSDialog :project="project" ref="dialogCSS"/>
+      <TerminalDialog :project="project" ref="dialogTerminal" @run="stopAndPlay"/>
       <Splitter :gutter-size="splitterSize" ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
         <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">        
           <TabView v-model:activeIndex="activeTab" :scrollable="true" class="editor-tabs" >
@@ -171,6 +173,7 @@ import { nextTick } from "vue";
 import PrintPreview from "./PrintPreview.vue";
 import ImageEditorDialog from "./ImageEditorDialog.vue";
 import Insights from "./Insights.vue";
+import TerminalDialog from "./TerminalDialog.vue";
 
 export default {
   props: {
@@ -456,7 +459,11 @@ export default {
       window.open(blob);
       URL.revokeObjectURL(blob);
     },
-    resume(){
+    stopAndPlay(infos){
+      this.stop();
+      this.resume(infos.args);
+    },
+    resume(args){
       if(this.rightClosed){
         this.closeRightAfterStopping=true;
         this.toggleRight();
@@ -473,7 +480,7 @@ export default {
         if(!this.running){
           this.clearRuntimeErrors();
           this.running=true;
-          this.$refs.preview.reload();
+          this.$refs.preview.reload(false,args);
         }
       }
     },
@@ -542,7 +549,8 @@ export default {
     PrintPreview,
     ProjectDetailsDialog,
     ImageEditorDialog,
-    Insights
+    Insights,
+    TerminalDialog
   }
 }
 </script>

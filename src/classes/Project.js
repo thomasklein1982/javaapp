@@ -99,7 +99,7 @@ export class Project{
   }
   // let code="\<script\>window.language='java';"+window.appJScode+" "+window.additionalJSCode;
   //       code+='\n\</script\>\n\<script\>'+src+'\n\</script\>';
-  getFullAppCode(additionalCode, includeSave, dontCallMain){
+  getFullAppCode(additionalCode, includeSave, dontCallMain, args){
     if(!additionalCode) additionalCode="";
     let databaseCode="";
     let cmds=database.createInMemory(true);
@@ -148,7 +148,8 @@ export class Project{
     let codeMainCall="";
     if(mainClazz){
       if(mainClazz.hasStaticMainMethod()){
-        codeMainCall="(async function(){await $App.setup();\nawait "+mainClazz.name+".main([]);})();";
+        if(!args) args=[];
+        codeMainCall="(async function(){await $App.setup();\nawait "+mainClazz.name+".main("+JSON.stringify(args)+");})();";
       }else{
         codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.setup();\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);})();";
       }
