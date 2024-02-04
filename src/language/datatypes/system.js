@@ -9,6 +9,11 @@ export function defineSystem(clazz){
     info: "Der Standard-Printstream des Systems.",
     type: 'PrintStream'
   },clazz,true,false,Java);
+  createAttribute({
+    name: "in",
+    info: "Der Standard-Inputstream des Systems.",
+    type: 'InputStream'
+  },clazz,true,false,Java);
 
   createMethod({
     name: "console",

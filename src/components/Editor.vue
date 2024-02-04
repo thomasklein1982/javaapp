@@ -447,7 +447,7 @@ export default {
       if(includeDevTools){
         precode="$onAfterSetup=function(){$App.loadEruda();};\n";
       }else{
-        precode="console.hide();\n";
+        precode="console.hideIfUI();\n";
       }
       let code=this.project.getFullAppCode(precode);
       const blob = URL.createObjectURL(

@@ -628,12 +628,7 @@ window.appJScode=function(){
     $App.$JoyStick=function(t,onDown,onUp,e){var i=void 0===(e=e||{}).title?"joystick":e.title,n=void 0===e.width?0:e.width,o=void 0===e.height?0:e.height,r=void 0===e.internalFillColor?"#00AA00":e.internalFillColor,h=void 0===e.internalLineWidth?2:e.internalLineWidth,a=void 0===e.internalStrokeColor?"#003300":e.internalStrokeColor,d=void 0===e.externalLineWidth?2:e.externalLineWidth,f=void 0===e.externalStrokeColor?"#008000":e.externalStrokeColor,l=void 0===e.autoReturnToCenter||e.autoReturnToCenter,s=t,c=document.createElement("canvas");c.id=i,0===n&&(n=s.clientWidth),0===o&&(o=s.clientHeight),c.width=n,c.height=o,s.appendChild(c);var u=c.getContext("2d"),g=0,v=2*Math.PI,p=(c.width-(c.width/2+10))/2,C=p+5,w=p+30,m=c.width/2,L=c.height/2,E=c.width/10,P=-1*E,S=c.height/10,k=-1*S,W=m,T=L;function G(){u.beginPath(),u.arc(m,L,w,0,v,!1),u.lineWidth=d,u.strokeStyle=f,u.stroke()}function x(){u.beginPath(),W<p&&(W=C),W+p>c.width&&(W=c.width-C),T<p&&(T=C),T+p>c.height&&(T=c.height-C),u.arc(W,T,p,0,v,!1);var t=u.createRadialGradient(m,L,5,m,L,200);t.addColorStop(0,r),t.addColorStop(1,a),u.fillStyle=t,u.fill(),u.lineWidth=h,u.strokeStyle=a,u.stroke()}"ontouchstart"in document.documentElement?(c.addEventListener("touchstart",function(t){g=1;if(onDown){onDown()}},!1),c.addEventListener("touchmove",function(t){t.preventDefault(),1===g&&t.targetTouches[0].target===c&&(W=t.targetTouches[0].pageX,T=t.targetTouches[0].pageY,"BODY"===c.offsetParent.tagName.toUpperCase()?(W-=c.offsetLeft,T-=c.offsetTop):(W-=c.offsetParent.offsetLeft,T-=c.offsetParent.offsetTop),u.clearRect(0,0,c.width,c.height),G(),x())},!1),c.addEventListener("touchend",function(t){g=0,l&&(W=m,T=L);u.clearRect(0,0,c.width,c.height),G(),x();if(onUp){onUp()}},!1)):(c.onmouseleave=function(){g=0,l&&(W=m,T=L);u.clearRect(0,0,c.width,c.height),G(),x();if(onUp){onUp()}},c.addEventListener("mousedown",function(t){g=1;if(onDown){onDown()}},!1),c.addEventListener("mousemove",function(t){1===g&&(W=t.pageX,T=t.pageY,"BODY"===c.offsetParent.tagName.toUpperCase()?(W-=c.offsetLeft,T-=c.offsetTop):(W-=c.offsetParent.offsetLeft,T-=c.offsetParent.offsetTop),u.clearRect(0,0,c.width,c.height),G(),x())},!1),c.addEventListener("mouseup",function(t){g=0,l&&(W=m,T=L);u.clearRect(0,0,c.width,c.height),G(),x();if(onUp){onUp()}},!1)),G(),x(),this.GetWidth=function(){return c.width},this.GetHeight=function(){return c.height},this.GetPosX=function(){return W},this.GetPosY=function(){return T},this.GetX=function(){return((W-m)/C*100).toFixed()},this.GetY=function(){return((T-L)/C*100*-1).toFixed()},this.setDir=function(dir){if(dir==="N"){W=m;T=-1000;}else if(dir==="S"){W=m;T=1000;}else if(dir==="W"){W=-1000;T=L;}else if(dir==="E"){W=1000;T=L;}else if(dir==="NW"){W=-1000;T=-1000;}else if(dir==="NE"){W=1000;T=-1000;}else if(dir==="SW"){W=-1000;T=1000;}else if(dir==="SE"){W=1000;T=1000;}else{W=m;T=L;}u.clearRect(0,0,c.width,c.height),G(),x();},this.GetDir=function(){var t="",e=W-m,i=T-L;return i>=k&&i<=S&&(t="C"),i<k&&(t="N"),i>S&&(t="S"),e<P&&("C"===t?t="W":t+="W"),e>E&&("C"===t?t="E":t+="E"),t}};
     
     $App.setup=async function(dontStart){
-      await this.loadScripts();
-      if(this.lazyLoading){
-        this.loadAssets();
-      }else{
-        await this.loadAssets();
-      }
+      this.loadAssets();
       
       if(!$App.headLoaded && document.head){
         var style=document.createElement("style");
@@ -672,7 +667,7 @@ window.appJScode=function(){
         this.canvas.isRootCanvas=true;
         this.world=new $App.World(this.canvas);
         let left=document.createElement("div");
-        left.style="font-family: monospace; position: absolute; width: 30%; height: 100%; left: 0; top: 0; display: none; z-index: 100;";
+        left.style="position: absolute; width: 30%; height: 100%; left: 0; top: 0; display: none; z-index: 100;";
         let right=document.createElement("div");
         right.style="position: absolute; width: 100%; height: 100%; right: 0; top: 0; display: grid; box-sizing: border-box; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; padding: 1rem";
         right.$canvas=this.canvas;
@@ -760,7 +755,7 @@ window.appJScode=function(){
           requestAnimationFrame(this.animationFrame);
         }
         this.addMouseStateHandler(this.canvas.el);
-        
+        this.console.element.focus();
         
       }else{
         setTimeout(()=>{
@@ -842,6 +837,9 @@ window.appJScode=function(){
     
     window.onkeydown=function(ev){
       var k=ev.keyCode;
+      if($App.console.readResolve){
+        $App.console.readResolve(k);
+      }
       var kb=$App.keyboard;
       kb.down[k]=true;
       if(kb.lastKeycodeDown!==k){
@@ -2854,19 +2852,27 @@ window.appJScode=function(){
     
     /**Console */
     $App.Console=function(){
+      this.rightReducedWidth="70%";
+      this.leftZIndex=100;
       this.element=document.createElement("div");
       this.element.onclick=()=>{
+        if(this.readResolve){
+          this.readResolve(0);
+          this.element.focus();
+          return;
+        }
         if(!this.readInput) return;
         this.readInput.focus();
       };
-      this.element.style="overscroll-behavior: none; width: 100%; height: 100%; background-color: #222222; color: white";
+      this.element.style="font-family: monospace; font-size: 1rem; overscroll-behavior: none; width: 100%; height: 100%; background-color: #222222; color: white";
       this.element.className="console";
       this.items={};
       this.localItems={};
       this.watchedVariables=[];
       this.visible=false;
+      this.readResolve=null;
       this.outputDiv=document.createElement("div");
-      this.outputDiv.style="height: 100%; overflow: auto";
+      this.outputDiv.style="height: 100%";
       this.element.appendChild(this.outputDiv);
       // this.input=document.createElement("input");
       // this.input.style="width: 100%; height: 0.8cm; background-color: #222222; outline: none;border: none; color: white; box-sizing: border-box;";
@@ -2925,9 +2931,7 @@ window.appJScode=function(){
       // this.element.appendChild(this.input);
       // this.localVariables=null;
       // this.loadHistory();
-      this.currentLineDiv=document.createElement("div");
-      this.currentLineDiv.style.whiteSpace="pre";
-      this.outputDiv.appendChild(this.currentLineDiv);
+      this.nextLine();
     };
     
     $App.Console.prototype={
@@ -2955,13 +2959,20 @@ window.appJScode=function(){
       addWatchedVariables: function(arrayWithVarNames){
         this.watchedVariables=this.watchedVariables.concat(arrayWithVarNames);
       },
+      nextLine: function(){
+        this.currentLineDiv=document.createElement("div");
+        this.currentLineDiv.style.whiteSpace="pre-wrap";
+        this.outputDiv.appendChild(this.currentLineDiv);
+        this.outputDiv.scrollTop=this.outputDiv.scrollHeight;
+        this.outputDiv.scrollLeft=0;
+      },
       /**println */
       log: function(){
         let div=this.currentLineDiv;
-        div.style.whiteSpace="pre";
         let args=[]
         for(let i=0;i<arguments.length;i++){
           let obj=arguments[i];
+          if(obj===undefined) obj="&nbsp;";
           let item;
           if(typeof obj==="object"){
             item=$App.console.createConsoleItem(null,false,true);
@@ -2974,17 +2985,14 @@ window.appJScode=function(){
           }
           div.appendChild(item);
         }
-        this.currentLineDiv=document.createElement("div");
-        this.currentLineDiv.style.whiteSpace="pre";
-        this.outputDiv.appendChild(this.currentLineDiv);
+        this.nextLine();
         //this.outputDiv.appendChild(div);
-        this.outputDiv.scrollTop=this.outputDiv.scrollHeight;
-        this.outputDiv.scrollLeft=0;
       },
       print: function(){
         let div=this.currentLineDiv;
         for(let i=0;i<arguments.length;i++){
           let obj=arguments[i];
+          if(obj===undefined) obj="&nbsp;";
           let item;
           if(typeof obj==="object"){
             item=$App.console.createConsoleItem(null,false,true);
@@ -2998,15 +3006,22 @@ window.appJScode=function(){
           div.appendChild(item);
         }
         //this.outputDiv.appendChild(div);
-        this.outputDiv.scrollTop=this.outputDiv.scrollHeight;
-        this.outputDiv.scrollLeft=0;
+        
+      },
+      read: async function(){
+        let p=new Promise((resolve,reject)=>{
+          this.readResolve=resolve;
+        });
+        let res=await p;
+        this.readResolve=null;
+        return res;
       },
       readLine: async function(prompt){
         if(prompt) this.print(prompt);
         let inp=document.createElement("input");
         this.readInput=inp;
         inp.type="text";
-        inp.style="width: 2em; height: 0.8cm; background-color: #222222; outline: none;border: none; color: white; box-sizing: border-box;font-family: monospace; padding: 0; margin: 0;";
+        inp.style="width: 2em; background-color: #222222; outline: none;border: none; color: white; box-sizing: border-box;font-family: monospace; padding: 0; margin: 0;";
         inp.currentPosition=-1;
         inp.spellcheck=false;
         inp.autocapitalize="none";
@@ -3019,18 +3034,17 @@ window.appJScode=function(){
           this.style.width=this.value.length+2+"em";
         };
         inp.onchange=function(){
-          this.disabled=true;
-          this.resolve(this.value);
+          let e=document.createElement("span");
+          let v=this.value;
+          e.textContent=v;
+          this.replaceWith(e);
+          this.resolve(v);
         };
         let p=new Promise((resolve,reject)=>{
           inp.resolve=resolve;
         });
         let q=await p;
-        this.currentLineDiv=document.createElement("div");
-        this.currentLineDiv.style.whiteSpace="pre";
-        this.outputDiv.appendChild(this.currentLineDiv);
-        this.outputDiv.scrollTop=this.outputDiv.scrollHeight;
-        this.outputDiv.scrollLeft=0;
+        this.nextLine();
         return q;
       },
       clear: function(){
@@ -3260,7 +3274,14 @@ window.appJScode=function(){
       hide: function(){
         this.setVisible(false);
       },
+      hideIfUI: function(){
+        this.rightReducedWidth="100%";
+        this.leftZIndex=0;
+        this.adaptSize();
+      },
       setVisible: function(v){
+        this.rightReducedWidth="70%";
+        this.leftZIndex=100;
         this.visible=v;
         let parent=this.element.parentElement;
         if(parent){
@@ -3269,6 +3290,7 @@ window.appJScode=function(){
         }
       },
       adaptSize: function(){
+        this.element.style.zIndex=this.leftZIndex;
         let parent=this.element.parentElement;
         if(parent){
           let right=parent.nextElementSibling;
@@ -3278,7 +3300,7 @@ window.appJScode=function(){
           }else{
             parent.style.width="30%";
             if(this.visible){
-              right.style.width="70%";
+              right.style.width=this.rightReducedWidth;
             }else{
               right.style.width="100%";
             }
@@ -5528,6 +5550,9 @@ window.appJScode=function(){
       hide: function(){
         $App.showConsoleOnStart=false;
         $App.console.setVisible(false);
+      },
+      hideIfUI: function(){
+        $App.console.hideIfUI();
       },
       readLine: function(text){
         $App.console.readLine(text);

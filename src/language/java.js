@@ -22,6 +22,7 @@ import { defineSound } from "./datatypes/Sound.js";
 import { defineException } from "./datatypes/Exception.js";
 import { defineInterfaces } from "./datatypes/interfaces.js";
 import { defineJavaApp } from "./datatypes/JavaApp.js";
+import { defineInputStream } from "./datatypes/InputStream.js";
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
 let boolean=new PrimitiveType("boolean",null,false,"Ein 'boolean' (dt: 'Wahrheitswert') kann nur true oder false sein.",true);
@@ -98,6 +99,8 @@ let System=new Clazz("System");
 System.cannotBeInstantiated=true;
 let PrintStream=new Clazz("PrintStream");
 PrintStream.cannotBeInstantiated=true;
+let InputStream=new Clazz("InputStream");
+InputStream.cannotBeInstantiated=true;
 
 let ArrayList=new Clazz("ArrayList");
 let HTMLElement=new Clazz("HTMLElement");
@@ -107,11 +110,11 @@ let Sound=new Clazz("Sound");
 let Exception=new Clazz("Exception");
 
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, ActionListener, JavaApp
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, ActionListener, JavaApp, InputStream
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, JavaApp
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, JavaApp, InputStream
 }
 
 let interfaces={
@@ -141,6 +144,7 @@ Boolean.cannotBeInstantiated=true;
 boolean.setWrapperClass(Boolean);
 defineMath(Math,Java);
 definePrintStream(PrintStream);
+defineInputStream(InputStream);
 defineSystem(System);
 defineJavaApp(JavaApp);
 defineGenericClazz(Gamepad,appjsdata.objects.gamepad,Java);

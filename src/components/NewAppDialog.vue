@@ -47,7 +47,7 @@ export default {
         {
           name: "Leere App",
           description: "Eine normale, leere App. Bereit zu coden!",
-          code: "class NAME extends JavaApp{\n  \n  public static void main(String[] args){\n    new NAME();\n  }\n}"
+          code: "class NAME{\n  \n  public static void main(String[] args){\n    new NAME();\n  }\n}"
         },
         {
           name: "App mit UI",

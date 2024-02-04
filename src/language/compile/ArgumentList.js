@@ -78,10 +78,20 @@ export function ArgumentList(node,source,scope,parameters){
       for(let i=0;i<p.type.length;i++){
         let type=p.type[i];
         type.applyAutoboxing(arg);
-        type.autoCastValue(arg);
         if(arg.type && arg.type.isSubtypeOf(type)){
           found=true;
           break;
+        }
+      }
+      if(!found){
+        for(let i=0;i<p.type.length;i++){
+          let type=p.type[i];
+          type.applyAutoboxing(arg);
+          type.autoCastValue(arg);
+          if(arg.type && arg.type.isSubtypeOf(type)){
+            found=true;
+            break;
+          }
         }
       }
       if(!found){

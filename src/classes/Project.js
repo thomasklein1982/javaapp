@@ -176,7 +176,7 @@ export class Project{
         window.language="java";
         window.appJSdebugMode=true;
         ${window.appJScode}
-        ${includeSave? 'console.hide()':''}
+        ${includeSave? 'console.hideIfUI()':''}
         ${window.additionalJSCode}
         ${databaseCode}
         ${assetsCode}

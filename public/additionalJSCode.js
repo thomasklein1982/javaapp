@@ -847,9 +847,17 @@ function additionalJSCode(){
     }
   }
 
+  class InputStream{
+    $constructor(){}
+    async read(){
+      return await $App.console.read();
+    }
+  }
+
   class System{
     $constructor(){}
     static out=$new(PrintStream);
+    static in=$new(InputStream);
     static console(){
       return $App.console;
     }

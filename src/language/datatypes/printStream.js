@@ -7,7 +7,8 @@ export function definePrintStream(clazz){
       {
         name: "text",
         type: ["double","int","boolean","char","String","Object"],
-        info: "Der Wert, der ausgegeben werden soll."
+        info: "Der Wert, der ausgegeben werden soll.",
+        optional: true
       }
     ],
     info: "Gibt den Text aus und macht einen Zeilenumbruch."
@@ -17,8 +18,9 @@ export function definePrintStream(clazz){
     args: [
       {
         name: "text",
-        type: ["int","double","boolean","char","String","Object"],
-        info: "Der Wert, der ausgegeben werden soll."
+        type: ["String","int","double","boolean","char","Object"],
+        info: "Der Wert, der ausgegeben werden soll.",
+        optional: true
       }
     ],
     info: "Gibt den Text aus."
