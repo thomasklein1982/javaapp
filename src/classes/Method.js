@@ -74,7 +74,7 @@ export class Method{
       code+=this.params.getJavaScriptCode()+"{";
     }
     code+="let $scope=new $Scope(this);";
-    code+="$App.debug.callDepth++;";
+    code+="$App.debug.incCallDepth();";
     for(let i=0;i<this.params.parameters.length;i++){
       let p=this.params.parameters[i];
       code+="$scope.pushVariable("+JSON.stringify(p.name)+","+JSON.stringify(p.type.baseType.name)+","+p.type.dimension+","+p.name+");";
@@ -84,7 +84,7 @@ export class Method{
       code+="\n"+this.block.code;
     }
     code+="\n";
-    code+="$App.debug.callDepth--;";
+    code+="$App.debug.decCallDepth();";
     if(this.isConstructor()){
       code+="\nreturn this;\n}";
     }else{

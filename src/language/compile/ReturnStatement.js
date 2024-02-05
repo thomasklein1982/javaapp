@@ -35,7 +35,7 @@ export function ReturnStatement(node,source,scope){
     }
     code+=";";
   }
-  code+="$App.debug.callDepth--;";
+  code+="$App.debug.decCallDepth();";
   if(node.type.isError || node.name!==";"){
     throw (source.createError("';' erwartet.",node));
   }

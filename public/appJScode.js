@@ -99,6 +99,31 @@ window.appJScode=function(){
         paused: false,
         stepAbove: false,
         callDepth: 0,
+        resetCallDepth: function(){
+          console.log("callDepth: reset");
+          this.callDepth=0;
+        },
+        incCallDepth: function(){
+          console.log("callDepth: inc",this.callDepth+1,this.lastLine,this.lastName);
+          this.callDepth++;
+        },
+        decCallDepth: function(){
+          console.log("callDepth: dec", this.callDepth-1,this.lastLine,this.lastName);
+          if(this.callDepth>0){
+            this.callDepth--;
+          }else{
+            this.callDepth=0;
+          }
+
+        },
+        getCallDepth: function(){
+          console.log("callDepth: get",this.callDepth,this.lastLine,this.lastName);
+          return this.callDepth;
+        },
+        isCallDepthZero: function(){
+          console.log("callDepth: isZero",this.callDepth===0,this.lastLine,this.lastName);
+          return this.callDepth===0;
+        },
         resolve: null,
         mainTemplate: {},
         line: async function(line,name, $scope){
@@ -106,13 +131,15 @@ window.appJScode=function(){
           this.$scope=$scope;
           this.lastLine=line;
           this.lastName=name;
-          if(this.paused || this.breakpoints[line]===name || this.callDepth===0 && this.stepAbove){
+          console.log(this,line,name,this.getCallDepth());
+          if(this.paused || this.breakpoints[line]===name || this.isCallDepthZero() && this.stepAbove){
             this.paused=true;
             this.stepAbove=false;
-            this.callDepth=0;
+            this.resetCallDepth();
             if($App.body.overlay){
               $App.body.overlay.style.display='';
             }
+            console.log("post debug pause");
             var p=new Promise((resolve,reject)=>{
               window.parent.postMessage({
                 type: "debug-pause",
@@ -157,12 +184,12 @@ window.appJScode=function(){
           }else if(data.type==="debug-step"){
             this.stepAbove=false;
             this.resolve();
-            $App.debug.callDepth=0;
+            $App.debug.resetCallDepth();
           }else if(data.type==="debug-step-above"){
             console.log("step above");
             this.paused=false;
             this.stepAbove=true;
-            $App.debug.callDepth=0;
+            $App.debug.resetCallDepth();
             this.resolve();
           }else if(data.type==="getScope"){
             let $scope=this.$scope.getData(JSON.parse(data.template));
