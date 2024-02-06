@@ -181,8 +181,8 @@ export class Project{
         ${window.additionalJSCode}
         ${databaseCode}
         ${assetsCode}
-        ${js}
         ${additionalCode}
+        ${js}
         ${codeMainCall}
       </script>
       <style>
@@ -283,7 +283,7 @@ export class Project{
         finished[c.name]=true;
       }
     }
-
+    code+="console.log(window.$uiPreviewMode);if(window.$uiPreviewMode){console.log('preview mode')}"
     //code+="\nasync function onStart(){if($main && $main.onStart){$main.onStart();}}\n";
     let clazzInfos={};
     /**Informationen zu allen Klassen anhaengen: Name, Attribute mit Datentyp, factory-Funktion */

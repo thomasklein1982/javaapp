@@ -297,7 +297,7 @@ export class UIClazz extends Clazz{
   }
 
   getUIPreviewCode(){
-    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;\nconsole.hide();\nasync function onStart(){\n\n(new "+this.name+"("+")).$constructor();}",false,true);
+    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;\nconsole.hide();\nconsole.log('set onstart');setTimeout(async ()=>{await $App.setup();\nconsole.log('start preview');\n(new "+this.name+"("+")).$constructor();},100);",false,true);
     return code;
   }
 

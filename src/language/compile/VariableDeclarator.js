@@ -30,10 +30,7 @@ export function VariableDeclarator(node,source,scope,vType){
     vType.applyAutoboxing(val);
     vType.autoCastValue(val);
     if(!val.type.isSubtypeOf(vType)){
-      if(val.type.isString() && vType.isPrimitive()){
-        val.type=vType;
-        val.code="("+")";
-      }
+      throw source.createError("Einer Variablen vom Typ '"+vType+"' kann kein Wert vom Typ '"+val.type+"' zugewiesen werden.",node);
     }
     code=name+"="+val.code;
     type=val.type;
