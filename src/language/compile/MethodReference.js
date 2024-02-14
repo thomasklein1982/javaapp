@@ -5,6 +5,9 @@ export function MethodReference(node,source,scope){
   node=node.firstChild;
   while(node){
     if(node.type.isError){
+      if(root.firstChild.name.indexOf("Type")>=0){
+        throw source.createError("Syntax-Fehler: Du kannst an dieser Stelle keine Variable deklarieren.",node);
+      }
       throw source.createError("Syntax-Fehler: Fehlt hier vielleicht der Index?",node);
     }
     node=node.nextSibling;

@@ -5,6 +5,7 @@
       <Button :disabled="!paused" @click="$emit('step-above')" icon="pi pi-arrow-right" />
       <Button :disabled="!paused" @click="$emit('step')" icon="pi pi-arrow-down-right" />
       <Button @click="$emit('stop')" icon="pi pi-times" />
+      <Button severity="secondary" text @click="$emit('remove-breakpoints')" style="text-decoration: line-through; padding-left:0.5rem; padding-right:0.5rem;">🛑</Button>
     </div>
     <div style="overflow: auto; flex: 1;">
       <template v-if="scope && scope.main">

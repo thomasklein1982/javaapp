@@ -53,7 +53,7 @@ export function Block(node,source,scope){
         if(res.errors){
           concatArrays(errors,res.errors);
         }
-        if(!scope.optimizeCompiler){
+        if(!scope.optimizeCompiler && !res.waitForLineIncluded){
           let line=source.getLineNumber(node.from);
           if(!scope.optimizeCompiler){
             code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",$scope);";

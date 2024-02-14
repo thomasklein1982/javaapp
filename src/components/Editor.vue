@@ -36,6 +36,7 @@
         @play-window="playInNewWindow(false)"
         @play-dev="playInNewWindow(true)"
         @terminal="$refs.dialogTerminal.setVisible(true)"
+        
       />
       <LinksDialog
         ref="dialogResources"
@@ -114,6 +115,7 @@
                 @stop="stop()"
                 @step="step()"
                 @step-above="stepAbove()"
+                @remove-breakpoints="removeAllBreakpoints()"
               />
               <UIComponentEditor 
                 v-if="!running && showUIEditor && selectedUIComponent" 
@@ -270,6 +272,24 @@ export default {
     },1000);
   },
   methods: {
+    async removeAllBreakpoints(){
+      // let tab=this.activeTab;
+      for(let i=0;i<this.$refs.editor.length;i++){
+        console.log(i);
+        let e=this.$refs.editor[i];
+        if(e.removeAllBreakpoints){
+          e.removeAllBreakpoints();
+        }
+      }
+      // for(let i=0;i<this.project.clazzes.length;i++){
+      //   this.activeTab=i;
+      //   await nextTick();
+      //   if(this.currentEditor){
+      //     this.currentEditor.removeAllBreakpoints();
+      //   }
+      // }
+      // this.activeTab=tab;
+    },
     getEditorIndexByClazzName(name){
       if(!this.$refs.editor) return -1;
       let index=this.project.getClazzIndexByName(name);

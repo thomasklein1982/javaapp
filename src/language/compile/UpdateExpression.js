@@ -29,6 +29,7 @@ export function UpdateExpression(node,source,scope){
     }else{
       code+=source.getText(node);
     }
+    code="(("+code+")|$scope.setVariable("+JSON.stringify(v.name)+","+v.name+"))";
   }
   return {
     code: code,

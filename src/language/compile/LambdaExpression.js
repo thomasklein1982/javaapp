@@ -1,9 +1,9 @@
 import { CompileFunctions } from "../CompileFunctions";
 
 export function LambdaExpression(node,source,scope,infos){
-  /**not implemented yet */
-  // console.log("lambda",node,source.getText(node));
-  //throw source.createError("Lambda-Expressions sind noch nicht implementiert. Das dauert noch ein bisschen :(.",node);
+  if(!infos || !infos.parameter || !infos.parameter.type){
+    throw source.createError("Unvorhergesehener Lamdba-Ausdruck.\nWahrscheinlich verursacht durch einen anderen Fehler.",node);
+  }
   let inter=infos.parameter.type;
   if(inter.dimension>0 || !inter.baseType.isInterface){
     throw source.createError("An dieser Stelle kann kein Lamda-Ausdruck übergeben werden.",node);

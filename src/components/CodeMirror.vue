@@ -39,26 +39,27 @@ const breakpointEffect = StateEffect.define({
 const breakpointState = StateField.define({
   create() { return RangeSet.empty },
   update(set, transaction) {
-    set = set.map(transaction.changes)
+    set = set.map(transaction.changes);
     for (let e of transaction.effects) {
       if (e.is(breakpointEffect)) {
         if (e.value.on){
-          set = set.update({add: [breakpointMarker.range(e.value.pos)]})
-
+          set = set.update({add: [breakpointMarker.range(e.value.pos)]});
         }else{
-          set = set.update({filter: from => from != e.value.pos})
+          set = set.update({filter: from => from != e.value.pos});
         }
         let clazz=getClazzFromState(transaction.startState);
+        clazz.breakpointSet=set;
         app.updateBreakpoints(set,transaction.startState.doc,clazz);
       }
     }
-    return set
+    return set;
   }
 })
 
 function toggleBreakpoint(view, line) {
+  console.log("toggle bp");
   let pos=line.from;
-  line=view.state.doc.lineAt(pos)
+  // line=view.state.doc.lineAt(pos)
   let breakpoints = view.state.field(breakpointState);
   let hasBreakpoint = false;
   breakpoints.between(pos, pos, () => {hasBreakpoint = true});
@@ -66,6 +67,18 @@ function toggleBreakpoint(view, line) {
     effects: breakpointEffect.of({pos, on: !hasBreakpoint})
   });
   
+}
+
+function removeAllBreakpoints(clazz,view){
+  console.log("remove all bp");
+  if(clazz.breakpointSet){
+    while(clazz.breakpointSet.chunk.pop());
+    while(clazz.breakpointSet.chunkPos.pop());
+    let n=view.viewState.state.doc.length;
+    view.dispatch({
+      effects: breakpointEffect.of({from:0,to:n, on: false})
+    });
+  }
 }
 
 const breakpointMarker = new class extends GutterMarker {
@@ -80,8 +93,8 @@ const breakpointGutter = [
     initialSpacer: () => breakpointMarker,
     domEventHandlers: {
       mousedown(view, line) {
-        toggleBreakpoint(view, line)
-        return true
+        toggleBreakpoint(view, line);
+        return true;
       }
     }
   }),
@@ -361,9 +374,11 @@ export default {
     });
     this.editor.component=this;
     this.setCode(this.clazz.src);
-    // this.emptyTransaction();
   },
   methods: {
+    removeAllBreakpoints(){
+      removeAllBreakpoints(this.clazz,this.editor);
+    },
     setLanguage(language){
       this.editor.dispatch({
         effects: languageConf.reconfigure(language)
