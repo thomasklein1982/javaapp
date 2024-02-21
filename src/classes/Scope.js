@@ -10,6 +10,7 @@ export class Scope{
     this.method=method;
     this.endPosition=endPosition;
     this.stack=[];
+    this.methodStack=[];
     this.typeAnnotations={};
     this.assignmentTargetObjectStack=[];
     this.addLocalVariablesUpdates=true;
@@ -76,6 +77,22 @@ export class Scope{
 
   popLayer(){
     this.stack.pop();
+  }
+
+  pushMethod(method){
+    this.methodStack.push(method);
+  }
+
+  popMethod(){
+    return this.methodStack.pop();
+  }
+
+  getMethodFromStack(){
+    if(this.methodStack.length>0){
+      return this.methodStack[0];
+    }else{
+      return this.method;
+    }
   }
 
   pushParameterList(plist){
@@ -231,7 +248,7 @@ export class Scope{
   getTypeByName(name){
     let c;
     if(this.method && this.method.clazz){
-      c=this.method.clazz.getClazzByName(name);
+      c=this.method.getClazzByName(name);
     }else{
       c=this.project.getClazzByName(name);
     }

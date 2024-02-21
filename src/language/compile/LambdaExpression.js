@@ -1,9 +1,10 @@
 import { CompileFunctions } from "../CompileFunctions";
 
 export function LambdaExpression(node,source,scope,infos){
-  if(!infos || !infos.parameter || !infos.parameter.type){
+  if(!infos || !infos.parameter || !infos.parameter.type || !infos.owner){
     throw source.createError("Unvorhergesehener Lamdba-Ausdruck.\nWahrscheinlich verursacht durch einen anderen Fehler.",node);
   }
+  console.log("lambda",source.getText(node),infos.owner);
   let inter=infos.parameter.type;
   if(inter.dimension>0 || !inter.baseType.isInterface){
     throw source.createError("An dieser Stelle kann kein Lamda-Ausdruck übergeben werden.",node);
@@ -25,16 +26,22 @@ export function LambdaExpression(node,source,scope,infos){
   
   let plist;
   try{
-    plist=method.getRenamedParameterList(params.params);
+    plist=method.getRenamedParameterList(infos.owner.typeArguments,params.params);
   }catch(e){
     throw source.createError(e,node);
   }
-  scope.pushParameterList(plist);
+  try{
+    scope.pushParameterList(plist);
+  }catch(e){
+    throw source.createError(e,node);
+  }
   node=node.nextSibling;
   let block=CompileFunctions.get(node,source);
+  scope.pushMethod(method);
   scope.pushLayer();
   block=block(node,source,scope);
   scope.popLayer();
+  scope.popMethod();
   if(block.errors.length>0){
     throw block.errors[0];
   }

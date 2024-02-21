@@ -20,7 +20,7 @@ export class ParameterList{
     }
     return params;
   }
-  getRenamedCopy(newNames){
+  getRenamedCopy(typeArguments,newNames){
     if(this.parameters.length!==newNames.length){
       let soll=this.parameters.length;
       let ist=newNames.length;
@@ -31,7 +31,7 @@ export class ParameterList{
     params.reverseOrder=this.reverseOrder;
     for(let i=0;i<this.parameters.length;i++){
       let p=this.parameters[i];
-      let n=p.getRenamedCopy(newNames[i],params);
+      let n=p.getRenamedCopy(typeArguments,newNames[i],params);
       params.parameters.push(n);
     }
     return params;
@@ -113,23 +113,39 @@ export class Parameter{
     let p=new Parameter(copyList);
     p.name=this.name;
     if(this.type && this.type.baseType && this.type.baseType.isGeneric){
-      for (let i = 0; i < typeArguments.length; i++) {
-        let a = typeArguments[i];
-        if(a.param.name===this.type.baseType.name){
-          p.type=a;
-          break;
+      if(this.list.method.typeParameters){
+        for (let i = 0; i < this.list.method.typeParameters.length; i++) {
+          let a = this.list.method.typeParameters[i];
+          if(a.name===this.type.baseType.name){
+            p.type=new Type(a,this.type.dimension);
+            p.type.isMethodGeneric=true;
+            return p;
+          }
         }
       }
-    }else{
-      p.type=this.type;
+      if(typeArguments){
+        for (let i = 0; i < typeArguments.length; i++) {
+          let a = typeArguments[i];
+          if(a.param.name===this.type.baseType.name){
+            p.type=new Type(a,this.type.dimension);
+            return p;
+          }
+        }
+      }
     }
+    p.type=this.type;
     return p;
   }
 
-  getRenamedCopy(newName,copyList){
+  getRenamedCopy(typeArguments,newName,copyList){
     let p=new Parameter(copyList);
     p.name=newName;
     p.type=this.type;
+    if(p.type.baseType.isGeneric){
+      if(typeArguments && typeArguments.length===1){
+        p.type.baseType=typeArguments[0].baseType;
+      }
+    }
     return p;
   }
 
@@ -169,7 +185,7 @@ export class Parameter{
     
     node=node.firstChild;
     if(node.name.indexOf("Type")>=0){
-      this.type=Type.compile(node,source,this.list.method.clazz,errors);
+      this.type=Type.compile(node,source,this.list.method,errors);
     }else{
 
     }

@@ -12,7 +12,7 @@ export function ReturnStatement(node,source,scope){
     throw (source.createError("';' erwartet.",node));
   }
   node=node.nextSibling;
-  let returnType=scope.method.type;
+  let returnType=scope.getMethodFromStack().type;
   if(!node.type.isError && node.name!==";"){
     if(returnType){
       let f=CompileFunctions.get(node,source);

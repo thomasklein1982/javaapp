@@ -3075,10 +3075,10 @@ window.appJScode=function(){
         return q;
       },
       clear: function(){
-        this.element.removeChild(this.outputDiv);
-        this.outputDiv=document.createElement("div");
-        this.outputDiv.style="height: calc(30% - 0.4cm); overflow: auto";
-        this.element.insertBefore(this.outputDiv,this.input);
+        while(this.outputDiv.firstChild){
+          this.outputDiv.removeChild(this.outputDiv.firstChild);
+        }
+        this.log("");
       },
       update: function(){
         //console.log("update global 1");

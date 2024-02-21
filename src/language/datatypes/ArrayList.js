@@ -115,6 +115,6 @@ export function defineArrayList(clazz){
   createMethod({
     name: "sort",
     info: "",
-    args: [{name: "comparator", type: "$LAMBDA"}],
+    args: [{name: "comparator", type: "Comparable"}],
   },clazz,false,false);
 }

@@ -25,10 +25,10 @@ export class Type{
     }
     return t;
   }
-  static compile(node,source,clazz,errors){
+  static compile(node,source,clazzOrMethod,errors){
     try{
       let f=CompileFunctions.get(node,source);
-      let res=f(node,source,clazz);
+      let res=f(node,source,clazzOrMethod);
       let type=res.type;
       return type;
     }catch(e){
@@ -77,7 +77,7 @@ export class Type{
         dimension++;
       }
     }
-    let basetype=clazz.getTypeByName(name);
+    let basetype=clazzOrMethod.getTypeByName(name);
     if(!basetype){
       errors.push(source.createError("Es gibt keinen Datentyp '"+name+"'.",startNode));
       basetype=null;

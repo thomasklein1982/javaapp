@@ -99,7 +99,7 @@ export function MethodInvocation(node,source,scope){
   if(node.name!=="ArgumentList"){
   }
   let updateLocalVariablesAfter=!method.isBuiltIn();
-  al=ArgumentList(node,source,scope,method.getRealParameterList(owner.typeArguments));
+  al=ArgumentList(node,source,scope,method.getRealParameterList(owner.typeArguments),method,owner);
   if(al.updateLocalVariablesAfter){
     updateLocalVariablesAfter=true;
   }
@@ -115,7 +115,7 @@ export function MethodInvocation(node,source,scope){
   code="await "+code;
   let returnType=null;
   if(method.type){
-    returnType=method.getRealReturnType(owner.typeArguments);
+    returnType=method.getRealReturnType(al.replacementTypes,owner.typeArguments);
     let startLine=undefined;
     if(method.bodyNode){
       startLine=source.getLine(method.bodyNode.from).number;

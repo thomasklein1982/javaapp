@@ -110,7 +110,7 @@ export function ObjectCreationExpression(node,source,scope,infos){
     throw source.createError("'(' erwartet.", node)
   }
   node=node.nextSibling;
-  let al=ArgumentList(node,source,scope,clazz.getConstructorParameters());
+  let al=ArgumentList(node,source,scope,clazz.getConstructorParameters(),null);
   if(!clazz.isNative()){
     code="new "+typename.code;
     code="await $App.asyncFunctionCall("+code+"(),'$constructor',["+JSON.stringify(runtimeTypeArguments)+","+al.code.substring(1,al.code.length-1)+"])";

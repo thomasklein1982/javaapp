@@ -2426,8 +2426,18 @@ function additionalJSCode(){
       }
       return changed;
     }
-    sort(comparator){
-      this.elements.sort(comparator);
+    async sort(comparator){
+      let n=this.size();
+      for(let i=0;i<n;i++){
+        for(let j=0;j<n-i-1;j++){
+          let c=this.get(j);
+          if(await comparator.compareTo(c,this.get(j+1))>0){
+            this.set(j,this.get(j+1));
+            this.set(j+1,c);
+          }
+        }
+      }
+      //await this.elements.sort((a,b)=>{return await comparator.compareTo(a,b););
     }
   }
 
