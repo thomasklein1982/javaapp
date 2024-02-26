@@ -2899,7 +2899,7 @@ window.appJScode=function(){
       this.visible=false;
       this.readResolve=null;
       this.outputDiv=document.createElement("div");
-      this.outputDiv.style="height: 100%";
+      this.outputDiv.style="height: 100%; overflow: auto;";
       this.element.appendChild(this.outputDiv);
       // this.input=document.createElement("input");
       // this.input.style="width: 100%; height: 0.8cm; background-color: #222222; outline: none;border: none; color: white; box-sizing: border-box;";
@@ -4878,7 +4878,7 @@ window.appJScode=function(){
           cb.type=type;
           var id=Math.floor(Math.random()*100000000);
           cb.id="checkbox-"+id;
-          b.style="display: flex; text-align: center;align-items: center;justify-content: center;";
+          b.style="display: inline-flex; text-align: center;align-items: center;justify-content: center;";
           b.appendChild(cb);
           b.box=cb;
           var label=document.createElement("label");
@@ -5101,7 +5101,7 @@ window.appJScode=function(){
       label: function(text,cx,cy,width,height){
         var b=$App.createElement("div");
         b.style.overflow="auto";
-        b.style.display="grid";
+        b.style.display="inline-grid";
         b.$standardPositionValue="relative";
         //$App.canvas.addElement(b,cx,cy,width,height);
         Object.defineProperty(b,'value', {

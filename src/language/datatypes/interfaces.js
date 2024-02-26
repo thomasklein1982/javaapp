@@ -10,8 +10,8 @@ export function defineInterfaces(){
 
 function defineActionListener(clazz){
   createMethod({
-    name: "onAction",
-    args: [{name: "trigger",type: "JComponent"}],
+    name: "actionPerformed",
+    args: [{name: "ev",type: "ActionEvent"}],
   },clazz,false,false);
 }
 

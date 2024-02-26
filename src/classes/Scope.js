@@ -189,7 +189,8 @@ export class Scope{
         error: "Das Attribut '"+name+"' ist private."
       };
     }
-    if(a.isStatic()){
+    let m=this.method;
+    if(a.isStatic() ){
       if(!isStatic){
         return {
           error: "Das Attribut '"+name+"' ist statisch. Schreibe stattdessen '"+c.name+"."+name+"'."

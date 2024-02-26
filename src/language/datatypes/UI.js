@@ -47,6 +47,13 @@ function defineJComponent(Clazz,Java){
   //   this.$el.classList.remove(className);
   // }
   createMethod({
+    name: 'addActionListener',
+    args: [
+      {name: 'handler', type: 'ActionListener'}
+    ],
+    info: "Fügt einen ActionListener hinzu, der aufgerufen wird, wenn man mit der Komponente interagiert."
+  },Clazz,false,false);
+  createMethod({
     name: 'setOnAction',
     args: [
       {name: 'handler', type: 'ActionListener'}

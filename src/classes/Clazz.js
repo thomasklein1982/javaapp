@@ -233,15 +233,13 @@ export class Clazz{
     if(!a){
       let sc=this.getRealSuperClazz();
       if(sc){
-        a=sc.getAttribute(name,staticAccess);
-        if(a && a.error){
-          a=null;
-        }
+        return sc.getAttribute(name,staticAccess);
       }
     }
     if(!a){
       return {
-        error: "Die Klasse '"+this.name+"' hat kein "+(staticAccess? "statisches ":"")+"Attribut namens '"+name+"'."
+        error: "Die Klasse '"+this.name+"' hat kein "+(staticAccess? "statisches ":"")+"Attribut namens '"+name+"'.",
+        clazzHasAttribute: false
       };
     }
     if(staticAccess){
@@ -249,13 +247,15 @@ export class Clazz{
         return a;
       }else{
         return {
-          error: "Das Attribut '"+name+"' ist nicht statisch."
+          error: "Das Attribut '"+name+"' ist nicht statisch.",
+          clazzHasAttribute: true
         };
       }
     }else{
       if(a.isStatic && a.isStatic() || a.static){
         return {
-          error: "Das Attribut '"+name+"' ist statisch. Verwende '"+this.name+"."+name+"' um darauf zuzugreifen."
+          error: "Das Attribut '"+name+"' ist statisch. Verwende '"+this.name+"."+name+"' um darauf zuzugreifen.",
+          clazzHasAttribute: true
         };
       }else{
         return a;
@@ -735,6 +735,11 @@ export class Clazz{
   getConstructorParameters(){
     let c=this.getConstructor();
     return c? c.params: null;
+  }
+  getConstructorRealParameters(){
+    let c=this.getConstructor();
+    if(!c) return null;
+    return c.getRealParameterList();
   }
 
   /**

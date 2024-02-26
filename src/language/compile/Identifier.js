@@ -66,14 +66,20 @@ export function Identifier(node,source,scope,infos){
       type=obj.type;
       scope.addTypeAnnotation(node,type,false);
     }else{
-      obj=scope.getAttribute(name,false);
+      let staticContext=scope.method.isStatic();
+      obj=scope.getAttribute(name,staticContext);
       if(obj && obj.error){
+        if(obj.clazzHasAttribute){
+          throw source.createError(obj.error,node);
+        }
+        let error=obj.error;
         obj=scope.getTypeByName(name);
         if(obj){
           type=null;
           scope.addTypeAnnotation(node,new Type(obj,0),true);
         }else{
           throw source.createError("Der Bezeichner '"+name+"' ist undefiniert.",node);
+          //t source.createError(error,node);
         }
         //throw source.createError(obj.error,node);
       }else{

@@ -30,15 +30,16 @@ export function LambdaExpression(node,source,scope,infos){
   }catch(e){
     throw source.createError(e,node);
   }
+  scope.pushLayer();
   try{
     scope.pushParameterList(plist);
   }catch(e){
+    scope.popLayer();
     throw source.createError(e,node);
   }
   node=node.nextSibling;
   let block=CompileFunctions.get(node,source);
   scope.pushMethod(method);
-  scope.pushLayer();
   block=block(node,source,scope);
   scope.popLayer();
   scope.popMethod();

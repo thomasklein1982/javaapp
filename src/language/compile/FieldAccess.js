@@ -21,6 +21,7 @@ export function FieldAccess(node,source,scope){
   node=node.firstChild;
   let code="";
   let owner;
+  let staticContext=scope.method.isStatic();
   //TODO: Verallgemeinern der owner-Suche
   if(node.name==="FieldAccess" || node.name==="ScopedTypeName"){
     let fa=FieldAccess(node,source,scope);
@@ -51,6 +52,9 @@ export function FieldAccess(node,source,scope){
       static: false
     };
   }else if(node.name==="this"){
+    if(staticContext){
+      throw source.createError("Das Schlüsselwort 'this' existiert nicht in statischen Methoden.",node);
+    }
     let This=ThisExpression(node,source,scope);
     code+=This.code;
     owner={

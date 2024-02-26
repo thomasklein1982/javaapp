@@ -58,6 +58,16 @@ function additionalJSCode(){
 
   async function $handleEvent(eventname,ev,argsFunc){
     let comp=this.component;
+    if(comp.actionListeners && comp.actionListeners.length>0){
+      for(let i=0;i<comp.actionListeners.length;i++){
+        let al=comp.actionListeners[i];
+        let event=$new(ActionEvent,comp,0,comp.actionCommand,Date.now());
+        al.actionPerformed(event);
+        //source,id,command,when
+      }
+      console.log("actionlistener handle");
+      return;
+    }
     let listener=comp["$triggerOn"+eventname];
     if (listener) {
         ev.stopPropagation();
@@ -878,6 +888,7 @@ function additionalJSCode(){
       this.$triggerOnMouseUp=false;
       this.$triggerOnMouseMove=false;
       this.standardCSSClasses="";
+      this.actionListeners=[];
     }
     getMouseX(){
       return 0;
@@ -1076,6 +1087,14 @@ function additionalJSCode(){
       }else{
         return -1;
       }
+    }
+    addActionListener(al){
+      this.actionListeners.push(al);
+    }
+    removeActionListener(al){
+      let index=this.actionListeners.indexOf(al);
+      if(index<0) return;
+      this.actionListeners.splice(index,1);
     }
     setOnAction(listener){
       if(!listener) throw $new(Exception,"Das Listener-Objekt ist null.");
@@ -2438,6 +2457,93 @@ function additionalJSCode(){
         }
       }
       //await this.elements.sort((a,b)=>{return await comparator.compareTo(a,b););
+    }
+  }
+
+  class ActionEvent{
+    $constructor(source,id,command,when){
+      this.source=source;
+      this.id=id;
+      this.command=command;
+      this.when=when;
+      if(!this.command){
+        this.command=null;
+      }
+    }
+    getActionCommand(){
+      return this.command;
+    }
+    getWhen(){
+      return this.when;
+    }
+    getSource(){
+      return this.source;
+    }
+  }
+
+  /**mimics javax.swing.timer-class */
+  class Timer{
+    $constructor(delay,actionListener){
+      this.initialDelay=delay;
+      this.delay=delay;
+      this.repeats=true;
+      this.actionListeners=[actionListener];
+      this.actionCommand=null;
+      this.$timer_id=null;
+      this.$running=false;
+    }
+    addActionListener(al){
+      this.actionListeners.push(al);
+    }
+    removeActionListener(al){
+      let index=this.actionListeners.indexOf(al);
+      if(index<0) return;
+      this.actionListeners.splice(index,1);
+    }
+    setActionCommand(command){
+      this.actionCommand=command;
+    }
+    getActionCommand(){
+      return this.actionCommand;
+    }
+    setRepeats(v){
+      this.repeats=v;
+    }
+    isRepeats(){
+      return this.repeats;
+    }
+    isRunning(){
+      return this.$running;
+    }
+    start(){
+      if(this.$running) return;
+      this.restart();
+    }
+    restart(){
+      if(this.$running) this.stop();
+      this.$running=true;
+      let handler=()=>{
+        for(let i=0;i<this.actionListeners.length;i++){
+          let al=this.actionListeners[i];
+          let ev=$new(ActionEvent,this,0,this.actionCommand,Date.now());
+          al.actionPerformed(ev);
+        };
+      };
+      this.$timer_id=setTimeout(()=>{
+        if(this.repeats){
+          this.$timer_id=setInterval(()=>{
+            if(!this.repeats){
+              clearInterval(this.$timer_id);
+            }
+            handler();
+          },this.delay);
+        }
+        handler();
+      },this.initialDelay);
+    }
+    stop(){
+      clearTimeout(this.$timer_id);
+      clearInterval(this.$timer_id);
     }
   }
 
