@@ -480,7 +480,7 @@ function defineJTextArea(Clazz, Java){
 function defineJComboBox(Clazz,Java){
   createConstructor ({
     args: [
-      {type: {baseType: 'String', dimension: 1}, name: 'options'}
+      {type: {baseType: 'String', dimension: 1}, name: 'options', optional: true}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
@@ -503,6 +503,27 @@ function defineJComboBox(Clazz,Java){
       }
     ]
   }, Clazz, false,false,Java);
+  createMethod({
+    name: 'addItem',
+    args: [
+      {
+        name: 'item', type: 'String'
+      }
+    ]
+  }, Clazz, false,false);
+  createMethod({
+    name: 'removeItemAt',
+    args: [
+      {
+        name: 'index', type: 'int'
+      }
+    ]
+  }, Clazz, false,false);
+  createMethod({
+    name: 'removeAllItems',
+    args: [
+    ]
+  }, Clazz, false,false);
 }
 
 function defineJCheckBox(Clazz,Java){

@@ -784,7 +784,7 @@ function additionalJSCode(){
     static parseInt(s, radix){
       if(!radix) radix=10;
       let v=s*1;
-      if(v+""===s){
+      if(v+""===s+""){
         return parseInt(s,radix);
       }else{
         throw $new(Exception,"Dieser String kodiert keine ganze Zahl:\n"+s);
@@ -801,7 +801,7 @@ function additionalJSCode(){
     }
     static parseDouble(s){
       let v=s*1;
-      if(v+""===s){
+      if(v+""===s+""){
         return v;
       }else{
         throw $new(Exception,"Dieser String kodiert keine Kommazahl:\n"+s);
@@ -1588,6 +1588,9 @@ function additionalJSCode(){
   class JComboBox extends JComponent{
     $constructor(options,x,y,width,height){
       super.$constructor(x,y,width,height);
+      if(!options){
+        options=[];
+      }
       this.$el=ui.select(options,x,y,width,height);
       this.$el.component=this;
       this.$el.onchange = $handleOnAction;
@@ -1600,6 +1603,19 @@ function additionalJSCode(){
     }
     setOptions(options){
       this.$el.options=options;
+    }
+    addItem(item){
+      let o=document.createElement("option");
+      o.innerHTML=item;
+      this.$el.appendChild(o);
+    }
+    removeItemAt(index){
+      let o=this.$el.children(index);
+      if(!o) return;
+      this.$el.removeChild(o);
+    }
+    removeAllItems(){
+      this.$el.replaceChildren();
     }
   }
 
@@ -2666,6 +2682,11 @@ function additionalJSCode(){
       $App.setWatchedObject(object);
     }
   }
+
+  class Random{
+
+  }
+
 
   class $Scope{
     constructor(thisObject){

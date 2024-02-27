@@ -496,6 +496,7 @@ export default {
         "space_in_paren": true,
         "space_in_empty_paren": true
       });
+      code=code.replace(/\) - > \{/g,") -> {");
       this.editor.dispatch({
         changes: {from: 0, to: this.size, insert: code}
       });

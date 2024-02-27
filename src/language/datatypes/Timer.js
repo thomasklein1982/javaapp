@@ -39,7 +39,7 @@ export function defineTimer(clazz){
   },clazz,false,false);
   createMethod({
     name: "setRepeats",
-    args: [{name: "false", type: "Boolean"}],
+    args: [{name: "false", type: "boolean"}],
     info: "Left fest, ob der Timer mehrfach ausgeführt werden soll oder nicht."
   },clazz,false,false);
 }
