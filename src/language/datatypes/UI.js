@@ -49,7 +49,7 @@ function defineJComponent(Clazz,Java){
   createMethod({
     name: 'addActionListener',
     args: [
-      {name: 'handler', type: 'ActionListener'}
+      {name: '(ev)->{}', type: 'ActionListener'}
     ],
     info: "Fügt einen ActionListener hinzu, der aufgerufen wird, wenn man mit der Komponente interagiert."
   },Clazz,false,false);

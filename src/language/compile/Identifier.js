@@ -62,6 +62,7 @@ export function Identifier(node,source,scope,infos){
     }
     obj=scope.getLocalVariable(name);
     if(obj){
+      code="$u("+code+")";
       local=true;
       type=obj.type;
       scope.addTypeAnnotation(node,type,false);

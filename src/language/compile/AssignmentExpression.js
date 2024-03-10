@@ -40,7 +40,7 @@ export function AssignmentExpression(node,source,scope){
   if(v.codeSet){
     code=v.codeSet+val.code+","+JSON.stringify(assignOp)+")";
   }else{
-    code=v.code+assignOp+val.code;
+    code=v.name+assignOp+val.code;
   }
   code="(("+code+")|$scope.setVariable("+JSON.stringify(v.name)+","+v.code+"))";
   //console.log("assign",code);

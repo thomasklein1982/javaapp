@@ -1096,6 +1096,13 @@ function additionalJSCode(){
       if(index<0) return;
       this.actionListeners.splice(index,1);
     }
+    getActionListeners(){
+      let a=$createArray("ActionListener",this.actionListeners.length,[]);
+      for(let i=0;i<this.actionListeners.length;i++){
+        a[i]=this.actionListeners[i];
+      }
+      return a;
+    }
     setOnAction(listener){
       if(!listener) throw $new(Exception,"Das Listener-Objekt ist null.");
       if(!listener.onAction) throw $new(Exception,"Das Listener-Objekt besitzt keine onAction-Methode.");

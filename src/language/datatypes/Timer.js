@@ -10,7 +10,7 @@ export function defineTimer(clazz){
         info: "Die Anzahl Millisekunden bis der Timer abläuft."
       },
       {
-        name: "listener",
+        name: "(ev)->{}",
         type: "ActionListener",
         info: "Wird ausgeführt, wenn der Timer abläuft."
       },
