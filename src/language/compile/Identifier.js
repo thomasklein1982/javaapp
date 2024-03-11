@@ -28,6 +28,7 @@ export function Identifier(node,source,scope,infos){
   }
   let obj;
   let code=name;
+  let codeAssign=code;
   let type=null;
   let owner=infos?.owner;
   if(owner && owner.type){
@@ -86,6 +87,7 @@ export function Identifier(node,source,scope,infos){
       }else{
         /**Attribut: */
         code="this."+code;
+        codeAssign=code;
         type=obj.type;
         scope.addTypeAnnotation(node,type,false);
         if(!owner){
@@ -104,6 +106,8 @@ export function Identifier(node,source,scope,infos){
   
   return {
     code: code,
+    codeAssign,
+    codeUpdate: codeAssign,
     object: obj,
     type: type,
     local: local,

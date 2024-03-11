@@ -16,6 +16,7 @@ export function UpdateExpression(node,source,scope){
   }
   node=node.nextSibling;
   if(node.name==="UpdateOp"){
+    code+="="+code;
     if(v.codeUpdate){
       let op=source.getText(node);
       if(op==="++"){
