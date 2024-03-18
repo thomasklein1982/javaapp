@@ -2083,19 +2083,19 @@ function additionalJSCode(){
     }
     areResultsEqualIgnoreOrder(array1,array2){
       if(!array1 || !array2) return false;
-      if(array1.values.length===0){
-        if(array2.values.length===0){
+      if(array1.length===0){
+        if(array2.length===0){
           return true;
         }else{
           return false;
         }
       }else{
-        if(array2.values.length===0 || array2.values.length!==array1.values.length){
+        if(array2.length===0 || array2.length!==array1.length){
           return false;
         }
       }
-      var r1=array1.values[0];
-      var r2=array2.values[0];
+      var r1=array1[0];
+      var r2=array2[0];
       var attributes=[];
       var sortFunc=(r,s)=>{
         for(var attr in r1.$data){
@@ -2107,8 +2107,8 @@ function additionalJSCode(){
         }
         return -1;
       };
-      array1.values.sort(sortFunc);
-      array2.values.sort(sortFunc);
+      array1.sort(sortFunc);
+      array2.sort(sortFunc);
       return this.areResultsEqual(array1,array2);
     }
     areResultsEqual(array1,array2){
@@ -2120,18 +2120,18 @@ function additionalJSCode(){
         return true;
       }
       var n1=0;
-      var r1=array1.values[0];
+      var r1=array1[0];
       for(var a in r1){
         n1++;
       }
-      var r2=array2.values[0];
+      var r2=array2[0];
       var n2=0;
       for(var a in r2){
         n2++;
       }
       if(n1!==n2) return false;
       for(var i=0;i<n1;i++){
-        var r1=array1.values[i];
+        var r1=array1[i];
         var s1=0;
         for(var a in r1.$data){
           s1++;
@@ -2141,7 +2141,7 @@ function additionalJSCode(){
           s2++;
         }
         if(s1!==s2) return false;
-        var r2=array2.values[i];
+        var r2=array2[i];
         for(var a in r1.$data){
           if(a in r2.$data){
             if(r1.$data[a]!==r2.$data[a]) return false;

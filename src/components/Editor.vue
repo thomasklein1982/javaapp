@@ -79,7 +79,7 @@
                 v-show="!c.showUIEditor"
                 :clazz="c"
                 :tab-index="i"
-                :disabled="running"
+                :disabled="paused"
                 :project="project"
                 :settings="settings"
                 :font-size="fontSize"

@@ -15,6 +15,7 @@ export function ParenthesizedExpression(node,source,scope){
   }
   code="("+expression.code+")";
   type=expression.type;
+  scope.addTypeAnnotation(node,type,false);
   return {
     code,type
   }

@@ -595,7 +595,7 @@ export default {
       return node;
     },
     clickDisabled(){
-      this.$toast.add({severity:'info', summary:'App läuft gerade', detail:'So lange die App läuft, kannst du den Code nicht ändern.', life: 3000});
+      this.$toast.add({severity:'info', summary:'App pausiert', detail:'So lange die Ausführung pausiert ist, kannst du den Code nicht ändern.', life: 2000});
     },
     setCursorToEnd(){
       this.setCursor(this.size-1);
