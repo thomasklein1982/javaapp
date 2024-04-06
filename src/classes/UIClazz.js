@@ -67,7 +67,8 @@ export class UIClazz extends Clazz{
         minX: "Minimale x-Koordinate.",
         maxX: "Maximale x-Koordinate.",
         minY: "Minimale y-Koordinate.",
-        maxY: "Maximale y-Koordinate."
+        maxY: "Maximale y-Koordinate.",
+        sizePolicy: "Anpassung"
       }
     }
   };
@@ -679,6 +680,10 @@ export class UIClazz extends Clazz{
       }
       if(this.onMouseMove===true || this.onMouseMove===false){
         let code=".setTriggerOnMouseMove("+(c.onMouseMove===true)+");";
+        newCode+="\n"+last+code;
+      }
+      if(c.sizePolicy){
+        let code=".setSizePolicy('"+(c.sizePolicy)+"');";
         newCode+="\n"+last+code;
       }
       if(c.actionCommand){

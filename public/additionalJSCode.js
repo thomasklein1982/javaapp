@@ -1356,7 +1356,7 @@ function additionalJSCode(){
     }
   }
 
-  class HTMLElement extends JPanel{
+  class HTMLElement extends JComponent{
     $constructor(tag){
       //super.$constructor(0,0,0,0);
       if(tag && tag.substring){
@@ -1374,10 +1374,10 @@ function additionalJSCode(){
       
     }
     getAttribute(name){
-      return this.$el.getAttribute(name);
+      return this.$el[name];
     }
     setAttribute(name, value){
-      this.$el.setAttribute(name,value);
+      this.$el[name]=value;
     }
     getValue(){
       if(!this.$el) return null;
@@ -1459,6 +1459,12 @@ function additionalJSCode(){
       y=canvas.getCanvasY(y);
       this.mouse.x=x;
       this.mouse.y=y;
+    }
+    setSizePolicy(policy){
+      this.$el.setSizePolicy(policy);
+    }
+    getSizePolicy(){
+      return this.$el.getSizePolicy();
     }
     getMouseX(){
       return this.mouse.x;

@@ -76,6 +76,10 @@
           <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.maxY" style="width: 95%"/></td>
         </tr>
       </template>
+      <template v-if="component.sizePolicy!==undefined">
+        <td>Anpassung:</td>
+        <td><Dropdown @change="emitUpdate()" :options="['fit','stretch']" v-model="component.sizePolicy" style="width: 95%"/></td>
+      </template>
       <tr v-if="component.onAction!==undefined">
         <td>onAction auslösen?</td>
         <td><InputSwitch v-model="component.onAction"/></td>

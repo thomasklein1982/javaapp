@@ -827,4 +827,10 @@ function defineCanvas(Clazz,Java){
     ],//image, cx, cy, width, height
     info: 'Zeichnet einen Bildausschnitt in den Canvas.'
   },Clazz,false,false,Java);
+
+  createMethod({
+    name: 'setSizePolicy',
+    args: [{name: '"stretch"', type: "String"}],
+    info: 'Legt die Größenanpassung auf "stretch" oder auf "fit" fest.'
+  },Clazz,false,false,Java);
 }

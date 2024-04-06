@@ -4,7 +4,7 @@ import { Java } from "../java";
 import { createConstructor } from "../helper/createConstructor";
 
 export function defineHTMLElement(clazz){
-  clazz.superClazz=Java.clazzes.JPanel;
+  clazz.superClazz=Java.clazzes.JComponent;
   createConstructor({
     args: [
       {
@@ -14,4 +14,12 @@ export function defineHTMLElement(clazz){
       }
     ]
   }, clazz);
+  createMethod({
+    name: 'setAttribute',
+    args: [
+      {name: 'attribute', type: 'String'},
+      {name: 'value', type: 'String'}
+    ],
+    info: "Legt den Wert eines Attributs des HTML-Elements fest."
+  },clazz,false,false);
 }
