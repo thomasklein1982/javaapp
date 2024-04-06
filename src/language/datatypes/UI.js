@@ -416,6 +416,34 @@ function defineJImage(Clazz,Java){
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
+  createMethod({
+    name: 'setImageWidth',
+    args: [
+      {name: '"100%"', type: 'String', info: 'Breite des Bildes.'}
+    ],
+    info: 'Legt die Breite des Bildes fest.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setImageHeight',
+    args: [
+      {name: '"100%"', type: 'String', info: 'Höhe des Bildes.'}
+    ],
+    info: 'Legt die Höhe des Bildes fest.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setImageTranslationX',
+    args: [
+      {name: '"0%"', type: 'String', info: 'Verschiebung des Bildes nach rechts/links.'}
+    ],
+    info: 'Legt die Verschiebung des Bildes in x-Richtung fest.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setImageTranslationY',
+    args: [
+      {name: '"0%"', type: 'String', info: 'Verschiebung des Bildes nach oben/unten.'}
+    ],
+    info: 'Legt die Verschiebung des Bildes in y-Richtung fest.'
+  },Clazz,false,false,Java);
 }
 
 function defineJLabel(Clazz,Java){

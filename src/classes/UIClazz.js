@@ -719,6 +719,22 @@ export class UIClazz extends Clazz{
           updateCode+="\ncomponent"+code;
         }
       }
+      if(c.imageWidth){
+        let code=".setImageWidth("+JSON.stringify(c.imageWidth)+")";
+        newCode+="\n"+last+code;
+      }
+      if(c.imageHeight){
+        let code=".setImageHeight("+JSON.stringify(c.imageHeight)+")";
+        newCode+="\n"+last+code;
+      }
+      if(c.imageTranslationX){
+        let code=".setImageTranslationX("+JSON.stringify(c.imageTranslationX)+")";
+        newCode+="\n"+last+code;
+      }
+      if(c.imageTranslationY){
+        let code=".setImageTranslationY("+JSON.stringify(c.imageTranslationY)+")";
+        newCode+="\n"+last+code;
+      }
       // if(c.forceAbsolute){
       //   newCode+="\n"+last+".setStyle('position','absolute');";
       //   newCode+="\n"+last+".$el.updatePosition();";

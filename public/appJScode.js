@@ -4902,7 +4902,7 @@ window.appJScode=function(){
         $App.$iframes.push(div);
         return div;
       },
-      image: function (url,cx,cy,width,height){
+      imageOld: function (url,cx,cy,width,height){
         var b=$App.createElement("img");
         var asset=$App.assets[url];
         if(asset){
@@ -4914,7 +4914,31 @@ window.appJScode=function(){
         }else{
           b.src=url;
         }
-        //$App.canvas.addElement(b,cx,cy,width,height);
+        return b;
+      },
+      image: function (url,cx,cy,width,height){
+        var b=$App.createElement("div");
+        b.style.backgroundSize="100% 100%";
+        b.style.backgroundRepeat="no-repeat";
+        Object.defineProperty(b,'value', {
+          set: function(v){
+            this.appJSData.value=v;
+            var asset=$App.assets[v];
+            if(asset){
+              var url=asset.url;
+              if(!url.startsWith("data:")){
+                url=(new URL(asset.url,document.baseURI)).href;
+              }
+            }else{
+              var url=v;
+            }
+            this.style.backgroundImage="url("+url+")";
+          },
+          get: function(){
+            return this.appJSData.value;
+          }
+        });
+        b.value=url;
         return b;
       },
       input: function (type,placeholdertext,cx,cy,width,height){
@@ -5014,6 +5038,7 @@ window.appJScode=function(){
         });
         b.placeholder=placeholdertext;
         b.style.textAlign="";
+        b.style.minWidth="0px";
         //$App.canvas.addElement(b,cx,cy,width,height);
         return b;
       },

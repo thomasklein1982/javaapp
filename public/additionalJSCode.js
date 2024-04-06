@@ -1178,6 +1178,30 @@ function additionalJSCode(){
       this.$el=ui.image(url,x,y,width,height);
       this.$el.component=this;
       this.$el.onclick = $handleOnAction;
+      this.dimension={
+        width: "100%",
+        height: "100%",
+        translate: {
+          x: "0%",
+          y: "0%"
+        }
+      }
+    }
+    setImageWidth(w){
+      this.dimension.width=w;
+      this.$el.style.backgroundSize=this.dimension.width+" "+this.dimension.height;
+    }
+    setImageHeight(h){
+      this.dimension.height=h;
+      this.$el.style.backgroundSize=this.dimension.width+" "+this.dimension.height;
+    }
+    setImageTranslationX(x){
+      this.dimension.translate.x=x;
+      this.$el.style.backgroundPosition="calc(50% + "+this.dimension.translate.x+") calc(50% - "+this.dimension.translate.y+")";
+    }
+    setImageTranslationY(y){
+      this.dimension.translate.y=y;
+      this.$el.style.backgroundPosition="calc(50% + "+this.dimension.translate.x+") calc(50% - "+this.dimension.translate.y+")";
     }
   }
 
