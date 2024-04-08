@@ -81,6 +81,11 @@ export function createAutocompletion(){
     }
     //console.log("autocomplete: look for annotations");
     
+    //handle error position:
+    if(nodeBefore.parent.type.isError && nodeBefore.parent.prevSibling){
+      nodeBefore=nodeBefore.parent.prevSibling;
+    }
+
     let annotation;
     if(nodeBefore.name==="Identifier" && !nodeBefore.prevSibling && nodeBefore.parent &&nodeBefore.parent.name==="MethodName"){
       nodeBefore=nodeBefore.parent;
@@ -210,7 +215,9 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope,
           let m=clazz.methods[name];
           if(m.isConstructor()) continue;
           if(m.isStatic()===isStatic  && (!m.isPrivate() || currentClazz.name===clazz.name)){
-            options.push(autocomplete.snippetCompletion(m.name+createParamsString(m,true),{
+            let suffix="";
+            if(m.type===null) suffix=";";
+            options.push(autocomplete.snippetCompletion(m.name+createParamsString(m,true)+suffix,{
               label: m.name+"(...)",
               type: "function",
               info: (completion)=>{

@@ -2724,6 +2724,133 @@ function additionalJSCode(){
 
   }
 
+  class JSON_Java{
+    $constructor(){
+      this.json=null;
+    }
+    static stringify(obj){
+      if(obj===null || obj===undefined) return "null";
+      let s=JSON.stringify(obj);
+      obj=JSON.parse(s);
+      delete obj["$typeArguments"];
+      return JSON.stringify(obj);
+    }
+    static parse(str){
+      let j=$new(JSON_Java);
+      j.json=JSON.parse(str);
+      return j;
+    }
+    getKeys(){
+      if(!this.json) return [];
+      return Object.keys(this.json);
+    }
+    hasKey(key){
+      if(!this.json) return false;
+      return (key in this.json);
+    }
+    $get(key){
+      if(!this.json) return null;
+      if(key in this.json){
+        let v=this.json[key];
+        if(v===undefined||v===null) return null;
+        return v;  
+      }
+      return null;
+    }
+    getString(key){
+      let v=this.$get(key);
+      if(v===null) return null;
+      return v+"";
+    }
+    toString(){
+      return this.json+"";
+    }
+    toInt(){
+      if(typeof this.json==="number"){
+        return Math.floor(this.json);
+      }else{
+        return 0;
+      }
+    }
+    toDouble(){
+      if(typeof this.json==="number"){
+        return this.json;
+      }else{
+        return 0;
+      }
+    }
+    toBoolean(){
+      if(this.json){
+        return true;
+      }else{
+        return false;
+      }
+    }
+    toArray(){
+      if(this.json && Array.isArray(this.json)){
+        return this;
+      }else{
+        return $createArray("JSON",1,[this]);
+      }
+    }
+    getInt(key){
+      let v=this.$get(key);
+      if(v===null || (typeof v!=="number")) return 0;
+      return Math.floor(v);
+    }
+    getDouble(key){
+      let v=this.$get(key);
+      if(v===null || (typeof v!=="number")) return 0;
+      return v;
+    }
+    getBoolean(key){
+      let v=this.$get(key);
+      if(!v) return false;
+      return true;
+    }
+    get(key){
+      let v=this.$get(key);
+      if(v===null) return null;
+      let jo=$new(JSON_Java);
+      jo.json=v;
+      return jo;
+    }
+    getArray(key){
+      let v=this.$get(key);
+      if(v===null) return null;
+      let array;
+      if(Array.isArray(v)){
+        let v_neu=[];
+        for(let i=0;i<v.length;i++){
+          let jo=$new(JSON_Java);
+          jo.json=v[i];
+          v_neu.push(jo);
+        }
+        array=$createArray("JSON",1,v_neu);
+      }else{
+        let jo=$new(JSON_Java);
+        jo.json=v;
+        array=$createArray("JSON",1,[jo]);
+      }
+      return array;
+    }
+    setString(key,v){
+      if(this.json===null) this.json={};
+      this.json[key]=v;
+    }
+    setInt(key,v){
+      if(this.json===null) this.json={};
+      this.json[key]=v;
+    }
+    setDouble(key,v){
+      if(this.json===null) this.json={};
+      this.json[key]=v;
+    }
+    setBoolean(key, v){
+      if(this.json===null) this.json={};
+      this.json[key]=v;
+    }
+  }
 
   class $Scope{
     constructor(thisObject){

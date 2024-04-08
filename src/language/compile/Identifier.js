@@ -79,6 +79,7 @@ export function Identifier(node,source,scope,infos){
         if(obj){
           type=null;
           scope.addTypeAnnotation(node,new Type(obj,0),true);
+          code=obj.jsName;
         }else{
           throw source.createError("Der Bezeichner '"+name+"' ist undefiniert.",node);
           //t source.createError(error,node);

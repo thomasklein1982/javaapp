@@ -3,6 +3,7 @@ import { Type } from "../../classes/Type";
 export function TypeName(node,source,scope,infos){
   let name=source.src.substring(node.from,node.to);
   let type=null;
+  let code=name;
   if(scope){
     let clazz=scope.getTypeByName(name);
     if(!clazz){
@@ -12,9 +13,10 @@ export function TypeName(node,source,scope,infos){
       throw (source.createError("Die Klasse '"+name+"' erfordert die Angabe eines Datentypen in spitzen Klammern <>.",node));
     }
     type=new Type(clazz,0);
+    name=clazz.jsName;
   }
   return {
     type,
-    code: name
+    code
   }
 }
