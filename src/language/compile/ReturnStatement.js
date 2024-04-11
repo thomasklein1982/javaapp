@@ -7,7 +7,7 @@ export function ReturnStatement(node,source,scope){
   if(node.name!=="return"){
 
   }
-  let code="return ";
+  let code="$App.debug.decCallDepth();return ";
   if(!node.nextSibling){
     throw (source.createError("';' erwartet.",node));
   }
@@ -35,7 +35,6 @@ export function ReturnStatement(node,source,scope){
     }
     code+=";";
   }
-  code+="$App.debug.decCallDepth();";
   if(node.type.isError || node.name!==";"){
     throw (source.createError("';' erwartet.",node));
   }
