@@ -13,7 +13,7 @@ export function TypeName(node,source,scope,infos){
       throw (source.createError("Die Klasse '"+name+"' erfordert die Angabe eines Datentypen in spitzen Klammern <>.",node));
     }
     type=new Type(clazz,0);
-    name=clazz.jsName;
+    name=clazz.name;
   }
   return {
     type,

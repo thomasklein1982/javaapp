@@ -17,7 +17,6 @@ import { createMethod } from "../language/helper/createMethod";
 export class Clazz{
   constructor(name,project,isInterface){
     this.name=name;
-    this.jsName=name;
     this.cannotBeInstantiated=false;
     this.isAbstract=false;
     this.isInterface=isInterface===true;
@@ -233,7 +232,7 @@ export class Clazz{
     let a=this.attributes[name];
     if(!a){
       let sc=this.getRealSuperClazz();
-      if(sc){
+      if(sc && sc.getAttribute){
         return sc.getAttribute(name,staticAccess);
       }
     }

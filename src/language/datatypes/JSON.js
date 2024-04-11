@@ -4,7 +4,6 @@ import { createConstructor } from "../helper/createConstructor";
 import { createMethod } from "../helper/createMethod";
 
 export function defineJSON(Clazz,Java){
-  Clazz.jsName="JSON_Java";
   createConstructor({
     args: [
       
@@ -12,105 +11,139 @@ export function defineJSON(Clazz,Java){
   },Clazz);
   createMethod({
     name: 'stringify',
+    isExtraFunction: true,
     args: [
       {name: 'obj', type: 'Object'}
     ],
-    returnType: "String"
+    returnType: "String",
+    jsName: "$jsstringify"
   },Clazz,true,false);
   createMethod({
     name: 'parse',
+    isExtraFunction: true,
     args: [
       {name: 's', type: 'String'}
     ],
     info: "",
-    returnType: "JSON"
+    returnType: "JSON",
+    jsName: "$jsparse"
   },Clazz,true,false);
   createMethod({
     name: 'getKeys',
+    isExtraFunction: true,
     args: [
     ],
     info: "",
-    returnType: {baseType: "String",dimension: 1}
+    returnType: {baseType: "String",dimension: 1},
+    jsName: "$jsgetKeys"
   },Clazz,false,false);
   createMethod({
     name: 'hasKey',
+    isExtraFunction: true,
     args: [{name: 'key', type: 'String'}],
     info: "",
-    returnType: "boolean"
+    returnType: "boolean",
+    jsName: "$jshasKey"
   },Clazz,false,false);
   createMethod({
     name: 'getString',
+    isExtraFunction: true,
     args: [{name: 'key', type: 'String'}],
     info: "",
-    returnType: "String"
+    returnType: "String",
+    jsName: "$jsgetString"
   },Clazz,false,false);
   createMethod({
     name: 'getInt',
+    isExtraFunction: true,
     args: [{name: 'key', type: 'String'}],
     info: "",
-    returnType: "int"
+    returnType: "int",
+    jsName: "$jsgetInt"
   },Clazz,false,false);
   createMethod({
     name: 'toInt',
+    isExtraFunction: true,
     args: [],
     info: "",
-    returnType: "int"
+    returnType: "int",
+    jsName: "$jstoInt"
   },Clazz,false,false);
   createMethod({
     name: 'getDouble',
+    isExtraFunction: true,
     args: [{name: 'key', type: 'String'}],
     info: "",
-    returnType: "double"
+    returnType: "double",
+    jsName: "$jsgetDouble"
   },Clazz,false,false);
   createMethod({
     name: 'toDouble',
+    isExtraFunction: true,
     args: [],
     info: "",
-    returnType: "double"
+    returnType: "double",
+    jsName: "$jstoDouble"
   },Clazz,false,false);
   createMethod({
     name: 'getBoolean',
+    isExtraFunction: true,
     args: [{name: 'key', type: 'String'}],
     info: "",
-    returnType: "boolean"
+    returnType: "boolean",
+    jsName: "$jsgetBoolean"
   },Clazz,false,false);
   createMethod({
     name: 'toBoolean',
+    isExtraFunction: true,
     args: [],
     info: "",
-    returnType: "boolean"
+    returnType: "boolean",
+    jsName: "$jstoBoolean"
   },Clazz,false,false);
   createMethod({
     name: 'get',
+    isExtraFunction: true,
     args: [{name: 'key', type: 'String'}],
     info: "",
-    returnType: "JSON"
+    returnType: "JSON",
+    jsName: "$jsget"
   },Clazz,false,false);
   createMethod({
     name: 'getArray',
+    isExtraFunction: true,
     args: [{name: 'key', type: 'String'}],
     info: "",
-    returnType: {baseType: "JSON", dimension: 1}
+    returnType: {baseType: "JSON", dimension: 1},
+    jsName: "$jsgetArray"
   },Clazz,false,false);
 
   createMethod({
     name: 'setString',
+    isExtraFunction: true,
     args: [{name: 'key', type: 'String'}, {name: '"wert"', type: 'String'}],
     info: "",
+    jsName: "$jsset"
   },Clazz,false,false);
   createMethod({
     name: 'setInt',
+    isExtraFunction: true,
     args: [{name: 'key', type: 'String'}, {name: '0', type: 'int'}],
     info: "",
+    jsName: "$jsset"
   },Clazz,false,false);
   createMethod({
     name: 'setBoolean',
+    isExtraFunction: true,
     args: [{name: 'key', type: 'String'}, {name: 'true', type: 'boolean'}],
     info: "",
+    jsName: "$jsset"
   },Clazz,false,false);
   createMethod({
     name: 'setDouble',
+    isExtraFunction: true,
     args: [{name: 'key', type: 'String'}, {name: '0', type: 'double'}],
     info: "",
+    jsName: "$jsset"
   },Clazz,false,false);
 }

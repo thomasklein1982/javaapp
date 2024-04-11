@@ -4,6 +4,8 @@
 
 function additionalJSCode(){
 
+  JSON.$constructor=function(){ };
+
   function $u(v){if(v===undefined){throw $new(Exception,"Undefinierter Wert.")} return v;}
   function $N(v,name){if(v===null){throw $new(Exception,"NullPointerException: Der Wert von '"+name+"' ist null, deshalb kannst du nicht auf Methoden oder Attribute zugreifen.")} return v;}
   function $v(v){if(Number.isNaN(v*1)){throw $new(Exception,"'"+v+"' ist keine Zahl.")}else{return v*1;}}
@@ -13,7 +15,13 @@ function additionalJSCode(){
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
 
   function $new(constructor){
-    let o=new constructor();
+    let o;
+    try{
+      o=new constructor();
+    }catch(e){
+      o=new constructor.constructor();
+      return o;
+    }
     if(!o.$constructor){
       console.error("error in $new!!!",constructor);
     }
@@ -2723,134 +2731,122 @@ function additionalJSCode(){
   class Random{
 
   }
+  
+  $jstoJSON=async function(obj){
+    if(obj===null || obj===undefined) return null;
+    if(obj.toJSON){
+      obj=await obj.toJSON();
+    }
+    if(typeof obj!=='object'){
+      return obj;
+    }
+    let json={};
+    for(let a in obj){
+      if(a.startsWith("$")) continue;
+      let b=obj[a];
+      json[a]=await $jstoJSON(b);
+    }
+    return json;
+  }
 
-  class JSON_Java{
-    $constructor(){
-      this.json=null;
-    }
-    static stringify(obj){
-      if(obj===null || obj===undefined) return "null";
-      let s=JSON.stringify(obj);
-      obj=JSON.parse(s);
-      delete obj["$typeArguments"];
-      return JSON.stringify(obj);
-    }
-    static parse(str){
-      let j=$new(JSON_Java);
-      j.json=JSON.parse(str);
-      return j;
-    }
-    getKeys(){
-      if(!this.json) return [];
-      return Object.keys(this.json);
-    }
-    hasKey(key){
-      if(!this.json) return false;
-      return (key in this.json);
-    }
-    $get(key){
-      if(!this.json) return null;
-      if(key in this.json){
-        let v=this.json[key];
+  $jsstringify=async function(json,obj){
+    if(obj===null || obj===undefined) return null;
+    let jo=await $jstoJSON(obj);
+    let s=JSON.stringify(jo);
+    return s;
+  };
+  $jsparse=function(json,str){
+    let j=JSON.parse(str);
+    return j;
+  };
+  $jsgetKeys=function(obj){
+    return Object.keys(obj);
+  };
+  $jshasKey=function(obj,key){
+    return (key in obj);
+  };
+  $js$get=function(obj,key){
+    try{
+      if(key in obj){
+        let v=obj[key];
         if(v===undefined||v===null) return null;
         return v;  
       }
-      return null;
+    }catch(e){
+      
     }
-    getString(key){
-      let v=this.$get(key);
-      if(v===null) return null;
-      return v+"";
+    return null;
+  };
+  $jsgetString=function(obj,key){
+    let v=$js$get(obj,key);
+    if(v===null) return null;
+    return v+"";
+  };
+  $jstoString=function(obj){
+    return obj+"";
+  };
+  $jstoInt=function(obj){
+    if(typeof obj==="number"){
+      return Math.floor(this.json);
+    }else{
+      return 0;
     }
-    toString(){
-      return this.json+"";
+  };
+  $jstoDouble=function(obj){
+    if(typeof obj==="number"){
+      return obj;
+    }else{
+      return 0;
     }
-    toInt(){
-      if(typeof this.json==="number"){
-        return Math.floor(this.json);
-      }else{
-        return 0;
-      }
-    }
-    toDouble(){
-      if(typeof this.json==="number"){
-        return this.json;
-      }else{
-        return 0;
-      }
-    }
-    toBoolean(){
-      if(this.json){
-        return true;
-      }else{
-        return false;
-      }
-    }
-    toArray(){
-      if(this.json && Array.isArray(this.json)){
-        return this;
-      }else{
-        return $createArray("JSON",1,[this]);
-      }
-    }
-    getInt(key){
-      let v=this.$get(key);
-      if(v===null || (typeof v!=="number")) return 0;
-      return Math.floor(v);
-    }
-    getDouble(key){
-      let v=this.$get(key);
-      if(v===null || (typeof v!=="number")) return 0;
-      return v;
-    }
-    getBoolean(key){
-      let v=this.$get(key);
-      if(!v) return false;
+  };
+  $jstoBoolean=function(obj){
+    if(this.json){
       return true;
+    }else{
+      return false;
     }
-    get(key){
-      let v=this.$get(key);
-      if(v===null) return null;
-      let jo=$new(JSON_Java);
-      jo.json=v;
-      return jo;
+  };
+  $jstoArray=function(obj){
+    if(obj && Array.isArray(obj)){
+      return $createArray("JSON",1,obj);;
+    }else{
+      return $createArray("JSON",1,[obj]);
     }
-    getArray(key){
-      let v=this.$get(key);
-      if(v===null) return null;
-      let array;
-      if(Array.isArray(v)){
-        let v_neu=[];
-        for(let i=0;i<v.length;i++){
-          let jo=$new(JSON_Java);
-          jo.json=v[i];
-          v_neu.push(jo);
-        }
-        array=$createArray("JSON",1,v_neu);
-      }else{
-        let jo=$new(JSON_Java);
-        jo.json=v;
-        array=$createArray("JSON",1,[jo]);
-      }
-      return array;
+  };
+  $jsgetInt=function(obj,key){
+    let v=$js$get(obj,key);
+    if(v===null || (typeof v!=="number")) return 0;
+    return Math.floor(v);
+  };
+  $jsgetDouble=function(obj,key){
+    let v=$js$get(obj,key);
+    if(v===null || (typeof v!=="number")) return 0;
+    return v;
+  };
+  $jsgetBoolean=function(obj,key){
+    let v=$js$get(obj,key);
+    if(!v) return false;
+    return true;
+  };
+  $jsget=function(obj,key){
+    let v=$js$get(obj,key);
+    if(v===null) return null;
+    return v;
+  };
+  $jsgetArray=function(obj,key){
+    let v=$js$get(obj,key);
+    if(v===null) return null;
+    let array;
+    if(Array.isArray(v)){
+      array=$createArray("JSON",1,v);
+    }else{
+      array=$createArray("JSON",1,[v]);
     }
-    setString(key,v){
-      if(this.json===null) this.json={};
-      this.json[key]=v;
-    }
-    setInt(key,v){
-      if(this.json===null) this.json={};
-      this.json[key]=v;
-    }
-    setDouble(key,v){
-      if(this.json===null) this.json={};
-      this.json[key]=v;
-    }
-    setBoolean(key, v){
-      if(this.json===null) this.json={};
-      this.json[key]=v;
-    }
-  }
+    return array;
+  };
+  $jsset=function(obj,key,v){
+    obj[key]=v;
+  };
 
   class $Scope{
     constructor(thisObject){

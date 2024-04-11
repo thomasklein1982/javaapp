@@ -80,7 +80,12 @@ export class Method{
       code="async $constructor";
       code+=this.params.getJavaScriptCode("typeArguments,")+"{\nthis.$typeArguments=typeArguments;";
     }else{
-      code=this.modifiers.getJavaScriptCode()+" async "+this.name;
+      // if(this.name==="toJSON"){
+      //   code=this.modifiers.getJavaScriptCode()+" "+this.name;
+      // }else{
+        code=this.modifiers.getJavaScriptCode()+" async "+this.name;
+      // }
+      
       code+=this.params.getJavaScriptCode()+"{";
     }
     code+="let $scope=new $Scope(this);";
