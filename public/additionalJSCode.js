@@ -107,6 +107,27 @@ function additionalJSCode(){
     }
   }
 
+  function $beep(object,type, frequency, volume, duration){
+    let oscillator = audioCtx.createOscillator();
+    let gainNode = audioCtx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    gainNode.gain.value = volume;
+    oscillator.frequency.value = frequency;
+    oscillator.type = type;
+
+    oscillator.start();
+
+    setTimeout(
+      function() {
+        oscillator.stop();
+      },
+      duration
+    );
+  }
+
   $arrayCheckBounds=function(array,index){
     if(index>=array.length || index<0){
       var m="Index "+index+" liegt ausserhalb der Array-Grenzen von 0 bis "+(array.length-1);
@@ -1392,7 +1413,7 @@ function additionalJSCode(){
     $constructor(tag){
       //super.$constructor(0,0,0,0);
       if(tag && tag.substring){
-        tag=document.createElement("tag");
+        tag=document.createElement(tag);
       }
       this.$el=tag;
       this.$el.appJSData={};
@@ -1404,6 +1425,23 @@ function additionalJSCode(){
         this.$el.onclick = $handleOnAction;
       }
       
+    }
+    addEventListener(type, listener){
+      this.$el.addEventListener(type,listener.actionPerformed);
+    }
+    add(comp,index){
+      if(index===undefined){
+        this.$el.appendChild(comp.$el);
+      }else{
+        let ref=this.$el.children[index];
+        this.$el.insertBefore(comp.$el,ref);
+      }
+    }
+    setInnerHTML(html){
+      this.$el.innerHTML=html;
+    }
+    setTextContent(text){
+      this.$el.textContent=text;
     }
     getAttribute(name){
       return this.$el[name];

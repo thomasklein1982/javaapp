@@ -494,7 +494,8 @@ export default {
         "max_preserve_newlines": 2,
         "indent_empty_lines": true,
         "space_in_paren": true,
-        "space_in_empty_paren": true
+        "space_in_empty_paren": true,
+        "keep_array_indentation": true
       });
       code=code.replace(/\) - > \{/g,") -> {");
       this.editor.dispatch({

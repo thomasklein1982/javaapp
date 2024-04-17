@@ -15,11 +15,40 @@ export function defineHTMLElement(clazz){
     ]
   }, clazz);
   createMethod({
+    name: 'addEventListener',
+    args: [
+      {name: 'event', type: 'String', info: 'Art des Events, z. B. "click" oder "change".'},
+      {name: '(ev)->{}', type: 'ActionListener'}
+    ],
+    info: "Fügt einen EventListener hinzu, der aufgerufen wird, wenn man mit der Komponente interagiert."
+  },clazz,false,false);
+  createMethod({
+    name: 'add',
+    args: [
+      {name: 'component', type: 'JComponent', info: 'Die Komponente, die hinzugefügt werden soll.'}
+    ],
+    info: 'Fügt dem HTMLElement eine (weitere) Komponente hinzu.'
+  },clazz,false,false,Java);
+  createMethod({
     name: 'setAttribute',
     args: [
       {name: 'attribute', type: 'String'},
       {name: 'value', type: 'String'}
     ],
     info: "Legt den Wert eines Attributs des HTML-Elements fest."
+  },clazz,false,false);
+  createMethod({
+    name: 'setInnerHTML',
+    args: [
+      {name: 'html', type: 'String'}
+    ],
+    info: "Legt das innere HTML des Elements fest."
+  },clazz,false,false);
+  createMethod({
+    name: 'setTextContent',
+    args: [
+      {name: 'text', type: 'String'}
+    ],
+    info: "Legt den Textinhalt des Elements fest."
   },clazz,false,false);
 }
