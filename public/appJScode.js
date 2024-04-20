@@ -100,15 +100,12 @@ window.appJScode=function(){
         stepAbove: false,
         callDepth: 0,
         resetCallDepth: function(){
-          console.log("callDepth: reset");
           this.callDepth=0;
         },
         incCallDepth: function(){
-          console.log("callDepth: inc",this.callDepth+1,this.lastLine,this.lastName);
           this.callDepth++;
         },
         decCallDepth: function(){
-          console.log("callDepth: dec", this.callDepth-1,this.lastLine,this.lastName);
           if(this.callDepth>0){
             this.callDepth--;
           }else{
@@ -117,11 +114,9 @@ window.appJScode=function(){
 
         },
         getCallDepth: function(){
-          console.log("callDepth: get",this.callDepth,this.lastLine,this.lastName);
           return this.callDepth;
         },
         isCallDepthZero: function(){
-          console.log("callDepth: isZero",this.callDepth===0,this.lastLine,this.lastName);
           return this.callDepth===0;
         },
         resolve: null,
@@ -131,7 +126,6 @@ window.appJScode=function(){
           this.$scope=$scope;
           this.lastLine=line;
           this.lastName=name;
-          console.log(this,line,name,this.getCallDepth());
           if(this.paused || this.breakpoints[line]===name || this.isCallDepthZero() && this.stepAbove){
             this.paused=true;
             this.stepAbove=false;
@@ -1288,6 +1282,14 @@ window.appJScode=function(){
       setOrigin: function(x,y){
         this.origin.x=x;
         this.origin.y=y;
+      },
+      setAxisX: function(min,max){
+        this.origin.x=(min+max)/2;
+        this.width=max-min;
+      },
+      setAxisY: function(min,max){
+        this.origin.y=(min+max)/2;
+        this.height=max-min;
       },
       setSize: function(width,height,fullWidth,fullHeight){
         this.width=width;
@@ -4781,7 +4783,7 @@ window.appJScode=function(){
         }
         b.noAbsolutePosition=true;
         b.canvas=canvas;
-        var methods=["setSize","setMirrored","setRotation","setOpacity","setFontsize","setFont","setLinewidth","write","drawCircle","fillCircle","drawRect","fillRect","drawLine","beginPath","lineTo","closePath","setColor","drawImage","drawImagePart","rotate","translate","scale","addElement","setSizePolicy","getSizePolicy"];
+        var methods=["setSize","setMirrored","setRotation","setOpacity","setFontsize","setFont","setLinewidth","write","drawCircle","fillCircle","drawRect","fillRect","drawLine","beginPath","lineTo","closePath","setColor","drawImage","drawImagePart","rotate","translate","scale","addElement","setSizePolicy","getSizePolicy","setAxisX","setAxisY"];
         for(var i=0;i<methods.length;i++){
           let m=methods[i];
           b[m]=function(){

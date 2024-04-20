@@ -4,7 +4,6 @@ export function LambdaExpression(node,source,scope,infos){
   if(!infos || !infos.parameter || !infos.parameter.type || !infos.owner){
     throw source.createError("Unvorhergesehener Lamdba-Ausdruck.\nWahrscheinlich verursacht durch einen anderen Fehler.",node);
   }
-  console.log("lambda",source.getText(node),infos.owner);
   let inter=infos.parameter.type;
   if(inter.dimension>0 || !inter.baseType.isInterface){
     throw source.createError("An dieser Stelle kann kein Lamda-Ausdruck übergeben werden.",node);
@@ -49,7 +48,6 @@ export function LambdaExpression(node,source,scope,infos){
   let code="async "+params.code+"=>{"+block.code+"}";
   
   code="$createInterfaceInstance("+JSON.stringify(inter.baseType.name)+","+JSON.stringify(method.name)+","+code+")";
-  console.log(code);
   return {
     code,
     params,block,

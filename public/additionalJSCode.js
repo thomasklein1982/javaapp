@@ -904,6 +904,10 @@ function additionalJSCode(){
 
   class JComponent{
     $constructor(x,y,width,height){
+      if(x===undefined) x=50;
+      if(y===undefined) y=50;
+      if(width===undefined) width=100;
+      if(height===undefined) height=100;
       this.x=x;
       this.y=y;
       this.width=width;
@@ -919,6 +923,9 @@ function additionalJSCode(){
       this.standardCSSClasses="";
       this.actionListeners=[];
     }
+    addEventListener(type, listener){
+      this.$el.addEventListener(type,listener.actionPerformed);
+    }
     getMouseX(){
       return 0;
     }
@@ -930,8 +937,8 @@ function additionalJSCode(){
       try{
         let e=this.$el.querySelector(selector);
         if(!e) return null;
-        if(e.component) return e.component;
-        return $new(HTMLElement,e);
+        if(!e.component) e.component=$new(HTMLElement,e);
+        return e.component;
       }catch(e){
         throw $new(Exception,"Fehlerhafter Selektor\n"+e);
       }
@@ -940,19 +947,18 @@ function additionalJSCode(){
       try{
         let es=this.$el.querySelectorAll(selector);
         if(!es) return null;
-        let comps=[];
         for(let i=0;i<es.length;i++){
           let e=es[i];
-          if(e.component){
-            comps.push(e.component);
-          }else{
-            comps.push($new(HTMLElement,e));
-          }
+          if(!e.component) e.component=$new(HTMLElement,e)
+          es[i]=e.component;
         }
-        return comps;
+        return $createArray("HTMLElement",1,es);
       }catch(e){
         throw $new(Exception,"Fehlerhafter Selektor\n"+e);
       }
+    }
+    getElementById(id){
+      return this.querySelector("[id='"+id+"']");
     }
     getScrollPosition(){
       return this.$el.scrollTop;
@@ -964,7 +970,11 @@ function additionalJSCode(){
       this.actionCommand=ac;
     }
     getActionCommand(){
-      return this.actionCommand;
+      if(this.actionCommand){
+        return this.actionCommand;
+      }else{
+        return this.$el.textContent;
+      }
     }
     setActionObject(object){
       this.actionObject=object;
@@ -1426,9 +1436,10 @@ function additionalJSCode(){
       }
       
     }
-    addEventListener(type, listener){
-      this.$el.addEventListener(type,listener.actionPerformed);
+    getChildElements(){
+
     }
+    
     add(comp,index){
       if(index===undefined){
         this.$el.appendChild(comp.$el);
@@ -1508,6 +1519,12 @@ function additionalJSCode(){
       this.$el.onpointermove=$handleOnPointerMove;
       this.setTriggerOnMouseDown(true);
       this.setTriggerOnMouseUp(true);
+    }
+    setAxisX(min,max){
+      this.$el.canvas.setAxisX(min,max);
+    }
+    setAxisY(min,max){
+      this.$el.canvas.setAxisY(min,max);
     }
     $updateMousePosition(ev){
       let canvas=this.$el.canvas;
@@ -2646,6 +2663,168 @@ function additionalJSCode(){
     }
   }
 
+  class Gamepad{
+    $constructor(){
+      this.rootElement=document.body;
+      this.dpad=new DPad(this);
+      this.setBounds(0,0,100);
+    }
+    setBounds(x,y,w){
+      this.dpad.setPosition(x,y);
+    }
+    getDirection(){
+      return this.dpad.getDirection();
+    }
+    isUpPressed(){
+      return this.dpad.isPressed("n");
+    }
+    isDownPressed(){
+      return this.dpad.isPressed("s");
+    }
+    isRightPressed(){
+      return this.dpad.isPressed("e");
+    }
+    isLeftPressed(){
+      return this.dpad.isPressed("w");
+    }
+  }
+
+  class DPad{
+    constructor(gamepad){
+      this.gamepad=gamepad;
+      this.buttons={
+        center: null,
+        s: null,
+        n: null,
+        w: null,
+        e: null,
+        ne: null,
+        nw: null,
+        se: null,
+        sw: null,
+      };
+      
+      for(let a in this.buttons){
+        this.buttons[a]=new DPadButton(this,a);
+      }
+      for(let a in this.buttons){
+        if(a.length===2){
+          this.buttons[a].setToDiagonal(this.buttons[a.charAt(0)],this.buttons[a.charAt(1)]);
+        }
+      }
+      this.scaling=1;
+      this.setPosition("1cm","1cm");
+      this.buttons.center.hide();
+    }
+    isPressed(dir){
+      if(!this.buttons[dir]) return false;
+      return this.buttons[dir].isPressed;
+    }
+    getDirection(){
+      let dir="";
+      for(let a in this.buttons){
+        let b=this.buttons[a];
+        if(a.length===1 && b.isPressed){
+          dir+=a;
+        }
+      }
+      return dir;
+    }
+    setPosition(left, bottom){
+      this.buttons.nw.setBounds(left,bottom,this.scaling,0,2);
+      this.buttons.n.setBounds(left,bottom,this.scaling,1,2);
+      this.buttons.ne.setBounds(left,bottom,this.scaling,2,2);
+      this.buttons.w.setBounds(left,bottom,this.scaling,0,1);
+      this.buttons.e.setBounds(left,bottom,this.scaling,2,1);
+      this.buttons.sw.setBounds(left,bottom,this.scaling,0,0);
+      this.buttons.s.setBounds(left,bottom,this.scaling,1,0);
+      this.buttons.se.setBounds(left,bottom,this.scaling,2,0);
+      this.buttons.center.setBounds(left,bottom,this.scaling,1,1);
+    }
+  }
+
+  class DPadButton{
+    constructor(dpad,dir){
+      this.dpad=dpad;
+      this.dir=dir;
+      this.diagonal=false;
+      this.mainNeighbors=null;
+      this.hidden=false;
+      this.listeners={
+        click: [],
+        down: [],
+        up: []
+      };
+      this.isPressed=false;
+      this.ui=document.createElement("div");
+      this.ui.style="z-index: 100;border: 1pt solid black; opacity: 0.5; position: fixed; aspect-ratio: 1; background-color: grey;touch-action: none;";
+      this.ui.addEventListener("pointerenter",(ev)=>{
+        this.isPressed=ev.buttons>0;
+        this.updateHover();
+      });
+      this.ui.addEventListener("pointerdown",(ev)=>{
+        try{
+          ev.target.releasePointerCapture(ev.pointerId);
+        }catch(e){}
+        this.isPressed=ev.buttons>0;
+        this.updateHover();
+        for(let i=0;i<this.listeners.down.length;i++){
+          let l=this.listeners.down[i];
+          l(ev);
+        }
+      });
+      this.ui.addEventListener("pointerup",(ev)=>{
+        this.isPressed=false;
+        this.updateHover();
+        for(let i=0;i<this.listeners.up.length;i++){
+          let l=this.listeners.up[i];
+          l(ev);
+        }
+      });
+      this.ui.addEventListener("pointerout",(ev)=>{
+        this.isPressed=false;
+        this.updateHover();
+      });
+      this.ui.addEventListener("click",()=>{
+        for(let i=0;i<this.listeners.click.length;i++){
+          let l=this.listeners.click[i];
+          l(ev);
+        }
+      });
+      this.dpad.gamepad.rootElement.appendChild(this.ui);
+    }
+    hide(){
+      this.hidden=true;
+      this.ui.style.opacity=0;
+    }
+    setToDiagonal(mainAxis1,mainAxis2){
+      this.diagonal=true;
+      this.hide();
+      this.mainNeighbors=[mainAxis1,mainAxis2];
+    }
+    updateHover(){
+      if(this.diagonal){
+        for(let i=0;i<this.mainNeighbors.length;i++){
+          let n=this.mainNeighbors[i];
+          n.isPressed=this.isPressed;
+          n.updateHover();
+        }
+      }
+      if(this.hidden) return;
+      if(this.isPressed){
+        this.ui.style.opacity=1;
+      }else{
+        this.ui.style.opacity=0.5;
+      }
+    }
+
+    setBounds(left, bottom, scaling, offsetX,offsetY){
+      this.ui.style.left="calc("+left+" + "+offsetX*scaling+"cm)";
+      this.ui.style.bottom="calc("+bottom+" + "+offsetY*scaling+"cm)";
+      this.ui.style.width=scaling+"cm";
+    }
+  }
+
   class Sound{
     $constructor(url){
       this.setSource(url);
@@ -2767,7 +2946,50 @@ function additionalJSCode(){
   }
 
   class Random{
+    $constructor(seed){
+      if(seed===undefined){
+        seed=Math.floor(Math.random()*36223827);
+      }
+      this.seed=seed;
+    }
 
+    setSeed(seed){
+      this.seed=seed;
+    }
+
+    static testInts(bound,count){
+      let results=[];
+      for(let i=0;i<bound;i++){
+        results.push(0);
+      }
+      let r=$new(Random);
+      let mu=count/bound;
+      let s=Math.sqrt(count*(1/bound)*(1-1/bound));
+      for(let i=0;i<count;i++){
+        let z=r.nextInt(bound);
+        results[z]++;
+      }
+      console.log(results,mu,s,2*s,3*s);
+      for(let i=0;i<bound;i++){
+        let c=results[i];
+        if(Math.abs(c-mu)>s*2){
+          console.error(i,c,count,c/count*100);
+        }else{
+          console.log(i,c,count,c/count*100);
+        }
+      }
+      
+    }
+
+    nextDouble(){
+      this.seed++;
+      var z=Math.sin(this.seed)*100;
+      return z-Math.floor(z);
+    }
+
+    nextInt(bound){
+      return Math.floor(this.nextDouble()*(bound));
+    }
   }
   
   $jstoJSON=async function(obj){

@@ -26,6 +26,8 @@ import { defineInputStream } from "./datatypes/InputStream.js";
 import { defineActionEvent } from "./datatypes/ActionEvent.js";
 import { defineTimer } from "./datatypes/Timer.js";
 import { defineJSON } from "./datatypes/JSON.js";
+import { defineRandom } from "./datatypes/Random.js";
+import { defineGamepad } from "./datatypes/Gamepad.js";
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
 let boolean=new PrimitiveType("boolean",null,false,"Ein 'boolean' (dt: 'Wahrheitswert') kann nur true oder false sein.",true);
@@ -51,7 +53,6 @@ let JavaApp=new Clazz("JavaApp");
 let Math=new Clazz("Math");
 Math.cannotBeInstantiated=true;
 let Gamepad=new Clazz("Gamepad");
-Gamepad.cannotBeInstantiated=true;
 // let UI=new Clazz("UI");
 // UI.cannotBeInstantiated=true;
 let Path=new Clazz("Path");
@@ -118,12 +119,14 @@ let Timer=new Clazz("Timer");
 
 let JSON=new Clazz("JSON");
 
+let Random=new Clazz("Random");
+
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, ActionListener, JavaApp, InputStream, Comparable, ActionEvent, Timer, JSON
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, ActionListener, JavaApp, InputStream, Comparable, ActionEvent, Timer, JSON, Random
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, JavaApp, InputStream, Comparable, ActionEvent, Timer, JSON
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, JavaApp, InputStream, Comparable, ActionEvent, Timer, JSON, Random
 }
 
 let interfaces={
@@ -157,7 +160,8 @@ definePrintStream(PrintStream);
 defineInputStream(InputStream);
 defineSystem(System);
 defineJavaApp(JavaApp);
-defineGenericClazz(Gamepad,appjsdata.objects.gamepad,Java);
+
+defineGamepad(Gamepad);
 defineGenericClazz(Console,appjsdata.objects.console,Java);
 defineGenericClazz(Path,appjsdata.objects.path,Java);
 defineGenericClazz(World,appjsdata.objects.world,Java);
@@ -178,5 +182,5 @@ defineHTMLElement(HTMLElement);
 defineSound(Sound,Java);
 defineTimer(Timer);
 defineJSON(JSON);
+defineRandom(Random);
 defineInterfaces();
-

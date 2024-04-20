@@ -15,14 +15,6 @@ export function defineHTMLElement(clazz){
     ]
   }, clazz);
   createMethod({
-    name: 'addEventListener',
-    args: [
-      {name: 'event', type: 'String', info: 'Art des Events, z. B. "click" oder "change".'},
-      {name: '(ev)->{}', type: 'ActionListener'}
-    ],
-    info: "Fügt einen EventListener hinzu, der aufgerufen wird, wenn man mit der Komponente interagiert."
-  },clazz,false,false);
-  createMethod({
     name: 'add',
     args: [
       {name: 'component', type: 'JComponent', info: 'Die Komponente, die hinzugefügt werden soll.'}

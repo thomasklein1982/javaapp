@@ -31,6 +31,14 @@ function defineJComponent(Clazz,Java){
       {name: 'v', type: 'String'}
     ]
   },Clazz,false,false,Java);
+  createMethod({
+    name: 'addEventListener',
+    args: [
+      {name: 'event', type: 'String', info: 'Art des Events, z. B. "click" oder "change".'},
+      {name: '(ev)->{}', type: 'ActionListener'}
+    ],
+    info: "Fügt einen EventListener hinzu, der aufgerufen wird, wenn man mit der Komponente interagiert."
+  },Clazz,false,false);
   // setCSSClass(className){
   //   this.$el.className=className;
   // }
@@ -52,6 +60,14 @@ function defineJComponent(Clazz,Java){
       {name: '(ev)->{}', type: 'ActionListener'}
     ],
     info: "Fügt einen ActionListener hinzu, der aufgerufen wird, wenn man mit der Komponente interagiert."
+  },Clazz,false,false);
+  createMethod({
+    name: 'getElementById',
+    args: [
+      {name: 'id', type: 'String'}
+    ],
+    returnType: "HTMLElement",
+    info: "Liefert das HTMLElement mit der angegebenen ID zurück."
   },Clazz,false,false);
   createMethod({
     name: 'setOnAction',
@@ -360,43 +376,45 @@ function defineJComponent(Clazz,Java){
 }
 
 function defineJFrame(Clazz,Java){
+  Clazz.superClazz=Java.datatypes.JPanel;
   createConstructor ({
     args: [
+      {type: {baseType: 'String', dimension: 0}, name: 'template', optional: true}
     ]
   },Clazz,Java);
-  createMethod({
-    name: 'setLayout',
-    args: [
-      {name: 'layout', type: 'String', info: 'Das neue Layout des Panels.'}
-    ],
-    info: 'Legt das Layout für das Panel fest.'
-  },Clazz,false,false,Java);
-  createMethod({
-    name: 'setVisible',
-    args: [
-      {name: 'v', type: 'boolean', info: 'Legt fest, ob das Fenster sichtbar oder unsichtbar ist.'}
-    ],
-    info: "Macht das Fenster sichtbar oder unsichtbar."
-  },Clazz,false,false,Java);
+  // createMethod({
+  //   name: 'setLayout',
+  //   args: [
+  //     {name: 'layout', type: 'String', info: 'Das neue Layout des Panels.'}
+  //   ],
+  //   info: 'Legt das Layout für das Panel fest.'
+  // },Clazz,false,false,Java);
+  // createMethod({
+  //   name: 'setVisible',
+  //   args: [
+  //     {name: 'v', type: 'boolean', info: 'Legt fest, ob das Fenster sichtbar oder unsichtbar ist.'}
+  //   ],
+  //   info: "Macht das Fenster sichtbar oder unsichtbar."
+  // },Clazz,false,false,Java);
 
-  createMethod({
-    name: 'add',
-    args: [
-      {name: 'component', type: 'JComponent', info: 'Die Komponente, die hinzugefügt werden soll.'}
-    ],
-    info: 'Fügt dem Frame eine (weitere) Komponente hinzu.'
-  },Clazz,false,false,Java);
-  createMethod({
-    name: 'remove',
-    args: [
-      {name: 'component', type: 'JComponent', info: 'Die Komponente, die entfernt werden soll.'}
-    ],
-    info: 'Entfernt die Komponente aus dem Frame, falls möglich.'
-  },Clazz,false,false,Java);
-  createMethod({
-    name: 'removeAll',
-    info: 'Entfernt alle Komponenten aus dem Frame.'
-  },Clazz,false,false,Java);
+  // createMethod({
+  //   name: 'add',
+  //   args: [
+  //     {name: 'component', type: 'JComponent', info: 'Die Komponente, die hinzugefügt werden soll.'}
+  //   ],
+  //   info: 'Fügt dem Frame eine (weitere) Komponente hinzu.'
+  // },Clazz,false,false,Java);
+  // createMethod({
+  //   name: 'remove',
+  //   args: [
+  //     {name: 'component', type: 'JComponent', info: 'Die Komponente, die entfernt werden soll.'}
+  //   ],
+  //   info: 'Entfernt die Komponente aus dem Frame, falls möglich.'
+  // },Clazz,false,false,Java);
+  // createMethod({
+  //   name: 'removeAll',
+  //   info: 'Entfernt alle Komponenten aus dem Frame.'
+  // },Clazz,false,false,Java);
 }
 
 function defineJButton(Clazz,Java){
@@ -719,11 +737,11 @@ function defineCanvas(Clazz,Java){
     args: [{name: 'sx', type: 'double', info: 'Skalierungsfaktor in x-Richtung. Bei negativem Wert wird an einer vertikalen Achse gespiegelt.'}, {name: 'sy', type: 'double', info: 'Skalierungsfaktor in y-Richtung. Bei negativem Wert wird an einer horizontalen Achse gespiegelt.'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts der Skalierung.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts der Skalierung.'}],
     info: 'Skaliert alles, was danach gezeichnet wird.'
   },Clazz,false,false,Java);
-  createMethod({
-    name: 'scale',
-    args: [{name: 'sx', type: 'double', info: 'Skalierungsfaktor in x-Richtung. Bei negativem Wert wird an einer vertikalen Achse gespiegelt.'}, {name: 'sy', type: 'double', info: 'Skalierungsfaktor in y-Richtung. Bei negativem Wert wird an einer horizontalen Achse gespiegelt.'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts der Skalierung.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts der Skalierung.'}],
-    info: 'Skaliert alles, was danach gezeichnet wird.'
-  },Clazz,false,false,Java);
+  // createMethod({
+  //   name: 'scale',
+  //   args: [{name: 'sx', type: 'double', info: 'Skalierungsfaktor in x-Richtung. Bei negativem Wert wird an einer vertikalen Achse gespiegelt.'}, {name: 'sy', type: 'double', info: 'Skalierungsfaktor in y-Richtung. Bei negativem Wert wird an einer horizontalen Achse gespiegelt.'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts der Skalierung.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts der Skalierung.'}],
+  //   info: 'Skaliert alles, was danach gezeichnet wird.'
+  // },Clazz,false,false,Java);
   createMethod({
     name: 'setMirrored',
     args: [
@@ -737,10 +755,20 @@ function defineCanvas(Clazz,Java){
     ],
     info: "Zeichnet den Canvas neu."
   },Clazz,false,false,Java);
+  // createMethod({
+  //   name: 'setOrigin',
+  //   args: [{name: 'x', type: 'double', info: 'x-Koordinate des Koordinatenursprungs'}, {name: 'y', type: 'double', info: 'y-Koordinate des Koordinatenursprungs'}],
+  //   info: 'Legt die Position des Koordinatenursprungs (0|0) fest.'
+  // },Clazz,false,false,Java);
   createMethod({
-    name: 'setOrigin',
-    args: [{name: 'x', type: 'double', info: 'x-Koordinate des Koordinatenursprungs'}, {name: 'y', type: 'double', info: 'y-Koordinate des Koordinatenursprungs'}],
-    info: 'Legt die Position des Koordinatenursprungs (0|0) fest.'
+    name: 'setAxisX',
+    args: [{name: 'min', type: 'double', info: 'minimale x-Koordinate'}, {name: 'max', type: 'double', info: 'maximale x-Koordinate'}],
+    info: 'Legt die x-Achse des Koordinatensystems fest.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setAxisY',
+    args: [{name: 'min', type: 'double', info: 'minimale y-Koordinate'}, {name: 'max', type: 'double', info: 'maximale y-Koordinate'}],
+    info: 'Legt die y-Achse des Koordinatensystems fest.'
   },Clazz,false,false,Java);
   createMethod({
     name: 'setRotation',
