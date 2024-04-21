@@ -40,9 +40,24 @@ export function defineGamepad(Clazz,Java){
     returnType: "boolean"
   },Clazz,false,false);
   createMethod({
-    name: 'nextDouble',
+    name: 'setPosition',
     args: [
-    ],
-    returnType: "double"
+      {name: "left", type: "String"},
+      {name: "bottom", type: "String"},
+    ]
+  },Clazz,false,false);
+  createMethod({
+    name: 'setWidth',
+    args: [
+      {name: "w", type: "String"}
+    ]
+  },Clazz,false,false);
+  createMethod({
+    name: 'setButtonListener',
+    args: [
+      {name: "button", type: "String"},
+      {name: "event", type: "String"},
+      {name: "(ev)->{}", type: "ActionListener"},
+    ]
   },Clazz,false,false);
 }

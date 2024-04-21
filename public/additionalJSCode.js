@@ -2666,11 +2666,105 @@ function additionalJSCode(){
   class Gamepad{
     $constructor(){
       this.rootElement=document.body;
+      this.buttonHandlers={};
+      this.padding="0.5cm";
+      this.width="100%";
+      this.buttonSize=1;
       this.dpad=new DPad(this);
-      this.setBounds(0,0,100);
+      this.buttons={
+        B: new GamepadButton(this,"B","B","yellow","black"),
+        A: new GamepadButton(this,"A","A","red","black"),
+        Y: new GamepadButton(this,"Y","Y","green","white"),
+        X: new GamepadButton(this,"X","X","blue","white"),
+        // SELECT: new GamepadButton(this,"SELECT","Select","grey","black"),
+        // START: new GamepadButton(this,"START","Start","grey","black")
+      };
+      this.setPosition("0cm","0cm");
+      this.setKey("up",38);
+      this.setKey("down",40);
+      this.setKey("left",37);
+      this.setKey("right",39);
+      this.setKey("B","B");
+      this.setKey("A","A");
+      this.setKey("X","X");
+      this.setKey("Y","Y");
+      this.setKey("Start","P");
+      this.setKey("Select","O");
+      this.keydownListener=(ev)=>{
+        let k=ev.keyCode;
+        k=String.fromCodePoint(k).toLowerCase().codePointAt(0);
+        for(let a in this.buttons){
+          let b=this.buttons[a];
+          if(b.keyDown(k)){
+            return;
+          }
+        }
+        this.dpad.keyDown(k);
+
+      };
+      window.addEventListener("keydown",this.keydownListener);
+      this.keyupListener=(ev)=>{
+        let k=ev.keyCode;
+        k=String.fromCodePoint(k).toLowerCase().codePointAt(0);
+        for(let a in this.buttons){
+          let b=this.buttons[a];
+          if(b.keyUp(k)){
+            return;
+          }
+        }
+        this.dpad.keyUp(k);
+      };
+      window.addEventListener("keyup",this.keyupListener);
     }
-    setBounds(x,y,w){
-      this.dpad.setPosition(x,y);
+    setKey(button,key){
+      if(key.toLowerCase){
+        key=key.toLowerCase();
+        let dirs={
+          left: 13,
+          right: 14,
+          up: 18,
+          down: 19
+        };
+        if(key in dirs){
+          key=dirs[key];
+        }
+        key=key.codePointAt(0);
+      }
+      if(button in this.buttons){
+        let b=this.buttons[button];
+        b.setKey(key);
+        return;
+      }
+      this.dpad.setKey(button,key);
+    }
+    setPosition(x,y){
+      this.x=x;
+      this.y=y;
+      this.updateLayout();
+    }
+    updateLayout(){
+      let x=this.x;
+      let y=this.y;
+      this.dpad.setPosition(x,y,this.padding);
+      this.buttons.B.setBounds(x+" + "+this.width+" - "+this.padding,y+" + "+this.padding,this.buttonSize,-2.2,0);
+      this.buttons.A.setBounds(x+" + "+this.width+" - "+this.padding,y+" + "+this.padding,this.buttonSize,-1,1);
+      this.buttons.Y.setBounds(x+" + "+this.width+" - "+this.padding,y+" + "+this.padding,this.buttonSize,-3.4,1);
+      this.buttons.X.setBounds(x+" + "+this.width+" - "+this.padding,y+" + "+this.padding,this.buttonSize,-2.2,2);
+    }
+    setWidth(w){
+      this.width=w;
+      this.updateLayout();
+    }
+    setDirectionButtonsSize(size){
+
+    }
+    setButtonListener(button, event, handler){
+      this.buttonHandlers[button+":"+event]=handler;
+    }
+    onButtonEvent(button,event,eventData){
+      let handler=this.buttonHandlers[button+":"+event];
+      if(!handler) return;
+      handler.actionPerformed(eventData);
     }
     getDirection(){
       return this.dpad.getDirection();
@@ -2716,6 +2810,32 @@ function additionalJSCode(){
       this.setPosition("1cm","1cm");
       this.buttons.center.hide();
     }
+    keyDown(key){
+      for(let a in this.buttons){
+        let b=this.buttons[a];
+        b.keyDown(key);
+      }
+    }
+    keyUp(key){
+      for(let a in this.buttons){
+        let b=this.buttons[a];
+        b.keyUp(key);
+      }
+    }
+    setKey(button,key){
+      button=button.toLowerCase();
+      let translation={
+        up: "n",
+        down: "s",
+        right: "e",
+        left: "w"
+      };
+      if(button in translation){
+        button=translation[button];
+      }
+      if(!this.buttons[button]) return;
+      this.buttons[button].setKey(key);
+    }
     isPressed(dir){
       if(!this.buttons[dir]) return false;
       return this.buttons[dir].isPressed;
@@ -2730,21 +2850,100 @@ function additionalJSCode(){
       }
       return dir;
     }
-    setPosition(left, bottom){
-      this.buttons.nw.setBounds(left,bottom,this.scaling,0,2);
-      this.buttons.n.setBounds(left,bottom,this.scaling,1,2);
-      this.buttons.ne.setBounds(left,bottom,this.scaling,2,2);
-      this.buttons.w.setBounds(left,bottom,this.scaling,0,1);
-      this.buttons.e.setBounds(left,bottom,this.scaling,2,1);
-      this.buttons.sw.setBounds(left,bottom,this.scaling,0,0);
-      this.buttons.s.setBounds(left,bottom,this.scaling,1,0);
-      this.buttons.se.setBounds(left,bottom,this.scaling,2,0);
-      this.buttons.center.setBounds(left,bottom,this.scaling,1,1);
+    setPosition(left, bottom,padding){
+      this.buttons.nw.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,0,2);
+      this.buttons.n.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,1,2);
+      this.buttons.ne.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,2,2);
+      this.buttons.w.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,0,1);
+      this.buttons.e.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,2,1);
+      this.buttons.sw.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,0,0);
+      this.buttons.s.setBounds(left+ " + "+padding,bottom+" + "+padding,this.scaling,1,0);
+      this.buttons.se.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,2,0);
+      this.buttons.center.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,1,1);
+    }
+  }
+
+  class GamepadButton{
+    constructor(gamepad,name,label,background,foreground){
+      this.gamepad=gamepad;
+      this.name=name;
+      this.ui=document.createElement("div");
+      this.ui.innerHTML=label;
+      this.ui.style="z-index: 100;border-radius: 100%; border: 1pt solid black; opacity: 0.5; position: fixed; aspect-ratio: 1;touch-action: none; display: flex;justify-content: center; align-items: center; font-weight: bold";
+      this.setColor(background,foreground);
+      this.gamepad.rootElement.appendChild(this.ui);
+      this.isPressed=false;
+      this.ui.addEventListener("pointerenter",(ev)=>{
+        this.isPressed=ev.buttons>0;
+        this.updateHover();
+        if(this.isPressed){
+          this.gamepad.onButtonEvent(this.name,"pressed",ev);
+        }
+      });
+      this.ui.addEventListener("pointerdown",(ev)=>{
+        try{
+          ev.target.releasePointerCapture(ev.pointerId);
+        }catch(e){}
+        this.isPressed=ev.buttons>0;
+        this.updateHover();
+        if(this.isPressed){
+          this.gamepad.onButtonEvent(this.name,"pressed",ev);
+        }
+      });
+      this.ui.addEventListener("pointerup",(ev)=>{
+        this.isPressed=false;
+        this.updateHover();
+        this.gamepad.onButtonEvent(this.name,"released",ev);
+      });
+      this.ui.addEventListener("pointerout",(ev)=>{
+        this.isPressed=false;
+        this.updateHover();
+        this.gamepad.onButtonEvent(this.name,"released",ev);
+
+      });
+    }
+    setKey(key){
+      this.key=key;
+    }
+    keyDown(key){
+      if(this.key===key){
+        this.isPressed=true;
+        this.updateHover();
+        this.gamepad.onButtonEvent(this.name,"pressed",{});
+        return true;
+      }
+      return false;
+    }
+    keyUp(key){
+      if(this.key===key){
+        this.isPressed=false;
+        this.updateHover();
+        this.gamepad.onButtonEvent(this.name,"released",{});
+        return true;
+      }
+      return false;
+    }
+    updateHover(){
+      if(this.isPressed){
+        this.ui.style.opacity=1;
+      }else{
+        this.ui.style.opacity=0.5;
+      }
+    }
+    setColor(background,foreground){
+      this.ui.style.backgroundColor=background;
+      this.ui.style.color=foreground;
+    }
+    setBounds(left, bottom, scaling, offsetX,offsetY){
+      this.ui.style.left="calc("+left+" + "+offsetX*scaling+"cm)";
+      this.ui.style.bottom="calc("+bottom+" + "+offsetY*scaling+"cm)";
+      this.ui.style.width=scaling+"cm";
     }
   }
 
   class DPadButton{
     constructor(dpad,dir){
+      this.key=null;
       this.dpad=dpad;
       this.dir=dir;
       this.diagonal=false;
@@ -2757,7 +2956,7 @@ function additionalJSCode(){
       };
       this.isPressed=false;
       this.ui=document.createElement("div");
-      this.ui.style="z-index: 100;border: 1pt solid black; opacity: 0.5; position: fixed; aspect-ratio: 1; background-color: grey;touch-action: none;";
+      this.ui.style="z-index: 100;bordesr: 1pt solid black; opacity: 0.5; position: fixed; aspect-ratio: 1; background-color: grey;touch-action: none;";
       this.ui.addEventListener("pointerenter",(ev)=>{
         this.isPressed=ev.buttons>0;
         this.updateHover();
@@ -2792,6 +2991,21 @@ function additionalJSCode(){
         }
       });
       this.dpad.gamepad.rootElement.appendChild(this.ui);
+    }
+    setKey(key){
+      this.key=key;
+    }
+    keyDown(key){
+      if(this.key===key){
+        this.isPressed=true;
+        this.updateHover();
+      }
+    }
+    keyUp(key){
+      if(this.key===key){
+        this.isPressed=false;
+        this.updateHover();
+      }
     }
     hide(){
       this.hidden=true;
