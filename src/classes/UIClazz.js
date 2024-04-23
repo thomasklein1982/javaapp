@@ -67,7 +67,8 @@ export class UIClazz extends Clazz{
         minX: "Minimale x-Koordinate.",
         maxX: "Maximale x-Koordinate.",
         minY: "Minimale y-Koordinate.",
-        maxY: "Maximale y-Koordinate."
+        maxY: "Maximale y-Koordinate.",
+        sizePolicy: "Anpassung"
       }
     }
   };
@@ -297,12 +298,12 @@ export class UIClazz extends Clazz{
   }
 
   getUIPreviewCode(){
-    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;\nconsole.hide();\nasync function onStart(){\n\n(new "+this.name+"("+")).$constructor();}");
+    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;\nconsole.hide();\nconsole.log('set onstart');setTimeout(async ()=>{await $App.setup();\nconsole.log('start preview');\n(new "+this.name+"("+")).$constructor();},100);",false,true);
     return code;
   }
 
   getJavaScriptCode(){
-    let code="class "+this.name+" extends JPanel";
+    let code="class "+this.name+" extends JFrame";
     code+="{";
     // code+="\n$constructor(){";
     // code+="super("+JSON.stringify(this.template)+","+this.x+","+this.y+","+this.width+","+this.height+");";
@@ -681,6 +682,10 @@ export class UIClazz extends Clazz{
         let code=".setTriggerOnMouseMove("+(c.onMouseMove===true)+");";
         newCode+="\n"+last+code;
       }
+      if(c.sizePolicy){
+        let code=".setSizePolicy('"+(c.sizePolicy)+"');";
+        newCode+="\n"+last+code;
+      }
       if(c.actionCommand){
         scope.clearReferencedVariables();
         let code=".setActionCommand("+this.parseInterpolatedString(scope, c.actionCommand)+");";
@@ -713,6 +718,22 @@ export class UIClazz extends Clazz{
         if(scope.referencedVariablesCount>0){
           updateCode+="\ncomponent"+code;
         }
+      }
+      if(c.imageWidth){
+        let code=".setImageWidth("+JSON.stringify(c.imageWidth)+")";
+        newCode+="\n"+last+code;
+      }
+      if(c.imageHeight){
+        let code=".setImageHeight("+JSON.stringify(c.imageHeight)+")";
+        newCode+="\n"+last+code;
+      }
+      if(c.imageTranslationX){
+        let code=".setImageTranslationX("+JSON.stringify(c.imageTranslationX)+")";
+        newCode+="\n"+last+code;
+      }
+      if(c.imageTranslationY){
+        let code=".setImageTranslationY("+JSON.stringify(c.imageTranslationY)+")";
+        newCode+="\n"+last+code;
       }
       // if(c.forceAbsolute){
       //   newCode+="\n"+last+".setStyle('position','absolute');";

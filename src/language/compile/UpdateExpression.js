@@ -16,6 +16,7 @@ export function UpdateExpression(node,source,scope){
   }
   node=node.nextSibling;
   if(node.name==="UpdateOp"){
+    code+="="+code;
     if(v.codeUpdate){
       let op=source.getText(node);
       if(op==="++"){
@@ -29,6 +30,7 @@ export function UpdateExpression(node,source,scope){
     }else{
       code+=source.getText(node);
     }
+    code="(("+code+")|$scope.setVariable("+JSON.stringify(v.name)+","+v.code+"))";
   }
   return {
     code: code,

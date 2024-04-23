@@ -29,6 +29,7 @@ export function AssignmentExpression(node,source,scope){
   if(!val.type){
     throw source.createError("Dieser Ausdruck hat keinen Wert, der zugewiesen werden könnte.",node);
   }
+  v.type.applyAutoboxing(val);
   v.type.autoCastValue(val);
   if(!val.type.isSubtypeOf(v.type)){
     throw source.createError("Einer Variablen vom Typ '"+v.type+"' kann kein Wert vom Typ '"+val.type+"' zugewiesen werden.",node);
@@ -39,8 +40,11 @@ export function AssignmentExpression(node,source,scope){
   if(v.codeSet){
     code=v.codeSet+val.code+","+JSON.stringify(assignOp)+")";
   }else{
-    code=v.code+assignOp+val.code;
+    code=v.codeAssign+assignOp+val.code;
   }
+  code="(("+code+")|$scope.setVariable("+JSON.stringify(v.name)+","+v.code+"))";
+  //console.log("assign",code);
+  //code+="$scope.setVariable("+JSON.stringify(v.name)+","+v.code+")";
   return {
     code,
     local: v.local,

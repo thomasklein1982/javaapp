@@ -11,6 +11,8 @@ import { CompileFunctions } from "../language/CompileFunctions";
 import { FormalParameters } from "../language/compile/FormalParameters";
 import { concatArrays } from "../functions/helper";
 import { Definition } from "../language/compile/Definition";
+import { TypeParameters } from "../language/compile/TypeParameters";
+import { Java } from "../language/java";
 
 export class Method{
   constructor(clazz, isConstructorNode){
@@ -20,6 +22,7 @@ export class Method{
     this.params=null;
     this.type=null;
     this.modifiers=null;
+    this.typeParameters=null;
     this.bodyNode=null;
     this.block=null;
     this.comment=null;
@@ -29,6 +32,7 @@ export class Method{
     this.errors=null;
     this.bodyErrors=null;
     this.nodeOffset=0;
+    this.hide=false;
   }
   getFrom(){
     return this.node.from+this.nodeOffset;
@@ -50,9 +54,19 @@ export class Method{
     let params=this.params.getCopy(typeArguments);
     return params;
   }
-  getRealReturnType(typeArguments){
+  getRenamedParameterList(typeArguments,newNames){
+    return this.params.getRenamedCopy(typeArguments,newNames);
+  }
+  getRealReturnType(replacementTypes,typeArguments){
     if(!this.type) return null;
     if(!this.type.baseType.isGeneric) return this.type;
+    if(replacementTypes){
+      for(let n in replacementTypes){
+        if(n===this.type.baseType.name){
+          return new Type(replacementTypes[n],this.type.dimension);
+        }
+      }
+    }
     for(let i=0;i<typeArguments.length;i++){
       let a=typeArguments[i];
       if(a.param.name===this.type.baseType.name){
@@ -66,18 +80,30 @@ export class Method{
       code="async $constructor";
       code+=this.params.getJavaScriptCode("typeArguments,")+"{\nthis.$typeArguments=typeArguments;";
     }else{
-      code=this.modifiers.getJavaScriptCode()+" async "+this.name;
+      // if(this.name==="toJSON"){
+      //   code=this.modifiers.getJavaScriptCode()+" "+this.name;
+      // }else{
+        code=this.modifiers.getJavaScriptCode()+" async "+this.name;
+      // }
+      
       code+=this.params.getJavaScriptCode()+"{";
     }
-    
+    code+="let $scope=new $Scope(this);";
+    code+="$App.debug.incCallDepth();";
+    for(let i=0;i<this.params.parameters.length;i++){
+      let p=this.params.parameters[i];
+      code+="$scope.pushVariable("+JSON.stringify(p.name)+","+JSON.stringify(p.type.baseType.name)+","+p.type.dimension+","+p.name+");";
+    }
     if(additionalJSCode) code+=additionalJSCode;
     if(this.block){
       code+="\n"+this.block.code;
     }
+    code+="\n";
+    code+="$App.debug.decCallDepth();";
     if(this.isConstructor()){
       code+="\nreturn this;\n}";
     }else{
-      code+="\nreturn undefined;\n}";
+      code+="return undefined;\n}";
     }
     return code;
   }
@@ -254,6 +280,33 @@ export class Method{
     
   }
 
+  getTypeParameterByName(name){
+    if(this.typeParameters){
+      for(let i=0;i<this.typeParameters.length;i++){
+        if(this.typeParameters[i].name===name){
+          return this.typeParameters[i];
+        }
+      }
+    }
+    return null;
+  }
+
+  getPrimitiveTypeByName(name){
+    return Java.datatypes[name];
+  }
+
+  getClazzByName(name){
+    let tp=this.getTypeParameterByName(name);
+    if(tp) return tp;
+    return this.clazz.getClazzByName(name);
+  }
+
+  getTypeByName(name){
+    let tp=this.getTypeParameterByName(name);
+    if(tp) return tp;
+    return this.clazz.getTypeByName(name);
+  }
+
   /**
    * 
    * @param {*} node 
@@ -271,10 +324,15 @@ export class Method{
       errors=errors.concat(m.compile(node,source));
       node=node.nextSibling;
     }
+    this.typeParameters=null;
+    if(node.name==="TypeParameters"){
+      this.typeParameters=TypeParameters(node,source,undefined);
+      node=node.nextSibling;
+    }
     this.type=null;
     if(!this.isConstructorNode){
       if(node.name.indexOf("Type")>=0){
-        this.type=Type.compile(node,source,this.clazz,errors);
+        this.type=Type.compile(node,source,this,errors);
       }else if(node.name==='void'){
         this.type=null;
       }else{

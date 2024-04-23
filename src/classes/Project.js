@@ -99,7 +99,7 @@ export class Project{
   }
   // let code="\<script\>window.language='java';"+window.appJScode+" "+window.additionalJSCode;
   //       code+='\n\</script\>\n\<script\>'+src+'\n\</script\>';
-  getFullAppCode(additionalCode, includeSave){
+  getFullAppCode(additionalCode, includeSave, dontCallMain, args){
     if(!additionalCode) additionalCode="";
     let databaseCode="";
     let cmds=database.createInMemory(true);
@@ -147,14 +147,18 @@ export class Project{
     let mainClazz=this.getMainClazz();
     let codeMainCall="";
     if(mainClazz){
-      codeMainCall="(async function(){await "+mainClazz.name+".main([]);})();";
-    }else{
-      if(options.mainOptional){
-        let mainClazz=this.clazzes[0];
-        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);})();";
+      if(mainClazz.hasStaticMainMethod()){
+        if(!args) args=[];
+        codeMainCall="(async function(){await $App.setup();\nawait "+mainClazz.name+".main("+JSON.stringify(args)+");})();";
+      }else{
+        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.setup();\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);})();";
       }
     }
     let css=this.prepareCSS(this.css);
+    codeMainCall="window.addEventListener('DOMContentLoaded',async function(){"+codeMainCall+"});";
+    if(dontCallMain){
+      codeMainCall="";
+    }
     let code=`<!doctype html>
 <html>
     <head>
@@ -173,12 +177,12 @@ export class Project{
         window.language="java";
         window.appJSdebugMode=true;
         ${window.appJScode}
-        ${includeSave? 'console.hide()':''}
+        ${includeSave? 'console.hideIfUI()':''}
         ${window.additionalJSCode}
         ${databaseCode}
         ${assetsCode}
-        ${js}
         ${additionalCode}
+        ${js}
         ${codeMainCall}
       </script>
       <style>
@@ -241,6 +245,9 @@ export class Project{
         return c;
       }
     }
+    if(options.mainOptional){
+      return this.clazzes[0];
+    }
     return null;
   }
   getJavaScriptCode(){
@@ -254,6 +261,10 @@ export class Project{
         mainClazz=c;
       }
       remaining.push(c);
+    }
+    if(!mainClazz && options.mainOptional){
+      mainClazz=this.clazzes[0];
+      mainClazz.superClazz=Java.clazzes.JavaApp;
     }
     let loopCounter=0;
     while(remaining.length>0 && loopCounter<=this.clazzes.length*this.clazzes.length){
@@ -272,8 +283,8 @@ export class Project{
         finished[c.name]=true;
       }
     }
-
-    code+="\nasync function onStart(){if($main && $main.onStart){$main.onStart();}}\n";
+    code+="console.log(window.$uiPreviewMode);if(window.$uiPreviewMode){console.log('preview mode')}"
+    //code+="\nasync function onStart(){if($main && $main.onStart){$main.onStart();}}\n";
     let clazzInfos={};
     /**Informationen zu allen Klassen anhaengen: Name, Attribute mit Datentyp, factory-Funktion */
     for(let i=0;i<this.clazzes.length;i++){

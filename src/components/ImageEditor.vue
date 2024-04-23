@@ -9,6 +9,7 @@
         <Button icon="pi pi-arrows-alt" :outlined="currentTool!=='move'" @click="currentTool='move'"/>
         <Button icon="pi pi-pencil" :outlined="currentTool!=='pen'" @click="currentTool='pen'"/>
         <Button icon="pi pi-eraser" :outlined="currentTool!=='eraser'" @click="currentTool='eraser'"/>
+        <Button icon="pi pi-palette" :outlined="currentTool!=='color'" @click="currentTool='color'"/>
       </div>
       <div class="flex-container-vertical">
         <div style="position: relative;height: 2ex;"><span style="font-size: 50%; position: absolute">{{ width }}:{{ height }}</span></div>
@@ -201,6 +202,24 @@ export default{
         this.ctx.fillStyle=this.fillColor;
         let w=this.pen.width;
         this.ctx.fillRect(x-w/2,y-w/2,w,w);
+      }else if(this.currentTool==="color"){
+        let br=canvas.getBoundingClientRect();
+        x = e.offsetX;
+        y = e.offsetY;
+        x*=this.width/br.width;
+        y*=this.height/br.height;
+        let imageData=this.ctx.getImageData(x,y,1,1);
+        let r=imageData.data[0];
+        let g=imageData.data[1];
+        let b=imageData.data[2];
+        r=r.toString(16);
+        g=g.toString(16);
+        b=b.toString(16);
+        if(r.length<2) r="0"+r;
+        if(g.length<2) g="0"+g;
+        if(b.length<2) b="0"+b;
+        console.log(r,g,b);
+        this.pen.color=r+g+b;
       }
     };
     canvas.addEventListener('pointerdown', handler);
@@ -311,7 +330,7 @@ export default{
       this.updateCanvasStyle();
     },
     openColorToTransparency(){
-      this.colorToTransparency.color="#fff";
+      this.colorToTransparency.color="#"+this.pen.color;
       this.colorToTransparency.show=true;
       this.colorToTransparency.tolerance=0;
     },

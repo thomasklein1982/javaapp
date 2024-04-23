@@ -2,10 +2,13 @@
   <Menubar :model="items" class="noprint">
     <template #start>
       <template v-if="isEasy">
-        <span style="position: relative; white-space: nowrap;"><img alt="logo" src="/icon-white-transparent.png" style="height: 2rem" ><span v-if="isEasy" style="font-size: 60%; color: yellow; writing-mode: vertical-lr;">Easy!</span></span>
+        <span style="position: relative; white-space: nowrap;"><img alt="logo" src="/icon-white-transparent.png" style="height: 2rem" ><span style="font-size: 60%; color: yellow; writing-mode: vertical-lr;">Easy!</span></span>
+      </template>
+      <template v-else-if="isNormal">
+        <img alt="logo" src="/icon-white-transparent.png" style="height: 2rem" >
       </template>
       <template v-else>
-        <img alt="logo" src="/icon-white-transparent.png" style="height: 2rem" >
+        <span style="position: relative; white-space: nowrap;"><img alt="logo" src="/icon-white-transparent.png" style="height: 2rem" ><span style="font-size: 60%; color: red; writing-mode: vertical-lr;">Hard!</span></span>
       </template>
     </template>
     <template #end>
@@ -23,7 +26,7 @@
 export default {
   props: {
     rightClosed: Boolean,
-    isEasy: Boolean,
+    difficulty: Number,
     allowTrash: Boolean,
     currentClazz: Object,
     caretPosition: {
@@ -37,6 +40,15 @@ export default {
     };
   },
   computed: {
+    isEasy(){
+      return this.difficulty===0;
+    },
+    isNormal(){
+      return this.difficulty===1;
+    },
+    isHard(){
+      return this.difficulty===2;
+    },
     items(){
       return [
         {
@@ -197,6 +209,13 @@ export default {
               icon: 'pi pi-star',
               command: (ev)=>{
                 this.$emit("resources");
+              }
+            },
+            {
+              label: 'Terminal',
+              icon: 'pi pi-hashtag',
+              command: (ev)=>{
+                this.$emit("terminal");
               }
             },
             {

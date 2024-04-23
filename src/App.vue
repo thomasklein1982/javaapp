@@ -2,14 +2,14 @@
   <div style="width: 100%;overflow: hidden;" :style="{position: $root.printMode? '':'fixed', height: $root.printMode? '':'100%'}">
     <StartScreen 
       v-if="screen==='start'"
-      :is-easy="isEasy"
+      :difficulty="difficulty"
       @open-project="openProject"
     />
     <Editor
       v-show="screen==='editor'"
       :paused="paused"
       :current="current"
-      :is-easy="isEasy"
+      :difficulty="difficulty"
       ref="editor"
     />
     
@@ -26,16 +26,18 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 287,
+      version: 322,
       paused: false,
       printMode: false,
-      current: {line: -1, name: null},
-      isEasy: options.isEasyMode()
+      current: {line: -1, name: null, $scope: {local: null, main: null, that: null}},
+      difficulty: options.difficulty()
     };
   },
   methods: {
-    resetCurrent(){
-      this.current={line: -1, name: this.current.name};
+    resetCurrent(line,name){
+      if(!line) line=this.current.line;
+      if(!name) name=this.current.name;
+      this.current={line, name, $scope: this.current.$scope};
     },
     showScreen: function(name){
       this.screen=name;

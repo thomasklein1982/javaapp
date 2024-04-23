@@ -1,8 +1,9 @@
 
 export function FormalParameters(node,source,scope){
-  console.log("FormalParameters",node,source.getText(node));
+  //TODO: Unklar, wo FormalParameters auftreten, ausser bei Lambda-Ausdruecken ohne Argumente
+  let code=source.getText(node);
   return {
     code: code,
-    type: null
+    params: []
   }
 }

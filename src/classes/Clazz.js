@@ -1,3 +1,4 @@
+import { nextTick } from "vue";
 import { concatArrays } from "../functions/helper";
 import { parseJava } from "../functions/parseJava";
 import { SuperInterfaces } from "../language/compile/SuperInterfaces";
@@ -11,6 +12,7 @@ import { Scope } from "./Scope";
 import { Source } from "./Source";
 import { Type } from "./Type";
 import  * as autocomplete  from "@codemirror/autocomplete";
+import { createMethod } from "../language/helper/createMethod";
 
 export class Clazz{
   constructor(name,project,isInterface){
@@ -18,6 +20,7 @@ export class Clazz{
     this.cannotBeInstantiated=false;
     this.isAbstract=false;
     this.isInterface=isInterface===true;
+    this.wrappedPrimitiveType=null;
     this.description="";
     this.hasClazzDeclaration=true;
     this.project=project;
@@ -31,7 +34,7 @@ export class Clazz{
       this.isInterface=false;
       this.src="class "+this.name+"{\n  \n}";
     }
-    
+    this.editor=null;
     /**der erste Kindknoten des ClassBody: */
     this.clazzBody=null;
     this.attributes={};
@@ -49,6 +52,9 @@ export class Clazz{
     }else{
       this.typeSnippet=null;
     }
+  }
+  setWrappedPrimitiveType(ptype){
+    this.wrappedPrimitiveType=ptype;
   }
   setAsFirstClazz(){
     this.isFirstClazz=true;
@@ -78,9 +84,9 @@ export class Clazz{
     if(this.superClazz){
       code+="super();";
     }
-    if(this.hasStaticMainMethod()){
-      code+="if(!window.$main){window.$main=this;}";
-    }
+    // if(this.hasStaticMainMethod()){
+    //   code+="if(!window.$main){window.$main=this;}";
+    // }
     let attributesInitCode="";
     for(let i in this.attributes){
       let a=this.attributes[i];
@@ -226,16 +232,14 @@ export class Clazz{
     let a=this.attributes[name];
     if(!a){
       let sc=this.getRealSuperClazz();
-      if(sc){
-        a=sc.getAttribute(name,staticAccess);
-        if(a && a.error){
-          a=null;
-        }
+      if(sc && sc.getAttribute){
+        return sc.getAttribute(name,staticAccess);
       }
     }
     if(!a){
       return {
-        error: "Die Klasse '"+this.name+"' hat kein "+(staticAccess? "statisches ":"")+"Attribut namens '"+name+"'."
+        error: "Die Klasse '"+this.name+"' hat kein "+(staticAccess? "statisches ":"")+"Attribut namens '"+name+"'.",
+        clazzHasAttribute: false
       };
     }
     if(staticAccess){
@@ -243,13 +247,15 @@ export class Clazz{
         return a;
       }else{
         return {
-          error: "Das Attribut '"+name+"' ist nicht statisch."
+          error: "Das Attribut '"+name+"' ist nicht statisch.",
+          clazzHasAttribute: true
         };
       }
     }else{
       if(a.isStatic && a.isStatic() || a.static){
         return {
-          error: "Das Attribut '"+name+"' ist statisch. Verwende '"+this.name+"."+name+"' um darauf zuzugreifen."
+          error: "Das Attribut '"+name+"' ist statisch. Verwende '"+this.name+"."+name+"' um darauf zuzugreifen.",
+          clazzHasAttribute: true
         };
       }else{
         return a;
@@ -316,11 +322,15 @@ export class Clazz{
       }
     }
     if(type instanceof Clazz){
+      if(type.name==="Object" || this.name===type.name){
+        return true;
+      }
       if(type.isInterface){
+        
         if(this.implementedInterfaces){
           for(let i=0;i<this.implementedInterfaces.length;i++){
             let inter=this.implementedInterfaces[i];
-            if(inter===type){
+            if(inter.name===type.name){
               return true;
             }
           }
@@ -328,9 +338,6 @@ export class Clazz{
         }else{
           return false;
         }
-      }
-      if(type.name==="Object" || this.name===type.name){
-        return true;
       }
       if(this.superClazz && !this.superClazz.isSubtypeOf){
         console.error("superklasse is subtype of",this,this.superClazz);
@@ -445,6 +452,10 @@ export class Clazz{
       }
       node=node.nextSibling;
     }
+    nextTick(()=>{
+      if(!this.editor) return;
+      this.editor.updateLinter();
+    });
   }
 
   compile(fromSource,optimizeCompiler){
@@ -457,7 +468,12 @@ export class Clazz{
     if(this.implementedInterfaces){
       for(let i=0;i<this.implementedInterfaces.length;i++){
         let inter=this.implementedInterfaces[i];
-
+        for(let m in inter.methods){
+          if(!this.methods[m]){
+            this.errors.push(this.source.createError("Als "+inter.name+" muss diese Klasse eine Methode "+m+" implementieren.",inter.node));
+          }
+          console.log(m);
+        }
       }
     }
   }
@@ -687,18 +703,43 @@ export class Clazz{
       }
     }
     this.methods={};
+    // if(!this.deserializeMethod){
+    //   if(!this.isInterface){ 
+    //     let m=createMethod({
+    //       name: "deserialize",
+    //       info: "Erzeugt ein neues Objekt aus dem übergebenen String.",
+    //       args: [{name: "serializedObject", type: "String", info: "Ein String, der aus der Serialisierung eines Objekts dieser Klasse entstanden ist."}],
+    //       returnType: new Type(this,0),
+    //       isExtraFunction: true,
+    //       jsName: "$object_deserialize"
+    //     },this,true,false);
+    //     m.hide=true;
+    //     this.deserializeMethod=m;
+    //   }
+    // }
+    // if(this.deserializeMethod){
+    //   this.methods.deserialize=this.deserializeMethod;
+    // }
     var node=this.clazzBody;
     if(!node) return;
     /**Klassenkoerper parsen: */
     let scope=new Scope(this.project);
     this.compileMemberNodes(scope,node);
-    
+    if(options.autoextendJavaApp && !this.superClazz && this.hasStaticMainMethod()){
+      console.log("auto extend javaapp",this.name);
+      this.superClazz=Java.clazzes.JavaApp;
+    }
     return this.errors;
   }
 
   getConstructorParameters(){
     let c=this.getConstructor();
     return c? c.params: null;
+  }
+  getConstructorRealParameters(){
+    let c=this.getConstructor();
+    if(!c) return null;
+    return c.getRealParameterList();
   }
 
   /**
@@ -710,5 +751,6 @@ export class Clazz{
       m.compileBody(this.source,optimizeCompiler);
       concatArrays(this.errors,m.getErrors());
     }
+    this.compileLastChecks();
   }
 }

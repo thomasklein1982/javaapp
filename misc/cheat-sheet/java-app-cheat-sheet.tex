@@ -1,0 +1,281 @@
+\directlua{basispfad="../../../../Users/Thomas/Dropbox/Schule/tex/" context("\\input{"..basispfad.."basis}")}
+\inputRelative{uebungen}
+\inputRelative{info}
+\setupfootertexts[]
+
+\def\injava#1{\type[escape={[[,]]},option=java]{#1}}
+
+\def\javaapp{{\externalfigure[../../res/icon][height=1.5ex]}}
+
+\def\befehl#1#2{\item{\type[option=java]{#1}\\#2}}
+\def\befehlJA#1#2{\item{\type[option=java]{#1} \javaapp\\#2}}
+
+\def\nurCanvas{\color[red]{\tfx Klappt nur, wenn sich das Element in einem \mono{Canvas} befindet.}}
+
+\setupbodyfont[10.5pt]
+
+\setuppapersize[A4,landscape]
+
+\setMargins{0.5cm}{-0.2cm}{30cm}
+
+\setuphead
+  [subject]
+  [before={},
+   after={\vskip-0.8\baselineskip},
+   style=\tfb\bf]
+
+\setuphead
+  [subsubject]
+  [before={},
+   after={\vskip-0\baselineskip},
+   style=\bf]
+
+\starttext
+
+\startcolumns[n=2]
+
+\startsubject[title=UI]
+Diese Methoden müssen von \mono{JComponent}-Elementen aufgerufen werden, z. B. \type[option=java]{label.setValue("Text");}.
+\startsubsubject[title={Alle UI-Komponenten (\mono{JComponent})}]
+\startitemize[4,nowhite]
+\befehlJA{setValue(String)}{Ändert den Text des Elements.}
+\befehlJA{getValue(): String}{Liefert den Text des Elements zurück.}
+\befehlJA{show()/hide()}{Macht die Komponente sichtbar / unsichtbar.}
+\befehlJA{setStyle(String css-eigenschaft, String wert)}{Legt eine CSS-Eigenschaft fest, z. B. \injava{setStyle("color","red")}}
+\befehlJA{setStyle(String css-eigenschaft, String wert)}{Legt eine CSS-Eigenschaft fest, z. B. \injava{setStyle("color","red")}}
+\befehl{setEnabled(boolean)}{Aktiviert (\mono{true}) bzw. deaktiviert (\mono{false}) die Komponente.}
+\befehl{setActionCommand(String)}{Legt das \mono{ActionCommand} dieser Komponente fest.}
+\befehl{getActionCommand(): String}{Gibt das \mono{ActionCommand} dieser Komponente zurück. Falls keines definiert wurde, wird der Text der Komponente zurückgegeben.}
+\befehlJA{addEventListener(String event, (ev)->{Anweisungen})}{Legt fest, welche Anweisungen ausgeführt werden sollen, wenn ein bestimmtes Ereignis eintritt. Der Parameter \injava{ev} enthält Infos zu dem Event. Mögliche Events sind z.~B.:
+\vskip-\baselineskip
+\startitemize[1,packed][n=2,distance=6em]
+\sym{\injava{"click"}} Komponente wird angeklickt.
+\sym{\injava{"pointerover"}} Maus betritt die Komponente.
+\sym{\injava{"pointerout"}} Maus bewegt sich von der Komponente weg.
+\sym{\injava{"pointermove"}} Maus bewegt sich über der Komponente.
+\sym{\injava{"pointerdown"}} Maustaste wird gedrückt über der Komponente.
+\sym{\injava{"pointerup"}} Maustaste wird losgelassen über der Komponente.
+\sym{\injava{"change"}} Der Wert der Komponente ändert sich.
+\sym{\injava{"input"}} Es wird etwas in die Komponente eingegeben.
+\stopitemize}
+\column
+\befehlJA{setX(double)/setY(double)}{Legt die $x$/$y$-Koordinate des Mittelpunkts fest. \nurCanvas}
+\befehlJA{setWidth(double)/setHeight(double)}{Legt die Breite / Höhe fest. \nurCanvas}
+\befehlJA{changeX(double)/...Y/...Width/...Height}{Ändert den entsprechenden Wert um die Angabe. \nurCanvas}
+%\befehlJA{focus()}{Gibt der Komponente den Fokus.}
+\stopitemize
+\stopsubsubject
+
+
+\startsubsubject[title={Container (\mono{JPanel}, \mono{JFrame} und \mono{Canvas})}]
+\startitemize[4,nowhite]
+\befehlJA{setLayout(String)}{Legt das \begriff{Layout} fest. Dieses bestimmt, wie die Kinder angeordnet werden. Syntax: \mono{Höhe Höhe ... Höhe / Breite Breite ... Breite}.\blank[small]
+
+\startcombination[2*2]
+{\startMPcode
+setUnits(0.9cm,0.7cm);
+draw rechteck((-1,0),7,3) tf withcolor white;
+draw rechteck((0,0),6,3) tf;
+for y=2:
+	draw ((0,y)--(6,y)) tf dashed evenly;
+endfor;
+label.lft(textext("\mono{auto}"),(0,2.5) tf);
+label.lft(textext("\mono{1fr}"),(0,1) tf);
+for x=2,4:
+	draw ((x,0)--(x,3)) tf dashed evenly;
+endfor;
+for x=1,3,5:
+	label.bot(textext("\mono{1fr}"),(x,0) tf);
+endfor;
+\stopMPcode}{\tfx\injava{setLayout("auto 1fr / 1fr 1fr 1fr")}}
+{\startMPcode
+setUnits(0.9cm,0.7cm);
+draw rechteck((-1,0),7,3) tf withcolor white;
+draw rechteck((0,0),6,3) tf;
+for y=2,0.5:
+	draw ((0,y)--(6,y)) tf dashed evenly;
+endfor;
+label.lft(textext("\mono{1cm}"),(0,2.5) tf);
+label.lft(textext("\mono{1fr}"),(0,2.75/2) tf);
+label.lft(textext("\mono{0.5cm}"),(0,0.25) tf);
+for x=1.8:
+	draw ((x,0)--(x,3)) tf dashed evenly;
+endfor;
+label.bot(textext("\mono{30\%}"),(0.9,0) tf);
+label.bot(textext("\mono{1fr}"),(1.8+4.2/2,0) tf);
+\stopMPcode}{\tfx\injava{setLayout("1cm 1fr 0.5cm / 30[[\percent]] 1fr")}}
+{\startMPcode
+setUnits(0.9cm,0.7cm);
+draw rechteck((-1,0),7,3) tf withcolor white;
+draw rechteck((0,0),6,3) tf;
+for x=1.5,3,4.5:
+	draw ((x,0)--(x,3)) tf dashed evenly;
+endfor;
+\stopMPcode}{\tfx\injava{setLayout("4")}}
+{\startMPcode
+setUnits(0.9cm,0.7cm);
+draw rechteck((-1,0),7,3) tf withcolor white;
+draw rechteck((0,0),6,3) tf;
+for y=1.5:
+	draw ((0,y)--(6,y)) tf dashed evenly;
+endfor;
+for x=2,4:
+	draw ((x,0)--(x,3)) tf dashed evenly;
+endfor;
+\stopMPcode}{\tfx\injava{setLayout("3/2")}}
+\stopcombination
+}
+\befehl{add(JComponent)}{Fügt die Komponente hinzu.}
+\befehl{remove(JComponent)}{Entfernt die Komponente.}
+\befehlJA{getChild(int)}{Gibt die Kind-Komponente an der Stelle zurück.}
+\befehlJA{getChildCount()}{Die Anzahl der Kind-Komponenten.}
+\stopitemize
+\stopsubsubject
+\stopsubject
+
+\column
+\startsubject[title=Grafiken mit \mono{Canvas}]
+Alle Methoden müssen von einem \mono{Canvas} ausgeführt werden.
+\startsubsubject[title=Zeichnen-Befehle]
+\startitemize[4,nowhite]
+\befehlJA{clear()}{Löscht alle Zeichnungen.}
+\befehlJA{drawLine(double x1,y1,x2,y2)}{Linie von $(\mono{x1}\mid \mono{y1})$ zu $(\mono{x2}\mid \mono{y2})$}
+\befehlJA{drawCircle(double mx,my,r) / fillCircle(double mx,my,r)}{Kreis mit Mittelpunkt $(\mono{mx}\mid \mono{my})$ und Radius \mono{r}}
+\befehlJA{drawRect(double mx,my,w,h) / fillRect(double mx,my,w,h)}{Rechteck mit Mittelpunkt $(\mono{mx}\mid \mono{my})$, Breite \mono{w}, Höhe \mono{h} }
+\befehlJA{write(String t, double mx, double my, String align)}{Schreibt den Text \mono{t} an den Punkt $(\mono{mx}\mid \mono{my})$. Der optionale Parameter \mono{align} bestimmt die Ausrichtung:\vskip-\baselineskip
+\startitemize[1,packed]
+\item \mono{left/right/center}: Links/rechts oder in der Mitte.
+\item \mono{top/bottom/middle}: Oben/unten oder in der Mitte.
+\stopitemize
+}
+\befehlJA{drawImage(String url, double mx,my,w,h,winkel, boolean mirror)}{Zeichnet das Bild in das Rechteck mit Mittelpunkt $(\mono{mx}\mid \mono{my})$, Breite~\mono{w}, Höhe~\mono{h}, gedreht um \mono{winkel} und gespiegelt, wenn \injava{mirror==true}.  }
+
+\stopitemize
+\stopsubsubject
+
+\startsubsubject[title=Canvas-Einstellungen]
+\startitemize[4,nowhite]
+\befehlJA{setAxisX(double min, double max)}{Legt fest, bei welchem $x$-Wert der Canvas startet und bis zu welchem $x$-Wert er geht.}
+\befehlJA{setAxisY(double min, double max)}{Legt fest, bei welchem $y$-Wert der Canvas startet und bis zu welchem $y$-Wert er geht.}
+\befehlJA{setSizePolicy(String)}{Legt fest, ob sich der Canvas ausdehnen soll  (\injava{"stretch"}) oder ob er eingepasst werden soll (\injava{"fit"}).\vskip-0.5\baselineskip
+
+\midaligned{\startcombination[2*1]
+{\startMPcode
+setUnits(1cm,1cm);
+draw rechteck((0,0),3,2) tf;
+path p;
+p:=rechteck((0.5,0),2,2) tf;
+fill p withcolor red;
+draw p dashed evenly;
+label.bot(textext("\injava{fit}"),(1.5,0) tf);
+\stopMPcode
+}{}
+{\startMPcode
+setUnits(1cm,1cm);
+draw rechteck((0,0),3,2) tf;
+path p;
+p:=rechteck((0,0),3,2) tf;
+fill p withcolor red;
+draw p dashed evenly;
+label.bot(textext("\injava{stretch}"),(1.5,0) tf);
+\stopMPcode}{}
+\stopcombination}
+
+}
+\column
+
+\startsubsubject[title=Zeichnen-Einstellungen]
+Jeder dieser Befehle beeinflusst alle {\bf nachfolgenden Zeichnen-Befehle}.
+\vskip-\baselineskip
+\startitemize[4,packed]
+\befehlJA{setColor(String)}{Legt die Farbe fest, z.~B. \injava{setColor("red");} oder \injava{setColor("[[\#]]FF69B4");}}
+\befehlJA{setOpacity(double)}{Legt die Transparenz fest von $0.0$ (unsichtbar) über $0.5$ (halb durchscheinend) bis $1.0$ (keine Transparenz).}
+\befehlJA{setLinewidth(double)}{Legt Liniendicke fest.}
+\befehlJA{setFontsize(double)}{Legt die Schriftgröße fest.}
+\befehlJA{setFont(String)}{Legt die Schriftart fest, z.~B. \injava{setFont("Arial");}}
+\befehlJA{setMirrored(boolean)}{\injava{setMirrored(true);} $\Rightarrow$ alle Zeichnungen spiegeln.}
+\befehlJA{rotate(double w, double mx, double my)}{Dreht die Zeichnung um den Winkel \mono{w} um den Mittelpunkt $(\mono{mx}\mid\mono{my})$.}
+\befehlJA{scale(double sx, double sy, double mx, double my)}{Vergrößert/verkleinert die Zeichung vom Mittelpunkt $(\mono{mx}\mid\mono{my})$ aus mit dem Vergrößerungsfaktor \mono{sx} in $x$-Richtung und \mono{sy} in $y$-Richtung.}
+\befehlJA{translate(double dx, double dy)}{Verschiebt die Zeichnung um \mono{dx} in $x$-Richtung und um \mono{dy} in $y$-Richtung.}
+\befehlJA{setTransform(double m00, double m10, double m01, double m11, double m02, double m12)}{Legt die Transformationsmatrix fest auf 
+
+\matrix{m_{00};m_{01};m_{02}|m_{10};m_{11};m_{12}|0;0;1}
+}
+\befehlJA{reset()}{Setzt alle Eigenschaften auf die Ursprungswerte zurück.}
+\befehlJA{save()}{Speichert die aktuellen Eigenschaften des Canvas.}
+\befehlJA{restore()}{Stellt die zuletzt gespeicherten Eigenschaften des Canvas wieder her.}
+
+\stopitemize 
+\stopsubsubject
+
+\stopsubject
+\column
+\startsubject[title={Assets}]
+\startitemize[1,packed]
+\item Assets sind statische Dateien wie Bilder, Sounds, Videos usw. 
+\item Assets werden in JavaApp hochgeladen (Projekt \rightarrow\ Assets). 
+\item Um ein Asset in HTML oder CSS zu verwenden, muss man \mono{asset(name)} schreiben, wobei \mono{name} der Name des Assets in JavaApp ist: 
+
+\midaligned{\type{<img src="asset(bild)"/>}}
+\stopitemize
+\stopsubject
+
+\startsubject[title=Sound]
+Erst MP3-Datei als Asset hochladen und Namen geben.
+\vskip-\baselineskip
+\startitemize[4,packed]
+\befehlJA{new Sound(String asset)}{Erzeugt ein neues \mono{Sound}-Objekt. Der Parameter ist der Name der entsprechenden Datei, die als Asset hochgeladen wurde.}
+\befehlJA{play(boolean)}{Startet die Wiedergabe (ggf. neu). Falls der Parameter \mono{true} ist, in Endlosschleife.}
+\befehlJA{pause()}{Pausiert die Wiedergabe.}
+\befehlJA{resume()}{Beendet die Pausierung.}
+\befehlJA{stop()}{Beendet die Wiedergabe und setzt den Sound auf Anfang zurück.}
+\befehlJA{setSource(String)}{Legt fest, welche Datei abgespielt werden soll.}
+\befehlJA{getDuration(): int}{Liefert die Wiedergabezeit des Sounds in Millisekunden zurück.}
+\befehlJA{getCurrentTime(): int}{Liefert die Wiedergabeposition zurück (in Millisekunden).}
+\befehlJA{isEnded(): boolean}{Liefert \mono{true}, falls die Wiedergabe beendet ist, ansonsten \mono{false}.}
+\stopitemize
+\stopsubject
+
+\startbuffer[addbuttonlistener]
+\startjava[numbering=no]
+gamepad.addButtonListener("B", (ev)->{
+	mario.springen();
+});
+\stopjava
+\stopbuffer
+
+\startsubject[title=Gamepad]
+Jedes Gamepad-Objekt erzeugt ein On-Screen-Gamepad, das automatisch mit einem physischen Gamepad verbunden wird, falls ein solches Gamepad an das Gerät angeschlossen wird.
+\startitemize[4,nowhite]
+\befehlJA{new Gamepad()}{Erzeugt ein neues Gamepad und zeigt es auf dem Bildschirm an.}
+\befehl{setEventListener(String button, String event, (ev)->{Anweisungen})}{
+Legt fest, was passieren soll, wenn ein Button gedrückt bzw. losgelassen wird.
+\vskip-\baselineskip
+\startitemize[1,packed]
+\item \mono{button}: \injava{"A"}, \injava{"B"}, \injava{"X"}, \injava{"Y"}, \injava{"LEFT"}, \injava{"RIGHT"}, \injava{"UP"} oder \injava{"DOWN"}.
+\item \mono{event}: \injava{"pressed"} oder \injava{"released"}
+\stopitemize
+
+}
+\befehlJA{setPosition(String left, String bottom)}{Legt den Abstand zum linken unteren Bildschirmrand fest.\\
+Z.~B. \injava{setPosition("2cm","3cm")}}
+\befehlJA{setWidth(String width)}{Legt die Breite des Gamepads inklusive Padding fest.\\
+Z.~B. \injava{setWidth("50[[\percent]]")}}
+\befehlJA{setPadding(String p)}{Legt fest, wie viel Abstand das Steuerkreuz und die ActionButtons vom Rand haben sollen. Z.~B. \injava{setPadding("0.5cm")}}
+\befehlJA{getDirection(): String}{Liefert einen String zurück, der die Richtung beschreibt, in die das Steuerkreuz gerade zeigt: \injava{"n"}, \injava{"s"}, \injava{"w"}, \injava{"e"}, \injava{"nw"}, \injava{"ne"}, \injava{"sw"} oder \injava{"se"}.}
+\befehlJA{isLeftPressed()/isRightPressed()/isUpPressed()/isDownPressed(): boolean}{Liefert \mono{true} zurück, wenn der entsprechende Richtungsbutton gedrückt ist, sonst \mono{false}.}
+\stopitemize
+\stopsubject
+
+\startsubject[title=Konsole]
+\startitemize[4,nowhite]
+\befehl{System.out.println(String)}{Gibt eine Zeile in der Konsole aus.}
+\befehl{System.in.read()}{Wartet auf einen Tastendruck/Klick des Users.}
+\befehl{System.console().readLine(): String}{Wartet darauf, dass der User etwas eingibt. Gibt die Eingabe zurück.}
+\befehlJA{System.clear()}{Löscht die gesamte Konsole.}
+\stopitemize
+\stopsubject
+
+\stopcolumns
+
+\stoptext

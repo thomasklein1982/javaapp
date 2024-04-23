@@ -16,6 +16,7 @@ export function defineUIClazzes(Java){
   defineDataTable(Java.datatypes.DataTable,Java);
   defineJPanel(Java.datatypes.JPanel,Java);
   defineCanvas(Java.datatypes.Canvas,Java);
+  defineJFrame(Java.datatypes.JFrame,Java);
 }
 
 function defineJComponent(Clazz,Java){
@@ -30,6 +31,14 @@ function defineJComponent(Clazz,Java){
       {name: 'v', type: 'String'}
     ]
   },Clazz,false,false,Java);
+  createMethod({
+    name: 'addEventListener',
+    args: [
+      {name: 'event', type: 'String', info: 'Art des Events, z. B. "click" oder "change".'},
+      {name: '(ev)->{}', type: 'ActionListener'}
+    ],
+    info: "Fügt einen EventListener hinzu, der aufgerufen wird, wenn man mit der Komponente interagiert."
+  },Clazz,false,false);
   // setCSSClass(className){
   //   this.$el.className=className;
   // }
@@ -45,6 +54,28 @@ function defineJComponent(Clazz,Java){
   // removeCSSClass(className){
   //   this.$el.classList.remove(className);
   // }
+  createMethod({
+    name: 'addActionListener',
+    args: [
+      {name: '(ev)->{}', type: 'ActionListener'}
+    ],
+    info: "Fügt einen ActionListener hinzu, der aufgerufen wird, wenn man mit der Komponente interagiert."
+  },Clazz,false,false);
+  createMethod({
+    name: 'getElementById',
+    args: [
+      {name: 'id', type: 'String'}
+    ],
+    returnType: "HTMLElement",
+    info: "Liefert das HTMLElement mit der angegebenen ID zurück."
+  },Clazz,false,false);
+  createMethod({
+    name: 'setOnAction',
+    args: [
+      {name: 'handler', type: 'ActionListener'}
+    ],
+    info: "Legt fest, welches Objekt bei einer Aktion die onAction-Methode ausführen soll."
+  },Clazz,false,false);
   createMethod({
     name: 'setCSSClass',
     args: [
@@ -219,6 +250,15 @@ function defineJComponent(Clazz,Java){
     ]
   },Clazz,false,false,Java);
   createMethod({
+    name: 'setBounds',
+    args: [
+      {name: 'x', type: 'double'},
+      {name: 'y', type: 'double'},
+      {name: 'width', type: 'double'},
+      {name: 'height', type: 'double'}
+    ]
+  },Clazz,false,false,Java);
+  createMethod({
     name: 'getX',
     returnType: 'double'
   },Clazz,false,false,Java);
@@ -335,10 +375,52 @@ function defineJComponent(Clazz,Java){
   // },Clazz,false,Java);
 }
 
+function defineJFrame(Clazz,Java){
+  Clazz.superClazz=Java.datatypes.JPanel;
+  createConstructor ({
+    args: [
+      {type: {baseType: 'String', dimension: 0}, name: 'template', optional: true}
+    ]
+  },Clazz,Java);
+  // createMethod({
+  //   name: 'setLayout',
+  //   args: [
+  //     {name: 'layout', type: 'String', info: 'Das neue Layout des Panels.'}
+  //   ],
+  //   info: 'Legt das Layout für das Panel fest.'
+  // },Clazz,false,false,Java);
+  // createMethod({
+  //   name: 'setVisible',
+  //   args: [
+  //     {name: 'v', type: 'boolean', info: 'Legt fest, ob das Fenster sichtbar oder unsichtbar ist.'}
+  //   ],
+  //   info: "Macht das Fenster sichtbar oder unsichtbar."
+  // },Clazz,false,false,Java);
+
+  // createMethod({
+  //   name: 'add',
+  //   args: [
+  //     {name: 'component', type: 'JComponent', info: 'Die Komponente, die hinzugefügt werden soll.'}
+  //   ],
+  //   info: 'Fügt dem Frame eine (weitere) Komponente hinzu.'
+  // },Clazz,false,false,Java);
+  // createMethod({
+  //   name: 'remove',
+  //   args: [
+  //     {name: 'component', type: 'JComponent', info: 'Die Komponente, die entfernt werden soll.'}
+  //   ],
+  //   info: 'Entfernt die Komponente aus dem Frame, falls möglich.'
+  // },Clazz,false,false,Java);
+  // createMethod({
+  //   name: 'removeAll',
+  //   info: 'Entfernt alle Komponenten aus dem Frame.'
+  // },Clazz,false,false,Java);
+}
+
 function defineJButton(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'String', name: 'label'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: 'String', name: 'label'}//, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
@@ -348,16 +430,44 @@ function defineJButton(Clazz,Java){
 function defineJImage(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'String', name: 'url'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: 'String', name: 'url'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
+  createMethod({
+    name: 'setImageWidth',
+    args: [
+      {name: '"100%"', type: 'String', info: 'Breite des Bildes.'}
+    ],
+    info: 'Legt die Breite des Bildes fest.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setImageHeight',
+    args: [
+      {name: '"100%"', type: 'String', info: 'Höhe des Bildes.'}
+    ],
+    info: 'Legt die Höhe des Bildes fest.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setImageTranslationX',
+    args: [
+      {name: '"0%"', type: 'String', info: 'Verschiebung des Bildes nach rechts/links.'}
+    ],
+    info: 'Legt die Verschiebung des Bildes in x-Richtung fest.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setImageTranslationY',
+    args: [
+      {name: '"0%"', type: 'String', info: 'Verschiebung des Bildes nach oben/unten.'}
+    ],
+    info: 'Legt die Verschiebung des Bildes in y-Richtung fest.'
+  },Clazz,false,false,Java);
 }
 
 function defineJLabel(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'String', name: 'text'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: 'String', name: 'text'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
@@ -398,7 +508,7 @@ function defineJTextComponent(Clazz, Java){
 function defineJTextField(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'String', name: 'type'}, {type: 'String', name: 'placeholder'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: 'String', name: 'type'}, {type: 'String', name: 'placeholder'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JTextComponent;
@@ -407,7 +517,7 @@ function defineJTextField(Clazz,Java){
 function defineJTextArea(Clazz, Java){
   createConstructor ({
     args: [
-      {type: 'String', name: 'placeholder'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: 'String', name: 'placeholder'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JTextComponent;
@@ -416,7 +526,7 @@ function defineJTextArea(Clazz, Java){
 function defineJComboBox(Clazz,Java){
   createConstructor ({
     args: [
-      {type: {baseType: 'String', dimension: 1}, name: 'options'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: {baseType: 'String', dimension: 1}, name: 'options', optional: true}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
@@ -439,12 +549,33 @@ function defineJComboBox(Clazz,Java){
       }
     ]
   }, Clazz, false,false,Java);
+  createMethod({
+    name: 'addItem',
+    args: [
+      {
+        name: 'item', type: 'String'
+      }
+    ]
+  }, Clazz, false,false);
+  createMethod({
+    name: 'removeItemAt',
+    args: [
+      {
+        name: 'index', type: 'int'
+      }
+    ]
+  }, Clazz, false,false);
+  createMethod({
+    name: 'removeAllItems',
+    args: [
+    ]
+  }, Clazz, false,false);
 }
 
 function defineJCheckBox(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'String', name: 'label'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: 'String', name: 'label'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
@@ -454,7 +585,6 @@ function defineJCheckBox(Clazz,Java){
 function defineDataTable(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
@@ -482,10 +612,17 @@ function defineDataTable(Clazz,Java){
 function defineJPanel(Clazz,Java){
   createConstructor ({
     args: [
-      {type: {baseType: 'String', dimension: 0}, name: 'template'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: {baseType: 'String', dimension: 0}, name: 'template'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
+  createMethod({
+    name: 'setLayout',
+    args: [
+      {name: 'layout', type: 'String', info: 'Das neue Layout des Panels.'}
+    ],
+    info: 'Legt das Layout für das Panel fest.'
+  },Clazz,false,false,Java);
   createMethod({
     name: 'add',
     args: [
@@ -558,7 +695,7 @@ function defineJPanel(Clazz,Java){
 function defineCanvas(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'double', name: 'minX'},{type: 'double', name: 'maxX'},{type: 'double', name: 'minY'}, {type: 'double', name: 'maxY'}, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: 'double', name: 'minX'},{type: 'double', name: 'maxX'},{type: 'double', name: 'minY'}, {type: 'double', name: 'maxY'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JPanel;
@@ -600,11 +737,11 @@ function defineCanvas(Clazz,Java){
     args: [{name: 'sx', type: 'double', info: 'Skalierungsfaktor in x-Richtung. Bei negativem Wert wird an einer vertikalen Achse gespiegelt.'}, {name: 'sy', type: 'double', info: 'Skalierungsfaktor in y-Richtung. Bei negativem Wert wird an einer horizontalen Achse gespiegelt.'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts der Skalierung.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts der Skalierung.'}],
     info: 'Skaliert alles, was danach gezeichnet wird.'
   },Clazz,false,false,Java);
-  createMethod({
-    name: 'scale',
-    args: [{name: 'sx', type: 'double', info: 'Skalierungsfaktor in x-Richtung. Bei negativem Wert wird an einer vertikalen Achse gespiegelt.'}, {name: 'sy', type: 'double', info: 'Skalierungsfaktor in y-Richtung. Bei negativem Wert wird an einer horizontalen Achse gespiegelt.'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts der Skalierung.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts der Skalierung.'}],
-    info: 'Skaliert alles, was danach gezeichnet wird.'
-  },Clazz,false,false,Java);
+  // createMethod({
+  //   name: 'scale',
+  //   args: [{name: 'sx', type: 'double', info: 'Skalierungsfaktor in x-Richtung. Bei negativem Wert wird an einer vertikalen Achse gespiegelt.'}, {name: 'sy', type: 'double', info: 'Skalierungsfaktor in y-Richtung. Bei negativem Wert wird an einer horizontalen Achse gespiegelt.'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts der Skalierung.'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts der Skalierung.'}],
+  //   info: 'Skaliert alles, was danach gezeichnet wird.'
+  // },Clazz,false,false,Java);
   createMethod({
     name: 'setMirrored',
     args: [
@@ -618,10 +755,20 @@ function defineCanvas(Clazz,Java){
     ],
     info: "Zeichnet den Canvas neu."
   },Clazz,false,false,Java);
+  // createMethod({
+  //   name: 'setOrigin',
+  //   args: [{name: 'x', type: 'double', info: 'x-Koordinate des Koordinatenursprungs'}, {name: 'y', type: 'double', info: 'y-Koordinate des Koordinatenursprungs'}],
+  //   info: 'Legt die Position des Koordinatenursprungs (0|0) fest.'
+  // },Clazz,false,false,Java);
   createMethod({
-    name: 'setOrigin',
-    args: [{name: 'x', type: 'double', info: 'x-Koordinate des Koordinatenursprungs'}, {name: 'y', type: 'double', info: 'y-Koordinate des Koordinatenursprungs'}],
-    info: 'Legt die Position des Koordinatenursprungs (0|0) fest.'
+    name: 'setAxisX',
+    args: [{name: 'min', type: 'double', info: 'minimale x-Koordinate'}, {name: 'max', type: 'double', info: 'maximale x-Koordinate'}],
+    info: 'Legt die x-Achse des Koordinatensystems fest.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setAxisY',
+    args: [{name: 'min', type: 'double', info: 'minimale y-Koordinate'}, {name: 'max', type: 'double', info: 'maximale y-Koordinate'}],
+    info: 'Legt die y-Achse des Koordinatensystems fest.'
   },Clazz,false,false,Java);
   createMethod({
     name: 'setRotation',
@@ -701,6 +848,18 @@ function defineCanvas(Clazz,Java){
     returnType: 'double'
   },Clazz,false,false,Java);
   createMethod({
+    name: 'isMouseOver',
+    args: [],
+    info: 'Prüft, ob sich die Maus aktuell über dem Canvas befindet.',
+    returnType: 'boolean'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'isMousePressed',
+    args: [],
+    info: 'Prüft, ob die Maustaste gedrückt ist und sich die Maus aktuell über dem Canvas befindet.',
+    returnType: 'boolean'
+  },Clazz,false,false,Java);
+  createMethod({
     name: 'getChildAtPoint',
     args: [{name: "x", type: "double"}, {name: "y", type: "double"}],
     info: 'Liefert die Komponente an dieser Stelle.',
@@ -735,5 +894,11 @@ function defineCanvas(Clazz,Java){
       {name: 'mirrored', type: 'boolean'}
     ],//image, cx, cy, width, height
     info: 'Zeichnet einen Bildausschnitt in den Canvas.'
+  },Clazz,false,false,Java);
+
+  createMethod({
+    name: 'setSizePolicy',
+    args: [{name: '"stretch"', type: "String"}],
+    info: 'Legt die Größenanpassung auf "stretch" oder auf "fit" fest.'
   },Clazz,false,false,Java);
 }

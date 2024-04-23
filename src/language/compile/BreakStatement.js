@@ -3,17 +3,17 @@ import { checkSemikolon } from "../helper/checkSemicolon";
 export function BreakStatement(node,source,scope){
   node=node.firstChild;
   let nodeBackup=node;
-  let inLoop=false;
+  let isOK=false;
   while(node){
-    if(node.name==="ForStatement"||node.name==="WhileStatement"){
-      inLoop=true;
+    if(node.name==="ForStatement"||node.name==="WhileStatement"||node.name==="SwitchBlock"){
+      isOK=true;
       break;
     }
     node=node.parent;
   }
   node=nodeBackup;
-  if(!inLoop){
-    throw source.createError("'break' ist nur innerhalb einer Schleife erlaubt.",node);
+  if(!isOK){
+    throw source.createError("'break' ist nur innerhalb von Schleifen und switch-Statements erlaubt.",node);
   }
   checkSemikolon(node,source);
   return {

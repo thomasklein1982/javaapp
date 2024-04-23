@@ -11,10 +11,13 @@ export function ExpressionStatement(node,source,scope){
   //   throw e;
   // }
   if(node.nextSibling.type.isError || node.nextSibling.name!==";"){
-    throw (source.createError("';' erwartet.",node.nextSibling));
+    while(node.lastChild){
+      node=node.lastChild;
+    }
+    throw (source.createErrorAt("';' erwartet.",node.to));
   }
   if(a.local && scope.addLocalVariablesUpdates && !scope.optimizeCompiler){
-    a.code+=";eval('$locals["+JSON.stringify(a.name)+"]="+a.name+"');";
+    a.code+=";";//eval('$locals["+JSON.stringify(a.name)+"]="+a.name+"');";
   }else{
     a.code+=";";
   }

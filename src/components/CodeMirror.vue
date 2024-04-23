@@ -1,6 +1,8 @@
 <template>
   <div id="root">
+    <Toast/>
     <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px'}"></div>
+    <div v-show="disabled" @click="clickDisabled()" style="cursor: not-allowed" :style="disableDivStyle" id="disable-div"></div>
     <Message v-if="displayedRuntimeError" severity="error" @close="dismissRuntimeError()">Z{{displayedRuntimeError.line}}: {{displayedRuntimeError.message}}</Message>
     <Button outlined style="position: absolute; top: 0; right: 0" v-if="isUIClazz" icon="pi pi-table" @click="clazz.showUIEditor=true"/>
   </div>
@@ -37,26 +39,27 @@ const breakpointEffect = StateEffect.define({
 const breakpointState = StateField.define({
   create() { return RangeSet.empty },
   update(set, transaction) {
-    set = set.map(transaction.changes)
+    set = set.map(transaction.changes);
     for (let e of transaction.effects) {
       if (e.is(breakpointEffect)) {
         if (e.value.on){
-          set = set.update({add: [breakpointMarker.range(e.value.pos)]})
-
+          set = set.update({add: [breakpointMarker.range(e.value.pos)]});
         }else{
-          set = set.update({filter: from => from != e.value.pos})
+          set = set.update({filter: from => from != e.value.pos});
         }
         let clazz=getClazzFromState(transaction.startState);
+        clazz.breakpointSet=set;
         app.updateBreakpoints(set,transaction.startState.doc,clazz);
       }
     }
-    return set
+    return set;
   }
 })
 
 function toggleBreakpoint(view, line) {
+  console.log("toggle bp");
   let pos=line.from;
-  line=view.state.doc.lineAt(pos)
+  // line=view.state.doc.lineAt(pos)
   let breakpoints = view.state.field(breakpointState);
   let hasBreakpoint = false;
   breakpoints.between(pos, pos, () => {hasBreakpoint = true});
@@ -66,8 +69,20 @@ function toggleBreakpoint(view, line) {
   
 }
 
+function removeAllBreakpoints(clazz,view){
+  console.log("remove all bp");
+  if(clazz.breakpointSet){
+    while(clazz.breakpointSet.chunk.pop());
+    while(clazz.breakpointSet.chunkPos.pop());
+    let n=view.viewState.state.doc.length;
+    view.dispatch({
+      effects: breakpointEffect.of({from:0,to:n, on: false})
+    });
+  }
+}
+
 const breakpointMarker = new class extends GutterMarker {
-  toDOM() { return document.createTextNode("⬤") }
+  toDOM() { return document.createTextNode("🛑") }
 }
 
 const breakpointGutter = [
@@ -78,14 +93,14 @@ const breakpointGutter = [
     initialSpacer: () => breakpointMarker,
     domEventHandlers: {
       mousedown(view, line) {
-        toggleBreakpoint(view, line)
-        return true
+        toggleBreakpoint(view, line);
+        return true;
       }
     }
   }),
   EditorView.baseTheme({
     ".cm-breakpoint-gutter .cm-gutterElement": {
-      color: "red",
+      color: "yellow",
       paddingLeft: "5px",
       cursor: "default"
     },
@@ -158,10 +173,15 @@ export default {
     tabIndex: {
       type: Number,
       default: 0
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
     clazz(nv,ov){
+      nv.editor=this;
       if(!ov){
         return;
       }
@@ -177,6 +197,8 @@ export default {
       this.setCode(nv.src);
     },
     current(nv,ov){
+      if(!this.clazz || !nv) return;
+      if(nv.name!==this.clazz.name) return;
       if(nv===null && ov!==null){
         this.setCursorToLine(ov.line);
       }else if(nv.line<1){
@@ -189,6 +211,16 @@ export default {
           this.setSelection(line.from,line.to);
         }
       // currentLineHighlighter.update()
+      }
+    },
+    disabled(nv){
+      if(nv){
+        let content=document.querySelector(".cm-content");
+        let parent=content.parentElement;
+        content=content.getBoundingClientRect();
+        parent=parent.getBoundingClientRect();
+        this.disableDivStyle.left=content.x-parent.x+"px";
+        this.disableDivStyle.width=content.width+"px";
       }
     }
 
@@ -204,7 +236,10 @@ export default {
       displayedRuntimeError: null,
       errorID: 1,
       size: 0,
-      triggerRecompilation: true
+      triggerRecompilation: true,
+      disableDivStyle: {
+        left: "0px", width: "100px", top: "0px", height: "100%"
+      }
     };
   },
   mounted(){
@@ -265,6 +300,22 @@ export default {
             this.$emit("caretupdate",v.state.selection.main.head);
             if(!v.docChanged) return;
             if(!v.changedRanges || v.changedRanges.length===0) return;
+            // if(v.transactions.length===1){
+            //   let t=v.transactions[0];
+            //   if(t.changes && t.changes.inserted.length>0){
+            //     let lastChange=t.changes.inserted[t.changes.inserted.length-1];
+            //     if(lastChange.text && lastChange.text.length===1){
+            //       let inserted=lastChange.text[0];
+            //       let key=inserted.codePointAt(0);
+            //       if(key>=65 && key<=122 || key>=48 && key<=57){
+            //         return;
+            //       }
+            //     }
+            //   }
+            // }
+            if(v.changedRanges.length===1 && (v.changedRanges[0].toA-v.changedRanges[0].fromA===1)){
+
+            }
             this.size=v.state.doc.length;
             this.src=v.state.doc.toString();
             if(this.clazz.hasClazzDeclaration){
@@ -339,9 +390,11 @@ export default {
     });
     this.editor.component=this;
     this.setCode(this.clazz.src);
-    // this.emptyTransaction();
   },
   methods: {
+    removeAllBreakpoints(){
+      removeAllBreakpoints(this.clazz,this.editor);
+    },
     setLanguage(language){
       this.editor.dispatch({
         effects: languageConf.reconfigure(language)
@@ -457,8 +510,10 @@ export default {
         "max_preserve_newlines": 2,
         "indent_empty_lines": true,
         "space_in_paren": true,
-        "space_in_empty_paren": true
+        "space_in_empty_paren": true,
+        "keep_array_indentation": true
       });
+      code=code.replace(/\) - > \{/g,") -> {");
       this.editor.dispatch({
         changes: {from: 0, to: this.size, insert: code}
       });
@@ -556,6 +611,9 @@ export default {
       }
       return node;
     },
+    clickDisabled(){
+      this.$toast.add({severity:'info', summary:'App pausiert', detail:'So lange die Ausführung pausiert ist, kannst du den Code nicht ändern.', life: 2000});
+    },
     setCursorToEnd(){
       this.setCursor(this.size-1);
     },
@@ -591,6 +649,9 @@ export default {
   }
   #errors{
     color: red;
+  }
+  #disable-div{
+    position: absolute;
   }
 </style>
 

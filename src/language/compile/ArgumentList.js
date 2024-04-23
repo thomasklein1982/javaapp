@@ -1,6 +1,6 @@
 import { CompileFunctions } from "../CompileFunctions";
 
-export function ArgumentList(node,source,scope,parameters){
+export function ArgumentList(node,source,scope,parameters,method,owner){
   if(!node || !node.firstChild){
     throw source.createError("'(' erwartet",node);
   }
@@ -51,6 +51,7 @@ export function ArgumentList(node,source,scope,parameters){
       throw source.createError("Zu wenig Argumente! Es müssen "+pcount+" Argumente sein.",node);
     }
   }
+  let replacementTypes={};
   for(let i=0;i<paramNodes.length;i++){
     let p=parameters.parameters[i];
     let pnode;
@@ -60,7 +61,8 @@ export function ArgumentList(node,source,scope,parameters){
       pnode=paramNodes[i];
     }
     let f=CompileFunctions.get(pnode,source);
-    let arg=f(pnode,source,scope);
+    
+    let arg=f(pnode,source,scope,{parameter: p, owner});
     if(arg.updateLocalVariablesAfter){
       updateLocalVariablesAfter=true;
     }
@@ -71,12 +73,49 @@ export function ArgumentList(node,source,scope,parameters){
       throw source.createError("Der Datentyp von '"+arg.code+"' ist unbekannt.",pnode);
     }
     if(!p.type){
-      throw source.createError("Der "+(i+1)+"-te Parameter ' dieser Methode hat keinen Datentyp.",pnode);
+      throw source.createError("Der "+(i+1)+"-te Parameter '"+arg.code+"' dieser Methode hat keinen Datentyp.",pnode);
     }
-    p.type.autoCastValue(arg);
-    if(!arg.type || !arg.type.isSubtypeOf(p.type)){
-      let text=source.getText(pnode);
-      throw source.createError( "Das "+(i+1)+"-te Argument '"+text+"' ist kein "+p.type+".",pnode);
+    if(p.type.isMethodGeneric && replacementTypes[p.type.baseType.name]){
+      p.type.baseType=replacementTypes[p.type.baseType.name];
+      p.type.isMethodGeneric=false;
+    }
+    if(p.type.isMethodGeneric){
+      //keine pruefung notwendig, typ wird inferred
+      replacementTypes[p.type.baseType.name]=arg.type.baseType;
+    }else{
+      if(Array.isArray(p.type)){
+        let found=false;
+        for(let i=0;i<p.type.length;i++){
+          let type=p.type[i];
+          type.applyAutoboxing(arg);
+          if(arg.type && arg.type.isSubtypeOf(type)){
+            found=true;
+            break;
+          }
+        }
+        if(!found){
+          for(let i=0;i<p.type.length;i++){
+            let type=p.type[i];
+            type.applyAutoboxing(arg);
+            type.autoCastValue(arg);
+            if(arg.type && arg.type.isSubtypeOf(type)){
+              found=true;
+              break;
+            }
+          }
+        }
+        if(!found){
+          let text=source.getText(pnode);
+          throw source.createError( "Das "+(i+1)+"-te Argument '"+text+"' ist kein "+p.getTypeAsString()+".",pnode);
+        }
+      }else{
+        p.type.applyAutoboxing(arg);
+        p.type.autoCastValue(arg);
+        if(!arg.type || !arg.type.isSubtypeOf(p.type)){
+          let text=source.getText(pnode);
+          throw source.createError( "Das "+(i+1)+"-te Argument '"+text+"' ist kein "+p.type+".",pnode);
+        }
+      }
     }
     if(reverseOrder){
       codeArgs[paramNodes.length-1-i]=arg.code;
@@ -89,6 +128,6 @@ export function ArgumentList(node,source,scope,parameters){
   code+=codeArgs.join(",");
   code+=")";
   return {
-    list, code, updateLocalVariablesAfter
+    list, code, updateLocalVariablesAfter, replacementTypes
   };
 }

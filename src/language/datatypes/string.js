@@ -1,3 +1,4 @@
+import { options } from "../../classes/Options";
 import { createMethod } from "../helper/createMethod";
 
 export function defineString(StringClazz,Java){
@@ -23,9 +24,10 @@ export function defineString(StringClazz,Java){
   createMethod({
     name: "charAt",
     args: [{name: "index",type: "int"}],
+    isExtraFunction: true,
     info: "Liefert das Zeichen an der angegebenen Stelle zurück.",
-    returnType: 'String',
-    jsName: "charAt"
+    returnType: options.stringCharAtDeliversString? 'String':'char',
+    jsName: options.stringCharAtDeliversString?"$StringCharAtString":"$StringCharAtChar"
   },StringClazz,false,false,Java);
   createMethod({
     name: "codePointAt",
@@ -52,7 +54,7 @@ export function defineString(StringClazz,Java){
     isExtraFunction: true,
     args: [{name: "string2",type: "String"}],
     info: "Vergleicht diesen String mit dem angegebenen String. Ein Ergebnis von 0 sagt, dass die beiden Strings identisch sind, ein Ergebnis kleiner als 0, dass der String kleiner ist als der angegebene String und ein Ergebnis größer als 0, dass der String größer ist als der angegebene String.",
-    returnType: 'String',
+    returnType: 'int',
     jsName: "$StringCompareTo",
   },StringClazz,false,false,Java);
   createMethod({
@@ -60,7 +62,7 @@ export function defineString(StringClazz,Java){
     isExtraFunction: true,
     args: [{name: "string2",type: "String"}],
     info: "Vergleicht diesen String mit dem angegebenen String ohne Beachtung der Groß-/Kleinschreibung. Ein Ergebnis von 0 sagt, dass die beiden Strings identisch sind, ein Ergebnis kleiner als 0, dass der String kleiner ist als der angegebene String und ein Ergebnis größer als 0, dass der String größer ist als der angegebene String.",
-    returnType: 'String',
+    returnType: 'int',
     jsName: "$StringCompareToIgnoreCase",
   },StringClazz,false,false,Java);
   createMethod({

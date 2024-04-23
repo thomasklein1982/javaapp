@@ -28,6 +28,7 @@ export function Identifier(node,source,scope,infos){
   }
   let obj;
   let code=name;
+  let codeAssign=code;
   let type=null;
   let owner=infos?.owner;
   if(owner && owner.type){
@@ -62,23 +63,34 @@ export function Identifier(node,source,scope,infos){
     }
     obj=scope.getLocalVariable(name);
     if(obj){
+      code="$u("+code+")";
       local=true;
       type=obj.type;
       scope.addTypeAnnotation(node,type,false);
     }else{
-      obj=scope.getAttribute(name,false);
+      if(!scope.method){
+        throw source.createError("Es tut mir leid, ich kann diese Variable nicht außerhalb einer Methode verwenden.",node);
+      }
+      let staticContext=scope.method && scope.method.isStatic()||false;
+      obj=scope.getAttribute(name,staticContext);
       if(obj && obj.error){
+        if(obj.clazzHasAttribute){
+          throw source.createError(obj.error,node);
+        }
+        let error=obj.error;
         obj=scope.getTypeByName(name);
         if(obj){
           type=null;
           scope.addTypeAnnotation(node,new Type(obj,0),true);
         }else{
           throw source.createError("Der Bezeichner '"+name+"' ist undefiniert.",node);
+          //t source.createError(error,node);
         }
         //throw source.createError(obj.error,node);
       }else{
         /**Attribut: */
         code="this."+code;
+        codeAssign=code;
         type=obj.type;
         scope.addTypeAnnotation(node,type,false);
         if(!owner){
@@ -97,6 +109,8 @@ export function Identifier(node,source,scope,infos){
   
   return {
     code: code,
+    codeAssign,
+    codeUpdate: codeAssign,
     object: obj,
     type: type,
     local: local,

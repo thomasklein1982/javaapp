@@ -45,6 +45,12 @@ import { TryStatement } from "./compile/TryStatement.js";
 import { Definition } from "./compile/Definition.js";
 import { CatchType } from "./compile/CatchType.js";
 import { ThrowStatement } from "./compile/ThrowStatement.js";
+import { CharacterLiteral } from "./compile/CharacterLiteral.js";
+import { InferredParameters } from "./compile/InferredParameters.js";
+import { DoStatement } from "./compile/DoStatement.js";
+import { SwitchStatement } from "./compile/SwitchStatement.js";
+import { TextBlock } from "./compile/TextBlock.js";
+
 
 function doNothing(){}
 
@@ -64,6 +70,6 @@ export const CompileFunctions={
     return compile;
   },
   functions: {
-    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral,FloatingPointLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression, ArrayCreationExpression, Dimension, ArrayAccess, IfStatement, ArrayType, ForStatement, LineComment, ThisExpression, ReturnStatement, UpdateExpression, Null, WhileStatement, ArrayInitializer, UnaryExpression, Block, ScopedTypeName, ExplicitConstructorInvocation, CastExpression, BreakStatement, ContinueStatement, BlockComment, GenericType, LambdaExpression, FormalParameters, InstanceofExpression, MethodReference, TryStatement, Definition, CatchType, ThrowStatement
+    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral,FloatingPointLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression, ArrayCreationExpression, Dimension, ArrayAccess, IfStatement, ArrayType, ForStatement, LineComment, ThisExpression, ReturnStatement, UpdateExpression, Null, WhileStatement, ArrayInitializer, UnaryExpression, Block, ScopedTypeName, ExplicitConstructorInvocation, CastExpression, BreakStatement, ContinueStatement, BlockComment, GenericType, LambdaExpression, FormalParameters, InstanceofExpression, MethodReference, TryStatement, Definition, CatchType, ThrowStatement, CharacterLiteral, InferredParameters, DoStatement, SwitchStatement, TextBlock
   }
 }

@@ -76,6 +76,28 @@
           <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.maxY" style="width: 95%"/></td>
         </tr>
       </template>
+      <template v-if="component.imageWidth!==undefined">
+        <tr>
+          <td>Bild-Breite:</td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.imageWidth" style="width: 95%"/></td>
+        </tr>
+        <tr>
+          <td>Bild-Höhe:</td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.imageHeight" style="width: 95%"/></td>
+        </tr>
+        <tr>
+          <td>Bild-Verschiebung-X:</td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.imageTranslationX" style="width: 95%"/></td>
+        </tr>
+        <tr>
+          <td>Bild-Verschiebung-Y:</td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.imageTranslationY" style="width: 95%"/></td>
+        </tr>
+      </template>
+      <template v-if="component.sizePolicy!==undefined">
+        <td>Anpassung:</td>
+        <td><Dropdown @change="emitUpdate()" :options="['fit','stretch']" v-model="component.sizePolicy" style="width: 95%"/></td>
+      </template>
       <tr v-if="component.onAction!==undefined">
         <td>onAction auslösen?</td>
         <td><InputSwitch v-model="component.onAction"/></td>

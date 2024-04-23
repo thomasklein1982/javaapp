@@ -121,6 +121,15 @@ body,html{
   }
 }
 
+.unselectable{
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.accordion-packed div.p-accordion-content{
+  padding: 0;
+}
+
 /*.cm-editor{
   cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAACxCAYAAAAIwae7AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAACtJREFUWIXtyUENAAAIBCC1f+czgQHc4EsnlTrMFVJKKaWUUkoppZRSyne52TEEX6YBkucAAAAASUVORK5CYII=), auto;
 }*/

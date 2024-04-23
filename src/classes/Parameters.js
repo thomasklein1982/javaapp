@@ -20,6 +20,22 @@ export class ParameterList{
     }
     return params;
   }
+  getRenamedCopy(typeArguments,newNames){
+    if(this.parameters.length!==newNames.length){
+      let soll=this.parameters.length;
+      let ist=newNames.length;
+      throw "Zu "+(soll<ist? 'viele':'wenige')+ " Parameter, es müsste"+(soll===1?' ein': 'n '+soll)+" Parameter sein.";
+    }
+    let params=new ParameterList(this.method);
+    params.minCount=this.minCount;
+    params.reverseOrder=this.reverseOrder;
+    for(let i=0;i<this.parameters.length;i++){
+      let p=this.parameters[i];
+      let n=p.getRenamedCopy(typeArguments,newNames[i],params);
+      params.parameters.push(n);
+    }
+    return params;
+  }
   get count(){
     return this.parameters.length;
   }
@@ -96,16 +112,39 @@ export class Parameter{
   getCopy(typeArguments,copyList){
     let p=new Parameter(copyList);
     p.name=this.name;
-    if(this.type && this.type.baseType.isGeneric){
-      for (let i = 0; i < typeArguments.length; i++) {
-        let a = typeArguments[i];
-        if(a.param.name===this.type.baseType.name){
-          p.type=a;
-          break;
+    if(this.type && this.type.baseType && this.type.baseType.isGeneric){
+      if(this.list.method.typeParameters){
+        for (let i = 0; i < this.list.method.typeParameters.length; i++) {
+          let a = this.list.method.typeParameters[i];
+          if(a.name===this.type.baseType.name){
+            p.type=new Type(a,this.type.dimension);
+            p.type.isMethodGeneric=true;
+            return p;
+          }
         }
       }
-    }else{
-      p.type=this.type;
+      if(typeArguments){
+        for (let i = 0; i < typeArguments.length; i++) {
+          let a = typeArguments[i];
+          if(a.param.name===this.type.baseType.name){
+            p.type=new Type(a,this.type.dimension);
+            return p;
+          }
+        }
+      }
+    }
+    p.type=this.type;
+    return p;
+  }
+
+  getRenamedCopy(typeArguments,newName,copyList){
+    let p=new Parameter(copyList);
+    p.name=newName;
+    p.type=this.type;
+    if(p.type.baseType.isGeneric){
+      if(typeArguments && typeArguments.length===1){
+        p.type.baseType=typeArguments[0].baseType;
+      }
     }
     return p;
   }
@@ -114,9 +153,24 @@ export class Parameter{
     return this.name;
   }
 
-  toString(){
+  getTypeAsString(){
     if(!this.type) return "???";
-    return this.type.toString()+" "+this.name;
+    let t;
+    if(Array.isArray(this.type)){
+      t="";
+      for(let i=0;i<this.type.length;i++){
+        let type=this.type[i];
+        if(i>0) t+="|";
+        t+=type.toString();
+      }
+    }else{
+      t=this.type.toString();
+    }
+    return t;
+  }
+
+  toString(){
+    return this.getTypeAsString()+" "+this.name;
   };
 
   define(data){
@@ -124,12 +178,14 @@ export class Parameter{
     this.name=data.name;
   }
 
+
+
   compile(node,source){
     let errors=[];
     
     node=node.firstChild;
     if(node.name.indexOf("Type")>=0){
-      this.type=Type.compile(node,source,this.list.method.clazz,errors);
+      this.type=Type.compile(node,source,this.list.method,errors);
     }else{
 
     }

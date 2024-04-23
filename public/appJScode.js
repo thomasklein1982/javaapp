@@ -1,4 +1,15 @@
+
 window.appJScode=function(){
+  class $Char{
+    constructor(char){
+      if(!char.substring){
+        char=String.fromCodePoint(char);
+      }
+      this.char=char;
+      this.int=char.codePointAt(0);
+    }
+  }
+
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
   audioCtx = new(window.AudioContext || window.webkitAudioContext)();
@@ -35,6 +46,7 @@ window.appJScode=function(){
       $sharedVariables: null,
       $iframes: [],
       resizeObserver: null,
+      watchedObject: null,
       dialog: {
         root: null,
         backdrop: null,
@@ -81,28 +93,48 @@ window.appJScode=function(){
         lastLine: -1,
         lastName: true,
         object: null,
+        $scope: null,
         enabled: window.appJSdebugMode? window.appJSdebugMode: false,
         breakpoints: {},
         breakpointCount: 0,
         paused: false,
-        resolve: null,
-        line: async function(line,name, object){
-          if(window===window.top) return;
-          if(!name){
-            name=true;
-          }
-          if(object){
-            this.object=object;
+        stepAbove: false,
+        callDepth: 0,
+        resetCallDepth: function(){
+          this.callDepth=0;
+        },
+        incCallDepth: function(){
+          this.callDepth++;
+        },
+        decCallDepth: function(){
+          if(this.callDepth>0){
+            this.callDepth--;
           }else{
-            this.object=null;
+            this.callDepth=0;
           }
+
+        },
+        getCallDepth: function(){
+          return this.callDepth;
+        },
+        isCallDepthZero: function(){
+          return this.callDepth===0;
+        },
+        resolve: null,
+        mainTemplate: {},
+        line: async function(line,name, $scope){
+          if(window===window.top) return;
+          this.$scope=$scope;
           this.lastLine=line;
           this.lastName=name;
-          if(this.paused || this.breakpoints[line]===name){
+          if(this.paused || this.breakpoints[line]===name || this.isCallDepthZero() && this.stepAbove){
             this.paused=true;
+            this.stepAbove=false;
+            this.resetCallDepth();
             if($App.body.overlay){
               $App.body.overlay.style.display='';
             }
+            console.log("post debug pause");
             var p=new Promise((resolve,reject)=>{
               window.parent.postMessage({
                 type: "debug-pause",
@@ -135,15 +167,28 @@ window.appJScode=function(){
           }
         },
         onMessage: function(message){
+          if(!window.parent) return;
           var data=message.data;
           if(data.type==="breakpoints"){
             var bp=data.breakpoints;
             this.setBreakpoints(bp);
           }else if(data.type==="debug-resume"){
             this.paused=false;
+            this.stepAbove=false;
             this.resolve();
           }else if(data.type==="debug-step"){
+            this.stepAbove=false;
             this.resolve();
+            $App.debug.resetCallDepth();
+          }else if(data.type==="debug-step-above"){
+            console.log("step above");
+            this.paused=false;
+            this.stepAbove=true;
+            $App.debug.resetCallDepth();
+            this.resolve();
+          }else if(data.type==="getScope"){
+            let $scope=this.$scope.getData(JSON.parse(data.template));
+            window.parent.postMessage({type: "getScope", data: $scope});
           }
           if(this.paused){
             if($App.body.overlay && $App.body.overlay.style.display==='none'){
@@ -278,7 +323,6 @@ window.appJScode=function(){
       },
       executedOnStart: false,
       animationFrame: null,
-      gamepad: null,
       canvas: null,
       world: null,
       showConsoleOnStart: true
@@ -601,16 +645,8 @@ window.appJScode=function(){
       });
     };
     
-    
-    $App.$JoyStick=function(t,onDown,onUp,e){var i=void 0===(e=e||{}).title?"joystick":e.title,n=void 0===e.width?0:e.width,o=void 0===e.height?0:e.height,r=void 0===e.internalFillColor?"#00AA00":e.internalFillColor,h=void 0===e.internalLineWidth?2:e.internalLineWidth,a=void 0===e.internalStrokeColor?"#003300":e.internalStrokeColor,d=void 0===e.externalLineWidth?2:e.externalLineWidth,f=void 0===e.externalStrokeColor?"#008000":e.externalStrokeColor,l=void 0===e.autoReturnToCenter||e.autoReturnToCenter,s=t,c=document.createElement("canvas");c.id=i,0===n&&(n=s.clientWidth),0===o&&(o=s.clientHeight),c.width=n,c.height=o,s.appendChild(c);var u=c.getContext("2d"),g=0,v=2*Math.PI,p=(c.width-(c.width/2+10))/2,C=p+5,w=p+30,m=c.width/2,L=c.height/2,E=c.width/10,P=-1*E,S=c.height/10,k=-1*S,W=m,T=L;function G(){u.beginPath(),u.arc(m,L,w,0,v,!1),u.lineWidth=d,u.strokeStyle=f,u.stroke()}function x(){u.beginPath(),W<p&&(W=C),W+p>c.width&&(W=c.width-C),T<p&&(T=C),T+p>c.height&&(T=c.height-C),u.arc(W,T,p,0,v,!1);var t=u.createRadialGradient(m,L,5,m,L,200);t.addColorStop(0,r),t.addColorStop(1,a),u.fillStyle=t,u.fill(),u.lineWidth=h,u.strokeStyle=a,u.stroke()}"ontouchstart"in document.documentElement?(c.addEventListener("touchstart",function(t){g=1;if(onDown){onDown()}},!1),c.addEventListener("touchmove",function(t){t.preventDefault(),1===g&&t.targetTouches[0].target===c&&(W=t.targetTouches[0].pageX,T=t.targetTouches[0].pageY,"BODY"===c.offsetParent.tagName.toUpperCase()?(W-=c.offsetLeft,T-=c.offsetTop):(W-=c.offsetParent.offsetLeft,T-=c.offsetParent.offsetTop),u.clearRect(0,0,c.width,c.height),G(),x())},!1),c.addEventListener("touchend",function(t){g=0,l&&(W=m,T=L);u.clearRect(0,0,c.width,c.height),G(),x();if(onUp){onUp()}},!1)):(c.onmouseleave=function(){g=0,l&&(W=m,T=L);u.clearRect(0,0,c.width,c.height),G(),x();if(onUp){onUp()}},c.addEventListener("mousedown",function(t){g=1;if(onDown){onDown()}},!1),c.addEventListener("mousemove",function(t){1===g&&(W=t.pageX,T=t.pageY,"BODY"===c.offsetParent.tagName.toUpperCase()?(W-=c.offsetLeft,T-=c.offsetTop):(W-=c.offsetParent.offsetLeft,T-=c.offsetParent.offsetTop),u.clearRect(0,0,c.width,c.height),G(),x())},!1),c.addEventListener("mouseup",function(t){g=0,l&&(W=m,T=L);u.clearRect(0,0,c.width,c.height),G(),x();if(onUp){onUp()}},!1)),G(),x(),this.GetWidth=function(){return c.width},this.GetHeight=function(){return c.height},this.GetPosX=function(){return W},this.GetPosY=function(){return T},this.GetX=function(){return((W-m)/C*100).toFixed()},this.GetY=function(){return((T-L)/C*100*-1).toFixed()},this.setDir=function(dir){if(dir==="N"){W=m;T=-1000;}else if(dir==="S"){W=m;T=1000;}else if(dir==="W"){W=-1000;T=L;}else if(dir==="E"){W=1000;T=L;}else if(dir==="NW"){W=-1000;T=-1000;}else if(dir==="NE"){W=1000;T=-1000;}else if(dir==="SW"){W=-1000;T=1000;}else if(dir==="SE"){W=1000;T=1000;}else{W=m;T=L;}u.clearRect(0,0,c.width,c.height),G(),x();},this.GetDir=function(){var t="",e=W-m,i=T-L;return i>=k&&i<=S&&(t="C"),i<k&&(t="N"),i>S&&(t="S"),e<P&&("C"===t?t="W":t+="W"),e>E&&("C"===t?t="E":t+="E"),t}};
-    
     $App.setup=async function(dontStart){
-      await this.loadScripts();
-      if(this.lazyLoading){
-        this.loadAssets();
-      }else{
-        await this.loadAssets();
-      }
+      this.loadAssets();
       
       if(!$App.headLoaded && document.head){
         var style=document.createElement("style");
@@ -626,7 +662,7 @@ window.appJScode=function(){
         style.insertRule("button:active{border-radius: 0;background-color:#e0e0e0}",0);
         style.insertRule("button{border-radius: 0;background-color:#d0d0d0}",0);
         style.insertRule("button:hover{border-radius: 0;background-color:#dadada}",0);
-        style.insertRule("html{font-family: sans-serif;}",0);
+        style.insertRule("html{font-family: sans-serif;width:100%;height:100%;}",0);
         $App.headLoaded=true;
       }
       if(!dontStart && document.body){
@@ -638,20 +674,23 @@ window.appJScode=function(){
         });
         this.body.element=document.body;
         this.body.element.style="padding: 0; margin: 0; width: 100%; height: 100%; overflow: hidden; user-select: none; -webkit-user-select: none";
-        this.body.element.parentElement.style=this.body.style;
+        this.body.element.parentElement.style=this.body.element.style;
         
         var root=document.createElement("div");
         this.body.root=root;
         root.style="position: fixed;width:100%;height:100%";
         root.className="app-root";
+        root.id="app-root";
+        
         this.body.element.appendChild(root);
         this.canvas=new $App.Canvas(root,100,100,true);
         this.canvas.isRootCanvas=true;
         this.world=new $App.World(this.canvas);
         let left=document.createElement("div");
-        left.style="font-family: monospace; position: absolute; width: 30%; height: 100%; left: 0; top: 0; display: none; z-index: 100;";
+        left.style="position: absolute; width: 30%; height: 100%; left: 0; top: 0; display: none; z-index: 100;";
         let right=document.createElement("div");
         right.style="position: absolute; width: 100%; height: 100%; right: 0; top: 0; display: grid; box-sizing: border-box; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; padding: 1rem";
+        right.$canvas=this.canvas;
         this.body.right=right;
         root.appendChild(left);
         root.appendChild(right);
@@ -700,7 +739,7 @@ window.appJScode=function(){
         }
         this.onResize();
         this.animationFrame=async ()=>{
-          this.gamepad.updatePhysicalGamepad();
+          //this.gamepad.updatePhysicalGamepad();
           if(window.onNextFrame && !$App.debug.paused){
             try{
               await window.onNextFrame();
@@ -735,8 +774,8 @@ window.appJScode=function(){
         }else{
           requestAnimationFrame(this.animationFrame);
         }
-        this.addMouseStateHandler(this.canvas.el);
-        
+        //this.addMouseStateHandler(this.canvas.el);
+        this.console.element.focus();
         
       }else{
         setTimeout(()=>{
@@ -745,6 +784,10 @@ window.appJScode=function(){
       }
     }
     
+    $App.setWatchedObject=function(obj){
+      this.watchedObject=obj;
+    }
+
     $App.setupApp=function(title,favicon,width,height,backgroundColor){
       if(!this.body.element){
         this.setupData={
@@ -814,29 +857,13 @@ window.appJScode=function(){
     
     window.onkeydown=function(ev){
       var k=ev.keyCode;
+      if($App.console.readResolve){
+        $App.console.readResolve(k);
+      }
       var kb=$App.keyboard;
       kb.down[k]=true;
       if(kb.lastKeycodeDown!==k){
         kb.lastKeycodeDown=k;
-        if($App.gamepad.element){
-          var gp=$App.gamepad;
-          gp.updateButtons(kb.down[gp.keycodes.A],kb.down[gp.keycodes.B], kb.down[gp.keycodes.X], kb.down[gp.keycodes.Y], kb.down[gp.keycodes.E], kb.down[gp.keycodes.F]);
-          var button=gp.getMappedButton(k);
-          if(button){
-            if(button==="up" || button==="down" || button==="left" || button==="right"){
-              gp.updateJoystickDirection(kb.down[gp.keycodes.left],kb.down[gp.keycodes.right],kb.down[gp.keycodes.up],kb.down[gp.keycodes.down]);
-              button=null;
-            }
-            if(window.onGamepadDown){
-              if($App.debug.paused) return;
-              try{
-                window.onGamepadDown(button);
-              }catch(e){
-                $App.handleException(e);
-              }
-            }
-          }
-        }
         if($App.debug.paused) return;
         if(window.onKeyDown){
           try{
@@ -852,25 +879,6 @@ window.appJScode=function(){
       var kb=$App.keyboard;
       delete kb.down[k];
       kb.lastKeycodeDown=-1;
-      if($App.gamepad.element){
-        var gp=$App.gamepad;
-        gp.updateButtons(kb.down[gp.keycodes.A],kb.down[gp.keycodes.B], kb.down[gp.keycodes.X], kb.down[gp.keycodes.Y], kb.down[gp.keycodes.E], kb.down[gp.keycodes.F]);
-        var button=gp.getMappedButton(k);
-        if(button){
-          if(button==="up" || button==="down" || button==="left" || button==="right"){
-            gp.updateJoystickDirection(kb.down[gp.keycodes.left],kb.down[gp.keycodes.right],kb.down[gp.keycodes.up],kb.down[gp.keycodes.down]);
-            button=null;
-          }
-          if(window.onGamepadUp){
-            if($App.debug.paused) return;
-            try{
-              window.onGamepadUp(button);
-            }catch(e){
-              $App.handleException(e);
-            }
-          }
-        }
-      }
       if($App.debug.paused) return;
       if(window.onKeyUp){
         try{
@@ -882,11 +890,11 @@ window.appJScode=function(){
     };
     
     window.addEventListener("gamepadconnected", function(e) {
-      $App.gamepad.connectPhysicalGamepad(e.gamepad);
+      
     });
     
     window.addEventListener("gamepaddisconnected", function(e) {
-      $App.gamepad.disconnectPhysicalGamepad();
+      
     });
     
     $App.addMouseStateHandler=function(e){
@@ -901,7 +909,7 @@ window.appJScode=function(){
         if(!t) return;
         $App.mouse.update(t.clientX,t.clientY,e,'down',ev.timeStamp,true);
         $App.mouse.down=true;
-      });
+      },false);
       e.addEventListener("touchend",function(ev){
         var x=-1; 
         var y=-1;
@@ -917,7 +925,7 @@ window.appJScode=function(){
         }
         $App.mouse.update(x,y,e,'up',ev.timeStamp,true);
         $App.mouse.down=false;
-      });
+      },false);
       e.onmouseup=function(ev){
         $App.mouse.update(ev.clientX,ev.clientY,e,'up',ev.timeStamp);
         $App.mouse.down=false;
@@ -929,7 +937,7 @@ window.appJScode=function(){
         if(!t) return;
         $App.mouse.update(t.clientX,t.clientY,e,'move',ev.timeStamp,true);
         $App.mouse.down=true;
-      });
+      },false);
       e.onmousemove=function(ev){
         $App.mouse.update(ev.clientX,ev.clientY,e,'move',ev.timeStamp);
       };
@@ -1062,6 +1070,7 @@ window.appJScode=function(){
         this.container.style.overflow="hidden";
       }
       this.el=document.createElement("canvas");
+      this.el.style.touchAction="none";
       this.el.jel=this;
       this.el.isCanvas=true;
       this.container.className="canvas-container";
@@ -1079,6 +1088,7 @@ window.appJScode=function(){
       this.el.style.top=0;
       this.el.style.width="100%";
       this.el.style.height="100%";
+      this.sizePolicy="fit";
       this.width=width;
       this.height=height;
       this.origin={
@@ -1146,6 +1156,13 @@ window.appJScode=function(){
           this.addCommand("restore",[])
         }
         this.ctx.restore();
+      },
+      setSizePolicy: function(policy){
+        this.sizePolicy=policy;
+        this.redraw();
+      },
+      getSizePolicy(){
+        return this.sizePolicy;
       },
       reset: function(){
         this.clear(true);
@@ -1228,6 +1245,14 @@ window.appJScode=function(){
         this.origin.x=x;
         this.origin.y=y;
       },
+      setAxisX: function(min,max){
+        this.origin.x=(min+max)/2;
+        this.width=max-min;
+      },
+      setAxisY: function(min,max){
+        this.origin.y=(min+max)/2;
+        this.height=max-min;
+      },
       setSize: function(width,height,fullWidth,fullHeight){
         this.width=width;
         this.height=height;
@@ -1301,6 +1326,9 @@ window.appJScode=function(){
         el.style.width=this.getRawWidth(width)+"px";
         el.style.height=this.getRawHeight(height)+"px";
       },
+      isEmpty: function(){
+        return (this.container.childNodes.length<=1);
+      },
       addElement: function(el,cx,cy,width,height){
         this.container.appendChild(el);
         this.updateElementPosition(el,cx,cy,width,height);
@@ -1327,16 +1355,20 @@ window.appJScode=function(){
           this.el.height=Math.round(h*dpr);
           var left, right, bottom, top;
           left=0; right=0; top=0; bottom=0;
-          if(w*this.height>=h*this.width){
-            var s=h/this.height;
-            var realW=this.width*s;
-            left=(w-realW)/2;
-            w=realW;
+          if(this.sizePolicy==="stretch"){
+            
           }else{
-            var s=w/this.width;
-            var realH=this.height*s;
-            top=(h-realH)/2;
-            h=realH;
+            if(w*this.height>=h*this.width){
+              var s=h/this.height;
+              var realW=this.width*s;
+              left=(w-realW)/2;
+              w=realW;
+            }else{
+              var s=w/this.width;
+              var realH=this.height*s;
+              top=(h-realH)/2;
+              h=realH;
+            }
           }
           this.pixelLeft=left;
           this.pixelTop=top;
@@ -1773,75 +1805,115 @@ window.appJScode=function(){
         return this.getCanvasY(0);
       },
       getCanvasX: function(x){
-        if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
-          var s=this.pixelHeight/this.height;
-          return (x-this.pixelLeft-(this.pixelWidth-s*this.width)/2)/(s)-this.origin.x;
-        }else{
+        if(this.sizePolicy==="stretch"){
           var s=this.pixelWidth/this.width;
           return (x-this.pixelLeft)/(s)-this.origin.x;
+        }else{ 
+          if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
+            var s=this.pixelHeight/this.height;
+            return (x-this.pixelLeft-(this.pixelWidth-s*this.width)/2)/(s)-this.origin.x;
+          }else{
+            var s=this.pixelWidth/this.width;
+            return (x-this.pixelLeft)/(s)-this.origin.x;
+          }
         }
       },
       getCanvasY: function(y){
-        if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
+        if(this.sizePolicy==="stretch"){
           var s=this.pixelHeight/this.height;
           return -(y-this.pixelTop-this.pixelHeight)/s-this.origin.y;
         }else{
-          var s=this.pixelWidth/this.width;
-          return (-(y-this.pixelTop-this.pixelHeight)-(this.pixelHeight-s*this.height)/2)/s-this.origin.y;
+          if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
+            var s=this.pixelHeight/this.height;
+            return -(y-this.pixelTop-this.pixelHeight)/s-this.origin.y;
+          }else{
+            var s=this.pixelWidth/this.width;
+            return (-(y-this.pixelTop-this.pixelHeight)-(this.pixelHeight-s*this.height)/2)/s-this.origin.y;
+          }
         }
       },
       getCanvasWidth: function(w){
-        if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
-          var s=this.pixelHeight/this.height;
-          return (w/s);
-        }else{
+        if(this.sizePolicy==="stretch"){
           var s=this.pixelWidth/this.width;
           return (w/s);
+        }else{
+          if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
+            var s=this.pixelHeight/this.height;
+            return (w/s);
+          }else{
+            var s=this.pixelWidth/this.width;
+            return (w/s);
+          }
         }
       },
       getCanvasHeight: function(h){
-        if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
+        if(this.sizePolicy==="stretch"){
           var s=this.pixelHeight/this.height;
           return (h/s);
         }else{
-          var s=this.pixelWidth/this.width;
-          return (h/s);
+          if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
+            var s=this.pixelHeight/this.height;
+            return (h/s);
+          }else{
+            var s=this.pixelWidth/this.width;
+            return (h/s);
+          }
         }
       },
       getRawX: function(x){
-        if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
-          var s=this.pixelHeight/this.height;
-          return (s*(x+this.origin.x)+this.pixelLeft+(this.pixelWidth-s*this.width)/2);
-        }else{
+        if(this.sizePolicy==="stretch"){
           var s=this.pixelWidth/this.width;
           return (s*(x+this.origin.x)+this.pixelLeft);
+        }else{
+          if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
+            var s=this.pixelHeight/this.height;
+            return (s*(x+this.origin.x)+this.pixelLeft+(this.pixelWidth-s*this.width)/2);
+          }else{
+            var s=this.pixelWidth/this.width;
+            return (s*(x+this.origin.x)+this.pixelLeft);
+          }
         }
       },
       getRawY: function(y){
-        if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
+        if(this.sizePolicy==="stretch"){
           var s=this.pixelHeight/this.height;
           return (this.pixelHeight+this.pixelTop-s*(y+this.origin.y));
         }else{
-          var s=this.pixelWidth/this.width;
-          return (this.pixelHeight+this.pixelTop-(s*(y+this.origin.y)+(this.pixelHeight-s*this.height)/2));
+          if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
+            var s=this.pixelHeight/this.height;
+            return (this.pixelHeight+this.pixelTop-s*(y+this.origin.y));
+          }else{
+            var s=this.pixelWidth/this.width;
+            return (this.pixelHeight+this.pixelTop-(s*(y+this.origin.y)+(this.pixelHeight-s*this.height)/2));
+          }
         }
       },
       getRawWidth: function(w){
-        if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
-          var s=this.pixelHeight/this.height;
-          return (s*w);
-        }else{
+        if(this.sizePolicy==="stretch"){
           var s=this.pixelWidth/this.width;
           return (s*w);
+        }else{
+          if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
+            var s=this.pixelHeight/this.height;
+            return (s*w);
+          }else{
+            var s=this.pixelWidth/this.width;
+            return (s*w);
+          }
         }
       },
       getRawHeight: function(h){
-        if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
+        if(this.sizePolicy==="stretch"){
           var s=this.pixelHeight/this.height;
           return (s*h);
         }else{
-          var s=this.pixelWidth/this.width;
-          return (s*h);
+          if(this.pixelWidth*this.height>=this.pixelHeight*this.width){
+            var s=this.pixelHeight/this.height;
+            return (s*h);
+          }else{
+            var s=this.pixelWidth/this.width;
+            return (s*h);
+          }
         }
       },
       getX: function(x,dontRound){
@@ -2335,369 +2407,6 @@ window.appJScode=function(){
         }
       }
     };
-  
-  
-    /**Gamepad: */
-    $App.Gamepad=function(){
-      this.element=null;
-      this.multiaxis=true;
-      this.buttons={
-        A: null, B: null, X: null, Y: null, E: null, F: null
-      };
-      this.joystick=null;
-      this.keycodes={
-        left: 37,
-        right: 39,
-        down: 40,
-        up: 38,
-        A: 65,
-        B: 66,
-        E: 69,
-        F: 70,
-        X: 88,
-        Y: 89
-      };
-      this.physicalButtons={
-        buttons: {
-          A: {index: 1, down: false},
-          B: {index: 0, down: false},
-          E: {index: 9, down: false},
-          F: {index: 8, down: false},
-          X: {index: 2, down: false},
-          Y: {index: 3, down: false},
-        },
-        dirs: {
-          left: {axis: 0, low: true, down: false},
-          right: {axis: 0, low: false, down: false},
-          up: {axis: 1, low: true, down: false},
-          down: {axis: 1, low: false, down: false}
-        }
-      };
-      //[{index: 1, name: "A"},{index: 2,name: "B"},{index: 0,name: "X"},{index: 3,name: "Y"},{index: 9,name: "E"},{index:8,name:"F"}];
-      this.connectedGamepadIndex=-1;
-    };  
-    
-    $App.Gamepad.prototype={
-      resetAllButtons: function(){
-        this.updateButtons(false,false,false,false,false,false);
-        this.updateJoystickDirection(false,false,false,false);
-      },
-      updateButtons: function(ADown,BDown,XDown,YDown,EDown,FDown){
-        var down={
-          A: ADown, B: BDown, X: XDown, Y: YDown, E: EDown, F: FDown
-        };
-        for(var a in this.buttons){
-          var b=this.buttons[a];
-          if(b && b.el){
-            if(down[a]){
-              b.el.style.opacity="0.3";
-            }else{
-              b.el.style.opacity="0.6";
-            }
-          }
-        }
-      },
-      updateJoystickDirection: function(leftDown,rightDown,upDown,downDown){
-        var dir=undefined;
-        if(upDown && !downDown){
-          dir="N";
-        }
-        if(!upDown && downDown){
-          dir="S";
-        }
-        if(!dir || this.multiaxis){
-          if(!dir) dir="";
-          if(leftDown && !rightDown){
-            dir+="W";
-          }
-          if(!leftDown && rightDown){
-            dir+="E";
-          }
-        }
-        if(this.joystick){
-          this.joystick.setDir(dir);
-        }
-      },
-      getMappedButton: function(keycode){
-        for(var a in this.keycodes){
-          if(this.keycodes[a]===keycode){
-            return a;
-          }
-        }
-        return null;
-      },
-      isButtonPressed: function(button){
-        if(this.connectedGamepadIndex>=0){
-          let buttonState=this.physicalButtons.buttons[button];
-          if(buttonState!==undefined){
-            return buttonState.down;
-          }
-          buttonState=this.physicalButtons.dirs[button];
-          if(!this.multiaxis && buttonState.axis===0 && (this.physicalButtons.dirs.up.down||this.physicalButtons.dirs.down.down)){
-            return false;
-          }
-          return buttonState.down;
-        }else{
-          if($App.keyboard.down[this.keycodes[button]]){
-            if(!this.multiaxis){
-              if(button==="left"||button==="right"){
-                if($App.keyboard.down[this.keycodes["Up"]] || $App.keyboard.down[this.keycodes["Down"]]){
-                  return false;
-                }
-              }
-            }
-            return true;
-          }
-          var b=this.buttons[button];
-          if(b){
-            return b.down;
-          }
-          var x=this.joystick.GetX();
-          var y=this.joystick.GetY();
-          var threshold=40;
-          if(!this.multiaxis){
-            /*wenn multiaxis false ist, dann wird nur die beste Richtung gewertet*/
-            var bestDir=null;
-            var bestDirValue;
-            if(Math.abs(x)>Math.abs(y)){
-              bestDir=x>0? "right": "left";
-              bestDirValue=x;
-            }else{
-              bestDir=y>0? "up": "down";
-              bestDirValue=y;
-            }
-            return button===bestDir && Math.abs(bestDirValue)>threshold;
-          }
-          if(button==="left"){
-            return (x<-threshold);
-          }
-          if(button==="right"){
-            return (x>threshold);
-          }
-          if(button==="up"){
-            return (y>threshold);
-          }
-          if(button==="down"){
-            return (y<-threshold);
-          }
-        }
-      },
-      setButtonKey: function(button,key){
-        let b=this.buttons[button];
-        if(b){
-          if(!key){
-            b.el.style.display="none";
-            this.keycodes[button]=null;
-            return;
-          }else{
-            b.el.style.display="inline-block";
-          }
-        }
-        if(typeof key==="string"){
-          key=key.codePointAt(0);
-        }
-        this.keycodes[button]=key;
-      },
-      setVisible: function(v){
-        if(v){
-          this.create();
-        }
-        v=v? "inline-block":"none";
-        this.joystick.element.style.display=v;
-        for(let a in this.buttons){
-          if(this.keycodes[a]!==null){
-            let b=this.buttons[a];
-            b.el.style.display=v;
-          }
-        }
-      },
-      connectPhysicalGamepad: function(gp){
-        this.connectedGamepadIndex=gp.index;
-      },
-      disconnectPhysicalGamepad: function(){
-        this.connectedGamepadIndex=-1;
-      },
-      updatePhysicalGamepad: function(){
-        if(this.connectedGamepadIndex<0){
-          return;
-        }
-        let gp=navigator.getGamepads()[this.connectedGamepadIndex];
-        for(let a in this.physicalButtons.buttons){
-          let buttonState=this.physicalButtons.buttons[a];
-          let button=gp.buttons[buttonState.index];
-          let v;
-          if(typeof button==="number"){
-            v=button>0.5;
-          }else{
-            v=button.pressed;
-          }
-          if(!$App.debug.paused && v && !buttonState.down && window.onGamepadDown){
-            try{
-              window.onGamepadDown(a);
-            }catch(e){
-              $App.handleException(e);
-            }
-          }else if(!$App.debug.paused && !v && buttonState.down && window.onGamepadUp){
-            try{
-              window.onGamepadUp(a);
-            }catch(e){
-              $App.handleException(e);
-            }
-          }
-          buttonState.down=v;
-        }
-        for(let a in this.physicalButtons.dirs){
-          let buttonState=this.physicalButtons.dirs[a];
-          let axis=gp.axes[buttonState.axis];
-          let v;
-          if(buttonState.low){
-            v=axis<-0.2;
-          }else{
-            v=axis>0.2;
-          }
-          if(!$App.debug.paused && v && !buttonState.down && window.onGamepadDown){
-            try{
-              window.onGamepadDown(a);
-            }catch(e){
-              $App.handleException(e);
-            }
-          }else if(!$App.debug.paused && !v && buttonState.down && window.onGamepadUp){
-            try{
-              window.onGamepadUp(a);
-            }catch(e){
-              $App.handleException(e);
-            }
-          }
-          buttonState.down=v;
-        }
-      },
-      create: function(){
-        if(this.element) return;
-        var div=document.createElement("div");
-        this.element=div;
-        div.style="position: absolute; left: 0.5cm; bottom: 0.5cm; width: 2cm; height: 2cm; z-index: 1000;";
-        div.onmouseleave=function(){
-    
-        };
-        $App.body.root.appendChild(div);
-        for(var a in this.buttons){
-          let b=this.buttons[a];
-          b=document.createElement("div");
-          b.style="font-family: sans-serif;font-weight:bold;border-radius: 2000px; width: 1cm; height: 1cm; position: absolute; z-index: 10; border: 1pt solid black;text-align: center; line-height: 1cm; user-select: none;cursor: pointer;opacity: 0.6";
-          b.className="gamepad-button";
-          b.textContent=a;
-          this.buttons[a]={
-            el: b,
-            name: a,
-            down: false
-          };
-          b.button=this.buttons[a];
-          b.onmousedown=function(ev){
-            if(ev) ev.preventDefault();
-            $App.mouse.down=true;
-            this.button.down=true;
-            this.button.el.style.opacity="0.5";
-            if(!$App.debug.paused && window.onGamepadDown){
-              try{
-                window.onGamepadDown(this.button.name);
-              }catch(e){
-                $App.handleException(e);
-              }
-            }
-          };
-          b.onmouseup=function(ev){
-            if(ev) ev.preventDefault();
-            $App.mouse.down=false;
-            this.button.down=false;
-            this.button.el.style.opacity="1";
-            if(!$App.debug.paused && window.onGamepadUp){
-              try{
-                window.onGamepadUp(this.button.name);
-              }catch(e){
-                $App.handleException(e);
-              }
-            }
-          };
-          b.addEventListener("touchstart",b.onmousedown);
-          b.addEventListener("touchend",b.onmouseup);
-          b.onmouseover=function(ev){
-            if(ev) ev.preventDefault();
-            if($App.mouse.down){
-              this.onmousedown();
-            }
-          },
-          b.onmouseout=function(ev){
-            if(ev) ev.preventDefault();
-            if(this.button.down){
-              this.button.down=false;
-              this.button.el.style.opacity="1";
-              if(!$App.debug.paused && window.onGamepadUp){
-                try{
-                  window.onGamepadUp(this.button.name);
-                }catch(e){
-                  $App.handleException(e);
-                }
-              }
-            }
-          };
-          document.body.addEventListener('touchmove', (ev)=>{
-            for(let i=0;i<ev.touches.length;i++){
-              var touch = ev.touches[i];
-              var touches=b===document.elementFromPoint(touch.pageX,touch.pageY);
-              if(touches) break; 
-            }
-            if(b.button.down){
-              if(!touches){
-                b.onmouseout();
-              }
-            }else{
-              if(touches){
-                b.onmousedown();
-              }
-            }
-          }, false);
-          $App.body.root.appendChild(b);
-        }
-        this.joystick=new $App.$JoyStick(div,function(){
-          if(!$App.debug.paused && window.onGamepadDown){
-            try{
-              window.onGamepadDown(null);
-            }catch(e){
-              $App.handleException(e);
-            }
-          }
-        }, function(){
-          if(!$App.debug.paused && window.onGamepadUp){
-            try{
-              window.onGamepadUp(null);
-            }catch(e){
-              $App.handleException(e);
-            }
-          }
-        });
-        this.joystick.element=div;
-        this.buttons.A.el.style.right="0.1cm";
-        this.buttons.A.el.style.bottom="0.75cm";
-        this.buttons.A.el.style.backgroundColor="red";
-        this.buttons.B.el.style.right="1.25cm";
-        this.buttons.B.el.style.bottom="0.5cm";
-        this.buttons.B.el.style.backgroundColor="yellow";
-        this.buttons.X.el.style.right="0.1cm";
-        this.buttons.X.el.style.bottom="2cm";
-        this.buttons.X.el.style.backgroundColor="blue";
-        this.buttons.X.el.style.color="white";
-        this.buttons.Y.el.style.right="1.25cm";
-        this.buttons.Y.el.style.bottom="1.75cm";
-        this.buttons.Y.el.style.backgroundColor="lime";
-        this.buttons.E.el.style.right="0.1cm";
-        this.buttons.E.el.style.bottom="3.25cm";
-        this.buttons.E.el.style.backgroundColor="magenta";
-        this.buttons.F.el.style.right="1.25cm";
-        this.buttons.F.el.style.bottom="3cm";
-        this.buttons.F.el.style.backgroundColor="cyan";
-      }
-    }
-    $App.gamepad=new $App.Gamepad()
     
     /*****Array */
     $App.Array=function(type, dim, values){
@@ -2817,82 +2526,88 @@ window.appJScode=function(){
       },
     };
     
-    
-    
-    
-    
     /**Console */
     $App.Console=function(){
+      this.rightReducedWidth="70%";
+      this.leftZIndex=100;
       this.element=document.createElement("div");
-      this.element.style="overscroll-behavior: none; width: 100%; height: 100%; background-color: #222222; color: white";
+      this.element.onclick=()=>{
+        if(this.readResolve){
+          this.readResolve(0);
+          this.element.focus();
+          return;
+        }
+        if(!this.readInput) return;
+        this.readInput.focus();
+      };
+      this.element.style="font-family: monospace; font-size: 1rem; overscroll-behavior: none; width: 100%; height: 100%; background-color: #222222; color: white";
       this.element.className="console";
       this.items={};
       this.localItems={};
       this.watchedVariables=[];
       this.visible=false;
-      this.variablesDiv=document.createElement("div");
-      this.variablesDiv.style="height: calc(70% - 0.4cm); overflow: auto";
-      this.element.appendChild(this.variablesDiv);
+      this.readResolve=null;
       this.outputDiv=document.createElement("div");
-      this.outputDiv.style="height: calc(30% - 0.4cm); overflow: auto";
+      this.outputDiv.style="height: 100%; overflow: auto;";
       this.element.appendChild(this.outputDiv);
-      this.input=document.createElement("input");
-      this.input.style="width: 100%; height: 0.8cm; background-color: #222222; outline: none;border: none; color: white; box-sizing: border-box;";
-      this.input.currentPosition=-1;
-      this.input.spellcheck=false;
-      this.input.autocapitalize="none";
-      this.input.autocorrect="off";
-      this.input.placeholder="gib einen Befehl ein...";
-      this.input.onchange=async ()=>{
-        var v=this.input.value;
-        if(v.trim().length===0) return;
-        if(!(this.history.length>0 && this.history[this.history.length-1]===v)){
-          this.history.push(v);
-          this.saveHistory();
-        }
-        //var w;
-        let func;
-        if(window.$main){
-          func="with($main){return "+v+";}";
-          //eval("with($main){w="+v+"}");
-        }else{
-          func="return "+v+";";
-          //eval("w="+v);
-        }
-        func=Function("return (async function anonym(){"+func+"}());");
-        var w=await func();
-        console.log(">",v);
-        if(w!==undefined){
-          console.log("<",w);
-        }
-        this.input.value="";
-        this.input.currentPosition=-1;
-      };
-      this.input.onkeydown=(ev)=>{
-        ev.stopPropagation();
-        if(ev.keyCode===40 || ev.keyCode===38 || ev.keyCode===13){
-          if(ev.keyCode===13){
-            this.input.onchange();
-          }else if(ev.keyCode===38){
+      // this.input=document.createElement("input");
+      // this.input.style="width: 100%; height: 0.8cm; background-color: #222222; outline: none;border: none; color: white; box-sizing: border-box;";
+      // this.input.currentPosition=-1;
+      // this.input.spellcheck=false;
+      // this.input.autocapitalize="none";
+      // this.input.autocorrect="off";
+      // this.input.placeholder="gib einen Befehl ein...";
+      // this.input.onchange=async ()=>{
+      //   var v=this.input.value;
+      //   if(v.trim().length===0) return;
+      //   if(!(this.history.length>0 && this.history[this.history.length-1]===v)){
+      //     this.history.push(v);
+      //     this.saveHistory();
+      //   }
+      //   //var w;
+      //   let func;
+      //   if(window.$main){
+      //     func="with($main){return "+v+";}";
+      //     //eval("with($main){w="+v+"}");
+      //   }else{
+      //     func="return "+v+";";
+      //     //eval("w="+v);
+      //   }
+      //   func=Function("return (async function anonym(){"+func+"}());");
+      //   var w=await func();
+      //   console.log(">",v);
+      //   if(w!==undefined){
+      //     console.log("<",w);
+      //   }
+      //   this.input.value="";
+      //   this.input.currentPosition=-1;
+      // };
+      // this.input.onkeydown=(ev)=>{
+      //   ev.stopPropagation();
+      //   if(ev.keyCode===40 || ev.keyCode===38 || ev.keyCode===13){
+      //     if(ev.keyCode===13){
+      //       this.input.onchange();
+      //     }else if(ev.keyCode===38){
             
-            if(this.input.currentPosition<this.history.length-1){
-              this.input.currentPosition++;
-            }
-          }else if(ev.keyCode===40){
-            if(this.input.currentPosition>=0){
-              this.input.currentPosition--;
-            }
-          }
-          if(this.input.currentPosition>=0){
-            this.input.value=this.history[this.history.length-this.input.currentPosition-1];
-          }else{
-            this.input.value="";
-          }
-        }
-      };
-      this.element.appendChild(this.input);
-      this.localVariables=null;
-      this.loadHistory();
+      //       if(this.input.currentPosition<this.history.length-1){
+      //         this.input.currentPosition++;
+      //       }
+      //     }else if(ev.keyCode===40){
+      //       if(this.input.currentPosition>=0){
+      //         this.input.currentPosition--;
+      //       }
+      //     }
+      //     if(this.input.currentPosition>=0){
+      //       this.input.value=this.history[this.history.length-this.input.currentPosition-1];
+      //     }else{
+      //       this.input.value="";
+      //     }
+      //   }
+      // };
+      // this.element.appendChild(this.input);
+      // this.localVariables=null;
+      // this.loadHistory();
+      this.nextLine();
     };
     
     $App.Console.prototype={
@@ -2920,12 +2635,20 @@ window.appJScode=function(){
       addWatchedVariables: function(arrayWithVarNames){
         this.watchedVariables=this.watchedVariables.concat(arrayWithVarNames);
       },
+      nextLine: function(){
+        this.currentLineDiv=document.createElement("div");
+        this.currentLineDiv.style.whiteSpace="pre-wrap";
+        this.outputDiv.appendChild(this.currentLineDiv);
+        this.outputDiv.scrollTop=this.outputDiv.scrollHeight;
+        this.outputDiv.scrollLeft=0;
+      },
+      /**println */
       log: function(){
-        let div=document.createElement("div");
-        div.style.whiteSpace="pre";
+        let div=this.currentLineDiv;
         let args=[]
         for(let i=0;i<arguments.length;i++){
           let obj=arguments[i];
+          if(obj===undefined) obj="&nbsp;";
           let item;
           if(typeof obj==="object"){
             item=$App.console.createConsoleItem(null,false,true);
@@ -2933,32 +2656,101 @@ window.appJScode=function(){
             item=item.element;
           }else{
             item=document.createElement("span");
-            item.style.marginRight="1em";
+            //item.style.marginRight="1em";
             item.innerHTML=obj;
           }
           div.appendChild(item);
         }
-        this.outputDiv.appendChild(div);
-        this.outputDiv.scrollTop=this.outputDiv.scrollHeight;
+        this.nextLine();
+        //this.outputDiv.appendChild(div);
+      },
+      print: function(){
+        let div=this.currentLineDiv;
+        for(let i=0;i<arguments.length;i++){
+          let obj=arguments[i];
+          if(obj===undefined) obj="&nbsp;";
+          let item;
+          if(typeof obj==="object"){
+            item=$App.console.createConsoleItem(null,false,true);
+            item.update(obj);
+            item=item.element;
+          }else{
+            item=document.createElement("span");
+            //item.style.marginRight="1em";
+            item.innerHTML=obj;
+          }
+          div.appendChild(item);
+        }
+        //this.outputDiv.appendChild(div);
+        
+      },
+      read: async function(){
+        let p=new Promise((resolve,reject)=>{
+          this.readResolve=resolve;
+        });
+        let res=await p;
+        this.readResolve=null;
+        return res;
+      },
+      readLine: async function(prompt){
+        if(prompt) this.print(prompt);
+        let inp=document.createElement("input");
+        this.readInput=inp;
+        inp.type="text";
+        inp.style="width: 2em; background-color: #222222; outline: none;border: none; color: white; box-sizing: border-box;font-family: monospace; padding: 0; margin: 0;";
+        inp.currentPosition=-1;
+        inp.spellcheck=false;
+        inp.autocapitalize="none";
+        inp.autocorrect="off";
+        this.currentLineDiv.appendChild(inp);
+        setTimeout(()=>{
+          inp.focus();
+        },10);
+        inp.oninput=function(){
+          this.style.width=this.value.length+2+"em";
+        };
+        inp.onchange=function(){
+          let e=document.createElement("span");
+          let v=this.value;
+          e.textContent=v;
+          this.replaceWith(e);
+          this.resolve(v);
+        };
+        let p=new Promise((resolve,reject)=>{
+          inp.resolve=resolve;
+        });
+        let q=await p;
+        this.nextLine();
+        return q;
       },
       clear: function(){
-        this.element.removeChild(this.outputDiv);
-        this.outputDiv=document.createElement("div");
-        this.outputDiv.style="height: calc(30% - 0.4cm); overflow: auto";
-        this.element.insertBefore(this.outputDiv,this.input);
+        while(this.outputDiv.firstChild){
+          this.outputDiv.removeChild(this.outputDiv.firstChild);
+        }
+        this.log("");
       },
-      update: function(sharedVariables){
-        if($App.language==="js"){
-          this.updateFromObject(window,sharedVariables);
-        }else if($App.language==="java"){
-          this.updateFromObject($App.debug.object? $App.debug.object : $main,sharedVariables);
+      update: function(){
+        //console.log("update global 1");
+        if(window.parent!==window && !$App.debug.paused){
+          let data=$getMainData();
+          if(data){
+            window.parent.postMessage({
+              type: "update-scope-main",
+              data
+            },"*");
+          }
         }
-        if(window.parent!==window && sharedVariables){
-          window.parent.postMessage({
-            type: "update-shared-variables",
-            sharedVariables: sharedVariables
-          },"*");
-        }
+        // if($App.language==="js"){
+        //   this.updateFromObject(window,sharedVariables);
+        // }else if($App.language==="java"){
+        //   this.updateFromObject($App.debug.object? $App.debug.object : $main,sharedVariables);
+        // }
+        // if(window.parent!==window && sharedVariables){
+        //   window.parent.postMessage({
+        //     type: "update-shared-variables",
+        //     sharedVariables: sharedVariables
+        //   },"*");
+        // }
       },
       updateLocalVariables: function(variables){
         this.localVariables=variables;
@@ -3048,6 +2840,8 @@ window.appJScode=function(){
             v="undefiniert";
           }else if(obj===null){
             v="null";
+          }else if(obj instanceof $Char){
+            v="'"+obj.char+"' ["+obj.int+"]";
           }else if(typeof obj==="object"){
             this.button.style.backgroundColor="gray";
             this.button.textContent=this.expanded? "-": "+";
@@ -3150,22 +2944,47 @@ window.appJScode=function(){
         }
         this.localItems=newItems;
       },
+      show: function(){
+        this.setVisible(true);
+      },
+      hide: function(){
+        this.setVisible(false);
+      },
+      hideIfUI: function(){
+        this.rightReducedWidth="100%";
+        this.leftZIndex=0;
+        this.adaptSize();
+      },
       setVisible: function(v){
+        this.rightReducedWidth="70%";
+        this.leftZIndex=100;
         this.visible=v;
         let parent=this.element.parentElement;
         if(parent){
           parent.style.display=v? "block": "none";
-          if(v){
-            parent.nextElementSibling.style.width="70%";
+          this.adaptSize();
+        }
+      },
+      adaptSize: function(){
+        this.element.style.zIndex=this.leftZIndex;
+        let parent=this.element.parentElement;
+        if(parent){
+          let right=parent.nextElementSibling;
+          if(right.$canvas.isEmpty()){
+            right.style.width="0%";
+            parent.style.width="100%";
           }else{
-            parent.nextElementSibling.style.width="100%";
+            parent.style.width="30%";
+            if(this.visible){
+              right.style.width=this.rightReducedWidth;
+            }else{
+              right.style.width="100%";
+            }
           }
           setTimeout(function(){
             $App.onResize(true);
           },10);
         }
-        
-        
       }
     };
     
@@ -3652,7 +3471,6 @@ window.appJScode=function(){
     $App.prompt=window.prompt;
   
     $App.handleModalDialog=function(){
-      $App.gamepad.resetAllButtons();
       $App.mouse.down=false;
       $App.keyboard.reset();
     };
@@ -4232,213 +4050,6 @@ window.appJScode=function(){
       {name: 'year', type: 'int', info: 'Die aktuelle Jahreszahl (vierstellig).'}
     ], "everywhere");
     
-    $App.addObject('gamepad',false,{
-      get left(){
-        return $App.gamepad.isButtonPressed("left");
-      },
-      get up(){
-        return $App.gamepad.isButtonPressed("up");
-      },
-      get right(){
-        return $App.gamepad.isButtonPressed("right");
-      },
-      get down(){
-        return $App.gamepad.isButtonPressed("down");
-      },
-      get X(){
-        return $App.gamepad.isButtonPressed("X");
-      },
-      get Y(){
-        return $App.gamepad.isButtonPressed("Y");
-      },
-      get A(){
-        return $App.gamepad.isButtonPressed("A");
-      },
-      get B(){
-        return $App.gamepad.isButtonPressed("B");
-      },
-      get E(){
-        return $App.gamepad.isButtonPressed("E");
-      },
-      get F(){
-        return $App.gamepad.isButtonPressed("F");
-      },
-      set left(key){
-        $App.gamepad.setButtonKey("left",key);
-      },
-      set right(key){
-        $App.gamepad.setButtonKey("right",key);
-      },
-      set up(key){
-        $App.gamepad.setButtonKey("up",key);
-      },
-      set down(key){
-        $App.gamepad.setButtonKey("down",key);
-      },
-      set X(key){
-        $App.gamepad.setButtonKey("X",key);
-      },
-      set Y(key){
-        $App.gamepad.setButtonKey("Y",key);
-      },
-      set A(key){
-        $App.gamepad.setButtonKey("A",key);
-      },
-      set B(key){
-        $App.gamepad.setButtonKey("B",key);
-      },
-      set E(key){
-        $App.gamepad.setButtonKey("E",key);
-      },
-      set F(key){
-        $App.gamepad.setButtonKey("F",key);
-      },
-      get multiaxis(){
-        return $App.gamepad.multiaxis;
-      },
-      set multiaxis(v){
-        $App.gamepad.multiaxis=v;
-      },
-      show: function(){
-        $App.gamepad.setVisible(true);
-      },
-      hide: function(){
-        $App.gamepad.setVisible(false);
-      },
-    },'Erlaubt die Benutzung des Gamepads.',
-    [
-      {
-        name: 'show',
-        returnType: null,
-        info: 'Zeigt das Gamepad an.'
-      }, 
-      {
-        name: 'hide',
-        returnType: null,
-        info: 'Verbirgt das Gamepad.'
-      },
-      {
-        name: 'left',
-        type: 'boolean',
-        info: 'Wird gerade der Joystick nach links bewegt?',
-      },
-      {
-        name: 'setLeft',
-        language: "java",
-        returnType: null,
-        args: [{name: 'keycode', type: 'int', info: 'Keycode der Taste, die mit "Links" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "Steuerkreuz - Links" verbunden werden soll.',
-      },
-      {
-        name: 'right',
-        type: 'boolean',
-        info: 'Wird gerade der Joystick nach rechts bewegt?'
-      },
-      {
-        name: 'setRight',
-        language: "java",
-        returnType: null,
-        args: [{name: 'keycode', type: 'int', info: 'Keycode der Taste, die mit "Rechts" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "Steuerkreuz - Rechts" verbunden werden soll.',
-      }, 
-      {
-        name: 'up',
-        type: 'boolean',
-        info: 'Wird gerade der Joystick nach oben bewegt?'
-      },
-      {
-        name: 'setUp',
-        language: "java",
-        returnType: null,
-        args: [{name: 'keycode', type: 'int', info: 'Keycode der Taste, die mit "Oben" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "Steuerkreuz - Oben" verbunden werden soll.',
-      },
-      {
-        name: 'down',
-        type: 'boolean',
-        info: 'Wird gerade der Joystick nach unten bewegt?'
-      }, 
-      {
-        name: 'setDown',
-        language: "java",
-        returnType: null,
-        args: [{name: 'keycode', type: 'int', info: 'Keycode der Taste, die mit "Unten" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "Steuerkreuz - Unten" verbunden werden soll.',
-      },
-      {
-        name: 'A',
-        type: 'boolean',
-        info: 'Wird gerade die Taste "A" gedrueckt?'
-      }, 
-      {
-        name: 'setA',
-        language: "java",
-        returnType: null,
-        args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "A" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "A" verbunden werden soll.',
-      },
-      {
-        name: 'B',
-        type: 'boolean',
-        info: 'Wird gerade die Taste "B" gedrueckt?'
-      },
-      {
-        name: 'setB',
-        language: "java",
-        returnType: null,
-        args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "B" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "B" verbunden werden soll.',
-      }, 
-      {
-        name: 'X',
-        type: 'boolean',
-        info: 'Wird gerade die Taste "X" gedrueckt?'
-      }, 
-      {
-        name: 'setX',
-        language: "java",
-        returnType: null,
-        args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "X" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "X" verbunden werden soll.',
-      },
-      {
-        name: 'Y',
-        type: 'boolean',
-        info: 'Wird gerade die Taste "Y" gedrueckt?'
-      }, 
-      {
-        name: 'setY',
-        language: "java",
-        returnType: null,
-        args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "Y" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "Y" verbunden werden soll.',
-      },
-      {
-        name: 'E',
-        type: 'boolean',
-        info: 'Wird gerade die Taste "E" gedrueckt?'
-      }, 
-      {
-        name: 'setE',
-        language: "java",
-        returnType: null,
-        args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "E" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "E" verbunden werden soll.',
-      },
-      {
-        name: 'F',
-        type: 'boolean',
-        info: 'Wird gerade die Taste "F" gedrueckt?'
-      },
-      {
-        name: 'setF',
-        language: "java",
-        returnType: null,
-        args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "F" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "F" verbunden werden soll.',
-      },
-    ],'Durch Zuweisen eines Zeichens zu einer Taste kannst du festlegen, welche Taste zu welchem Button gehoert:<code><pre>function onStart(){\n\tgamepad.show();\n\t//Bewegung mit WASD:\n\tgamepad.up = "W";\n\tgamepad.down = "S";\n\tgamepad.left = "A";\n\tgamepad.right = "D";\n\t//Buttons E und F ausblenden:\n\tgamepad.E = null;\n\tgamepad.F = null;\n\t//Button B durch Leertaste:\n\tgamepad.B = " ";\n}</pre></code>');
-    
     $App.addObject('path',false,{
       begin: function (x,y){
         $App.canvas.beginPath(x,y);
@@ -4559,7 +4170,7 @@ window.appJScode=function(){
         }
         b.noAbsolutePosition=true;
         b.canvas=canvas;
-        var methods=["setSize","setMirrored","setRotation","setOpacity","setFontsize","setFont","setLinewidth","write","drawCircle","fillCircle","drawRect","fillRect","drawLine","beginPath","lineTo","closePath","setColor","drawImage","drawImagePart","rotate","translate","scale","addElement"];
+        var methods=["setSize","setMirrored","setRotation","setOpacity","setFontsize","setFont","setLinewidth","write","drawCircle","fillCircle","drawRect","fillRect","drawLine","beginPath","lineTo","closePath","setColor","drawImage","drawImagePart","rotate","translate","scale","addElement","setSizePolicy","getSizePolicy","setAxisX","setAxisY"];
         for(var i=0;i<methods.length;i++){
           let m=methods[i];
           b[m]=function(){
@@ -4567,7 +4178,7 @@ window.appJScode=function(){
           }
         }
         $App.resizeObserver.observe(b);
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         //canvas.resize();
         return b;
       },
@@ -4575,51 +4186,6 @@ window.appJScode=function(){
         var b=$App.createElement("div");
         b.className="panel";
         b.style.flexDirection="column";
-        if(!template){
-          b.noAbsolutePosition=true;
-          b.style.overflow="auto";
-        }else{
-          b.noAbsolutePosition=false;
-          template+="";
-        }
-        
-        if(!b.noAbsolutePosition){
-          var teile=template.split("/");
-          for(var i=0;i<teile.length;i++){
-            var t=teile[i].trim();
-            if(/^\d+$/.test(t)){
-              teile[i]="repeat("+t+",minmax(0,1fr))";
-              
-            }
-          }
-          if(teile.length===2){
-            b.style.gridTemplateRows=teile[0];
-            b.style.gridTemplateColumns=teile[1];
-          }else{
-            b.style.gridTemplateColumns=teile[0];
-          }
-          b.style.gridAutoRows="minmax(0,1fr)";
-          b.style.display="grid"; 
-          b.style.alignItems="stretch";
-          b.style.justifyItems="stretch";
-          b.style.gridColumnGap=0;
-          b.style.gridRowGap=0;
-          b.style.columnGap=0;
-          b.style.rowGap=0;
-          b.style.overflow="auto";
-          //$App.resizeObserver.observe(b);
-          // b.resize=function(w,h){
-          //   for(var i=0;i<this.childNodes.length;i++){
-          //     var c=this.childNodes[i];
-          //     if(c.resize){
-          //       c.resize();
-          //     }
-          //     if(c.updatePosition){
-          //       c.updatePosition();
-          //     }
-          //   }
-          // }
-        }
         b.add=function(c,index){
           //if(!this.noAbsolutePosition){
             c.style.position="relative";
@@ -4628,8 +4194,8 @@ window.appJScode=function(){
             c.style.left="0px";
             c.style.top="0px";
           //}
-          if(c.appJSData.parent){
-            c.appJSData.parent.removeChild(c);
+          if(c.parentNode){
+            c.parentNode.removeChild(c);
           }
           c.appJSData.parent=this;
           if((index===0 || index>0) && index<this.childNodes.length){
@@ -4646,7 +4212,43 @@ window.appJScode=function(){
           this.removeChild(c);
           $App.canvas.addElement(c,c.appJSData.cx,c.appJSData.cy,c.appJSData.width,c.appJSData.height,c.appJSData.align);
         }
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
+        b.setTemplate=function(template){
+          if(!template){
+            b.noAbsolutePosition=true;
+            b.style.overflow="auto";
+          }else{
+            b.noAbsolutePosition=false;
+            template+="";
+          }
+          
+          if(!b.noAbsolutePosition){
+            var teile=template.split("/");
+            for(var i=0;i<teile.length;i++){
+              var t=teile[i].trim();
+              if(/^\d+$/.test(t)){
+                teile[i]="repeat("+t+",minmax(0,1fr))";
+                
+              }
+            }
+            if(teile.length===2){
+              b.style.gridTemplateRows=teile[0];
+              b.style.gridTemplateColumns=teile[1];
+            }else{
+              b.style.gridTemplateColumns=teile[0];
+            }
+            b.style.gridAutoRows="minmax(0,1fr)";
+            b.style.display="grid"; 
+            b.style.alignItems="stretch";
+            b.style.justifyItems="stretch";
+            b.style.gridColumnGap=0;
+            b.style.gridRowGap=0;
+            b.style.columnGap=0;
+            b.style.rowGap=0;
+            b.style.overflow="auto";
+          }
+        };
+        b.setTemplate(template);
         return b;
       },
       button: function (text,cx,cy,width,height){
@@ -4654,7 +4256,7 @@ window.appJScode=function(){
         b.value=text;
         //b.style.padding=0;
         //b.style.margin=0;
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         return b;
       },
       iframe: function(url,cx,cy,width,height){
@@ -4685,11 +4287,11 @@ window.appJScode=function(){
         div.iframe=frame;
         div.closeButton=button;
         div.value=url;
-        $App.canvas.addElement(div,cx,cy,width,height);
+        //$App.canvas.addElement(div,cx,cy,width,height);
         $App.$iframes.push(div);
         return div;
       },
-      image: function (url,cx,cy,width,height){
+      imageOld: function (url,cx,cy,width,height){
         var b=$App.createElement("img");
         var asset=$App.assets[url];
         if(asset){
@@ -4701,7 +4303,31 @@ window.appJScode=function(){
         }else{
           b.src=url;
         }
-        $App.canvas.addElement(b,cx,cy,width,height);
+        return b;
+      },
+      image: function (url,cx,cy,width,height){
+        var b=$App.createElement("div");
+        b.style.backgroundSize="100% 100%";
+        b.style.backgroundRepeat="no-repeat";
+        Object.defineProperty(b,'value', {
+          set: function(v){
+            this.appJSData.value=v;
+            var asset=$App.assets[v];
+            if(asset){
+              var url=asset.url;
+              if(!url.startsWith("data:")){
+                url=(new URL(asset.url,document.baseURI)).href;
+              }
+            }else{
+              var url=v;
+            }
+            this.style.backgroundImage="url("+url+")";
+          },
+          get: function(){
+            return this.appJSData.value;
+          }
+        });
+        b.value=url;
         return b;
       },
       input: function (type,placeholdertext,cx,cy,width,height){
@@ -4717,7 +4343,7 @@ window.appJScode=function(){
           cb.type=type;
           var id=Math.floor(Math.random()*100000000);
           cb.id="checkbox-"+id;
-          b.style="display: flex; text-align: center;align-items: center;justify-content: center;";
+          b.style="display: inline-flex; text-align: center;align-items: center;justify-content: center;";
           b.appendChild(cb);
           b.box=cb;
           var label=document.createElement("label");
@@ -4801,7 +4427,8 @@ window.appJScode=function(){
         });
         b.placeholder=placeholdertext;
         b.style.textAlign="";
-        $App.canvas.addElement(b,cx,cy,width,height);
+        b.style.minWidth="0px";
+        //$App.canvas.addElement(b,cx,cy,width,height);
         return b;
       },
       datatable: function(array,cx,cy,width,height){
@@ -4920,29 +4547,29 @@ window.appJScode=function(){
           }
         });
         b.array=array;
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         return b;
       },
       textarea: function (placeholdertext,cx,cy,width,height){
         var b=$App.createElement("textarea");
         b.placeholder=placeholdertext;
         b.style.resize="none";
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         b.style.textAlign="";
         return b;
       },
       select: function (options,cx,cy,width,height){
         var b=$App.createElement("select");
         b.options=options;
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         return b;
       },
       label: function(text,cx,cy,width,height){
         var b=$App.createElement("div");
         b.style.overflow="auto";
-        b.style.display="grid";
+        b.style.display="inline-grid";
         b.$standardPositionValue="relative";
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         Object.defineProperty(b,'value', {
           set: function(v){
             this.appJSData.value=v;
@@ -4967,7 +4594,7 @@ window.appJScode=function(){
         b.innerDiv=innerDiv;
         b.appendChild(innerDiv);
         b.style.textAlign="center";
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         Object.defineProperty(b,'value', {
           set: function(v){
             this.appJSData.value=v;
@@ -4987,7 +4614,7 @@ window.appJScode=function(){
         var b=$App.createElement("div");
         b.style.overflow="auto";
         b.$standardPositionValue="relative";
-        $App.canvas.addElement(b,cx,cy,width,height);
+        //$App.canvas.addElement(b,cx,cy,width,height);
         Object.defineProperty(b,'value', {
           set: function(v){
             this.appJSData.value=v;
@@ -5006,25 +4633,25 @@ window.appJScode=function(){
       {
         name: 'iframe', 
         returnType: 'IFrame',
-        args: [{name: 'url', type: 'String', info: 'Webadresse der eingebetteten Webseite'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts'}, {name: 'width', type: 'double', info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}, {name: 'height', type: 'double', info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}],
+        args: [{name: 'url', type: 'String', info: 'Webadresse der eingebetteten Webseite'}],
         info: 'Erzeugt ein neues iFrame, mit dem man eine Website in die eigene App einbetten kann.'
       },
       {
         name: 'button', 
         returnType: 'JButton',
-        args: [{name: 'text', type: 'String', info: 'Aufschrift des Buttons'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts'}, {name: 'width', type: 'double', info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}, {name: 'height', type: 'double', info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}],
+        args: [{name: 'text', type: 'String', info: 'Aufschrift des Buttons'}],
         info: 'Erzeugt einen neuen Button mit der Aufschrift <code>text</code>, dem Mittelpunkt (<code>cx</code>|<code>cy</code>), der Breite <code>width</code> und der Hoehe <code>height</code>. Liefert den Button zurueck.'
       },
       {
         name: 'panel', 
         returnType: 'JPanel',
-        args: [{name: 'template', type: 'String', info: 'Definition der Zeilen und Spalten des Panels. "" oder null bedeutet, dass es keine Spalten und Zeilen gibt. "3" bedeutet "3 gleich breite Spalten", "2fr 1fr" bedeutet "2 Spalten, die erste doppelt so breit wie die zweite". Hier sind alle Werte moeglich, die auch fuer die CSS-Eigenschaften "grid-template" oder "grid-template-columns" verwendet werden koennen.'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts'}, {name: 'width', type: 'double', info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}, {name: 'height', type: 'double', info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}],
+        args: [{name: 'template', type: 'String', info: 'Definition der Zeilen und Spalten des Panels. "" oder null bedeutet, dass es keine Spalten und Zeilen gibt. "3" bedeutet "3 gleich breite Spalten", "2fr 1fr" bedeutet "2 Spalten, die erste doppelt so breit wie die zweite". Hier sind alle Werte moeglich, die auch fuer die CSS-Eigenschaften "grid-template" oder "grid-template-columns" verwendet werden koennen.'}],
         info: 'Erzeugt ein neues Panel, ein Container fuer andere Elemente.'
       },
       {
         name: 'image', 
         returnType: 'JImage',
-        args: [{name: 'url', type: 'String', info: 'URL zum Bild'}, {name: 'cx', type: 'double', info: 'x-Koordinate des Mittelpunkts'}, {name: 'cy', type: 'double', info: 'y-Koordinate des Mittelpunkts'}, {name: 'width', type: 'double', info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}, {name: 'height', type: 'double', info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'}],
+        args: [{name: 'url', type: 'String', info: 'URL zum Bild'}],
         info: 'Erzeugt ein neues Bild von der URL <code>url</code>, dem Mittelpunkt (<code>cx</code>|<code>cy</code>), der Breite <code>width</code> und der Hoehe <code>height</code>. Liefert das Bild zurueck.'
       },
       {
@@ -5041,26 +4668,6 @@ window.appJScode=function(){
             name: 'placeholdertext',
             type: 'String', 
             info: 'Text, der angezeigt wird, wenn das Element leer ist.'
-          }, 
-          {
-            name: 'cx', 
-            type: 'double', 
-            info: 'x-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'cy', 
-            type: 'double', 
-            info: 'y-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'width', 
-            type: 'double', 
-            info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
-          }, 
-          {
-            name: 'height', 
-            type: 'double', 
-            info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
           }
         ],
         info: 'Erzeugt ein neues Eingabefeld, in das der User etwas eingeben kann. Mit <code>type</code> legst du fest, was der User eingeben soll (normalerweise <code>"text"</code> oder <code>"number"</code>, es gibt aber <a href="https://www.w3schools.com/html/html_form_input_types.asp" target="_blank">noch viel mehr</a>). Du kannst ausserdem den Platzhaltertext <code>placeholdertext</code>, den Mittelpunkt (<code>cx</code>|<code>cy</code>), die Breite <code>width</code> und die Hoehe <code>height</code> festlegen. Liefert das Eingabefeld zurueck.'
@@ -5077,26 +4684,6 @@ window.appJScode=function(){
               dimension: 1
             }, 
             info: 'Array mit Objekten, die dargestellt werden sollen'
-          },
-          {
-            name: 'cx', 
-            type: 'double', 
-            info: 'x-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'cy', 
-            type: 'double', 
-            info: 'y-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'width', 
-            type: 'double', 
-            info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
-          }, 
-          {
-            name: 'height', 
-            type: 'double', 
-            info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
           }
         ],
         info: 'Erzeugt eine neue Datatable, mit der du die Elemente eines Arrays anzeigen kannst.'
@@ -5110,26 +4697,6 @@ window.appJScode=function(){
             name: 'placeholdertext',
             type: 'String', 
             info: 'Text, der angezeigt wird, wenn das Element leer ist.'
-          }, 
-          {
-            name: 'cx', 
-            type: 'double', 
-            info: 'x-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'cy', 
-            type: 'double', 
-            info: 'y-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'width', 
-            type: 'double', 
-            info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
-          }, 
-          {
-            name: 'height', 
-            type: 'double', 
-            info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
           }
         ],
         info: 'Erzeugt ein neues Eingabefeld, in das der User Text eingeben kann. Du kannst den Platzhaltertext <code>placeholdertext</code>, den Mittelpunkt (<code>cx</code>|<code>cy</code>), die Breite <code>width</code> und die Hoehe <code>height</code> festlegen. Liefert das Element zurueck.'
@@ -5142,26 +4709,6 @@ window.appJScode=function(){
             name: 'placeholdertext',
             type: 'String', 
             info: 'Text, der angezeigt wird, wenn das Element leer ist.'
-          }, 
-          {
-            name: 'cx', 
-            type: 'double', 
-            info: 'x-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'cy', 
-            type: 'double', 
-            info: 'y-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'width', 
-            type: 'double', 
-            info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
-          }, 
-          {
-            name: 'height', 
-            type: 'double', 
-            info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
           }
         ],
         info: 'Erzeugt eine neue TextArea mit dem Platzhaltertext <code>placeholdertext</code>, dem Mittelpunkt (<code>cx</code>|<code>cy</code>), der Breite <code>width</code> und der Hoehe <code>height</code>. Liefert die TextArea zurueck.'
@@ -5174,26 +4721,6 @@ window.appJScode=function(){
             name: 'options',
             type: 'String[]', 
             info: 'Optionen, die zur Auswahl stehen'
-          }, 
-          {
-            name: 'cx', 
-            type: 'double', 
-            info: 'x-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'cy', 
-            type: 'double', 
-            info: 'y-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'width', 
-            type: 'double', 
-            info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
-          }, 
-          {
-            name: 'height', 
-            type: 'double', 
-            info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
           }
         ],
         info: 'Erzeugt ein neues Select-Element mit den Auswahl-Optionen <code>options</code> (ein  Array), dem Mittelpunkt (<code>cx</code>|<code>cy</code>), der Breite <code>width</code> und der Hoehe <code>height</code>. Liefert das Select-Element zurueck.'
@@ -5206,26 +4733,6 @@ window.appJScode=function(){
             name: 'text',
             type: 'String', 
             info: 'Art des Inputs'
-          },
-          {
-            name: 'cx', 
-            type: 'double', 
-            info: 'x-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'cy', 
-            type: 'double', 
-            info: 'y-Koordinate des Mittelpunkts'
-          }, 
-          {
-            name: 'width', 
-            type: 'double', 
-            info: 'Breite. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
-          }, 
-          {
-            name: 'height', 
-            type: 'double', 
-            info: 'Hoehe. Bei einem negativen Wert wird das Element in seiner natuerlichen Groesse gezeichnet.'
           }
         ], 
         info: 'Erzeugt ein neues Label mit dem Inhalt <code>text</code>, dem Mittelpunkt (<code>cx</code>|<code>cy</code>), der Breite <code>width</code> und der Hoehe <code>height</code>. Liefert das Label zurueck.'
@@ -5517,9 +5024,13 @@ window.appJScode=function(){
     //console.realLog=console.log;
     console.realClear=console.clear;
     $App.addObject('console',true,{
-      print: function(){
+      println: function(){
         console.log.apply(console,arguments);
         $App.console.log.apply($App.console,arguments);
+      },
+      print: function(){
+        console.log.apply(console,arguments);
+        $App.console.print.apply($App.console,arguments);
       },
       clear: function(){
         console.realClear();
@@ -5532,6 +5043,12 @@ window.appJScode=function(){
       hide: function(){
         $App.showConsoleOnStart=false;
         $App.console.setVisible(false);
+      },
+      hideIfUI: function(){
+        $App.console.hideIfUI();
+      },
+      readLine: function(text){
+        $App.console.readLine(text);
       }
     },'Erlaubt die Benutzung der Konsole.',
     [
@@ -5550,12 +5067,21 @@ window.appJScode=function(){
         name: 'hide', 
         returnType: null,
         info: 'Verbirgt die Konsole.'
+      },
+      {
+        name: 'clear', 
+        returnType: null,
+        info: 'Verbirgt die Konsole.'
+      },
+      {
+        name: "readLine",
+        args: [{name: "prompt", type: 'String', info: 'Text, der als Aufforderung angezeigt wird.', optional: true }],
+        returnType: "String",
+        info: "Fordert den User auf, eine Zeile Text einzugeben."
       }
     ],'',"everywhere");
     
     $App.help.compileScreen();
-    
-    $App.setup(true);
     
     if($App.language==="js"){
       /**Vordefinierte Variablennamen speichern:*/
@@ -5570,5 +5096,5 @@ window.appJScode=function(){
     }else{
       $main=null;
     }
-
+    var gamepad;
 }

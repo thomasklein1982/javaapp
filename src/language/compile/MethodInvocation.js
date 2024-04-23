@@ -30,12 +30,19 @@ export function MethodInvocation(node,source,scope){
     let code=Identifier(node,source,scope);
     return code;
   }
-  if(node.name==="MethodName"||node.name==="this"){
-    owner.clazz=scope.method.clazz;
-    code+="this";
-    if(node.name==="this"){
-      node=node.nextSibling.nextSibling;
+  let staticContext=scope.method.isStatic();
+  if(node.name==="this"){
+    if(staticContext){
+      throw source.createError("Das Schlüsselwort 'this' existiert nicht in statischen Methoden.",node);
     }
+    code+="this";
+    node=node.nextSibling.nextSibling;
+  }else if(node.name==="MethodName"){
+    owner.clazz=scope.method.clazz;
+    if(staticContext){
+      owner.static=true;
+    }
+    code+="this";
   }else{
     if(node.name==="Identifier"){
       let id=Identifier(node,source,scope);
@@ -92,7 +99,7 @@ export function MethodInvocation(node,source,scope){
   if(node.name!=="ArgumentList"){
   }
   let updateLocalVariablesAfter=!method.isBuiltIn();
-  al=ArgumentList(node,source,scope,method.getRealParameterList(owner.typeArguments));
+  al=ArgumentList(node,source,scope,method.getRealParameterList(owner.typeArguments),method,owner);
   if(al.updateLocalVariablesAfter){
     updateLocalVariablesAfter=true;
   }
@@ -108,7 +115,7 @@ export function MethodInvocation(node,source,scope){
   code="await "+code;
   let returnType=null;
   if(method.type){
-    returnType=method.getRealReturnType(owner.typeArguments);
+    returnType=method.getRealReturnType(al.replacementTypes,owner.typeArguments);
     let startLine=undefined;
     if(method.bodyNode){
       startLine=source.getLine(method.bodyNode.from).number;

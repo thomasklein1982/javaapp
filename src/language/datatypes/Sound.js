@@ -10,6 +10,18 @@ export function defineSound(Clazz,Java){
     ]
   },Clazz);
   createMethod({
+    name: 'beep',
+    args: [
+      {name: 'type', type: 'String', info: 'sine, square, triangle.'}, 
+      {name: 'frequency', type: 'int', info: 'Frequenz.'}, 
+      {name: 'volumne', type: 'double', info: 'Lautstärke.'}, 
+      {name: 'duration', type: 'int', info: 'Dauer in ms.'}
+    ],
+    isExtraFunction: true,
+    jsName: "$beep",
+    info: "Spielt einen Ton ab."
+  },Clazz,true,false);
+  createMethod({
     name: 'setSource',
     args: [
       {name: 'source', type: 'String'}

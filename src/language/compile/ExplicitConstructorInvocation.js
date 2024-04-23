@@ -10,7 +10,7 @@ export function ExplicitConstructorInvocation(node,source,scope){
   if(!superclazz){
     throw source.createError("Diese Klasse hat keine Oberklasse, also kann auch nicht der Konstruktor der Oberklasse aufgerufen werden!",node);
   }
-  let al=ArgumentList(node,source,scope,superclazz.getConstructorParameters());
+  let al=ArgumentList(node,source,scope,superclazz.getConstructorParameters(),null);
   let code="";
   if(!superclazz.isNative()){
     //TODO: Generics beachten!

@@ -7,12 +7,12 @@ export function ReturnStatement(node,source,scope){
   if(node.name!=="return"){
 
   }
-  let code="return ";
+  let code="$App.debug.decCallDepth();return ";
   if(!node.nextSibling){
     throw (source.createError("';' erwartet.",node));
   }
   node=node.nextSibling;
-  let returnType=scope.method.type;
+  let returnType=scope.getMethodFromStack().type;
   if(!node.type.isError && node.name!==";"){
     if(returnType){
       let f=CompileFunctions.get(node,source);

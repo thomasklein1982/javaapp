@@ -5,6 +5,7 @@ import { concatArrays } from "../../functions/helper";
 import { CompileFunctions } from "../CompileFunctions";
 
 function createUpdateLocalVariablesCode(scope){
+  return "";
   if(scope.optimizeCompiler) return "";
   let locals=scope.getLocalVariableNames();
   return "var $locals="+JSON.stringify(locals)+";for(var $a in $locals){eval('$locals[$a]='+$a)};$App.console.updateLocalVariables($locals);";
@@ -19,7 +20,7 @@ function createUpdateLocalVariablesCode(scope){
  * @returns 
  */
 export function Block(node,source,scope){
-  let code="";
+  let code="$scope.pushLayer();";
   let errors=[];
   let blockNode=node;
   node=node.firstChild;
@@ -52,34 +53,34 @@ export function Block(node,source,scope){
         if(res.errors){
           concatArrays(errors,res.errors);
         }
-        if(!scope.optimizeCompiler){
+        if(!scope.optimizeCompiler && !res.waitForLineIncluded){
           let line=source.getLineNumber(node.from);
           if(!scope.optimizeCompiler){
-            code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);";
+            code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",$scope);";
           }else{
             code+="\n";
           }
           code+=res.code;
-          if(res.updateLocalVariablesAfter && scope.addLocalVariablesUpdates){
-            let vnames;
-            if(res.updateLocalVariablesAfter===true){
-              vnames=[];
-              let localVariables=scope.getLocalVariables();
-              for(let vname in localVariables){
-                vnames.push(localVariables[vname].name);
-              }
-            }else{
-              vnames=res.updateLocalVariablesAfter;
-            }
-            if(!scope.optimizeCompiler && vnames){
-              code+="eval('";
-              for(let i=0;i<vnames.length;i++){
-                let name=vnames[i];
-                code+="$locals["+JSON.stringify(name)+"]="+name+";";
-              }
-              code+="',$App.console.updateLocalVariables($locals));";
-            }
-          }
+          // if(res.updateLocalVariablesAfter && scope.addLocalVariablesUpdates){
+          //   let vnames;
+          //   if(res.updateLocalVariablesAfter===true){
+          //     vnames=[];
+          //     let localVariables=scope.getLocalVariables();
+          //     for(let vname in localVariables){
+          //       vnames.push(localVariables[vname].name);
+          //     }
+          //   }else{
+          //     vnames=res.updateLocalVariablesAfter;
+          //   }
+          //   if(!scope.optimizeCompiler && vnames){
+          //     code+="eval('";
+          //     for(let i=0;i<vnames.length;i++){
+          //       let name=vnames[i];
+          //       code+="$locals["+JSON.stringify(name)+"]="+name+";";
+          //     }
+          //     code+="',$App.console.updateLocalVariables($locals));";
+          //   }
+          // }
         }else{
           code+="\n"+res.code;
         }
@@ -94,9 +95,10 @@ export function Block(node,source,scope){
   //let line=source.state.doc.lineAt(blockNode.to).number;
   if(!scope.optimizeCompiler){
     let line=source.getLineNumber(blockNode.to-1);
-    code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",this);";
+    code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",$scope);";
   }
   scope.popLayer();
+  code+="\n$scope.popLayer();"
   if(!scope.optimizeCompiler){
     code+=createUpdateLocalVariablesCode(scope);
   }

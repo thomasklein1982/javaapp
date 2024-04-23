@@ -5,6 +5,7 @@ import { Block } from "./Block";
 export function ForStatement(node,source,scope){
   let code="for(";
   node=node.firstChild;
+  let lineNumber=source.getLineNumber(node.to-1);
   node=node.nextSibling;
   let forSpec=node;
   if(!node.firstChild || node.firstChild.name!=="("){
@@ -30,12 +31,17 @@ export function ForStatement(node,source,scope){
   if(block instanceof Scope){
     return block;
   }
-  code+="{"+block.code+"}";
+  code+="{";
+  if(!scope.optimizeCompiler){
+    code+="\nawait $App.debug.line("+lineNumber+","+JSON.stringify(scope.method.clazz.name)+",$scope);";
+  }
+  code+=block.code+"}";
   scope.popLayer();
   
   return {
     code: code,
     type: null,
-    errors: block.errors
+    errors: block.errors,
+    waitForLineIncluded: true
   }
 }

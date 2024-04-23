@@ -3,6 +3,26 @@
  * statt mit new Klasse(Parameter,...)*/
 
 function additionalJSCode(){
+  window.mousePressed=false;
+  window.addEventListener('DOMContentLoaded', ()=>{
+    document.body.addEventListener("pointerenter",(ev)=>{
+      window.mousePressed=ev.buttons>0;
+    },false);
+    window.addEventListener("pointerdown",(ev)=>{
+      try{
+        ev.target.releasePointerCapture(ev.pointerId);
+      }catch(e){}
+      window.mousePressed=ev.buttons>0;
+    },false);
+    window.addEventListener("pointerup",(ev)=>{
+      window.mousePressed=false;
+    },false);
+    document.body.addEventListener("pointerleave",(ev)=>{
+      window.mousePressed=ev.buttons>0;
+    },false);
+  }, false);
+
+  JSON.$constructor=function(){ };
 
   function $u(v){if(v===undefined){throw $new(Exception,"Undefinierter Wert.")} return v;}
   function $N(v,name){if(v===null){throw $new(Exception,"NullPointerException: Der Wert von '"+name+"' ist null, deshalb kannst du nicht auf Methoden oder Attribute zugreifen.")} return v;}
@@ -13,7 +33,13 @@ function additionalJSCode(){
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
 
   function $new(constructor){
-    let o=new constructor();
+    let o;
+    try{
+      o=new constructor();
+    }catch(e){
+      o=new constructor.constructor();
+      return o;
+    }
     if(!o.$constructor){
       console.error("error in $new!!!",constructor);
     }
@@ -22,6 +48,12 @@ function additionalJSCode(){
       args.push(arguments[i]);
     }
     o.$constructor.apply(o,args);
+    return o;
+  }
+
+  function $createInterfaceInstance(name,methodname,func){
+    let o=new Object();
+    o[methodname]=func;
     return o;
   }
 
@@ -52,13 +84,29 @@ function additionalJSCode(){
 
   async function $handleEvent(eventname,ev,argsFunc){
     let comp=this.component;
-    if (comp["$triggerOn"+eventname]) {
+    if(comp.actionListeners && comp.actionListeners.length>0){
+      for(let i=0;i<comp.actionListeners.length;i++){
+        let al=comp.actionListeners[i];
+        let event=$new(ActionEvent,comp,0,comp.actionCommand,Date.now());
+        al.actionPerformed(event);
+        //source,id,command,when
+      }
+      console.log("actionlistener handle");
+      return;
+    }
+    let listener=comp["$triggerOn"+eventname];
+    if (listener) {
         ev.stopPropagation();
         let args;
         if(argsFunc){
           args=argsFunc(ev,comp);
         }else{
           args=[comp];
+        }
+        let handler=listener["on"+eventname];
+        if(handler && handler.apply){
+          await handler.apply(listener,args);
+          return;
         }
         let panel=comp.getPanel();
         while(panel){
@@ -71,10 +119,31 @@ function additionalJSCode(){
           }
           panel=panel.getPanel();
         }
-        if($main["on"+eventname]){
+        if($main && $main["on"+eventname]){
           $main["on"+eventname].apply($main,args);
         }
     }
+  }
+
+  function $beep(object,type, frequency, volume, duration){
+    let oscillator = audioCtx.createOscillator();
+    let gainNode = audioCtx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    gainNode.gain.value = volume;
+    oscillator.frequency.value = frequency;
+    oscillator.type = type;
+
+    oscillator.start();
+
+    setTimeout(
+      function() {
+        oscillator.stop();
+      },
+      duration
+    );
   }
 
   $arrayCheckBounds=function(array,index){
@@ -231,13 +300,74 @@ function additionalJSCode(){
     }
   }
 
+  function $array_deserialize(type,dimension,data){
+    //TODO: mehrdimensionale Arrays
+    if(!data) return null;
+    let array=$createArray(type, [data.length]);
+    let first=type.charAt(0);
+    let creator=null;
+    if(first!==first.toLowerCase()){
+      creator = Function("return new "+type+"();");
+    }
+    for(let i=0;i<data.length;i++){
+      if(creator){
+        let object=creator();
+        array[i]=$object_deserialize_internal(object,data[i]);
+      }else{
+        array[i]=data[i];
+      }
+    }
+    return array;
+  }
+
+  function $object_deserialize_internal(object,data){
+    if(data===null || data===undefined) return null;
+    try{
+      let infos=$clazzRuntimeInfos[object.constructor.prototype.constructor.name];
+      if(infos){
+        for(a in infos.attributes){
+          if(data[a]!==undefined){
+            let attr=infos.attributes[a];
+            if(attr.dimension>0){
+              object[a]=$array_deserialize(attr.baseType,attr.dimension,data[a]);
+            }else{
+              let type=attr.baseType;
+              let first=type.charAt(0);
+              if(type==="String" || first===first.toLowerCase()){
+                //primitiv oder string
+                object[a]=data[a];
+              }else{
+                let creator = Function("return new "+type+"();");
+                object[a]=creator();
+                object[a]=$object_deserialize_internal(object[a],data[a]);
+              }
+            }
+          }
+        }
+      }else{
+        //keine eigene Klasse
+        for(a in data){
+          if(data[a]!==undefined){
+            object[a]=data[a];
+          }
+        }
+      }
+      return object;
+    }catch(e){
+      throw {
+        message: "String konnte nicht deserialisiert werden\n"+e
+      }
+    }
+  }
+
   function $object_deserialize(obj,s){
     try{
       let data=JSON.parse(s);
-      return data;
+      let object=new obj();
+      return $object_deserialize_internal(object,data);
     }catch(e){
       throw {
-        message: "String konnte nicht deserialisiert werden"
+        message: "String konnte nicht deserialisiert werden\n"+e
       }
     }
   }
@@ -489,6 +619,16 @@ function additionalJSCode(){
     return format;
   }
 
+  function $StringCharAtChar(string,index){
+    let s=$StringCharAtString(string,index);
+    return new $Char(s);
+  }
+
+  function $StringCharAtString(string,index){
+    let s=string.charAt(index);
+    return s;
+  }
+
   function $StringReplaceAll(string,s,r){
     var regexp=new RegExp(s,"g");
     return string.replace(regexp,r);
@@ -649,51 +789,115 @@ function additionalJSCode(){
     }
   }
 
-  App.gamepad.setA=function(keycode){
-    this.A=keycode;
+  class ActionListener{
+    onAction(){}
   }
-  App.gamepad.setB=function(keycode){
-    this.B=keycode;
+
+  class Integer{
+    constructor(v){
+      this.value=v;
+    }
+    static parseInt(s, radix){
+      if(!radix) radix=10;
+      let v=s*1;
+      if(v+""===s+""){
+        return parseInt(s,radix);
+      }else{
+        throw $new(Exception,"Dieser String kodiert keine ganze Zahl:\n"+s);
+      }
+    }
+    static valueOf(v){
+      return new Integer(v);
+    }
   }
-  App.gamepad.setX=function(keycode){
-    this.X=keycode;
+
+  class Double{
+    constructor(v){
+      this.value=v;
+    }
+    static parseDouble(s){
+      let v=s*1;
+      if(v+""===s+""){
+        return v;
+      }else{
+        throw $new(Exception,"Dieser String kodiert keine Kommazahl:\n"+s);
+      }
+    }
+    static valueOf(v){
+      return new Double(v);
+    }
   }
-  App.gamepad.setY=function(keycode){
-    this.Y=keycode;
+
+  class Boolean{
+    constructor(v){
+      this.value=v;
+    }
+    static parseBoolean(s){
+      if(s==="true"){
+        this.value=true;
+      }else if(s==="false"){
+        this.value=false;
+      }else{
+        throw $new(Exception,"Dieser String kodiert keinen Wahrheitswert:\n"+s);
+      }
+    }
+    static valueOf(v){
+      return new Boolean(v);
+    }
   }
-  App.gamepad.setE=function(keycode){
-    this.E=keycode;
-  }
-  App.gamepad.setF=function(keycode){
-    this.F=keycode;
-  }
-  App.gamepad.setUp=function(keycode){
-    this.up=keycode;
-  }
-  App.gamepad.setDown=function(keycode){
-    this.down=keycode;
-  }
-  App.gamepad.setLeft=function(keycode){
-    this.left=keycode;
-  }
-  App.gamepad.setRight=function(keycode){
-    this.right=keycode;
+
+  class Char{
+    constructor(v){
+      this.value=v;
+    }
+    static parseChar(s){
+      let v=s+"";
+      if(v.length===1){
+        this.value=v;
+      }else{
+        throw $new(Exception,"Dieser String kodiert keinen Character:\n"+s);
+      }
+    }
+    static valueOf(v){
+      return new Char(v);
+    }
   }
 
   class PrintStream{
     $constructor(){}
     println(text){
+      console.println(text);
+    }
+    print(text){
       console.print(text);
+    }
+  }
+
+  class InputStream{
+    $constructor(){}
+    async read(){
+      return await $App.console.read();
     }
   }
 
   class System{
     $constructor(){}
     static out=$new(PrintStream);
+    static in=$new(InputStream);
+    static console(){
+      return $App.console;
+    }
+    static isMousePressed(){
+      return window.mousePressed;
+    }
   }
 
   class JComponent{
     $constructor(x,y,width,height){
+      if(x===undefined) x=50;
+      if(y===undefined) y=50;
+      if(width===undefined) width=100;
+      if(height===undefined) height=100;
       this.x=x;
       this.y=y;
       this.width=width;
@@ -701,11 +905,16 @@ function additionalJSCode(){
       this.$el=null;
       this.actionCommand="";
       this.actionObject=null;
+      this.$eventListeners={};
       this.$triggerOnAction=false;
       this.$triggerOnMouseDown=false;
       this.$triggerOnMouseUp=false;
       this.$triggerOnMouseMove=false;
       this.standardCSSClasses="";
+      this.actionListeners=[];
+    }
+    addEventListener(type, listener){
+      this.$el.addEventListener(type,listener.actionPerformed,false);
     }
     getMouseX(){
       return 0;
@@ -718,8 +927,8 @@ function additionalJSCode(){
       try{
         let e=this.$el.querySelector(selector);
         if(!e) return null;
-        if(e.component) return e.component;
-        return $new(HTMLElement,e);
+        if(!e.component) e.component=$new(HTMLElement,e);
+        return e.component;
       }catch(e){
         throw $new(Exception,"Fehlerhafter Selektor\n"+e);
       }
@@ -728,19 +937,18 @@ function additionalJSCode(){
       try{
         let es=this.$el.querySelectorAll(selector);
         if(!es) return null;
-        let comps=[];
         for(let i=0;i<es.length;i++){
           let e=es[i];
-          if(e.component){
-            comps.push(e.component);
-          }else{
-            comps.push($new(HTMLElement,e));
-          }
+          if(!e.component) e.component=$new(HTMLElement,e)
+          es[i]=e.component;
         }
-        return comps;
+        return $createArray("HTMLElement",1,es);
       }catch(e){
         throw $new(Exception,"Fehlerhafter Selektor\n"+e);
       }
+    }
+    getElementById(id){
+      return this.querySelector("[id='"+id+"']");
     }
     getScrollPosition(){
       return this.$el.scrollTop;
@@ -752,7 +960,11 @@ function additionalJSCode(){
       this.actionCommand=ac;
     }
     getActionCommand(){
-      return this.actionCommand;
+      if(this.actionCommand){
+        return this.actionCommand;
+      }else{
+        return this.$el.textContent;
+      }
     }
     setActionObject(object){
       this.actionObject=object;
@@ -812,6 +1024,12 @@ function additionalJSCode(){
     getY(){
       return this.$el.cy;
     }
+    setBounds(x,y,width,height){
+      this.setX(x);
+      this.setY(y);
+      this.setWidth(width);
+      this.setHeight(height);
+    }
     setWidth(v){
       this.width=v;
       this.$el.width=v;
@@ -826,6 +1044,7 @@ function additionalJSCode(){
     getHeight(){
       return this.$el.height;
     }
+    
     changeWidth(dw){
       this.setWidth(this.getWidth()+dw);
     }
@@ -898,6 +1117,26 @@ function additionalJSCode(){
         return -1;
       }
     }
+    addActionListener(al){
+      this.actionListeners.push(al);
+    }
+    removeActionListener(al){
+      let index=this.actionListeners.indexOf(al);
+      if(index<0) return;
+      this.actionListeners.splice(index,1);
+    }
+    getActionListeners(){
+      let a=$createArray("ActionListener",this.actionListeners.length,[]);
+      for(let i=0;i<this.actionListeners.length;i++){
+        a[i]=this.actionListeners[i];
+      }
+      return a;
+    }
+    setOnAction(listener){
+      if(!listener) throw $new(Exception,"Das Listener-Objekt ist null.");
+      if(!listener.onAction) throw $new(Exception,"Das Listener-Objekt besitzt keine onAction-Methode.");
+      this.$triggerOnAction=listener;
+    }
     setTriggerOnAction(t){
       this.$triggerOnAction=t;
     }
@@ -968,6 +1207,30 @@ function additionalJSCode(){
       this.$el=ui.image(url,x,y,width,height);
       this.$el.component=this;
       this.$el.onclick = $handleOnAction;
+      this.dimension={
+        width: "100%",
+        height: "100%",
+        translate: {
+          x: "0%",
+          y: "0%"
+        }
+      }
+    }
+    setImageWidth(w){
+      this.dimension.width=w;
+      this.$el.style.backgroundSize=this.dimension.width+" "+this.dimension.height;
+    }
+    setImageHeight(h){
+      this.dimension.height=h;
+      this.$el.style.backgroundSize=this.dimension.width+" "+this.dimension.height;
+    }
+    setImageTranslationX(x){
+      this.dimension.translate.x=x;
+      this.$el.style.backgroundPosition="calc(50% + "+this.dimension.translate.x+") calc(50% - "+this.dimension.translate.y+")";
+    }
+    setImageTranslationY(y){
+      this.dimension.translate.y=y;
+      this.$el.style.backgroundPosition="calc(50% + "+this.dimension.translate.x+") calc(50% - "+this.dimension.translate.y+")";
     }
   }
 
@@ -979,6 +1242,9 @@ function additionalJSCode(){
       this.$el.component=this;
       this.$el.onclick = $handleOnAction;
       this.lastRowAndColumnCount=null;
+    }
+    setLayout(layout){
+      this.$el.setTemplate(layout);
     }
     add(comp,index){
       this.$el.add(comp.$el,index);
@@ -1124,6 +1390,15 @@ function additionalJSCode(){
     }
   }
 
+  class JFrame extends JPanel{
+    $constructor(template){
+      super.$constructor(template);
+      this.$el.style="left: 0; right: 0; top: 0; bottom: 0; position: absolute;";
+      $App.canvas.addElement(this.$el,50,50,100,100);
+      $App.console.adaptSize();
+    }
+  }
+
   class JLabel extends JComponent{
     $constructor(text,x,y,width,height){
       super.$constructor(x,y,width,height);
@@ -1134,11 +1409,11 @@ function additionalJSCode(){
     }
   }
 
-  class HTMLElement extends JPanel{
+  class HTMLElement extends JComponent{
     $constructor(tag){
       //super.$constructor(0,0,0,0);
       if(tag && tag.substring){
-        tag=document.createElement("tag");
+        tag=document.createElement(tag);
       }
       this.$el=tag;
       this.$el.appJSData={};
@@ -1151,11 +1426,29 @@ function additionalJSCode(){
       }
       
     }
+    getChildElements(){
+
+    }
+    
+    add(comp,index){
+      if(index===undefined){
+        this.$el.appendChild(comp.$el);
+      }else{
+        let ref=this.$el.children[index];
+        this.$el.insertBefore(comp.$el,ref);
+      }
+    }
+    setInnerHTML(html){
+      this.$el.innerHTML=html;
+    }
+    setTextContent(text){
+      this.$el.textContent=text;
+    }
     getAttribute(name){
-      return this.$el.getAttribute(name);
+      return this.$el[name];
     }
     setAttribute(name, value){
-      this.$el.setAttribute(name,value);
+      this.$el[name]=value;
     }
     getValue(){
       if(!this.$el) return null;
@@ -1202,6 +1495,7 @@ function additionalJSCode(){
       this.standardCSSClasses="_java-app-canvas";
       if(this.$el && this.$el.parentNode) this.$el.parentNode.removeChild(this.$el);
       this.$el=ui.canvas(maxX-minX,maxY-minY,x,y,width,height);
+      this.$el.style.touchAction="none";
       this.$el.component=this;
       this.setCSSClass("");
       this.setOrigin(-minX,-minY);
@@ -1211,11 +1505,54 @@ function additionalJSCode(){
       this.$triggerOnMouseUp=true;
       this.mouse={
         x: -1,
-        y: -1
+        y: -1,
+        over: false
       };
-      this.$el.onpointermove=$handleOnPointerMove;
+      //this.$el.onpointermove=$handleOnPointerMove;
       this.setTriggerOnMouseDown(true);
       this.setTriggerOnMouseUp(true);
+      this.$el.addEventListener("pointerenter",(ev)=>{
+        try{
+          ev.target.releasePointerCapture(ev.pointerId);
+        }catch(e){}
+        this.mouse.over=true;
+        window.mousePressed=ev.buttons>0;
+        this.$updateMousePosition(ev);
+      },false);
+      this.$el.addEventListener("pointerdown",(ev)=>{
+        try{
+          ev.target.releasePointerCapture(ev.pointerId);
+        }catch(e){}
+        this.mouse.over=true;
+        window.mousePressed=true;
+        this.$updateMousePosition(ev);
+      },false);
+      this.$el.addEventListener("pointermove",(ev)=>{
+        try{
+          ev.target.releasePointerCapture(ev.pointerId);
+        }catch(e){}
+        this.mouse.over=true;
+        window.mousePressed=ev.buttons>0;
+        this.$updateMousePosition(ev);
+      },false);
+      this.$el.addEventListener("pointerup",(ev)=>{
+        this.mouse.over=true;
+        window.mousePressed=false;
+        this.$updateMousePosition(ev);
+      },false);
+      this.$el.addEventListener("pointerleave",(ev)=>{
+        try{
+          ev.target.releasePointerCapture(ev.pointerId);
+        }catch(e){}
+        this.mouse.over=false;
+        this.$updateMousePosition(ev);
+      },false);
+    }
+    setAxisX(min,max){
+      this.$el.canvas.setAxisX(min,max);
+    }
+    setAxisY(min,max){
+      this.$el.canvas.setAxisY(min,max);
     }
     $updateMousePosition(ev){
       let canvas=this.$el.canvas;
@@ -1237,6 +1574,18 @@ function additionalJSCode(){
       y=canvas.getCanvasY(y);
       this.mouse.x=x;
       this.mouse.y=y;
+    }
+    setSizePolicy(policy){
+      this.$el.setSizePolicy(policy);
+    }
+    getSizePolicy(){
+      return this.$el.getSizePolicy();
+    }
+    isMouseOver(){
+      return this.mouse.over;
+    }
+    isMousePressed(){
+      return window.mousePressed;
     }
     getMouseX(){
       return this.mouse.x;
@@ -1373,6 +1722,9 @@ function additionalJSCode(){
   class JComboBox extends JComponent{
     $constructor(options,x,y,width,height){
       super.$constructor(x,y,width,height);
+      if(!options){
+        options=[];
+      }
       this.$el=ui.select(options,x,y,width,height);
       this.$el.component=this;
       this.$el.onchange = $handleOnAction;
@@ -1385,6 +1737,19 @@ function additionalJSCode(){
     }
     setOptions(options){
       this.$el.options=options;
+    }
+    addItem(item){
+      let o=document.createElement("option");
+      o.innerHTML=item;
+      this.$el.appendChild(o);
+    }
+    removeItemAt(index){
+      let o=this.$el.children(index);
+      if(!o) return;
+      this.$el.removeChild(o);
+    }
+    removeAllItems(){
+      this.$el.replaceChildren();
     }
   }
 
@@ -1670,7 +2035,7 @@ function additionalJSCode(){
     getAsArray(){
       let array=$createArray("double",[this.size]);
       for(let i=0;i<this.size;i++){
-        array.set(i,this.components[i]);
+        array[i]=this.components[i];
       }
       return array;
     }
@@ -1679,7 +2044,7 @@ function additionalJSCode(){
         throw $new(Exception,"Das Array hat "+array.length+" Einträge, er muss aber "+this.size+" Einträge haben.");
       }
       for(let i=0;i<array.length;i++){
-        this.components[i]=array.get(i);
+        this.components[i]=array[i];
       }
     }
     toString(){
@@ -1845,19 +2210,19 @@ function additionalJSCode(){
     }
     areResultsEqualIgnoreOrder(array1,array2){
       if(!array1 || !array2) return false;
-      if(array1.values.length===0){
-        if(array2.values.length===0){
+      if(array1.length===0){
+        if(array2.length===0){
           return true;
         }else{
           return false;
         }
       }else{
-        if(array2.values.length===0 || array2.values.length!==array1.values.length){
+        if(array2.length===0 || array2.length!==array1.length){
           return false;
         }
       }
-      var r1=array1.values[0];
-      var r2=array2.values[0];
+      var r1=array1[0];
+      var r2=array2[0];
       var attributes=[];
       var sortFunc=(r,s)=>{
         for(var attr in r1.$data){
@@ -1869,8 +2234,8 @@ function additionalJSCode(){
         }
         return -1;
       };
-      array1.values.sort(sortFunc);
-      array2.values.sort(sortFunc);
+      array1.sort(sortFunc);
+      array2.sort(sortFunc);
       return this.areResultsEqual(array1,array2);
     }
     areResultsEqual(array1,array2){
@@ -1882,18 +2247,18 @@ function additionalJSCode(){
         return true;
       }
       var n1=0;
-      var r1=array1.values[0];
+      var r1=array1[0];
       for(var a in r1){
         n1++;
       }
-      var r2=array2.values[0];
+      var r2=array2[0];
       var n2=0;
       for(var a in r2){
         n2++;
       }
       if(n1!==n2) return false;
       for(var i=0;i<n1;i++){
-        var r1=array1.values[i];
+        var r1=array1[i];
         var s1=0;
         for(var a in r1.$data){
           s1++;
@@ -1903,7 +2268,7 @@ function additionalJSCode(){
           s2++;
         }
         if(s1!==s2) return false;
-        var r2=array2.values[i];
+        var r2=array2[i];
         for(var a in r1.$data){
           if(a in r2.$data){
             if(r1.$data[a]!==r2.$data[a]) return false;
@@ -2230,8 +2595,561 @@ function additionalJSCode(){
       }
       return changed;
     }
-    sort(comparator){
-      this.elements.sort(comparator);
+    async sort(comparator){
+      let n=this.size();
+      for(let i=0;i<n;i++){
+        for(let j=0;j<n-i-1;j++){
+          let c=this.get(j);
+          if(await comparator.compareTo(c,this.get(j+1))>0){
+            this.set(j,this.get(j+1));
+            this.set(j+1,c);
+          }
+        }
+      }
+      //await this.elements.sort((a,b)=>{return await comparator.compareTo(a,b););
+    }
+  }
+
+  class ActionEvent{
+    $constructor(source,id,command,when){
+      this.source=source;
+      this.id=id;
+      this.command=command;
+      this.when=when;
+      if(!this.command){
+        this.command=null;
+      }
+    }
+    getActionCommand(){
+      return this.command;
+    }
+    getWhen(){
+      return this.when;
+    }
+    getSource(){
+      return this.source;
+    }
+  }
+
+  /**mimics javax.swing.timer-class */
+  class Timer{
+    $constructor(delay,actionListener){
+      this.initialDelay=delay;
+      this.delay=delay;
+      this.repeats=true;
+      this.actionListeners=[actionListener];
+      this.actionCommand=null;
+      this.$timer_id=null;
+      this.$running=false;
+    }
+    addActionListener(al){
+      this.actionListeners.push(al);
+    }
+    removeActionListener(al){
+      let index=this.actionListeners.indexOf(al);
+      if(index<0) return;
+      this.actionListeners.splice(index,1);
+    }
+    setActionCommand(command){
+      this.actionCommand=command;
+    }
+    getActionCommand(){
+      return this.actionCommand;
+    }
+    setRepeats(v){
+      this.repeats=v;
+    }
+    isRepeats(){
+      return this.repeats;
+    }
+    isRunning(){
+      return this.$running;
+    }
+    start(){
+      if(this.$running) return;
+      this.restart();
+    }
+    restart(){
+      if(this.$running) this.stop();
+      this.$running=true;
+      let handler=()=>{
+        for(let i=0;i<this.actionListeners.length;i++){
+          let al=this.actionListeners[i];
+          let ev=$new(ActionEvent,this,0,this.actionCommand,Date.now());
+          al.actionPerformed(ev);
+        };
+      };
+      this.$timer_id=setTimeout(()=>{
+        if(this.repeats){
+          this.$timer_id=setInterval(()=>{
+            if(!this.repeats){
+              clearInterval(this.$timer_id);
+            }
+            handler();
+          },this.delay);
+        }
+        handler();
+      },this.initialDelay);
+    }
+    stop(){
+      clearTimeout(this.$timer_id);
+      clearInterval(this.$timer_id);
+    }
+  }
+
+  class Gamepad{
+    $constructor(){
+      this.rootElement=document.body;
+      this.buttonHandlers={};
+      this.padding="0.5cm";
+      this.width="100%";
+      this.buttonSize=1;
+      this.dpad=new DPad(this);
+      this.buttons={
+        B: new GamepadButton(this,"B","B","yellow","black"),
+        A: new GamepadButton(this,"A","A","red","black"),
+        Y: new GamepadButton(this,"Y","Y","green","white"),
+        X: new GamepadButton(this,"X","X","blue","white"),
+        // SELECT: new GamepadButton(this,"SELECT","Select","grey","black"),
+        // START: new GamepadButton(this,"START","Start","grey","black")
+      };
+      this.setPosition("0cm","0cm");
+      this.setKey("up",38);
+      this.setKey("down",40);
+      this.setKey("left",37);
+      this.setKey("right",39);
+      this.setKey("B","B");
+      this.setKey("A","A");
+      this.setKey("X","X");
+      this.setKey("Y","Y");
+      this.setKey("Start","P");
+      this.setKey("Select","O");
+      this.keydownListener=(ev)=>{
+        let k=ev.keyCode;
+        k=String.fromCodePoint(k).toLowerCase().codePointAt(0);
+        for(let a in this.buttons){
+          let b=this.buttons[a];
+          if(b.keyDown(k)){
+          }
+        }
+        this.dpad.keyDown(k);
+
+      };
+      window.addEventListener("keydown",this.keydownListener);
+      this.keyupListener=(ev)=>{
+        let k=ev.keyCode;
+        k=String.fromCodePoint(k).toLowerCase().codePointAt(0);
+        for(let a in this.buttons){
+          let b=this.buttons[a];
+          b.keyUp(k);
+        }
+        this.dpad.keyUp(k);
+      };
+      window.addEventListener("keyup",this.keyupListener);
+    }
+    setKey(button,key){
+      if(key.toLowerCase){
+        key=key.toLowerCase();
+        let dirs={
+          left: 13,
+          right: 14,
+          up: 18,
+          down: 19
+        };
+        if(key in dirs){
+          key=dirs[key];
+        }
+        key=key.codePointAt(0);
+      }
+      if(button in this.buttons){
+        let b=this.buttons[button];
+        b.setKey(key);
+        return;
+      }
+      this.dpad.setKey(button,key);
+    }
+    getActionButtonByName(button){
+      if(button in this.buttons){
+        return this.buttons[button];
+      }
+      return null;
+    }
+    setPosition(x,y){
+      this.x=x;
+      this.y=y;
+      this.updateLayout();
+    }
+    updateLayout(){
+      let x=this.x;
+      let y=this.y;
+      this.dpad.setPosition(x,y);
+      this.dpad.setPadding(this.padding);
+      this.buttons.B.setBounds(x+" + "+this.width+" - "+this.padding,y+" + "+this.padding,this.buttonSize,-2.2,0);
+      this.buttons.A.setBounds(x+" + "+this.width+" - "+this.padding,y+" + "+this.padding,this.buttonSize,-1,1);
+      this.buttons.Y.setBounds(x+" + "+this.width+" - "+this.padding,y+" + "+this.padding,this.buttonSize,-3.4,1);
+      this.buttons.X.setBounds(x+" + "+this.width+" - "+this.padding,y+" + "+this.padding,this.buttonSize,-2.2,2);
+    }
+    setWidth(w){
+      this.width=w;
+      this.updateLayout();
+    }
+    setDirectionButtonsSize(size){
+      this.dpad.setSize(size);
+      this.updateLayout();
+    }
+    setActionButtonsSize(size){
+      this.buttonSize=size;
+      this.updateLayout();
+    }
+    setEventListener(button, event, handler){
+      this.buttonHandlers[button+":"+event]=handler;
+    }
+    onButtonEvent(button,event,eventData){
+      let handler=this.buttonHandlers[button+":"+event];
+      if(!handler) return;
+      handler.actionPerformed(eventData);
+    }
+    getDirection(){
+      return this.dpad.getDirection();
+    }
+    isUpPressed(){
+      return this.dpad.isPressed("n");
+    }
+    isDownPressed(){
+      return this.dpad.isPressed("s");
+    }
+    isRightPressed(){
+      return this.dpad.isPressed("e");
+    }
+    isLeftPressed(){
+      return this.dpad.isPressed("w");
+    }
+    setButtonVisible(button,visible){
+      let b=this.getActionButtonByName(button);
+      if(b){
+        b.setVisible(visible);
+      }else{
+        this.dpad.setButtonVisible(button,visible);
+      }
+
+    }
+  }
+
+  class DPad{
+    constructor(gamepad){
+      this.gamepad=gamepad;
+      this.buttons={
+        center: null,
+        s: null,
+        n: null,
+        w: null,
+        e: null,
+        ne: null,
+        nw: null,
+        se: null,
+        sw: null,
+      };
+      
+      for(let a in this.buttons){
+        this.buttons[a]=new DPadButton(this,a);
+      }
+      for(let a in this.buttons){
+        if(a.length===2){
+          this.buttons[a].setToDiagonal(this.buttons[a.charAt(0)],this.buttons[a.charAt(1)]);
+        }
+      }
+      this.scaling=1;
+      this.setPosition("1cm","1cm");
+      this.buttons.center.hide();
+    }
+    keyDown(key){
+      for(let a in this.buttons){
+        let b=this.buttons[a];
+        b.keyDown(key);
+      }
+    }
+    keyUp(key){
+      for(let a in this.buttons){
+        let b=this.buttons[a];
+        b.keyUp(key);
+      }
+    }
+    setKey(button,key){
+      button=button.toLowerCase();
+      let translation={
+        up: "n",
+        down: "s",
+        right: "e",
+        left: "w"
+      };
+      if(button in translation){
+        button=translation[button];
+      }
+      if(!this.buttons[button]) return;
+      this.buttons[button].setKey(key);
+    }
+    isPressed(dir){
+      if(!this.buttons[dir]) return false;
+      return this.buttons[dir].isPressed;
+    }
+    getDirection(){
+      let dir="";
+      for(let a in this.buttons){
+        let b=this.buttons[a];
+        if(a.length===1 && b.isPressed){
+          dir+=a;
+        }
+      }
+      return dir;
+    }
+    getButtonByName(name){
+      let button=name.toLowerCase();
+      let translation={
+        up: "n",
+        down: "s",
+        right: "e",
+        left: "w"
+      };
+      if(button in translation){
+        button=translation[button];
+      }
+      if(button in this.buttons){
+        return this.buttons[button];
+      }else{
+        return null;
+      }
+    }
+    setButtonVisible(button,v){
+      let b=this.getButtonByName(button);
+      if(b){
+        b.setVisible(v);
+      }
+    }
+    setSize(size){
+      this.scaling=size;
+      this.updateLayout();
+    }
+    setPadding(p){
+      this.padding=p;
+      this.updateLayout();
+    }
+    setPosition(left, bottom){
+      this.left=left;
+      this.bottom=bottom;
+      this.updateLayout();
+    }
+    updateLayout(){
+      let left=this.left;
+      let bottom=this.bottom;
+      let padding=this.padding;
+      this.buttons.nw.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,0,2);
+      this.buttons.n.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,1,2);
+      this.buttons.ne.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,2,2);
+      this.buttons.w.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,0,1);
+      this.buttons.e.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,2,1);
+      this.buttons.sw.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,0,0);
+      this.buttons.s.setBounds(left+ " + "+padding,bottom+" + "+padding,this.scaling,1,0);
+      this.buttons.se.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,2,0);
+      this.buttons.center.setBounds(left+" + "+padding,bottom+" + "+padding,this.scaling,1,1);
+    }
+  }
+
+  class GamepadButton{
+    constructor(gamepad,name,label,background,foreground){
+      this.gamepad=gamepad;
+      this.name=name;
+      this.ui=document.createElement("div");
+      this.ui.innerHTML=label;
+      this.ui.style="z-index: 100;border-radius: 100%; border: 1pt solid black; opacity: 0.5; position: fixed; aspect-ratio: 1;touch-action: none; display: flex;justify-content: center; align-items: center; font-weight: bold,user-select: none;overflow: hidden";
+      this.setColor(background,foreground);
+      this.gamepad.rootElement.appendChild(this.ui);
+      this.isPressed=false;
+      this.ui.addEventListener("pointerenter",(ev)=>{
+        this.isPressed=ev.buttons>0;
+        this.updateHover();
+        if(this.isPressed){
+          this.gamepad.onButtonEvent(this.name,"pressed",ev);
+        }
+      });
+      this.ui.addEventListener("pointerdown",(ev)=>{
+        try{
+          ev.target.releasePointerCapture(ev.pointerId);
+        }catch(e){}
+        this.isPressed=ev.buttons>0;
+        this.updateHover();
+        if(this.isPressed){
+          this.gamepad.onButtonEvent(this.name,"pressed",ev);
+        }
+      });
+      this.ui.addEventListener("pointerup",(ev)=>{
+        this.isPressed=false;
+        this.updateHover();
+        this.gamepad.onButtonEvent(this.name,"released",ev);
+      });
+      this.ui.addEventListener("pointerout",(ev)=>{
+        this.isPressed=false;
+        this.updateHover();
+        this.gamepad.onButtonEvent(this.name,"released",ev);
+
+      });
+    }
+    setVisible(v){
+      if(v){
+        this.ui.style.display="";
+      }else{
+        this.ui.style.display="none";
+      }
+    }
+    setKey(key){
+      this.key=key;
+    }
+    keyDown(key){
+      if(this.key===key){
+        this.isPressed=true;
+        this.updateHover();
+        this.gamepad.onButtonEvent(this.name,"pressed",{});
+        return true;
+      }
+      return false;
+    }
+    keyUp(key){
+      if(this.key===key){
+        this.isPressed=false;
+        this.updateHover();
+        this.gamepad.onButtonEvent(this.name,"released",{});
+        return true;
+      }
+      return false;
+    }
+    updateHover(){
+      if(this.isPressed){
+        this.ui.style.opacity=1;
+      }else{
+        this.ui.style.opacity=0.5;
+      }
+    }
+    setColor(background,foreground){
+      this.ui.style.backgroundColor=background;
+      this.ui.style.color=foreground;
+    }
+    setBounds(left, bottom, scaling, offsetX,offsetY){
+      this.ui.style.left="calc("+left+" + "+offsetX*scaling+"cm)";
+      this.ui.style.bottom="calc("+bottom+" + "+offsetY*scaling+"cm)";
+      this.ui.style.width=scaling+"cm";
+    }
+  }
+
+  class DPadButton{
+    constructor(dpad,dir){
+      this.key=null;
+      this.dpad=dpad;
+      this.dir=dir;
+      this.diagonal=false;
+      this.mainNeighbors=null;
+      this.hidden=false;
+      this.listeners={
+        click: [],
+        down: [],
+        up: []
+      };
+      this.isPressed=false;
+      this.ui=document.createElement("div");
+      this.ui.style="z-index: 100;bordesr: 1pt solid black; opacity: 0.5; position: fixed; aspect-ratio: 1; background-color: grey;touch-action: none;user-select: none;";
+      this.ui.addEventListener("pointerenter",(ev)=>{
+        this.isPressed=ev.buttons>0;
+        this.updateHover();
+      });
+      this.ui.addEventListener("pointerdown",(ev)=>{
+        try{
+          ev.target.releasePointerCapture(ev.pointerId);
+        }catch(e){}
+        this.isPressed=ev.buttons>0;
+        this.updateHover();
+        for(let i=0;i<this.listeners.down.length;i++){
+          let l=this.listeners.down[i];
+          l(ev);
+        }
+      });
+      this.ui.addEventListener("pointerup",(ev)=>{
+        this.isPressed=false;
+        this.updateHover();
+        for(let i=0;i<this.listeners.up.length;i++){
+          let l=this.listeners.up[i];
+          l(ev);
+        }
+      });
+      this.ui.addEventListener("pointerout",(ev)=>{
+        this.isPressed=false;
+        this.updateHover();
+      });
+      this.ui.addEventListener("click",()=>{
+        for(let i=0;i<this.listeners.click.length;i++){
+          let l=this.listeners.click[i];
+          l(ev);
+        }
+      });
+      this.dpad.gamepad.rootElement.appendChild(this.ui);
+    }
+    setKey(key){
+      this.key=key;
+    }
+    keyDown(key){
+      if(this.key===key){
+        this.isPressed=true;
+        this.updateHover();
+      }
+    }
+    keyUp(key){
+      if(this.key===key){
+        this.isPressed=false;
+        this.updateHover();
+      }
+    }
+    hide(){
+      this.hidden=true;
+      this.ui.style.opacity=0;
+    }
+    setToDiagonal(mainAxis1,mainAxis2){
+      this.diagonal=true;
+      let dir={
+        nw: "top-left",
+        ne: "top-right",
+        sw: "bottom-left",
+        se: "bottom-right"
+      }[this.dir];
+      if(dir){
+        this.ui.style["border-"+dir+"-radius"]="100%";
+      }
+      this.hide();
+      this.mainNeighbors=[mainAxis1,mainAxis2];
+    }
+    setVisible(v){
+      if(v){
+        this.ui.style.display="";
+      }else{
+        this.ui.style.display="none";
+      }
+    }
+    updateHover(){
+      if(this.diagonal){
+        for(let i=0;i<this.mainNeighbors.length;i++){
+          let n=this.mainNeighbors[i];
+          n.isPressed=this.isPressed;
+          n.updateHover();
+        }
+      }
+      if(this.hidden) return;
+      if(this.isPressed){
+        this.ui.style.opacity=1;
+      }else{
+        this.ui.style.opacity=0.5;
+      }
+    }
+
+    setBounds(left, bottom, scaling, offsetX,offsetY){
+      this.ui.style.left="calc("+left+" + "+offsetX*scaling+"cm)";
+      this.ui.style.bottom="calc("+bottom+" + "+offsetY*scaling+"cm)";
+      this.ui.style.width=scaling+"cm";
     }
   }
 
@@ -2272,6 +3190,315 @@ function additionalJSCode(){
     }
     isEnded(){
       return this.audio.ended;
+    }
+  }
+
+  function $getData(vname,v,template){
+    let dim=[];
+    if(v.dimension>0){
+      if(v.value){
+        dim.push(v.value.length);
+      }else{
+        dim.push(0);
+      }
+    }
+    let d={
+      n: vname,
+      t: v.type,
+      d: dim
+    };
+    let isPrimitive=true;
+    if(v.type){
+      isPrimitive=v.type.charAt(0);
+      isPrimitive=isPrimitive===isPrimitive.toLowerCase();
+    }
+    let c=v.type;
+    if(v.value===null||v.value===undefined || v.dimension===0 && v.type==="String" || isPrimitive){
+      d.v=v.value;
+    }else if(template){
+      if(v.dimension>0){
+
+      }else{
+        d.v={};
+        let infos=$clazzRuntimeInfos[d.t];
+        for(let name in v.value){
+          if(name.startsWith("$")) continue;
+          //name, dimension, type, value
+          let value=v.value[name];
+          let type=null;
+          let dimension=0;
+          if(infos){
+            let attr=infos.attributes[name];
+            if(attr){
+              type=attr.baseType;
+              dimension=attr.dimension;
+            }
+          }else{
+          }
+          d.v[name]=$getData(name,{dimension,type,value}, template[name]);
+        }
+      }
+    }
+    return d;
+  }
+  
+  function $getMainData(){
+    let obj=$App.watchedObject;
+    if(obj){
+      
+      let type=obj.constructor.name;
+      if(Array.isArray(obj)){
+
+      }
+      let global=$getData("main",{type: type,dimension: 0, value: obj}, $App.debug.mainTemplate);
+      return global;
+    }
+    return undefined;
+  }
+
+  class JavaApp{
+    constructor(){
+      if(!window.$main){
+        window.$main=this;
+        JavaApp.setWatchedObject(this);
+        setTimeout(()=>{
+          $main.onStart();
+        },10);
+      }else{
+        throw $new(Exception,"Es darf nur eine Instanz einer JavaApp-Klasse existieren.");
+      }
+    }
+    static setWatchedObject(object){
+      $App.setWatchedObject(object);
+    }
+  }
+
+  class Random{
+    $constructor(seed){
+      if(seed===undefined){
+        seed=Math.floor(Math.random()*36223827);
+      }
+      this.seed=seed;
+    }
+
+    setSeed(seed){
+      this.seed=seed;
+    }
+
+    static testInts(bound,count){
+      let results=[];
+      for(let i=0;i<bound;i++){
+        results.push(0);
+      }
+      let r=$new(Random);
+      let mu=count/bound;
+      let s=Math.sqrt(count*(1/bound)*(1-1/bound));
+      for(let i=0;i<count;i++){
+        let z=r.nextInt(bound);
+        results[z]++;
+      }
+      console.log(results,mu,s,2*s,3*s);
+      for(let i=0;i<bound;i++){
+        let c=results[i];
+        if(Math.abs(c-mu)>s*2){
+          console.error(i,c,count,c/count*100);
+        }else{
+          console.log(i,c,count,c/count*100);
+        }
+      }
+      
+    }
+
+    nextDouble(){
+      this.seed++;
+      var z=Math.sin(this.seed)*100;
+      return z-Math.floor(z);
+    }
+
+    nextInt(bound){
+      return Math.floor(this.nextDouble()*(bound));
+    }
+  }
+  
+  $jstoJSON=async function(obj){
+    if(obj===null || obj===undefined) return null;
+    if(obj.toJSON){
+      obj=await obj.toJSON();
+    }
+    if(typeof obj!=='object'){
+      return obj;
+    }
+    let json={};
+    for(let a in obj){
+      if(a.startsWith("$")) continue;
+      let b=obj[a];
+      json[a]=await $jstoJSON(b);
+    }
+    return json;
+  }
+
+  $jsstringify=async function(json,obj){
+    if(obj===null || obj===undefined) return null;
+    let jo=await $jstoJSON(obj);
+    let s=JSON.stringify(jo);
+    return s;
+  };
+  $jsparse=function(json,str){
+    let j=JSON.parse(str);
+    return j;
+  };
+  $jsgetKeys=function(obj){
+    return Object.keys(obj);
+  };
+  $jshasKey=function(obj,key){
+    return (key in obj);
+  };
+  $js$get=function(obj,key){
+    try{
+      if(key in obj){
+        let v=obj[key];
+        if(v===undefined||v===null) return null;
+        return v;  
+      }
+    }catch(e){
+      
+    }
+    return null;
+  };
+  $jsgetString=function(obj,key){
+    let v=$js$get(obj,key);
+    if(v===null) return null;
+    return v+"";
+  };
+  $jstoString=function(obj){
+    return obj+"";
+  };
+  $jstoInt=function(obj){
+    if(typeof obj==="number"){
+      return Math.floor(this.json);
+    }else{
+      return 0;
+    }
+  };
+  $jstoDouble=function(obj){
+    if(typeof obj==="number"){
+      return obj;
+    }else{
+      return 0;
+    }
+  };
+  $jstoBoolean=function(obj){
+    if(this.json){
+      return true;
+    }else{
+      return false;
+    }
+  };
+  $jstoArray=function(obj){
+    if(obj && Array.isArray(obj)){
+      return $createArray("JSON",1,obj);;
+    }else{
+      return $createArray("JSON",1,[obj]);
+    }
+  };
+  $jsgetInt=function(obj,key){
+    let v=$js$get(obj,key);
+    if(v===null || (typeof v!=="number")) return 0;
+    return Math.floor(v);
+  };
+  $jsgetDouble=function(obj,key){
+    let v=$js$get(obj,key);
+    if(v===null || (typeof v!=="number")) return 0;
+    return v;
+  };
+  $jsgetBoolean=function(obj,key){
+    let v=$js$get(obj,key);
+    if(!v) return false;
+    return true;
+  };
+  $jsget=function(obj,key){
+    let v=$js$get(obj,key);
+    if(v===null) return null;
+    return v;
+  };
+  $jsgetArray=function(obj,key){
+    let v=$js$get(obj,key);
+    if(v===null) return null;
+    let array;
+    if(Array.isArray(v)){
+      array=$createArray("JSON",1,v);
+    }else{
+      array=$createArray("JSON",1,[v]);
+    }
+    return array;
+  };
+  $jsset=function(obj,key,v){
+    obj[key]=v;
+  };
+
+  class $Scope{
+    constructor(thisObject){
+      this.stack=[];
+      if(thisObject instanceof Function){
+        //static context
+        this.thisObject=null;
+      }else{
+        this.thisObject=thisObject;
+      }
+      this.pushLayer();
+    }
+    getData(template){
+      let local={};
+      if(template.local){
+        for(let i=this.stack.length-1;i>=0;i--){
+          let layer=this.stack[i];
+          for(let a in layer){
+            if(a in local) continue;
+            let v=layer[a];
+            let d=$getData(a,v,template.local[a]);
+            
+            local[a]=d;
+          }
+        }
+      }
+      let that=undefined;
+      if(this.thisObject && template.that){
+        let type=this.thisObject.constructor.name;
+        that=$getData("this",{type: type,dimension: 0, value: this.thisObject}, template.that);
+      }
+      let main=$getMainData();
+      
+      let res={
+        local, that, main
+      };
+      return res;
+    }
+    pushLayer(){
+      let layer={};
+      this.stack.push(layer);
+    }
+    pushVariable(name, type, dimension, value){
+      let layer=this.stack[this.stack.length-1];
+      layer[name]={
+        type, dimension, value
+      }
+    }
+    popLayer(){
+      return this.stack.pop();
+    }
+    getVariable(name){
+      for(let i=this.stack.length-1;i>=0;i--){
+        let layer=this.stack[i];
+        if(layer[name]){
+          return layer[name];
+        }
+      }
+      return null;
+    }
+    setVariable(name,value){
+      let v=this.getVariable(name);
+      if(!v) return;
+      v.value=value;
     }
   }
 }

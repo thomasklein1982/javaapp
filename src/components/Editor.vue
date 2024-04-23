@@ -7,7 +7,7 @@
     <template v-if="!$root.printMode">
       <EditorMenubar
         :right-closed="rightClosed"
-        :is-easy="isEasy"
+        :difficulty="difficulty"
         :allow-trash="activeTab>0"
         :current-clazz="currentClazz"
         :caret-position="settings.showCaretPosition? caretPosition: -1"
@@ -35,6 +35,8 @@
         @fullscreen="playInFullscreen()"
         @play-window="playInNewWindow(false)"
         @play-dev="playInNewWindow(true)"
+        @terminal="$refs.dialogTerminal.setVisible(true)"
+        
       />
       <LinksDialog
         ref="dialogResources"
@@ -54,6 +56,7 @@
       <AssetsDialog :project="project" ref="dialogAssets" @open-image-editor="asset=>$refs.imageEditor.open(asset)"/>
       <DatabaseDialog :database="database" ref="dialogDatabase"/>
       <CSSDialog :project="project" ref="dialogCSS"/>
+      <TerminalDialog :project="project" ref="dialogTerminal" @run="stopAndPlay"/>
       <Splitter :gutter-size="splitterSize" ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
         <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">        
           <TabView v-model:activeIndex="activeTab" :scrollable="true" class="editor-tabs" >
@@ -76,6 +79,7 @@
                 v-show="!c.showUIEditor"
                 :clazz="c"
                 :tab-index="i"
+                :disabled="paused"
                 :project="project"
                 :settings="settings"
                 :font-size="fontSize"
@@ -100,8 +104,21 @@
               <AppPreview v-show="running || !isCurrentClazzUIClazz" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
             </SplitterPanel>
             <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
+              <Insights 
+                v-if="running"
+                :line="current.line"
+                :clazz-name="current.name"
+                :scope="current.$scope"
+                :paused="paused"
+                @update-scope="$refs.preview?.askForScope"
+                @resume="resume()"
+                @stop="stop()"
+                @step="step()"
+                @step-above="stepAbove()"
+                @remove-breakpoints="removeAllBreakpoints()"
+              />
               <UIComponentEditor 
-                v-if="showUIEditor && selectedUIComponent" 
+                v-if="!running && showUIEditor && selectedUIComponent" 
                 :component="selectedUIComponent"
                 :project="project"
                 :maximized="false"
@@ -110,7 +127,7 @@
                 @isolatedupdate="compileUIClazzAndUpdatePreview()"
               />
               <Outline
-                v-else
+                v-else-if="!running"
                 @click="outlineClick"
                 :style="{flex: 1}" 
                 ref="outline"
@@ -121,10 +138,8 @@
         </SplitterPanel>
       </Splitter>
       <span style="position: fixed; bottom: 0.5rem; right: 0.5rem; z-index: 101">
-        <span class="p-buttonset" v-if="running || !isCurrentClazzUIClazz">
+        <span class="p-buttonset" v-if="!running">
           <Button class="p-button-lg" v-if="!running || paused" @click="resume()" icon="pi pi-play" />
-          <Button class="p-button-lg" v-if="paused" @click="step()" icon="pi pi-arrow-right" />
-          <Button class="p-button-lg" v-if="running" @click="stop()" icon="pi pi-times" />
         </span>
       </span>
     </template>
@@ -159,12 +174,14 @@ import SettingsDialog from "./SettingsDialog.vue";
 import { nextTick } from "vue";
 import PrintPreview from "./PrintPreview.vue";
 import ImageEditorDialog from "./ImageEditorDialog.vue";
+import Insights from "./Insights.vue";
+import TerminalDialog from "./TerminalDialog.vue";
 
 export default {
   props: {
     current: Object,
     paused: Boolean,
-    isEasy: Boolean
+    difficulty: Number
   },
   data(){
     return {
@@ -255,6 +272,24 @@ export default {
     },1000);
   },
   methods: {
+    async removeAllBreakpoints(){
+      // let tab=this.activeTab;
+      for(let i=0;i<this.$refs.editor.length;i++){
+        console.log(i);
+        let e=this.$refs.editor[i];
+        if(e.removeAllBreakpoints){
+          e.removeAllBreakpoints();
+        }
+      }
+      // for(let i=0;i<this.project.clazzes.length;i++){
+      //   this.activeTab=i;
+      //   await nextTick();
+      //   if(this.currentEditor){
+      //     this.currentEditor.removeAllBreakpoints();
+      //   }
+      // }
+      // this.activeTab=tab;
+    },
     getEditorIndexByClazzName(name){
       if(!this.$refs.editor) return -1;
       let index=this.project.getClazzIndexByName(name);
@@ -403,7 +438,7 @@ export default {
         }catch(e){
           console.error(e);
         }
-        download(this.project.getFullAppCode("",true),this.project.getName()+".html","text/html");
+        download(this.project.getFullAppCode("console.hide()",true),this.project.getName()+".html","text/html");
       }
     },
     async uploadProject(){
@@ -424,7 +459,7 @@ export default {
       }
     },
     playInFullscreen(){
-      this.$root.resetCurrent();
+      this.$root.resetCurrent(-1);
       this.clearRuntimeErrors();
       this.running=true;
       this.$refs.preview.runInFullscreen();
@@ -435,7 +470,7 @@ export default {
       if(includeDevTools){
         precode="$onAfterSetup=function(){$App.loadEruda();};\n";
       }else{
-        precode="console.hide();\n";
+        precode="console.hideIfUI();\n";
       }
       let code=this.project.getFullAppCode(precode);
       const blob = URL.createObjectURL(
@@ -444,28 +479,38 @@ export default {
       window.open(blob);
       URL.revokeObjectURL(blob);
     },
-    resume(){
+    stopAndPlay(infos){
+      this.stop();
+      this.resume(infos.args);
+    },
+    resume(args){
       if(this.rightClosed){
         this.closeRightAfterStopping=true;
         this.toggleRight();
       }else{
         this.closeRightAfterStopping=false;
       }
-      this.$root.resetCurrent();
-      
       if(this.paused){
+        this.$root.resetCurrent(-1);
         this.$root.paused=false;
         this.$refs.preview.resume();
         //this.$refs.controlArea.resume();
-      }else if(!this.running){
-        this.clearRuntimeErrors();
-        this.running=true;
-        this.$refs.preview.reload();
+      }else{
+        this.$root.resetCurrent(-1);
+        if(!this.running){
+          this.clearRuntimeErrors();
+          this.running=true;
+          this.$refs.preview.reload(false,args);
+        }
       }
     },
     step(){
-      this.$root.resetCurrent();
+      //this.$root.resetCurrent();
       this.$refs.preview.step();
+    },
+    stepAbove(){
+      //this.$root.resetCurrent();
+      this.$refs.preview.stepAbove();
     },
     stop(){
       if(this.closeRightAfterStopping && !this.rightClosed){
@@ -476,7 +521,7 @@ export default {
       }
       this.$root.paused=false;
       this.running=false;
-      this.$root.resetCurrent();
+      this.$root.resetCurrent(-1);
     },
     addNewClazz(clazzData){
       if(clazzData.type==='interface'){
@@ -505,7 +550,7 @@ export default {
     }
   },
   components: {
-    EditorMenubar: EditorMenubar,
+    EditorMenubar,
     CodeMirror,
     BlockEditor,
     ProjectExplorer,
@@ -523,7 +568,9 @@ export default {
     SettingsDialog,
     PrintPreview,
     ProjectDetailsDialog,
-    ImageEditorDialog
+    ImageEditorDialog,
+    Insights,
+    TerminalDialog
   }
 }
 </script>

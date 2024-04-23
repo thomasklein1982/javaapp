@@ -36,7 +36,19 @@ export class Source{
     };
   }
   createError(message,node){
-    return new Error(message,node,this);
+    let from,to;
+    if(node){
+      from=node.from+this.getPositionShift();
+      to=node.to+this.getPositionShift();
+      
+    }else{
+      from=0;
+      to=0;
+    }
+    return new Error(message,from,to,this);
+  }
+  createErrorAt(message,pos){
+    return new Error(message,pos,pos,this);
   }
   getText(node){
     return this.src.substring(node.from,node.to);

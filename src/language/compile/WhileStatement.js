@@ -5,7 +5,7 @@ import { Scope } from "../../classes/Scope";
 
 export function WhileStatement(node,source,scope){
   node=node.firstChild;
-  
+  let lineNumber=source.getLineNumber(node.to-1);
   let code;
   if(node.name!=="while"){
     
@@ -28,9 +28,14 @@ export function WhileStatement(node,source,scope){
   if(thenBlock.errors && thenBlock.errors.length>0){
     throw thenBlock.errors[0];
   }
-  code+="{"+thenBlock.code+"}";
+  code+="{";
+  if(!scope.optimizeCompiler){
+    code+="\nawait $App.debug.line("+lineNumber+","+JSON.stringify(scope.method.clazz.name)+",$scope);";
+  }
+  code+=thenBlock.code+"}";
   return {
     code: code,
-    type: null
+    type: null,
+    waitForLineIncluded: true
   }
 }
