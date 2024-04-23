@@ -20,4 +20,10 @@ export function defineSystem(clazz){
     args: [],
     returnType: "Console"
   },clazz,true,false);
+
+  createMethod({
+    name: "isMousePressed",
+    args: [],
+    returnType: "boolean"
+  },clazz,true,false);
 }

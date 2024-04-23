@@ -105,6 +105,25 @@ structure       > sectioning > subject @ level 3 : 0.0.0 -> Assets
 structure       > sectioning > subject @ level 3 : 0.0.0 -> Sound
 structure       > sectioning > subject @ level 3 : 0.0.0 -> Gamepad
 pages           > flushing realpage 2, userpage 2, subpage 2
+
+Overfull \hbox (22.39285pt too wide) in paragraph at lines 266--267
+ [][][][] <16: lmmono10-regular @ 10.5pt> isLeftPressed()/isRightPressed()/isUpPressed()/isDownPressed(): boolean
+
+\hbox(11.57628+4.50186)x400.42206, direction TLT
+.\glue(\leftskip) 31.5
+.\localpar
+..\localinterlinepenalty=0
+..\localbrokenpenalty=0
+..\localleftbox=null
+..\localrightbox=null
+.\hbox(0.0+0.0)x0.0, direction TLT
+.\latelua0 <function reference 1167>
+.\hbox(11.57628+4.50186)x0.0, glue set - 15.75fil, direction TLT
+..\glue 0.0 plus 1.0fil minus 1.0fil
+..\hbox(11.57628+4.50186)x15.75, direction TLT
+...\hbox(11.57628+4.50186)x15.75, glue set 6.95215fil, direction TLT []
+.etc.
+
 structure       > sectioning > subject @ level 3 : 0.0.0 -> Konsole
 pages           > flushing realpage 3, userpage 3, subpage 3
 close source    > level 2, order 15, name 'C:/Apps/java-app/misc/cheat-sheet/java-app-cheat-sheet.tex'
@@ -208,34 +227,32 @@ modules         > stop used modules
 
 mkiv lua stats  > used config file: selfautoparent:/texmfcnf.lua;selfautoparent:/texmf-dist/web2c/texmfcnf.lua
 mkiv lua stats  > used cache path: readable+writable: 'C:/Users/Thomas/.texlive2022/texmf-var/luatex-cache/context/a86c089b384a3076dc514ba966a1fac9'
-mkiv lua stats  > resource resolver: loadtime 0.020 seconds, 1 scans with scantime 0.004 seconds, 0 shared scans, 48 found files, scanned paths: C:/Users/Thomas/.texlive2022/texmf-config
-mkiv lua stats  > stored bytecode data: 454 modules (0.400 sec), 96 tables (0.026 sec), 550 chunks (0.426 sec)
+mkiv lua stats  > resource resolver: loadtime 0.019 seconds, 1 scans with scantime 0.003 seconds, 0 shared scans, 48 found files, scanned paths: C:/Users/Thomas/.texlive2022/texmf-config
+mkiv lua stats  > stored bytecode data: 454 modules (0.348 sec), 96 tables (0.019 sec), 550 chunks (0.367 sec)
 mkiv lua stats  > traced context: maxstack: 1423, freed: 3, unreachable: 1420
 mkiv lua stats  > cleaned up reserved nodes: 76 nodes, 12 lists of 444
 mkiv lua stats  > node memory usage: 21 attribute, 5 attribute_list, 2 glue, 53 glue_spec, 3 kern, 8 penalty, 2 temp, 2 user_defined
-mkiv lua stats  > node list callback tasks: 8 unique task lists, 10 instances (re)created, 1252 calls
-mkiv lua stats  > h-node processing time: 0.018 seconds including kernel
-mkiv lua stats  > synctex tracing: 10 referenced files, 5 files ignored, 576 objects flushed, logfile: java-app-cheat-sheet.synctex
-mkiv lua stats  > attribute processing time: 0.015 seconds front- and backend
-mkiv lua stats  > driver time: 0.183 seconds 
+mkiv lua stats  > node list callback tasks: 8 unique task lists, 10 instances (re)created, 1321 calls
+mkiv lua stats  > h-node processing time: 0.013 seconds including kernel
+mkiv lua stats  > synctex tracing: 10 referenced files, 5 files ignored, 657 objects flushed, logfile: java-app-cheat-sheet.synctex
+mkiv lua stats  > driver time: 0.091 seconds 
 mkiv lua stats  > used backend: pdf (backend for directly generating pdf output)
-mkiv lua stats  > jobdata time: 0.013 seconds saving, 0.004 seconds loading
-mkiv lua stats  > callbacks: internal: 2800, file: 3089, direct: 82, late: 726, function 4030, total: 10727 (3576 per page)
+mkiv lua stats  > jobdata time: 0.014 seconds saving, 0.003 seconds loading
+mkiv lua stats  > callbacks: internal: 2933, file: 3101, direct: 85, late: 816, function 4128, total: 11063 (3688 per page)
 mkiv lua stats  > randomizer: resumed with value 0.24298095703125
-mkiv lua stats  > positions: 77 collected, 77 regular, 0 special
-mkiv lua stats  > v-node processing time: 0.013 seconds 
+mkiv lua stats  > positions: 83 collected, 83 regular, 0 special
 mkiv lua stats  > loaded tex modules: 3 requested, 1 found (*-highlight-java), 2 missing (*-highlight-html *-highlight-js)
 mkiv lua stats  > result saved in file: java-app-cheat-sheet.pdf, compresslevel 3, objectcompresslevel 1
 mkiv lua stats  > loaded patterns: de::3 en::1, load time: 0.000
 mkiv lua stats  > interactive elements: 0 references, 11 destinations
 mkiv lua stats  > loaded fonts: 6 files: lmmono10-regular.otf, lmmonolt10-bold.otf, dejavumathtexgyre.ttf, dejavusans-bold.ttf, dejavusans.ttf, dejavuserif.ttf
-mkiv lua stats  > font engine: otf 3.113, afm 1.513, tfm 1.000, 21 instances, 15 shared in backend, 0 common vectors, 15 common hashes, load time 0.556 seconds 
+mkiv lua stats  > font engine: otf 3.113, afm 1.513, tfm 1.000, 21 instances, 15 shared in backend, 0 common vectors, 15 common hashes, load time 0.495 seconds 
 mkiv lua stats  > body font sizes: defined: 10pt 11pt 12pt 14.4pt 17.3pt 20.7pt 4pt 5pt 6pt 7pt 8pt 9pt, undefined: 10.5pt 12.6pt 8.4pt
-mkiv lua stats  > metapost: 0.037 seconds, loading: 0.237, execution: 0.036, n: 8, average: 0.039, instances: 1, luacalls: 32, memory: 2.350 M
-mkiv lua stats  > graphics processing time: 0.061 seconds including tex, 47 processed images, 1 unique asked, 1 bad names
+mkiv lua stats  > metapost: 0.010 seconds, loading: 0.039, execution: 0.009, n: 8, average: 0.007, instances: 1, luacalls: 32, memory: 2.350 M
+mkiv lua stats  > graphics processing time: 0.038 seconds including tex, 50 processed images, 1 unique asked, 1 bad names
 mkiv lua stats  > used platform: mswin, type: windows, binary subtree: bin
 mkiv lua stats  > used engine: luatex version: 1.15, functionality level: 7509, banner: this is luatex, version 1.15.0 (tex live 2022)
-mkiv lua stats  > used hash slots: 50146 of 65536 + 200000
-mkiv lua stats  > lua properties: engine: lua 5.3, used memory: 104 MB, ctx: 104 MB, max: unknown MB, hash chars: min(32,40), symbol mask: utf (τεχ)
-mkiv lua stats  > runtime: 2.545 seconds, 3 processed pages, 3 shipped pages, 1.179 pages/second
+mkiv lua stats  > used hash slots: 50153 of 65536 + 200000
+mkiv lua stats  > lua properties: engine: lua 5.3, used memory: 102 MB, ctx: 102 MB, max: unknown MB, hash chars: min(32,40), symbol mask: utf (τεχ)
+mkiv lua stats  > runtime: 1.798 seconds, 3 processed pages, 3 shipped pages, 1.669 pages/second
 

@@ -1,3 +1,4 @@
+
 window.appJScode=function(){
   class $Char{
     constructor(char){
@@ -322,7 +323,6 @@ window.appJScode=function(){
       },
       executedOnStart: false,
       animationFrame: null,
-      gamepad: null,
       canvas: null,
       world: null,
       showConsoleOnStart: true
@@ -645,9 +645,6 @@ window.appJScode=function(){
       });
     };
     
-    
-    $App.$JoyStick=function(t,onDown,onUp,e){var i=void 0===(e=e||{}).title?"joystick":e.title,n=void 0===e.width?0:e.width,o=void 0===e.height?0:e.height,r=void 0===e.internalFillColor?"#00AA00":e.internalFillColor,h=void 0===e.internalLineWidth?2:e.internalLineWidth,a=void 0===e.internalStrokeColor?"#003300":e.internalStrokeColor,d=void 0===e.externalLineWidth?2:e.externalLineWidth,f=void 0===e.externalStrokeColor?"#008000":e.externalStrokeColor,l=void 0===e.autoReturnToCenter||e.autoReturnToCenter,s=t,c=document.createElement("canvas");c.id=i,0===n&&(n=s.clientWidth),0===o&&(o=s.clientHeight),c.width=n,c.height=o,s.appendChild(c);var u=c.getContext("2d"),g=0,v=2*Math.PI,p=(c.width-(c.width/2+10))/2,C=p+5,w=p+30,m=c.width/2,L=c.height/2,E=c.width/10,P=-1*E,S=c.height/10,k=-1*S,W=m,T=L;function G(){u.beginPath(),u.arc(m,L,w,0,v,!1),u.lineWidth=d,u.strokeStyle=f,u.stroke()}function x(){u.beginPath(),W<p&&(W=C),W+p>c.width&&(W=c.width-C),T<p&&(T=C),T+p>c.height&&(T=c.height-C),u.arc(W,T,p,0,v,!1);var t=u.createRadialGradient(m,L,5,m,L,200);t.addColorStop(0,r),t.addColorStop(1,a),u.fillStyle=t,u.fill(),u.lineWidth=h,u.strokeStyle=a,u.stroke()}"ontouchstart"in document.documentElement?(c.addEventListener("touchstart",function(t){g=1;if(onDown){onDown()}},!1),c.addEventListener("touchmove",function(t){t.preventDefault(),1===g&&t.targetTouches[0].target===c&&(W=t.targetTouches[0].pageX,T=t.targetTouches[0].pageY,"BODY"===c.offsetParent.tagName.toUpperCase()?(W-=c.offsetLeft,T-=c.offsetTop):(W-=c.offsetParent.offsetLeft,T-=c.offsetParent.offsetTop),u.clearRect(0,0,c.width,c.height),G(),x())},!1),c.addEventListener("touchend",function(t){g=0,l&&(W=m,T=L);u.clearRect(0,0,c.width,c.height),G(),x();if(onUp){onUp()}},!1)):(c.onmouseleave=function(){g=0,l&&(W=m,T=L);u.clearRect(0,0,c.width,c.height),G(),x();if(onUp){onUp()}},c.addEventListener("mousedown",function(t){g=1;if(onDown){onDown()}},!1),c.addEventListener("mousemove",function(t){1===g&&(W=t.pageX,T=t.pageY,"BODY"===c.offsetParent.tagName.toUpperCase()?(W-=c.offsetLeft,T-=c.offsetTop):(W-=c.offsetParent.offsetLeft,T-=c.offsetParent.offsetTop),u.clearRect(0,0,c.width,c.height),G(),x())},!1),c.addEventListener("mouseup",function(t){g=0,l&&(W=m,T=L);u.clearRect(0,0,c.width,c.height),G(),x();if(onUp){onUp()}},!1)),G(),x(),this.GetWidth=function(){return c.width},this.GetHeight=function(){return c.height},this.GetPosX=function(){return W},this.GetPosY=function(){return T},this.GetX=function(){return((W-m)/C*100).toFixed()},this.GetY=function(){return((T-L)/C*100*-1).toFixed()},this.setDir=function(dir){if(dir==="N"){W=m;T=-1000;}else if(dir==="S"){W=m;T=1000;}else if(dir==="W"){W=-1000;T=L;}else if(dir==="E"){W=1000;T=L;}else if(dir==="NW"){W=-1000;T=-1000;}else if(dir==="NE"){W=1000;T=-1000;}else if(dir==="SW"){W=-1000;T=1000;}else if(dir==="SE"){W=1000;T=1000;}else{W=m;T=L;}u.clearRect(0,0,c.width,c.height),G(),x();},this.GetDir=function(){var t="",e=W-m,i=T-L;return i>=k&&i<=S&&(t="C"),i<k&&(t="N"),i>S&&(t="S"),e<P&&("C"===t?t="W":t+="W"),e>E&&("C"===t?t="E":t+="E"),t}};
-    
     $App.setup=async function(dontStart){
       this.loadAssets();
       
@@ -665,7 +662,7 @@ window.appJScode=function(){
         style.insertRule("button:active{border-radius: 0;background-color:#e0e0e0}",0);
         style.insertRule("button{border-radius: 0;background-color:#d0d0d0}",0);
         style.insertRule("button:hover{border-radius: 0;background-color:#dadada}",0);
-        style.insertRule("html{font-family: sans-serif;}",0);
+        style.insertRule("html{font-family: sans-serif;width:100%;height:100%;}",0);
         $App.headLoaded=true;
       }
       if(!dontStart && document.body){
@@ -677,12 +674,14 @@ window.appJScode=function(){
         });
         this.body.element=document.body;
         this.body.element.style="padding: 0; margin: 0; width: 100%; height: 100%; overflow: hidden; user-select: none; -webkit-user-select: none";
-        this.body.element.parentElement.style=this.body.style;
+        this.body.element.parentElement.style=this.body.element.style;
         
         var root=document.createElement("div");
         this.body.root=root;
         root.style="position: fixed;width:100%;height:100%";
         root.className="app-root";
+        root.id="app-root";
+        
         this.body.element.appendChild(root);
         this.canvas=new $App.Canvas(root,100,100,true);
         this.canvas.isRootCanvas=true;
@@ -740,7 +739,7 @@ window.appJScode=function(){
         }
         this.onResize();
         this.animationFrame=async ()=>{
-          this.gamepad.updatePhysicalGamepad();
+          //this.gamepad.updatePhysicalGamepad();
           if(window.onNextFrame && !$App.debug.paused){
             try{
               await window.onNextFrame();
@@ -775,7 +774,7 @@ window.appJScode=function(){
         }else{
           requestAnimationFrame(this.animationFrame);
         }
-        this.addMouseStateHandler(this.canvas.el);
+        //this.addMouseStateHandler(this.canvas.el);
         this.console.element.focus();
         
       }else{
@@ -865,25 +864,6 @@ window.appJScode=function(){
       kb.down[k]=true;
       if(kb.lastKeycodeDown!==k){
         kb.lastKeycodeDown=k;
-        if($App.gamepad.element){
-          var gp=$App.gamepad;
-          gp.updateButtons(kb.down[gp.keycodes.A],kb.down[gp.keycodes.B], kb.down[gp.keycodes.X], kb.down[gp.keycodes.Y], kb.down[gp.keycodes.E], kb.down[gp.keycodes.F]);
-          var button=gp.getMappedButton(k);
-          if(button){
-            if(button==="up" || button==="down" || button==="left" || button==="right"){
-              gp.updateJoystickDirection(kb.down[gp.keycodes.left],kb.down[gp.keycodes.right],kb.down[gp.keycodes.up],kb.down[gp.keycodes.down]);
-              button=null;
-            }
-            if(window.onGamepadDown){
-              if($App.debug.paused) return;
-              try{
-                window.onGamepadDown(button);
-              }catch(e){
-                $App.handleException(e);
-              }
-            }
-          }
-        }
         if($App.debug.paused) return;
         if(window.onKeyDown){
           try{
@@ -899,25 +879,6 @@ window.appJScode=function(){
       var kb=$App.keyboard;
       delete kb.down[k];
       kb.lastKeycodeDown=-1;
-      if($App.gamepad.element){
-        var gp=$App.gamepad;
-        gp.updateButtons(kb.down[gp.keycodes.A],kb.down[gp.keycodes.B], kb.down[gp.keycodes.X], kb.down[gp.keycodes.Y], kb.down[gp.keycodes.E], kb.down[gp.keycodes.F]);
-        var button=gp.getMappedButton(k);
-        if(button){
-          if(button==="up" || button==="down" || button==="left" || button==="right"){
-            gp.updateJoystickDirection(kb.down[gp.keycodes.left],kb.down[gp.keycodes.right],kb.down[gp.keycodes.up],kb.down[gp.keycodes.down]);
-            button=null;
-          }
-          if(window.onGamepadUp){
-            if($App.debug.paused) return;
-            try{
-              window.onGamepadUp(button);
-            }catch(e){
-              $App.handleException(e);
-            }
-          }
-        }
-      }
       if($App.debug.paused) return;
       if(window.onKeyUp){
         try{
@@ -929,11 +890,11 @@ window.appJScode=function(){
     };
     
     window.addEventListener("gamepadconnected", function(e) {
-      $App.gamepad.connectPhysicalGamepad(e.gamepad);
+      
     });
     
     window.addEventListener("gamepaddisconnected", function(e) {
-      $App.gamepad.disconnectPhysicalGamepad();
+      
     });
     
     $App.addMouseStateHandler=function(e){
@@ -948,7 +909,7 @@ window.appJScode=function(){
         if(!t) return;
         $App.mouse.update(t.clientX,t.clientY,e,'down',ev.timeStamp,true);
         $App.mouse.down=true;
-      });
+      },false);
       e.addEventListener("touchend",function(ev){
         var x=-1; 
         var y=-1;
@@ -964,7 +925,7 @@ window.appJScode=function(){
         }
         $App.mouse.update(x,y,e,'up',ev.timeStamp,true);
         $App.mouse.down=false;
-      });
+      },false);
       e.onmouseup=function(ev){
         $App.mouse.update(ev.clientX,ev.clientY,e,'up',ev.timeStamp);
         $App.mouse.down=false;
@@ -976,7 +937,7 @@ window.appJScode=function(){
         if(!t) return;
         $App.mouse.update(t.clientX,t.clientY,e,'move',ev.timeStamp,true);
         $App.mouse.down=true;
-      });
+      },false);
       e.onmousemove=function(ev){
         $App.mouse.update(ev.clientX,ev.clientY,e,'move',ev.timeStamp);
       };
@@ -1109,6 +1070,7 @@ window.appJScode=function(){
         this.container.style.overflow="hidden";
       }
       this.el=document.createElement("canvas");
+      this.el.style.touchAction="none";
       this.el.jel=this;
       this.el.isCanvas=true;
       this.container.className="canvas-container";
@@ -2445,369 +2407,6 @@ window.appJScode=function(){
         }
       }
     };
-  
-  
-    /**Gamepad: */
-    $App.Gamepad=function(){
-      this.element=null;
-      this.multiaxis=true;
-      this.buttons={
-        A: null, B: null, X: null, Y: null, E: null, F: null
-      };
-      this.joystick=null;
-      this.keycodes={
-        left: 37,
-        right: 39,
-        down: 40,
-        up: 38,
-        A: 65,
-        B: 66,
-        E: 69,
-        F: 70,
-        X: 88,
-        Y: 89
-      };
-      this.physicalButtons={
-        buttons: {
-          A: {index: 1, down: false},
-          B: {index: 0, down: false},
-          E: {index: 9, down: false},
-          F: {index: 8, down: false},
-          X: {index: 2, down: false},
-          Y: {index: 3, down: false},
-        },
-        dirs: {
-          left: {axis: 0, low: true, down: false},
-          right: {axis: 0, low: false, down: false},
-          up: {axis: 1, low: true, down: false},
-          down: {axis: 1, low: false, down: false}
-        }
-      };
-      //[{index: 1, name: "A"},{index: 2,name: "B"},{index: 0,name: "X"},{index: 3,name: "Y"},{index: 9,name: "E"},{index:8,name:"F"}];
-      this.connectedGamepadIndex=-1;
-    };  
-    
-    $App.Gamepad.prototype={
-      resetAllButtons: function(){
-        this.updateButtons(false,false,false,false,false,false);
-        this.updateJoystickDirection(false,false,false,false);
-      },
-      updateButtons: function(ADown,BDown,XDown,YDown,EDown,FDown){
-        var down={
-          A: ADown, B: BDown, X: XDown, Y: YDown, E: EDown, F: FDown
-        };
-        for(var a in this.buttons){
-          var b=this.buttons[a];
-          if(b && b.el){
-            if(down[a]){
-              b.el.style.opacity="0.3";
-            }else{
-              b.el.style.opacity="0.6";
-            }
-          }
-        }
-      },
-      updateJoystickDirection: function(leftDown,rightDown,upDown,downDown){
-        var dir=undefined;
-        if(upDown && !downDown){
-          dir="N";
-        }
-        if(!upDown && downDown){
-          dir="S";
-        }
-        if(!dir || this.multiaxis){
-          if(!dir) dir="";
-          if(leftDown && !rightDown){
-            dir+="W";
-          }
-          if(!leftDown && rightDown){
-            dir+="E";
-          }
-        }
-        if(this.joystick){
-          this.joystick.setDir(dir);
-        }
-      },
-      getMappedButton: function(keycode){
-        for(var a in this.keycodes){
-          if(this.keycodes[a]===keycode){
-            return a;
-          }
-        }
-        return null;
-      },
-      isButtonPressed: function(button){
-        if(this.connectedGamepadIndex>=0){
-          let buttonState=this.physicalButtons.buttons[button];
-          if(buttonState!==undefined){
-            return buttonState.down;
-          }
-          buttonState=this.physicalButtons.dirs[button];
-          if(!this.multiaxis && buttonState.axis===0 && (this.physicalButtons.dirs.up.down||this.physicalButtons.dirs.down.down)){
-            return false;
-          }
-          return buttonState.down;
-        }else{
-          if($App.keyboard.down[this.keycodes[button]]){
-            if(!this.multiaxis){
-              if(button==="left"||button==="right"){
-                if($App.keyboard.down[this.keycodes["Up"]] || $App.keyboard.down[this.keycodes["Down"]]){
-                  return false;
-                }
-              }
-            }
-            return true;
-          }
-          var b=this.buttons[button];
-          if(b){
-            return b.down;
-          }
-          var x=this.joystick.GetX();
-          var y=this.joystick.GetY();
-          var threshold=40;
-          if(!this.multiaxis){
-            /*wenn multiaxis false ist, dann wird nur die beste Richtung gewertet*/
-            var bestDir=null;
-            var bestDirValue;
-            if(Math.abs(x)>Math.abs(y)){
-              bestDir=x>0? "right": "left";
-              bestDirValue=x;
-            }else{
-              bestDir=y>0? "up": "down";
-              bestDirValue=y;
-            }
-            return button===bestDir && Math.abs(bestDirValue)>threshold;
-          }
-          if(button==="left"){
-            return (x<-threshold);
-          }
-          if(button==="right"){
-            return (x>threshold);
-          }
-          if(button==="up"){
-            return (y>threshold);
-          }
-          if(button==="down"){
-            return (y<-threshold);
-          }
-        }
-      },
-      setButtonKey: function(button,key){
-        let b=this.buttons[button];
-        if(b){
-          if(!key){
-            b.el.style.display="none";
-            this.keycodes[button]=null;
-            return;
-          }else{
-            b.el.style.display="inline-block";
-          }
-        }
-        if(typeof key==="string"){
-          key=key.codePointAt(0);
-        }
-        this.keycodes[button]=key;
-      },
-      setVisible: function(v){
-        if(v){
-          this.create();
-        }
-        v=v? "inline-block":"none";
-        this.joystick.element.style.display=v;
-        for(let a in this.buttons){
-          if(this.keycodes[a]!==null){
-            let b=this.buttons[a];
-            b.el.style.display=v;
-          }
-        }
-      },
-      connectPhysicalGamepad: function(gp){
-        this.connectedGamepadIndex=gp.index;
-      },
-      disconnectPhysicalGamepad: function(){
-        this.connectedGamepadIndex=-1;
-      },
-      updatePhysicalGamepad: function(){
-        if(this.connectedGamepadIndex<0){
-          return;
-        }
-        let gp=navigator.getGamepads()[this.connectedGamepadIndex];
-        for(let a in this.physicalButtons.buttons){
-          let buttonState=this.physicalButtons.buttons[a];
-          let button=gp.buttons[buttonState.index];
-          let v;
-          if(typeof button==="number"){
-            v=button>0.5;
-          }else{
-            v=button.pressed;
-          }
-          if(!$App.debug.paused && v && !buttonState.down && window.onGamepadDown){
-            try{
-              window.onGamepadDown(a);
-            }catch(e){
-              $App.handleException(e);
-            }
-          }else if(!$App.debug.paused && !v && buttonState.down && window.onGamepadUp){
-            try{
-              window.onGamepadUp(a);
-            }catch(e){
-              $App.handleException(e);
-            }
-          }
-          buttonState.down=v;
-        }
-        for(let a in this.physicalButtons.dirs){
-          let buttonState=this.physicalButtons.dirs[a];
-          let axis=gp.axes[buttonState.axis];
-          let v;
-          if(buttonState.low){
-            v=axis<-0.2;
-          }else{
-            v=axis>0.2;
-          }
-          if(!$App.debug.paused && v && !buttonState.down && window.onGamepadDown){
-            try{
-              window.onGamepadDown(a);
-            }catch(e){
-              $App.handleException(e);
-            }
-          }else if(!$App.debug.paused && !v && buttonState.down && window.onGamepadUp){
-            try{
-              window.onGamepadUp(a);
-            }catch(e){
-              $App.handleException(e);
-            }
-          }
-          buttonState.down=v;
-        }
-      },
-      create: function(){
-        if(this.element) return;
-        var div=document.createElement("div");
-        this.element=div;
-        div.style="position: absolute; left: 0.5cm; bottom: 0.5cm; width: 2cm; height: 2cm; z-index: 1000;";
-        div.onmouseleave=function(){
-    
-        };
-        $App.body.root.appendChild(div);
-        for(var a in this.buttons){
-          let b=this.buttons[a];
-          b=document.createElement("div");
-          b.style="font-family: sans-serif;font-weight:bold;border-radius: 2000px; width: 1cm; height: 1cm; position: absolute; z-index: 10; border: 1pt solid black;text-align: center; line-height: 1cm; user-select: none;cursor: pointer;opacity: 0.6";
-          b.className="gamepad-button";
-          b.textContent=a;
-          this.buttons[a]={
-            el: b,
-            name: a,
-            down: false
-          };
-          b.button=this.buttons[a];
-          b.onmousedown=function(ev){
-            if(ev) ev.preventDefault();
-            $App.mouse.down=true;
-            this.button.down=true;
-            this.button.el.style.opacity="0.5";
-            if(!$App.debug.paused && window.onGamepadDown){
-              try{
-                window.onGamepadDown(this.button.name);
-              }catch(e){
-                $App.handleException(e);
-              }
-            }
-          };
-          b.onmouseup=function(ev){
-            if(ev) ev.preventDefault();
-            $App.mouse.down=false;
-            this.button.down=false;
-            this.button.el.style.opacity="1";
-            if(!$App.debug.paused && window.onGamepadUp){
-              try{
-                window.onGamepadUp(this.button.name);
-              }catch(e){
-                $App.handleException(e);
-              }
-            }
-          };
-          b.addEventListener("touchstart",b.onmousedown);
-          b.addEventListener("touchend",b.onmouseup);
-          b.onmouseover=function(ev){
-            if(ev) ev.preventDefault();
-            if($App.mouse.down){
-              this.onmousedown();
-            }
-          },
-          b.onmouseout=function(ev){
-            if(ev) ev.preventDefault();
-            if(this.button.down){
-              this.button.down=false;
-              this.button.el.style.opacity="1";
-              if(!$App.debug.paused && window.onGamepadUp){
-                try{
-                  window.onGamepadUp(this.button.name);
-                }catch(e){
-                  $App.handleException(e);
-                }
-              }
-            }
-          };
-          document.body.addEventListener('touchmove', (ev)=>{
-            for(let i=0;i<ev.touches.length;i++){
-              var touch = ev.touches[i];
-              var touches=b===document.elementFromPoint(touch.pageX,touch.pageY);
-              if(touches) break; 
-            }
-            if(b.button.down){
-              if(!touches){
-                b.onmouseout();
-              }
-            }else{
-              if(touches){
-                b.onmousedown();
-              }
-            }
-          }, false);
-          $App.body.root.appendChild(b);
-        }
-        this.joystick=new $App.$JoyStick(div,function(){
-          if(!$App.debug.paused && window.onGamepadDown){
-            try{
-              window.onGamepadDown(null);
-            }catch(e){
-              $App.handleException(e);
-            }
-          }
-        }, function(){
-          if(!$App.debug.paused && window.onGamepadUp){
-            try{
-              window.onGamepadUp(null);
-            }catch(e){
-              $App.handleException(e);
-            }
-          }
-        });
-        this.joystick.element=div;
-        this.buttons.A.el.style.right="0.1cm";
-        this.buttons.A.el.style.bottom="0.75cm";
-        this.buttons.A.el.style.backgroundColor="red";
-        this.buttons.B.el.style.right="1.25cm";
-        this.buttons.B.el.style.bottom="0.5cm";
-        this.buttons.B.el.style.backgroundColor="yellow";
-        this.buttons.X.el.style.right="0.1cm";
-        this.buttons.X.el.style.bottom="2cm";
-        this.buttons.X.el.style.backgroundColor="blue";
-        this.buttons.X.el.style.color="white";
-        this.buttons.Y.el.style.right="1.25cm";
-        this.buttons.Y.el.style.bottom="1.75cm";
-        this.buttons.Y.el.style.backgroundColor="lime";
-        this.buttons.E.el.style.right="0.1cm";
-        this.buttons.E.el.style.bottom="3.25cm";
-        this.buttons.E.el.style.backgroundColor="magenta";
-        this.buttons.F.el.style.right="1.25cm";
-        this.buttons.F.el.style.bottom="3cm";
-        this.buttons.F.el.style.backgroundColor="cyan";
-      }
-    }
-    $App.gamepad=new $App.Gamepad()
     
     /*****Array */
     $App.Array=function(type, dim, values){
@@ -2926,10 +2525,6 @@ window.appJScode=function(){
         
       },
     };
-    
-    
-    
-    
     
     /**Console */
     $App.Console=function(){
@@ -3876,7 +3471,6 @@ window.appJScode=function(){
     $App.prompt=window.prompt;
   
     $App.handleModalDialog=function(){
-      $App.gamepad.resetAllButtons();
       $App.mouse.down=false;
       $App.keyboard.reset();
     };
@@ -4455,213 +4049,6 @@ window.appJScode=function(){
       },
       {name: 'year', type: 'int', info: 'Die aktuelle Jahreszahl (vierstellig).'}
     ], "everywhere");
-    
-    $App.addObject('gamepad',false,{
-      get left(){
-        return $App.gamepad.isButtonPressed("left");
-      },
-      get up(){
-        return $App.gamepad.isButtonPressed("up");
-      },
-      get right(){
-        return $App.gamepad.isButtonPressed("right");
-      },
-      get down(){
-        return $App.gamepad.isButtonPressed("down");
-      },
-      get X(){
-        return $App.gamepad.isButtonPressed("X");
-      },
-      get Y(){
-        return $App.gamepad.isButtonPressed("Y");
-      },
-      get A(){
-        return $App.gamepad.isButtonPressed("A");
-      },
-      get B(){
-        return $App.gamepad.isButtonPressed("B");
-      },
-      get E(){
-        return $App.gamepad.isButtonPressed("E");
-      },
-      get F(){
-        return $App.gamepad.isButtonPressed("F");
-      },
-      set left(key){
-        $App.gamepad.setButtonKey("left",key);
-      },
-      set right(key){
-        $App.gamepad.setButtonKey("right",key);
-      },
-      set up(key){
-        $App.gamepad.setButtonKey("up",key);
-      },
-      set down(key){
-        $App.gamepad.setButtonKey("down",key);
-      },
-      set X(key){
-        $App.gamepad.setButtonKey("X",key);
-      },
-      set Y(key){
-        $App.gamepad.setButtonKey("Y",key);
-      },
-      set A(key){
-        $App.gamepad.setButtonKey("A",key);
-      },
-      set B(key){
-        $App.gamepad.setButtonKey("B",key);
-      },
-      set E(key){
-        $App.gamepad.setButtonKey("E",key);
-      },
-      set F(key){
-        $App.gamepad.setButtonKey("F",key);
-      },
-      get multiaxis(){
-        return $App.gamepad.multiaxis;
-      },
-      set multiaxis(v){
-        $App.gamepad.multiaxis=v;
-      },
-      show: function(){
-        $App.gamepad.setVisible(true);
-      },
-      hide: function(){
-        $App.gamepad.setVisible(false);
-      },
-    },'Erlaubt die Benutzung des Gamepads.',
-    [
-      {
-        name: 'show',
-        returnType: null,
-        info: 'Zeigt das Gamepad an.'
-      }, 
-      {
-        name: 'hide',
-        returnType: null,
-        info: 'Verbirgt das Gamepad.'
-      },
-      {
-        name: 'left',
-        type: 'boolean',
-        info: 'Wird gerade der Joystick nach links bewegt?',
-      },
-      {
-        name: 'setLeft',
-        language: "java",
-        returnType: null,
-        args: [{name: 'keycode', type: 'int', info: 'Keycode der Taste, die mit "Links" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "Steuerkreuz - Links" verbunden werden soll.',
-      },
-      {
-        name: 'right',
-        type: 'boolean',
-        info: 'Wird gerade der Joystick nach rechts bewegt?'
-      },
-      {
-        name: 'setRight',
-        language: "java",
-        returnType: null,
-        args: [{name: 'keycode', type: 'int', info: 'Keycode der Taste, die mit "Rechts" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "Steuerkreuz - Rechts" verbunden werden soll.',
-      }, 
-      {
-        name: 'up',
-        type: 'boolean',
-        info: 'Wird gerade der Joystick nach oben bewegt?'
-      },
-      {
-        name: 'setUp',
-        language: "java",
-        returnType: null,
-        args: [{name: 'keycode', type: 'int', info: 'Keycode der Taste, die mit "Oben" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "Steuerkreuz - Oben" verbunden werden soll.',
-      },
-      {
-        name: 'down',
-        type: 'boolean',
-        info: 'Wird gerade der Joystick nach unten bewegt?'
-      }, 
-      {
-        name: 'setDown',
-        language: "java",
-        returnType: null,
-        args: [{name: 'keycode', type: 'int', info: 'Keycode der Taste, die mit "Unten" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "Steuerkreuz - Unten" verbunden werden soll.',
-      },
-      {
-        name: 'A',
-        type: 'boolean',
-        info: 'Wird gerade die Taste "A" gedrueckt?'
-      }, 
-      {
-        name: 'setA',
-        language: "java",
-        returnType: null,
-        args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "A" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "A" verbunden werden soll.',
-      },
-      {
-        name: 'B',
-        type: 'boolean',
-        info: 'Wird gerade die Taste "B" gedrueckt?'
-      },
-      {
-        name: 'setB',
-        language: "java",
-        returnType: null,
-        args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "B" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "B" verbunden werden soll.',
-      }, 
-      {
-        name: 'X',
-        type: 'boolean',
-        info: 'Wird gerade die Taste "X" gedrueckt?'
-      }, 
-      {
-        name: 'setX',
-        language: "java",
-        returnType: null,
-        args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "X" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "X" verbunden werden soll.',
-      },
-      {
-        name: 'Y',
-        type: 'boolean',
-        info: 'Wird gerade die Taste "Y" gedrueckt?'
-      }, 
-      {
-        name: 'setY',
-        language: "java",
-        returnType: null,
-        args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "Y" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "Y" verbunden werden soll.',
-      },
-      {
-        name: 'E',
-        type: 'boolean',
-        info: 'Wird gerade die Taste "E" gedrueckt?'
-      }, 
-      {
-        name: 'setE',
-        language: "java",
-        returnType: null,
-        args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "E" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "E" verbunden werden soll.',
-      },
-      {
-        name: 'F',
-        type: 'boolean',
-        info: 'Wird gerade die Taste "F" gedrueckt?'
-      },
-      {
-        name: 'setF',
-        language: "java",
-        returnType: null,
-        args: [{name: 'taste', type: 'String', info: 'Name der Taste, die mit "F" verbunden werden soll.'}],
-        info: 'Legt fest, welche Taste auf der Tastatur mit "F" verbunden werden soll.',
-      },
-    ],'Durch Zuweisen eines Zeichens zu einer Taste kannst du festlegen, welche Taste zu welchem Button gehoert:<code><pre>function onStart(){\n\tgamepad.show();\n\t//Bewegung mit WASD:\n\tgamepad.up = "W";\n\tgamepad.down = "S";\n\tgamepad.left = "A";\n\tgamepad.right = "D";\n\t//Buttons E und F ausblenden:\n\tgamepad.E = null;\n\tgamepad.F = null;\n\t//Button B durch Leertaste:\n\tgamepad.B = " ";\n}</pre></code>');
     
     $App.addObject('path',false,{
       begin: function (x,y){
@@ -5709,5 +5096,5 @@ window.appJScode=function(){
     }else{
       $main=null;
     }
-
+    var gamepad;
 }

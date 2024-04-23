@@ -53,11 +53,43 @@ export function defineGamepad(Clazz,Java){
     ]
   },Clazz,false,false);
   createMethod({
-    name: 'setButtonListener',
+    name: 'setPadding',
+    args: [
+      {name: "p", type: "String"}
+    ]
+  },Clazz,false,false);
+  createMethod({
+    name: 'setEventListener',
     args: [
       {name: "button", type: "String"},
       {name: "event", type: "String"},
       {name: "(ev)->{}", type: "ActionListener"},
+    ]
+  },Clazz,false,false);
+  createMethod({
+    name: 'setDirectionButtonsSize',
+    args: [
+      {name: "size", type: "double"}
+    ]
+  },Clazz,false,false);
+  createMethod({
+    name: 'setActionButtonsSize',
+    args: [
+      {name: "size", type: "double"}
+    ]
+  },Clazz,false,false);
+  createMethod({
+    name: 'setKey',
+    args: [
+      {name: "button", type: "String"},
+      {name: "key", type: ["String","int"]}
+    ]
+  },Clazz,false,false);
+  createMethod({
+    name: 'setButtonVisible',
+    args: [
+      {name: "button", type: "String"},
+      {name: "visible", type: "boolean"}
     ]
   },Clazz,false,false);
 }

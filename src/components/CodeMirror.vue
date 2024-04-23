@@ -300,6 +300,22 @@ export default {
             this.$emit("caretupdate",v.state.selection.main.head);
             if(!v.docChanged) return;
             if(!v.changedRanges || v.changedRanges.length===0) return;
+            // if(v.transactions.length===1){
+            //   let t=v.transactions[0];
+            //   if(t.changes && t.changes.inserted.length>0){
+            //     let lastChange=t.changes.inserted[t.changes.inserted.length-1];
+            //     if(lastChange.text && lastChange.text.length===1){
+            //       let inserted=lastChange.text[0];
+            //       let key=inserted.codePointAt(0);
+            //       if(key>=65 && key<=122 || key>=48 && key<=57){
+            //         return;
+            //       }
+            //     }
+            //   }
+            // }
+            if(v.changedRanges.length===1 && (v.changedRanges[0].toA-v.changedRanges[0].fromA===1)){
+
+            }
             this.size=v.state.doc.length;
             this.src=v.state.doc.toString();
             if(this.clazz.hasClazzDeclaration){

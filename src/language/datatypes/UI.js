@@ -848,6 +848,18 @@ function defineCanvas(Clazz,Java){
     returnType: 'double'
   },Clazz,false,false,Java);
   createMethod({
+    name: 'isMouseOver',
+    args: [],
+    info: 'Prüft, ob sich die Maus aktuell über dem Canvas befindet.',
+    returnType: 'boolean'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'isMousePressed',
+    args: [],
+    info: 'Prüft, ob die Maustaste gedrückt ist und sich die Maus aktuell über dem Canvas befindet.',
+    returnType: 'boolean'
+  },Clazz,false,false,Java);
+  createMethod({
     name: 'getChildAtPoint',
     args: [{name: "x", type: "double"}, {name: "y", type: "double"}],
     info: 'Liefert die Komponente an dieser Stelle.',

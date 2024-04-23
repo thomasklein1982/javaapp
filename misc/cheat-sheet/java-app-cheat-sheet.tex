@@ -248,10 +248,22 @@ gamepad.addButtonListener("B", (ev)->{
 Jedes Gamepad-Objekt erzeugt ein On-Screen-Gamepad, das automatisch mit einem physischen Gamepad verbunden wird, falls ein solches Gamepad an das Gerät angeschlossen wird.
 \startitemize[4,nowhite]
 \befehlJA{new Gamepad()}{Erzeugt ein neues Gamepad und zeigt es auf dem Bildschirm an.}
-\befehlJA{addButtonListener(String b, (ev)->{Anweisungen})}{Legt fest, welche Anweisungen ausgeführt werden sollen, wenn der entsprechende Button gedrückt wird. Mögliche Werte für \mono{b} sind \injava{"A"}, \injava{"B"}, \injava{"X"}, \injava{"Y"}, \injava{"UP"}, \injava{"DOWN"}, \injava{"LEFT"}, \injava{"RIGHT"}. 
-%\getbuffer[addbuttonlistener]
+\befehl{setEventListener(String button, String event, (ev)->{Anweisungen})}{
+Legt fest, was passieren soll, wenn ein Button gedrückt bzw. losgelassen wird.
+\vskip-\baselineskip
+\startitemize[1,packed]
+\item \mono{button}: \injava{"A"}, \injava{"B"}, \injava{"X"}, \injava{"Y"}, \injava{"LEFT"}, \injava{"RIGHT"}, \injava{"UP"} oder \injava{"DOWN"}.
+\item \mono{event}: \injava{"pressed"} oder \injava{"released"}
+\stopitemize
+
 }
-\befehlJA{setBounds(double x, double y, double w, double h)}{Legt fest, in welchem Bereich des Bildschirms das Gamepad angezeigt werden soll. Alle Angaben sind in \percent. $(\mono{x}\mid \mono{y})$ ist der linke untere Eckpunkt, \mono{w} ist die Breite, \mono{h} die Höhe.}
+\befehlJA{setPosition(String left, String bottom)}{Legt den Abstand zum linken unteren Bildschirmrand fest.\\
+Z.~B. \injava{setPosition("2cm","3cm")}}
+\befehlJA{setWidth(String width)}{Legt die Breite des Gamepads inklusive Padding fest.\\
+Z.~B. \injava{setWidth("50[[\percent]]")}}
+\befehlJA{setPadding(String p)}{Legt fest, wie viel Abstand das Steuerkreuz und die ActionButtons vom Rand haben sollen. Z.~B. \injava{setPadding("0.5cm")}}
+\befehlJA{getDirection(): String}{Liefert einen String zurück, der die Richtung beschreibt, in die das Steuerkreuz gerade zeigt: \injava{"n"}, \injava{"s"}, \injava{"w"}, \injava{"e"}, \injava{"nw"}, \injava{"ne"}, \injava{"sw"} oder \injava{"se"}.}
+\befehlJA{isLeftPressed()/isRightPressed()/isUpPressed()/isDownPressed(): boolean}{Liefert \mono{true} zurück, wenn der entsprechende Richtungsbutton gedrückt ist, sonst \mono{false}.}
 \stopitemize
 \stopsubject
 

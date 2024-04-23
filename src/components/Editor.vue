@@ -438,7 +438,7 @@ export default {
         }catch(e){
           console.error(e);
         }
-        download(this.project.getFullAppCode("",true),this.project.getName()+".html","text/html");
+        download(this.project.getFullAppCode("console.hide()",true),this.project.getName()+".html","text/html");
       }
     },
     async uploadProject(){
