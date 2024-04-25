@@ -30,15 +30,25 @@ export class Attribute{
   }
 
   getJavaScriptCode(){
-    let code="this."+this.name+"=";
-    let v;
-    if(!this.type){
-      return "";
-    }
-    if(this.type.baseType instanceof Clazz || this.type.dimension>0){
-      v="null";
+    let code;
+    if(this.isStatic()){
+      code="static "+this.name;
     }else{
-      v=JSON.stringify(this.type.baseType.initialValue);
+      code=this.name;
+    }
+    code+="=";
+    let v;
+    if(this.initialValue){
+      v=this.initialValue;
+    }else{
+      if(!this.type){
+        return "";
+      }
+      if(this.type.baseType instanceof Clazz || this.type.dimension>0){
+        v="null";
+      }else{
+        v=JSON.stringify(this.type.baseType.initialValue);
+      }
     }
     code+=v+";";
     return code;

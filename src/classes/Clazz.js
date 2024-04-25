@@ -87,13 +87,11 @@ export class Clazz{
     // if(this.hasStaticMainMethod()){
     //   code+="if(!window.$main){window.$main=this;}";
     // }
-    let attributesInitCode="";
+    let attributesCode="";
+    //let attributesInitCode="";
     for(let i in this.attributes){
       let a=this.attributes[i];
-      code+="\n"+a.getJavaScriptCode();
-      if(a.initialValue){
-        attributesInitCode+="\nthis."+a.name+"="+a.initialValue+";";
-      }
+      attributesCode+="\n"+a.getJavaScriptCode()+";";
     }
     /**Falls option aktiv, wird in der Hauptklasse für jede UI-Klasse 1 Attribut mit einer Instanz der UI-Klasse erzeugt: */
     let onStartPrecode="";
@@ -109,12 +107,13 @@ export class Clazz{
       }
     }
     code+="\n}";
+    code+=attributesCode;
     let hasConstructor=false;
     let hasOnStart=false;
     for(let i in this.methods){
       let m=this.methods[i];
       if(m.isConstructor()){
-        code+="\n"+m.getJavaScriptCode(attributesInitCode+"\n");
+        //code+="\n"+m.getJavaScriptCode(attributesInitCode+"\n");
         hasConstructor=true;
       }else{
         if(m.name==="onStart"){
@@ -130,7 +129,7 @@ export class Clazz{
       code+="\nasync onStart(){"+onStartPrecode+"\n}";
     }
     if(!hasConstructor){
-      code+="\nasync $constructor(typeArguments){\nthis.$typeArguments=typeArguments;\n"+attributesInitCode+"\nreturn this;}";
+      code+="\nasync $constructor(typeArguments){\nthis.$typeArguments=typeArguments;\nreturn this;}";
     }
     code+="\n$getType(infos){\nif(infos.isGeneric){\nreturn this.$typeArguments[infos.name];}\nreturn infos;}";
     code+="\n}";
