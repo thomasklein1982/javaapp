@@ -24,6 +24,7 @@
         @lint="currentEditor?.toggleLintPanel()"
         @toggleright="toggleRight()"
         @resources="$refs.dialogResources.setVisible(true)"
+        @help="$refs.dialogHelp.setVisible(true)"
         @database="$refs.dialogDatabase.setVisible(true)"
         @assets="$refs.dialogAssets.setVisible(true)"
         @details="$refs.dialogProjectDetails.setVisible(true)"
@@ -40,6 +41,9 @@
       />
       <LinksDialog
         ref="dialogResources"
+      />
+      <HelpDialog
+        ref="dialogHelp"
       />
       <ImageEditorDialog ref="imageEditor"/>
       <ProjectDetailsDialog
@@ -176,6 +180,7 @@ import PrintPreview from "./PrintPreview.vue";
 import ImageEditorDialog from "./ImageEditorDialog.vue";
 import Insights from "./Insights.vue";
 import TerminalDialog from "./TerminalDialog.vue";
+import HelpDialog from "./HelpDialog.vue";
 
 export default {
   props: {
@@ -570,7 +575,8 @@ export default {
     ProjectDetailsDialog,
     ImageEditorDialog,
     Insights,
-    TerminalDialog
+    TerminalDialog,
+    HelpDialog
   }
 }
 </script>

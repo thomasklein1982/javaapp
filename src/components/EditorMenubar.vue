@@ -204,6 +204,13 @@ export default {
         {
           label: "Extras",
           items: [
+          {
+              label: 'Hilfe',
+              icon: 'pi pi-question-circle',
+              command: (ev)=>{
+                this.$emit("help");
+              }
+            },
             {
               label: 'Links',
               icon: 'pi pi-star',
