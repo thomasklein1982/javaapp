@@ -873,8 +873,8 @@ function defineCanvas(Clazz,Java){
       {name: 'cy', type: 'double'},
       {name: 'width', type: 'double'},
       {name: 'height', type: 'double'},
-      {name: 'rotation', type: 'double'},
-      {name: 'mirrored', type: 'boolean'},
+      {name: 'rotation', type: 'double', optional: true},
+      {name: 'mirrored', type: 'boolean', optional: true},
     ],//image, cx, cy, width, height
     info: 'Zeichnet ein Bild in den Canvas.'
   },Clazz,false,false,Java);

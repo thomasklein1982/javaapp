@@ -38,8 +38,8 @@
 Diese Methoden müssen von \mono{JComponent}-Elementen aufgerufen werden, z. B. \type[option=java]{label.setValue("Text");}.
 \startsubsubject[title={Alle UI-Komponenten (\mono{JComponent})}]
 \startitemize[4,nowhite]
-\befehlJA{setValue(String)}{Ändert den Text des Elements.}
-\befehlJA{getValue(): String}{Liefert den Text des Elements zurück.}
+\befehlJA{setValue(String)}{Ändert den Text/Wert des Elements.}
+\befehlJA{getValue(): String}{Liefert den Text/Wert des Elements zurück.}
 \befehlJA{show()/hide()}{Macht die Komponente sichtbar / unsichtbar.}
 \befehlJA{setStyle(String css-eigenschaft, String wert)}{Legt eine CSS-Eigenschaft fest, z. B. \injava{setStyle("color","red")}}
 \befehlJA{setStyle(String css-eigenschaft, String wert)}{Legt eine CSS-Eigenschaft fest, z. B. \injava{setStyle("color","red")}}
@@ -244,8 +244,19 @@ gamepad.addButtonListener("B", (ev)->{
 \stopjava
 \stopbuffer
 
+
+\column
+\startsubject[title=JImage]
+UI-Komponente, die ein Bild darstellt. Erst PNG oder JPG als Asset hochladen und Namen geben.
+\vskip-\baselineskip
+\startitemize[4,nowhite]
+\befehlJA{new JImage(String asset)}{Erzeugt ein neues \mono{JImage}-Objekt.}
+\stopitemize
+\stopsubject
+
 \startsubject[title=Gamepad]
 Jedes Gamepad-Objekt erzeugt ein On-Screen-Gamepad, das automatisch mit einem physischen Gamepad verbunden wird, falls ein solches Gamepad an das Gerät angeschlossen wird.
+\vskip-\baselineskip
 \startitemize[4,nowhite]
 \befehlJA{new Gamepad()}{Erzeugt ein neues Gamepad und zeigt es auf dem Bildschirm an.}
 \befehl{setEventListener(String button, String event, (ev)->{Anweisungen})}{
@@ -253,7 +264,7 @@ Legt fest, was passieren soll, wenn ein Button gedrückt bzw. losgelassen wird.
 \vskip-\baselineskip
 \startitemize[1,packed]
 \item \mono{button}: \injava{"A"}, \injava{"B"}, \injava{"X"}, \injava{"Y"}, \injava{"LEFT"}, \injava{"RIGHT"}, \injava{"UP"} oder \injava{"DOWN"}.
-\item \mono{event}: \injava{"pressed"} oder \injava{"released"}
+\item \mono{event}: \injava{"press"} oder \injava{"release"} oder \injava{"click"}
 \stopitemize
 
 }
@@ -267,6 +278,7 @@ Z.~B. \injava{setWidth("50[[\percent]]")}}
 \stopitemize
 \stopsubject
 
+\column
 \startsubject[title=Konsole]
 \startitemize[4,nowhite]
 \befehl{System.out.println(String)}{Gibt eine Zeile in der Konsole aus.}

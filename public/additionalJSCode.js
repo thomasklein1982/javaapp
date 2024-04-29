@@ -2965,10 +2965,11 @@ function additionalJSCode(){
       this.gamepad.rootElement.appendChild(this.ui);
       this.isPressed=false;
       this.ui.addEventListener("pointerenter",(ev)=>{
+        let wasPressed=this.isPressed;
         this.isPressed=ev.buttons>0;
         this.updateHover();
-        if(this.isPressed){
-          this.gamepad.onButtonEvent(this.name,"pressed",ev);
+        if(this.isPressed && !wasPressed){
+          this.gamepad.onButtonEvent(this.name,"press",ev);
         }
       });
       this.ui.addEventListener("pointerdown",(ev)=>{
@@ -2978,19 +2979,22 @@ function additionalJSCode(){
         this.isPressed=ev.buttons>0;
         this.updateHover();
         if(this.isPressed){
-          this.gamepad.onButtonEvent(this.name,"pressed",ev);
+          this.gamepad.onButtonEvent(this.name,"press",ev);
         }
       });
       this.ui.addEventListener("pointerup",(ev)=>{
         this.isPressed=false;
         this.updateHover();
-        this.gamepad.onButtonEvent(this.name,"released",ev);
+        this.gamepad.onButtonEvent(this.name,"release",ev);
       });
       this.ui.addEventListener("pointerout",(ev)=>{
+        let wasPressed=this.isPressed;
         this.isPressed=false;
         this.updateHover();
-        this.gamepad.onButtonEvent(this.name,"released",ev);
-
+        if(wasPressed) this.gamepad.onButtonEvent(this.name,"release",ev);
+      });
+      this.ui.addEventListener("click",(ev)=>{
+        this.gamepad.onButtonEvent(this.name,"click",ev);
       });
     }
     setVisible(v){
@@ -3007,7 +3011,7 @@ function additionalJSCode(){
       if(this.key===key){
         this.isPressed=true;
         this.updateHover();
-        this.gamepad.onButtonEvent(this.name,"pressed",{});
+        this.gamepad.onButtonEvent(this.name,"press",{});
         return true;
       }
       return false;
@@ -3016,7 +3020,7 @@ function additionalJSCode(){
       if(this.key===key){
         this.isPressed=false;
         this.updateHover();
-        this.gamepad.onButtonEvent(this.name,"released",{});
+        this.gamepad.onButtonEvent(this.name,"release",{});
         return true;
       }
       return false;
@@ -3150,6 +3154,72 @@ function additionalJSCode(){
       this.ui.style.left="calc("+left+" + "+offsetX*scaling+"cm)";
       this.ui.style.bottom="calc("+bottom+" + "+offsetY*scaling+"cm)";
       this.ui.style.width=scaling+"cm";
+    }
+  }
+
+  class World{
+    $constructor(description){
+      this.tiles=null;
+      this.scrollTo(0,0);
+      this.setDescription(description);
+    }
+    getWorldX(x){
+      return x+this.scroll.x;
+    }
+    getWorldY(y){
+      return y+this.scroll.y;
+    }
+    getType(x,y){
+      if(!this.tiles) return null;
+      y=Math.round(y);
+      let line=this.tiles[y];
+      if(!line) return null;
+      x=Math.round(x);
+      if(!line[x]) return null;
+      return line[x];
+    }
+    setType(x,y,type){
+      if(!this.tiles) return;
+      y=Math.round(y);
+      let line=this.tiles[y];
+      if(!line) return;
+      x=Math.round(x);
+      if(!line[x]) return;
+      line[x]=type;
+    }
+    scrollTo(x,y){
+      
+      this.scroll={
+        x: x, y: y
+      };
+    }
+    scrollBy(x,y){
+      this.scroll.x+=x;
+      this.scroll.y+=y;
+    }
+    setDescription(s){
+      if(!s) return;
+      let lines=s.trim().split("\n");
+      this.tiles=[];
+      for(let i=0;i<lines.length;i++){
+        let l=lines[i];
+        let row=[];
+        this.tiles[lines.length-1-i]=row;
+        for(let j=0;j<l.length;j++){
+          row.push(l.charAt(j));
+        }
+      }
+    }
+    forEachTile(tileHandler){
+      if(!this.tiles) return;
+      for(let i=0;i<this.tiles.length;i++){
+        let l=this.tiles[i];
+        for(let j=0;j<l.length;j++){
+          let x=j-this.scroll.x//+cx;
+          let y=i-this.scroll.y//+cy;
+          tileHandler.handleTile(x,y,l[j]);
+        }
+      }
     }
   }
 
