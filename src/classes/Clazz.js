@@ -113,7 +113,7 @@ export class Clazz{
     for(let i in this.methods){
       let m=this.methods[i];
       if(m.isConstructor()){
-        //code+="\n"+m.getJavaScriptCode(attributesInitCode+"\n");
+        code+="\n"+m.getJavaScriptCode();
         hasConstructor=true;
       }else{
         if(m.name==="onStart"){
