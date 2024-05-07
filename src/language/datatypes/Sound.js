@@ -11,11 +11,11 @@ export function defineSound(Clazz,Java){
   },Clazz);
   createMethod({
     name: 'beep',
-    args: [
-      {name: 'type', type: 'String', info: 'sine, square, triangle.'}, 
+    args: [ 
       {name: 'frequency', type: 'int', info: 'Frequenz.'}, 
-      {name: 'volumne', type: 'double', info: 'Lautstärke.'}, 
-      {name: 'duration', type: 'int', info: 'Dauer in ms.'}
+      {name: 'volume', type: 'double', info: 'Lautstärke.'}, 
+      {name: 'duration', type: 'int', info: 'Dauer in ms.'},
+      {name: 'type', type: 'String', info: 'sine, square, triangle.', optional: true}
     ],
     isExtraFunction: true,
     jsName: "$beep",

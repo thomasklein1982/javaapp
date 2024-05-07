@@ -40,6 +40,30 @@ export function defineGamepad(Clazz,Java){
     returnType: "boolean"
   },Clazz,false,false);
   createMethod({
+    name: 'isAPressed',
+    args: [
+    ],
+    returnType: "boolean"
+  },Clazz,false,false);
+  createMethod({
+    name: 'isBPressed',
+    args: [
+    ],
+    returnType: "boolean"
+  },Clazz,false,false);
+  createMethod({
+    name: 'isXPressed',
+    args: [
+    ],
+    returnType: "boolean"
+  },Clazz,false,false);
+  createMethod({
+    name: 'isYPressed',
+    args: [
+    ],
+    returnType: "boolean"
+  },Clazz,false,false);
+  createMethod({
     name: 'setPosition',
     args: [
       {name: "left", type: "String"},

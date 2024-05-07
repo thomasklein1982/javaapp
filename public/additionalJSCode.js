@@ -125,7 +125,8 @@ function additionalJSCode(){
     }
   }
 
-  function $beep(object,type, frequency, volume, duration){
+  function $beep(object,frequency, volume, duration, type){
+    if(!type) type="sine";
     let oscillator = audioCtx.createOscillator();
     let gainNode = audioCtx.createGain();
 
@@ -2823,6 +2824,18 @@ function additionalJSCode(){
     }
     isLeftPressed(){
       return this.dpad.isPressed("w");
+    }
+    isAPressed(){
+      return this.buttons.A.isPressed;
+    }
+    isBPressed(){
+      return this.buttons.B.isPressed;
+    }
+    isXPressed(){
+      return this.buttons.X.isPressed;
+    }
+    isYPressed(){
+      return this.buttons.Y.isPressed;
     }
     setButtonVisible(button,visible){
       let b=this.getActionButtonByName(button);
