@@ -2803,9 +2803,13 @@ function additionalJSCode(){
       this.updateLayout();
     }
     setEventListener(button, event, handler){
+      event=event.toLowerCase();
+      button=button.toLowerCase();
       this.buttonHandlers[button+":"+event]=handler;
     }
     onButtonEvent(button,event,eventData){
+      event=event.toLowerCase();
+      button=button.toLowerCase();
       let handler=this.buttonHandlers[button+":"+event];
       if(!handler) return;
       handler.actionPerformed(eventData);
@@ -2874,6 +2878,17 @@ function additionalJSCode(){
       this.scaling=1;
       this.setPosition("1cm","1cm");
       this.buttons.center.hide();
+    }
+    handleEvent(dir,eventName,eventData){
+      let translation={
+        s: "down",
+        n: "up",
+        e: "right",
+        w: "left"
+      };
+      if(!(dir in translation)) return;
+      dir=translation[dir];
+      this.gamepad.onButtonEvent(dir,eventName,eventData);
     }
     keyDown(key){
       for(let a in this.buttons){
@@ -3073,8 +3088,15 @@ function additionalJSCode(){
       this.ui=document.createElement("div");
       this.ui.style="z-index: 100;bordesr: 1pt solid black; opacity: 0.5; position: fixed; aspect-ratio: 1; background-color: grey;touch-action: none;user-select: none;";
       this.ui.addEventListener("pointerenter",(ev)=>{
+        let wasPressed=this.isPressed;
         this.isPressed=ev.buttons>0;
         this.updateHover();
+        if(wasPressed && !this.isPressed){
+          this.dpad.handleEvent(this.dir,"release",ev);
+        }
+        if(!wasPressed && this.isPressed){
+          this.dpad.handleEvent(this.dir,"press",ev);
+        }
       });
       this.ui.addEventListener("pointerdown",(ev)=>{
         try{
@@ -3082,28 +3104,23 @@ function additionalJSCode(){
         }catch(e){}
         this.isPressed=ev.buttons>0;
         this.updateHover();
-        for(let i=0;i<this.listeners.down.length;i++){
-          let l=this.listeners.down[i];
-          l(ev);
-        }
+        this.dpad.handleEvent(this.dir,"press",ev);
       });
       this.ui.addEventListener("pointerup",(ev)=>{
         this.isPressed=false;
         this.updateHover();
-        for(let i=0;i<this.listeners.up.length;i++){
-          let l=this.listeners.up[i];
-          l(ev);
-        }
+        this.dpad.handleEvent(this.dir,"release",ev);
       });
       this.ui.addEventListener("pointerout",(ev)=>{
+        let wasPressed=this.isPressed;
         this.isPressed=false;
         this.updateHover();
+        if(wasPressed){
+          this.dpad.handleEvent(this.dir,"release",ev);
+        }
       });
       this.ui.addEventListener("click",()=>{
-        for(let i=0;i<this.listeners.click.length;i++){
-          let l=this.listeners.click[i];
-          l(ev);
-        }
+        this.dpad.handleEvent(this.dir,"click",ev);
       });
       this.dpad.gamepad.rootElement.appendChild(this.ui);
     }
@@ -3345,7 +3362,9 @@ function additionalJSCode(){
         window.$main=this;
         JavaApp.setWatchedObject(this);
         setTimeout(()=>{
-          $main.onStart();
+          if($main && $main.onStart){
+            $main.onStart();
+          }
         },10);
       }else{
         throw $new(Exception,"Es darf nur eine Instanz einer JavaApp-Klasse existieren.");
