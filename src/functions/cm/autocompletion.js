@@ -79,8 +79,7 @@ export function createAutocompletion(){
         span: /^[\w$]*$/
       }
     }
-    //console.log("autocomplete: look for annotations");
-    
+
     //handle error position:
     if(nodeBefore.parent.type.isError && nodeBefore.parent.prevSibling){
       nodeBefore=nodeBefore.parent.prevSibling;
@@ -138,7 +137,7 @@ export function createAutocompletion(){
         options,
         span: /^[\w$]*$/
       }
-    }else if(nodeBefore.name==="AssignOp"||nodeBefore.name==="Block"||nodeBefore.name==="["||nodeBefore.name==="("||nodeBefore.name==="{"||nodeBefore.name==="<" || nodeBefore.name==="," || nodeBefore.name==="ArithOp" || nodeBefore.name==="CompareOp" || nodeBefore.name==="return"){
+    }else if(nodeBefore.name==="AssignOp"||nodeBefore.name==="Block"||nodeBefore.name==="["||nodeBefore.name==="("||nodeBefore.name==="{"||nodeBefore.name==="<" || nodeBefore.name==="," || nodeBefore.name==="ArithOp" || nodeBefore.name==="LogicOp" || nodeBefore.name==="CompareOp" || nodeBefore.name==="return"){
       from=context.pos;
       let scope=method.getScopeAtPosition(from);
       annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true, scope};
@@ -173,7 +172,7 @@ export function createAutocompletion(){
   };
 }
 
-function completeProperties(from, type, isStatic, includeClasses, method, scope, currentClazz) {
+function completeProperties(from, type, isStatic, isTopLevel, method, scope, currentClazz) {
   let options = [];
   if(type.dimension>0){
     options.push({
@@ -188,30 +187,52 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope,
         options.push({
           label: vname,
           type: "variable",
-          info: "Eine lokale Variable des Typs "+locals[vname].type.toString()
+          info: "Eine lokale Variable des Typs "+locals[vname].type.toString(),
+          boost: 100
         });
       }
     }
     let clazz=type.baseType;
     if(!(clazz instanceof PrimitiveType)){
+      if(isTopLevel){
+        options.push({
+          label: "this",
+          type: "variable",
+          info: "Das Objekt selbst",
+          boost: 100
+        });
+        options.push({
+          label: "super",
+          type: "variable",
+          info: "Die Oberklasse",
+          boost: 50
+        });
+      }
+      let allAttributeNames={};
       while(clazz){
         //if(clazz.name==="nullType") continue;
         let attributeNames=clazz.getAllAttributeNames();
         for (let name in attributeNames) {
+          if(allAttributeNames[name]) continue;
+          allAttributeNames[name]=true;
           let a=clazz.getAttribute(name,isStatic);
           if(a && !a.error && a.isStatic()===isStatic && (!a.isPrivate() || currentClazz.name===clazz.name)){
             options.push({
               label: name,
               type: "variable",
-              info: a.comment
+              info: a.comment,
+              boost: 10
             });
           }
         }
         clazz=clazz.getRealSuperClazz();
       }
       clazz=type.baseType;
+      let methodNames={};
       while(clazz){
         for (let name in clazz.methods) {
+          if(methodNames[name]) continue;
+          methodNames[name]=true;
           let m=clazz.methods[name];
           if(m.isConstructor()) continue;
           if(m.isStatic()===isStatic  && (!m.isPrivate() || currentClazz.name===clazz.name)){
@@ -244,7 +265,7 @@ function completeProperties(from, type, isStatic, includeClasses, method, scope,
         clazz=clazz.getRealSuperClazz();
       }
     }
-    if(includeClasses){
+    if(isTopLevel){
       if(method){
         for(let i=0;i<snippets.inMethod.length;i++){
           options.push(snippets.inMethod[i]);

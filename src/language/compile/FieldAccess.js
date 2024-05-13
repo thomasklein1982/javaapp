@@ -7,6 +7,7 @@ import { CompileFunctions } from "../CompileFunctions";
 import { ArrayAccess } from "./ArrayAccess";
 import { Identifier } from "./Identifier";
 import { MethodInvocation } from "./MethodInvocation";
+import { Super } from "./Super";
 import { ThisExpression } from "./ThisExpression";
 
 /**
@@ -59,6 +60,16 @@ export function FieldAccess(node,source,scope){
     code+=This.code;
     owner={
       type: This.type,
+      static: false
+    };
+  }else if(node.name==="super"){
+    if(staticContext){
+      throw source.createError("Das Schlüsselwort 'super' existiert nicht in statischen Methoden.",node);
+    }
+    let sup=Super(node,source,scope);
+    code+=sup.code;
+    owner={
+      type: sup.type,
       static: false
     };
   }else if(node.name==="Identifier" || node.name==="TypeName"){

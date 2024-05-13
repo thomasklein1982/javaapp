@@ -71,6 +71,14 @@ export class Scope{
     
   }
 
+  getClazz(){
+    if(this.method){
+      return this.method.clazz;
+    }else{
+      return null;
+    }
+  }
+
   pushLayer(){
     this.stack.push({});
   }
