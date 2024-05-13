@@ -3332,17 +3332,19 @@ function additionalJSCode(){
             if(attr){
               type=attr.baseType;
               dimension=attr.dimension;
+              d.v[name]=$getData(name,{dimension,type,value}, template[name]);
             }
           }else{
           }
-          d.v[name]=$getData(name,{dimension,type,value}, template[name]);
+          
         }
       }
     }
     return d;
   }
   
-  function $getMainData(){
+  function $getMainData(template){
+    if(template) $App.debug.mainTemplate=template;
     let obj=$App.watchedObject;
     if(obj){
       
@@ -3566,9 +3568,9 @@ function additionalJSCode(){
       let that=undefined;
       if(this.thisObject && template.that){
         let type=this.thisObject.constructor.name;
-        that=$getData("this",{type: type,dimension: 0, value: this.thisObject}, template.that);
+        that=$getData("this",{type: type,dimension: 0, value: this.thisObject}, template.that["this"]);
       }
-      let main=$getMainData();
+      let main=$getMainData(template.main.main);
       
       let res={
         local, that, main

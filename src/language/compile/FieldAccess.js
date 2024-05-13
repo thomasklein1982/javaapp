@@ -128,6 +128,6 @@ export function FieldAccess(node,source,scope){
     returnType=object.type;
   }
   return {
-    code,type: returnType, owner: owner.object, codeAssign: code
+    code,type: returnType, owner: owner.object, codeAssign: code, codeUpdate: code
   };
 }

@@ -36,6 +36,7 @@
         }
       },
       askForScope(template){
+        console.log("template",template);
         if(this.frame){
           this.frame.contentWindow.postMessage({
             type: "getScope",

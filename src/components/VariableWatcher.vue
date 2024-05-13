@@ -1,10 +1,9 @@
 <template>
-  <div :style="{marginLeft: depth+'em'}">
+  <div :style="{marginLeft: depth===0? '0cm':'0.5em'}">
     <div @click="clickExpand()" class="unselectable" style="cursor: pointer; display: flex; align-items: center;">
       <span :style="{visibility: isExpandable? '':'hidden'}" :class="isExpanded? 'pi pi-angle-down':'pi pi-angle-right'"/><slot name="header">{{ variable.n }}</slot>: {{ value }}
     </div>
     <template v-if="isExpanded">
-      {{ depth>1? variable.v:'' }}
       <template v-for="(v,i) in variable.v">
         <VariableWatcher
           :variable="v"
@@ -33,6 +32,7 @@ export default{
       return this.template && this.template[this.variable.n];
     },
     isObject(){
+      if(!this.variable.t) return false;
       let c=this.variable.t.charAt(0);
       return this.variable.t!=="String" && c===c.toUpperCase();
     },
@@ -57,6 +57,7 @@ export default{
   },
   methods: {
     clickExpand(){
+      if(!this.isExpandable) return;
       if(this.isExpanded){
         delete this.template[this.variable.n];
       }else{

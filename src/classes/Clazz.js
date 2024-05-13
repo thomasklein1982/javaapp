@@ -202,8 +202,8 @@ export class Clazz{
         dimension: at.type.dimension
       };
     }
-    if(this.superClazz && this.superClazz.getAllAttributeNames){
-      return this.superClazz.getAllAttributeNames(names);
+    if(this.superClazz && this.superClazz.getAllDynamicAttributeNamesAndTypes){
+      return this.superClazz.getAllDynamicAttributeNamesAndTypes(names);
     }
     return names;
   }

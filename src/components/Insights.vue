@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%; width: 100%; overflow: auto" :style="{display: 'flex', 'flex-direction': 'column'}">
+  <div style="height: 100%; width: 100%; overflow: auto; font-family: monospace" :style="{display: 'flex', 'flex-direction': 'column'}">
     <div>
       <Button :disabled="!paused" @click="$emit('resume')" icon="pi pi-play" />
       <Button :disabled="!paused" @click="$emit('step-above')" icon="pi pi-arrow-right" />
