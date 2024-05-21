@@ -508,7 +508,7 @@ function defineJTextComponent(Clazz, Java){
 function defineJTextField(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'String', name: 'type'}, {type: 'String', name: 'placeholder'}
+      {type: 'String', name: 'type', optional: true}, {type: 'String', name: 'placeholder'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JTextComponent;

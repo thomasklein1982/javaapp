@@ -42,7 +42,7 @@
       <LinksDialog
         ref="dialogResources"
       />
-      <HelpDialog
+      <DocumentationDialog
         ref="dialogHelp"
       />
       <ImageEditorDialog ref="imageEditor"/>
@@ -180,7 +180,7 @@ import PrintPreview from "./PrintPreview.vue";
 import ImageEditorDialog from "./ImageEditorDialog.vue";
 import Insights from "./Insights.vue";
 import TerminalDialog from "./TerminalDialog.vue";
-import HelpDialog from "./HelpDialog.vue";
+import DocumentationDialog from "./DocumentationDialog.vue";
 
 export default {
   props: {
@@ -576,7 +576,7 @@ export default {
     ImageEditorDialog,
     Insights,
     TerminalDialog,
-    HelpDialog
+    DocumentationDialog
   }
 }
 </script>

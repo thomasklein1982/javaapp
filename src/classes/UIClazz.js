@@ -298,7 +298,7 @@ export class UIClazz extends Clazz{
   }
 
   getUIPreviewCode(){
-    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;\nconsole.hide();\nconsole.log('set onstart');setTimeout(async ()=>{await $App.setup();\nconsole.log('start preview');\n(new "+this.name+"("+")).$constructor();},100);",false,true);
+    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;\nconsole.hide();\nconsole.log('set onstart');setTimeout(async ()=>{await $App.setup();var sheet = window.document.styleSheets[0];sheet.insertRule('.__jcomponent:hover{ background: cyan;opacity: 0.5; }', sheet.cssRules.length);\nconsole.log('start preview');\n(new "+this.name+"("+")).$constructor();},100);",false,true);
     return code;
   }
 

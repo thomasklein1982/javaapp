@@ -215,6 +215,9 @@ function additionalJSCode(){
   }
 
   function $getFromArray(array,index){
+    if(!array){
+      throw $new(Exception,"Das Array muss zunächst initalisiert werden.");
+    }
     if(array.$type){
       return $arrayGet(array,index);
     }else{
@@ -223,6 +226,9 @@ function additionalJSCode(){
   }
 
   function $setInArray(array,index,value,assignOp){
+    if(!array){
+      throw $new(Exception,"Das Array muss zunächst initalisiert werden.");
+    }
     if(assignOp==="+="){
       value=$getFromArray(array,index)+value;
     }else if(assignOp==="-="){
@@ -911,7 +917,7 @@ function additionalJSCode(){
       this.$triggerOnMouseDown=false;
       this.$triggerOnMouseUp=false;
       this.$triggerOnMouseMove=false;
-      this.standardCSSClasses="";
+      this.standardCSSClasses="__jcomponent";
       this.actionListeners=[];
     }
     addEventListener(type, listener){
@@ -1198,6 +1204,7 @@ function additionalJSCode(){
       this.$el.component=this;
       this.$triggerOnAction=true;
       this.$el.onclick = $handleOnAction;
+      this.setCSSClass("");
     }
   }
 
@@ -1407,6 +1414,7 @@ function additionalJSCode(){
       this.setValue(text);
       this.$el.component=this;
       this.$el.onclick = $handleOnAction;
+      this.setCSSClass("");
     }
   }
 
@@ -1493,7 +1501,7 @@ function additionalJSCode(){
   class Canvas extends JPanel{
     $constructor(minX,maxX,minY,maxY,x,y,width,height){
       super.$constructor(x,y,width,height);
-      this.standardCSSClasses="_java-app-canvas";
+      this.standardCSSClasses="_java-app-canvas __jcomponent";
       if(this.$el && this.$el.parentNode) this.$el.parentNode.removeChild(this.$el);
       this.$el=ui.canvas(maxX-minX,maxY-minY,x,y,width,height);
       this.$el.style.touchAction="none";
@@ -1784,6 +1792,8 @@ function additionalJSCode(){
 
   class JTextField extends JTextComponent{
     $constructor(type,placeholder,x,y,width,height){
+      if(!type) type="text";
+      if(!placeholder) placeholder="";
       super.$constructor(x,y,width,height);
       this.$el=ui.input(type,placeholder,x,y,width,height);
       this.$el.spellcheck=false;

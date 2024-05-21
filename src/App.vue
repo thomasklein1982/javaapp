@@ -26,7 +26,7 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 327,
+      version: 328,
       paused: false,
       printMode: false,
       current: {line: -1, name: null, $scope: {local: null, main: null, that: null}},

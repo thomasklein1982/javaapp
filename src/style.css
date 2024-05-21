@@ -121,6 +121,18 @@ body,html{
   }
 }
 
+.documentation-menu .p-menuitem-content{
+  padding-left: 0.5rem;
+}
+
+.documentation-menu .p-menuitem-content>* {
+  border-left: 0.5pt solid white;
+}
+
+.documentation-menu .p-submenu-header{
+  font-weight: bold;
+}
+
 .unselectable{
   -webkit-user-select: none;
   user-select: none;
@@ -130,7 +142,32 @@ body,html{
   padding: 0;
 }
 
-a.ja-link{
+code.line{
+  display: block;
+  background-color: #050505;
+  border: 1pt solid orange;
+  padding: 0.2rem;
+  white-space: pre;
+  white-space-collapse: preserve;
+}
+
+pre.code{
+  background-color: #050505;
+  border: 1pt solid orange;
+  padding: 0.2rem;
+  white-space: pre-wrap;
+}
+
+textarea.code{
+  display: block;
+  resize: none;
+  background-color: #050505;
+  color: white;
+  font-family: monospace;
+  width: 100%;
+}
+
+a{
   color: orange;
 }
 

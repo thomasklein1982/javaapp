@@ -30,7 +30,7 @@ export function defineSound(Clazz,Java){
   createMethod({
     name: 'play',
     args: [
-      {name: 'loop', type: 'boolean'}
+      {name: 'loop', type: 'boolean', optional: true}
     ],
     info: ""
   },Clazz,false,false);
