@@ -11,14 +11,18 @@
       :current="current"
       :difficulty="difficulty"
       ref="editor"
+      @help="$refs.dialogHelp.setVisible(true)"
     />
-    
+    <DocumentationDialog
+      ref="dialogHelp"
+    />
   </div>
 </template>
 
 <script>
 import StartScreen from "./components/StartScreen.vue";
 import Editor from "./components/Editor.vue";
+import DocumentationDialog from "./components/DocumentationDialog.vue";
 import { nextTick } from '@vue/runtime-core';
 import { options } from "./classes/Options";
 
@@ -26,12 +30,19 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 328,
+      version: 330,
       paused: false,
       printMode: false,
       current: {line: -1, name: null, $scope: {local: null, main: null, that: null}},
       difficulty: options.difficulty()
     };
+  },
+  mounted(){
+    let hash=location.hash;
+    console.log(hash);
+    if(hash.indexOf("help")>=0){
+      this.$refs.dialogHelp.setVisible(true);
+    }
   },
   methods: {
     resetCurrent(line,name){
@@ -71,7 +82,8 @@ export default{
   },
   components: {
     StartScreen,
-    Editor
+    Editor,
+    DocumentationDialog
   }
 }
 

@@ -21,7 +21,7 @@ export default {
   methods: {
     click(){
       console.log(this.siteName);
-      app.$refs.editor.$refs.dialogHelp.changeSite(this.siteName);
+      app.$refs.dialogHelp.changeSite(this.siteName);
     }
   }
 }

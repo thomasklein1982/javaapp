@@ -107,11 +107,13 @@ export class Parameter{
     this.list=list;
     this.type=null;
     this.name=null;
+    this.optional=false;
   }
 
   getCopy(typeArguments,copyList){
     let p=new Parameter(copyList);
     p.name=this.name;
+    p.optional=this.optional;
     if(this.type && this.type.baseType && this.type.baseType.isGeneric){
       if(this.list.method.typeParameters){
         for (let i = 0; i < this.list.method.typeParameters.length; i++) {
@@ -140,6 +142,7 @@ export class Parameter{
   getRenamedCopy(typeArguments,newName,copyList){
     let p=new Parameter(copyList);
     p.name=newName;
+    p.optional=this.optional;
     p.type=this.type;
     if(p.type.baseType.isGeneric){
       if(typeArguments && typeArguments.length===1){
@@ -174,8 +177,10 @@ export class Parameter{
   };
 
   define(data){
+    console.log("define param",data),
     this.type=data.type;
     this.name=data.name;
+    this.optional=data.optional;
   }
 
 

@@ -4,14 +4,8 @@ export function VariableDeclarator(node,source,scope,vType){
   let code;
   let type=null;
   let initialValue=null;
-  if(!node.firstChild){
-    throw source.createError("Ein Variablenname muss mit einem Buchstaben oder einem Unterstrich beginnen.",node);
-  }
+  let name = getVariableName(node,source);
   node=node.firstChild;
-  let name=source.getText(node);
-  if(/[^a-zA-Z_]/.test(name.charAt(0))){
-    throw source.createError("Ein Variablenname muss mit einem Buchstaben oder einem Unterstrich beginnen.",node);
-  }
   let val;
   if(node.nextSibling){
     node=node.nextSibling;
@@ -45,4 +39,16 @@ export function VariableDeclarator(node,source,scope,vType){
     type,
     initialValue
   }
+}
+
+export function getVariableName(node,source){
+  if(!node.firstChild){
+    throw source.createError("Ein Variablenname muss mit einem Buchstaben oder einem Unterstrich beginnen.",node);
+  }
+  node=node.firstChild;
+  let name=source.getText(node);
+  if(/[^a-zA-Z_]/.test(name.charAt(0))){
+    throw source.createError("Ein Variablenname muss mit einem Buchstaben oder einem Unterstrich beginnen.",node);
+  }
+  return name;
 }

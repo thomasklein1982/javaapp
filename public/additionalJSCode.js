@@ -891,11 +891,28 @@ function additionalJSCode(){
     $constructor(){}
     static out=$new(PrintStream);
     static in=$new(InputStream);
+    static storage=App.storage;
+    static time=App.time;
     static console(){
       return $App.console;
     }
     static isMousePressed(){
       return window.mousePressed;
+    }
+    static isKeyPressed(key){
+      return window.isKeyDown(key);
+    }
+    static async alert(message){
+      await App.alert(message);
+    }
+    static async prompt(message, defaultValue){
+      return await App.prompt(message, defaultValue);
+    }
+    static async confirm(message){
+      return await App.confirm(message);
+    }
+    static async toast(message, position, duration){
+      return await App.toast(message, position, duration);
     }
   }
 
@@ -1620,8 +1637,8 @@ function additionalJSCode(){
       }
       return null;
     }
-    add(comp){
-      this.$el.canvas.add(comp.$el);
+    add(comp, index){
+      this.$el.canvas.add(comp.$el, index);
     }
     save(){
       this.$el.canvas.save();
@@ -2705,6 +2722,7 @@ function additionalJSCode(){
     stop(){
       clearTimeout(this.$timer_id);
       clearInterval(this.$timer_id);
+      this.$running=false;
     }
   }
 

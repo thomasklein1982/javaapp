@@ -6,6 +6,11 @@
 import Link from "../../Link.vue";
 
 export default{
-  components: { Link }
+  components: { Link },
+  data(){
+    return {
+      label: "Canvas"
+    };
+  }
 }
 </script>

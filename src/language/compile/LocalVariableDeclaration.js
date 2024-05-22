@@ -1,7 +1,7 @@
 import { parseJava } from "../../functions/parseJava";
 import { CompileFunctions } from "../CompileFunctions";
 import { Identifier } from "./Identifier";
-import { VariableDeclarator } from "./VariableDeclarator";
+import { VariableDeclarator, getVariableName } from "./VariableDeclarator";
 import {FieldAccess} from "./FieldAccess";
 
 export function LocalVariableDeclaration(node,source,scope){
@@ -35,7 +35,6 @@ export function LocalVariableDeclaration(node,source,scope){
     let vdekl=VariableDeclarator(node,source,scope,type);
     try{
       scope.pushLocalVariable(vdekl.name,type);
-
       vnames.push(vdekl.name);
       initialValues.push(vdekl.initialValue);
       scopeCode="$scope.pushVariable("+JSON.stringify(vdekl.name)+","+JSON.stringify(type.baseType.name)+","+type.dimension+","+vdekl.name+");";

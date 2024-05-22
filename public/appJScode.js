@@ -1329,20 +1329,24 @@ window.appJScode=function(){
       isEmpty: function(){
         return (this.container.childNodes.length<=1);
       },
-      addElement: function(el,cx,cy,width,height){
-        this.container.appendChild(el);
+      addElement: function(el,cx,cy,width,height, index){
+        if(index!==undefined){
+          this.container.insertBefore(el,this.container.children[index]);
+        }else{
+          this.container.appendChild(el);
+        }
         this.updateElementPosition(el,cx,cy,width,height);
         
       },
       removeChild: function(el){
         this.container.removeChild(el);
       },
-      add: function(el){
+      add: function(el, index){
         if(el.parentNode){
           el.parentNode.removeChild(el);
         }
         el.appJSData.parent=this;
-        this.addElement(el,el.appJSData.cx,el.appJSData.cy,el.appJSData.width,el.appJSData.height);
+        this.addElement(el,el.appJSData.cx,el.appJSData.cy,el.appJSData.width,el.appJSData.height, index);
       },
       resize: function(w,h,force){
         if(!w){
@@ -4038,13 +4042,13 @@ window.appJScode=function(){
       {
         name: 'start', 
         returnType: null, 
-        args: [{name: 'millis', type: 'int', info: 'Anzahl Millisekunden bis der Timer ausloest.'}, {name: 'name', type: 'String', info: "Name des Timers, mit dem onTimeout aufgerufen wird."}], 
+        args: [{name: 'millis', type: 'int', info: 'Anzahl Millisekunden bis der Timer ausloest.'}, {name: 'name', type: 'String', info: "Name des Timers, mit dem onTimeout aufgerufen wird.", optional: true}], 
         info: 'Startet einen Timer, der millis Millisekunden lang laeuft. Wenn er ablaeuft, loest er die Funktion <code>onTimeout</code> aus.'
       }, 
       {
         name: 'stop', 
         returnType: null,
-        args: [{name: 'name', type: 'String', info: 'Name des Timers, der gestoppt werden soll.'}], 
+        args: [{name: 'name', type: 'String', info: 'Name des Timers, der gestoppt werden soll.', optional: true}], 
         info: 'Stoppt den Timer mit dem angegebenen Namen. Wenn du keinen Namen angibst, werden alle laufenden Timer gestoppt.'
       },
       {name: 'year', type: 'int', info: 'Die aktuelle Jahreszahl (vierstellig).'}

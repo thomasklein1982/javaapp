@@ -24,7 +24,7 @@
         @lint="currentEditor?.toggleLintPanel()"
         @toggleright="toggleRight()"
         @resources="$refs.dialogResources.setVisible(true)"
-        @help="$refs.dialogHelp.setVisible(true)"
+        @help="$emit('help')"
         @database="$refs.dialogDatabase.setVisible(true)"
         @assets="$refs.dialogAssets.setVisible(true)"
         @details="$refs.dialogProjectDetails.setVisible(true)"
@@ -41,9 +41,6 @@
       />
       <LinksDialog
         ref="dialogResources"
-      />
-      <DocumentationDialog
-        ref="dialogHelp"
       />
       <ImageEditorDialog ref="imageEditor"/>
       <ProjectDetailsDialog

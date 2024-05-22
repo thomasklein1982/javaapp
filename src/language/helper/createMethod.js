@@ -29,6 +29,7 @@ export function createMethod(data,clazz,isStatic,isConstructor){
       //   a=data.args[j];
       // }
       let p=new Parameter(m.params);
+      p.optional=a.optional;
       let types;
       if(Array.isArray(a.type)){
         types=a.type;
