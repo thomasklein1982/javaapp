@@ -17,7 +17,7 @@
     <li><code>typ (String, optional)</code>: Ein Wert aus <code>"sine"</code>, <code>"square"</code>, <code>"sawtooth"</code> oder <code>"triangle"</code>. Mehr Infos gibt es <a href="https://developer.mozilla.org/en-US/docs/Web/API/OscillatorNode/type" target="_blank">hier</a>.</li>
   </ul>
   <h3>Komplettbeispiel:</h3>
-  <ExampleCode>
+  <ExampleCode :url="['assets/beep_easy','assets/beep_normal','assets/beep_hard']">
     <template v-slot:easy>
 <pre class="code">
 onAction(){
@@ -29,10 +29,9 @@ Außerdem benötigst du eine UI-Klasse mit einem Button.
     <template v-slot:normal>
 <pre class="code">
 class MyApp{
+  Screen screen;
   void onStart(){
-    JFrame frame = new JFrame();
-    JButton b = new JButton("Beep!");
-    frame.add(b);
+    screen = new Screen();
   }
   void onAction(){
     Sound.beep(440, 1, 1000);
@@ -42,6 +41,7 @@ class MyApp{
   }
 }
 </pre>
+Außerdem benötigst du eine UI-Klasse <code>Screen</code> mit einem Button.
     </template>
     <template v-slot:hard>
 <pre class="code">

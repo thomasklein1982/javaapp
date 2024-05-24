@@ -50,7 +50,7 @@ export default {
       return this.difficulty===2;
     },
     items(){
-      return [
+      let items= [
         {
           label: 'Projekt',
           items: [
@@ -235,6 +235,16 @@ export default {
           ]
         }
       ];
+      if(this.$root.tryItMode){
+        items[0].items[0]={
+          label: "TryIt!",
+          command: (ev)=>{
+            this.$emit("tryit");
+          }
+        }
+        items[0].items[1].disabled=true;
+      }
+      return items;
     }
   },
   methods: {

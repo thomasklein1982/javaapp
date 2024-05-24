@@ -1,6 +1,7 @@
 import {loadLocally,saveLocally} from "../functions/helper";
 
 let STORAGE_STRING="JAVA_APP_OPTIONS";
+let STORAGE_STRING_TRYIT="JAVA_APP_OPTIONS_TRYIT";
 
 class Options{
   /**
@@ -36,7 +37,7 @@ class Options{
     let options=new Options();
     let obj=await loadLocally(STORAGE_STRING);
     if(!obj){
-      options.changeToNormal();   
+      options.changeToNormal();
     }else{
       for(let a in options){
         options[a]=obj[a]===true;
@@ -107,3 +108,16 @@ class Options{
 }
 
 export const options=await Options.createFromStorage();
+let hash=location.hash;
+if(hash.indexOf("tryit")){
+  if(hash.indexOf(";easy")>=0){
+    console.log("change to easy");
+    options.changeToEasy(false);
+  }else if(hash.indexOf(";normal")>=0){
+    console.log("change to normal");
+    options.changeToNormal();
+  }else if(hash.indexOf(";hard")>=0){
+    console.log("change to hard");
+    options.changeToHard();
+  }
+}

@@ -37,7 +37,7 @@
         @play-window="playInNewWindow(false)"
         @play-dev="playInNewWindow(true)"
         @terminal="$refs.dialogTerminal.setVisible(true)"
-        
+        @tryit="$refs.tryItDialog.setVisible(true)"
       />
       <LinksDialog
         ref="dialogResources"
@@ -58,6 +58,7 @@
       <DatabaseDialog :database="database" ref="dialogDatabase"/>
       <CSSDialog :project="project" ref="dialogCSS"/>
       <TerminalDialog :project="project" ref="dialogTerminal" @run="stopAndPlay"/>
+      <TryItDialog ref="tryItDialog"/>
       <Splitter :gutter-size="splitterSize" ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
         <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">        
           <TabView v-model:activeIndex="activeTab" :scrollable="true" class="editor-tabs" >
@@ -178,6 +179,7 @@ import ImageEditorDialog from "./ImageEditorDialog.vue";
 import Insights from "./Insights.vue";
 import TerminalDialog from "./TerminalDialog.vue";
 import DocumentationDialog from "./DocumentationDialog.vue";
+import TryItDialog from "./TryItDialog.vue";
 
 export default {
   props: {
@@ -268,6 +270,12 @@ export default {
     }
   },
   mounted(){
+    if(location.hash.indexOf("tryit")>=0){
+      setTimeout(()=>{
+        this.$refs.tryItDialog.setVisible(true);
+      },1000);
+      return;
+    }
     let timer=setInterval(()=>{
       if(!this.project) return;
       saveLocally(STORAGE_PROJECT,this.project.toSaveString());
@@ -573,7 +581,8 @@ export default {
     ImageEditorDialog,
     Insights,
     TerminalDialog,
-    DocumentationDialog
+    DocumentationDialog,
+    TryItDialog
   }
 }
 </script>

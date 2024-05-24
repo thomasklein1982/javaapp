@@ -25,6 +25,7 @@ import Editor from "./components/Editor.vue";
 import DocumentationDialog from "./components/DocumentationDialog.vue";
 import { nextTick } from '@vue/runtime-core';
 import { options } from "./classes/Options";
+import {Project} from "./classes/Project";
 
 export default{
   data(){
@@ -34,14 +35,36 @@ export default{
       paused: false,
       printMode: false,
       current: {line: -1, name: null, $scope: {local: null, main: null, that: null}},
-      difficulty: options.difficulty()
+      difficulty: options.difficulty(),
+      tryItMode: location.hash.indexOf("tryit")>=0
     };
   },
-  mounted(){
+  async mounted(){
     let hash=location.hash;
     console.log(hash);
     if(hash.indexOf("help")>=0){
       this.$refs.dialogHelp.setVisible(true);
+    }
+    if(hash.indexOf("tryit:")>=0){
+      let text=hash.substring(7);
+      let url=text.split(";")[0];
+      if(!url) return;
+      let realUrl="https://thomaskl.uber.space/Sonstiges/java-app/examples/";
+      realUrl+=url;
+      let res;
+      try{
+        res=await fetch(realUrl);
+      }catch(e){
+        return;
+      }
+      const utf8Decoder = new TextDecoder("utf-8");
+      const reader = res.body.getReader();
+      let { value: chunk, done: readerDone } = await reader.read();
+      let code = chunk ? utf8Decoder.decode(chunk) : "";
+      console.log(code);
+      var p=new Project();
+      await p.fromSaveString(code);
+      this.openProject(p);
     }
   },
   methods: {
