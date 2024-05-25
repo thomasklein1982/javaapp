@@ -1,11 +1,15 @@
 <template>
   <Dialog header="JavaApp-Dokumentation" v-model:visible="show" :modal="true" class="p-dialog-maximized">
     <div :style="{display: 'flex'}" style="height: 100%">
-      <div style="height: 100%; overflow-y: auto; overflow-x: hidden;" class="documentation-menu">
-        <Menu ref="menu" :model="menuItems"/>
-      </div>
-      <div style="padding: 0.5rem; height: 100%; overflow-y: auto;" :style="{flex: 1}">
-        <component :is="currentComponent"/>
+      
+        <div :style="{display: showSidebar? 'block':'none'}" style="height: 100%;  overflow-y: auto; overflow-x: hidden;" class="documentation-menu">
+          <Menu ref="menu" :model="menuItems"/>
+        </div>
+      <div style="height: 100%; overflow:hidden; position: relative" :style="{flex: 1}">
+        <div style="padding: 0.5rem; height: 100%;  overflow-y: auto; overflow-x: hidden;">
+          <component :is="currentComponent"/>
+        </div>
+        <div @click="showSidebar=!showSidebar" :class="showSidebar? 'pi pi-angle-double-left':'pi pi-angle-double-right'" :style="{opacity: 0.7}" style="text-align: center; cursor: pointer; display: grid; align-items: center; background-color: rgb(255, 213, 79); border-bottom-right-radius:100%; border-top-right-radius:100%; position: absolute; top: calc(50% - 1rem); left: 0;width: 1.5rem; height: 2rem;"></div>
       </div>
     </div>
   </Dialog>

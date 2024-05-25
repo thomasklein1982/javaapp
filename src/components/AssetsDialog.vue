@@ -1,5 +1,5 @@
 <template>
-  <Dialog header="Assets" v-model:visible="show" :modal="true" class="p-dialog-maximized">
+  <Dialog header="Asset-Manager" v-model:visible="show" :modal="true" class="p-dialog-maximized">
     <NewAssetDialog 
       ref="newAssetDialog"
       @confirm="addAsset"

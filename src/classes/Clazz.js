@@ -654,7 +654,7 @@ export class Clazz{
           }
           this.methods[m.name]=m;
         }
-      }else if(node.name==="LineComment"){
+      }else if(node.name==="LineComment" || node.name==="BlockComment"){
       }else if(node.name==="}"){
         break;
       }else{

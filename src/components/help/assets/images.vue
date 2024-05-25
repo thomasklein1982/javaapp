@@ -20,7 +20,7 @@
   <h2>Verwenden von Bildern</h2>
   <p>Es gibt prinzipiell drei mögliche Arten, Bilder in JavaApp zu verwenden:</p>
   <ul>
-    <li>Als <Link href="api/jimage">JImage</Link>-Komponente direkt in der UI.</li>
+    <li>Als <Link href="api/jimage">JImage</Link>-Komponente direkt in der UI. Ein <code>JImage</code> sollte immer von einem <Link href="api/canvas">Canvas</Link> umgeben sein, damit die Maße des Bildes festlegt werden können.</li>
     <li>Mit Hilfe der Methode <code>drawImage</code> oder <code>drawImagePart</code> einer <Link href="api/canvas">Canvas</Link>-Komponente.</li>
     <li>In HTML-Code oder CSS-Code. Hierbei ist zu beachten, dass immer <code>asset(asset-name)</code> geschrieben werden muss:
       <code class="line">
@@ -28,12 +28,113 @@
       </code>
     </li>
   </ul>
+  <h3>Beispiel: Zwischen verschiedenen Bildern wechseln</h3>
+  Das folgende Beispiel zeigt, wie man ein JImage verwenden kann, um ein Bild anzuzeigen und wie man das Bild verändern kann.
+  <ExampleCode :url="['assets/image_easy','assets/image_normal','assets/image_hard']">
+    <template v-slot:easy>
+<pre class="code">
+int position;
+
+onStart( ) {
+  //wir starten außen:
+  position=1;
+}
+
+onAction( JComponent trigger ) {
+  //gehe von außen nach innen oder umgekehrt:
+  if(position==1){
+    Screen.bild.setValue("Haus");
+    position=2;
+    return;
+  }
+  if(position==2){
+    Screen.bild.setValue("Landschaft");
+    position=1;
+    return;
+  }
+}
+</pre>
+Außerdem benötigst du eine UI-Klasse mit einem Button und einem JImage. Es müssen zwei Bilder mit den Namen "Landschaft" und "Haus" als Assets hochgeladen werden.
+    </template>
+    <template v-slot:normal>
+<pre class="code">
+class Bilder{
+  Screen screen;
+  int position;
+  void onStart(){
+    screen = new Screen();
+    //wir starten außen:
+    position = 1;
+  }
+  void onAction(){
+    //gehe von außen nach innen oder umgekehrt:
+    if(position==1){
+      screen.bild.setValue("Haus");
+      position=2;
+      return;
+    }
+    if(position==2){
+      screen.bild.setValue("Landschaft");
+      position=1;
+      return;
+    }
+  }
+  public static void main(String[] args){
+    new Bilder();
+  }
+}
+</pre>
+Außerdem benötigst du eine UI-Klasse mit einem Button und einem JImage. Es müssen zwei Bilder mit den Namen "Landschaft" und "Haus" als Assets hochgeladen werden.
+    </template>
+    <template v-slot:hard>
+<pre class="code">
+class Bilder{
+
+  static JImage bild;
+  static JButton wechselButton;
+  
+  static void createUI(){
+    JFrame frame = new JFrame();
+    frame.setLayout("1fr 1cm/");
+    bild = new JImage("Landschaft");
+    frame.add(bild);
+    wechselButton=new JButton("Bild ändern");
+    frame.add(wechselButton);
+  }
+  
+  public static void main(String[] args){
+    createUI();
+    
+    //Variable position gibt an, wo wir uns befinden:
+    //1: außen (hier geht es los)
+    //2. innen
+    int position=1;
+    wechselButton.addActionListener((ev)->{
+      //gehe von außen nach innen oder umgekehrt:
+      if(position==1){
+        bild.setValue("Haus");
+        position=2;
+        return;
+      }
+      if(position==2){
+        bild.setValue("Landschaft");
+        position=1;
+        return;
+      }
+    });
+  }
+}
+</pre>
+Es müssen zwei Bilder mit den Namen "Landschaft" und "Haus" als Assets hochgeladen werden.
+    </template>
+  </ExampleCode>
 </template>
 
 <script>
 import Link from "../../Link.vue";
+import ExampleCode from "../../example-code.vue";
 
 export default{
-  components: { Link }
+  components: { Link, ExampleCode }
 }
 </script>

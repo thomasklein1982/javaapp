@@ -31,15 +31,16 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 330,
+      version: 334,
       paused: false,
       printMode: false,
       current: {line: -1, name: null, $scope: {local: null, main: null, that: null}},
       difficulty: options.difficulty(),
-      tryItMode: location.hash.indexOf("tryit")>=0
+      tryItMode: location.hash.indexOf("tryit")>=0,
+      tryItName: null,
     };
   },
-  async mounted(){
+  mounted(){
     let hash=location.hash;
     console.log(hash);
     if(hash.indexOf("help")>=0){
@@ -49,22 +50,32 @@ export default{
       let text=hash.substring(7);
       let url=text.split(";")[0];
       if(!url) return;
+      this.tryItName=url;
       let realUrl="https://thomaskl.uber.space/Sonstiges/java-app/examples/";
       realUrl+=url;
-      let res;
-      try{
-        res=await fetch(realUrl);
-      }catch(e){
-        return;
-      }
-      const utf8Decoder = new TextDecoder("utf-8");
-      const reader = res.body.getReader();
-      let { value: chunk, done: readerDone } = await reader.read();
-      let code = chunk ? utf8Decoder.decode(chunk) : "";
-      console.log(code);
-      var p=new Project();
-      await p.fromSaveString(code);
-      this.openProject(p);
+      fetch(realUrl).then((res)=>{
+        res.text().then((code)=>{
+          //alert(code);
+          let p=new Project();
+          p.fromSaveString(code).then(()=>{
+            this.openProject(p);
+          });
+        });
+        // const reader = res.body.getReader();
+        // reader.read().then((obj)=>{
+        //   const utf8Decoder = new TextDecoder("utf-8");
+        //   let code = obj.value ? utf8Decoder.decode(obj.value) : "";
+        //   console.log(code);
+        //   let p=new Project();
+        //   p.fromSaveString(code).then(()=>{
+        //     this.openProject(p);
+        //   });
+        // }).catch((err)=>{
+        //   console.log(err);
+        // });
+      }).catch((err)=>{
+        alert(err);
+      });
     }
   },
   methods: {
@@ -77,7 +88,8 @@ export default{
       this.screen=name;
     },
     openProject: function(project){
-      this.$refs.editor.openProject(project);      
+      console.log("open project",project);
+      this.$refs.editor.openProject(project);
       this.showScreen("editor");
     },
     getProject(){

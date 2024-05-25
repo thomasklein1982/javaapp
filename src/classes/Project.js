@@ -439,6 +439,7 @@ export class Project{
     })+stop;
   }
   async fromSaveString(appcode){
+    console.log("from save string");
     this.assets=[];
     let pos=appcode.indexOf(start);
     let saveString;
@@ -450,7 +451,9 @@ export class Project{
       saveString=appcode.substring(pos+start.length,pos2);
     }
     try{
+      console.log("parse");
       var o=JSON.parse(saveString);
+      console.log(o);
       if(o.database){
         database.fromCSVString(o.database);
       }

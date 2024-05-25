@@ -236,6 +236,7 @@ export default {
         }
       ];
       if(this.$root.tryItMode){
+        items[0].label="TryIt: "+this.$root.tryItName;
         items[0].items[0]={
           label: "TryIt!",
           command: (ev)=>{

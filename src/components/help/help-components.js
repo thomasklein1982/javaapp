@@ -73,10 +73,10 @@ import about_whatis from "./about/what-is.vue";
     assets: {
       label: "Assets",
       components: {
-        // whatis: {
-        //   label: "Was sind Assets?",
-        //   comp: assets_whatis
-        // },
+        whatis: {
+          label: "Was sind Assets?",
+          comp: assets_whatis
+        },
         images: {
           label: "Bilder",
           comp: assets_images
@@ -85,10 +85,10 @@ import about_whatis from "./about/what-is.vue";
           label: "Sound und Musik",
           comp: assets_sounds
         },
-        // fonts: {
-        //   label: "Schriftarten",
-        //   comp: assets_fonts
-        // },
+        fonts: {
+          label: "Schriftarten",
+          comp: assets_fonts
+        },
       }
     },
     api: {
