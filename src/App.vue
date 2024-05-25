@@ -31,7 +31,7 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 334,
+      version: 335,
       paused: false,
       printMode: false,
       current: {line: -1, name: null, $scope: {local: null, main: null, that: null}},

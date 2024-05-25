@@ -1,6 +1,6 @@
 <template>
   <div style="padding: 0.5rem; border: 1pt solid white">
-    <div style="display: flex"><SelectButton :options="difficulties" option-label="label" option-value="value" v-model="difficulty"/> <div style="flex: 1"></div><a v-if="url" target="_blank" :href="realUrl"><Button icon="pi pi-external-link" @click="tryIt()" label="Try it!"/></a></div>
+    <div style="display: flex"><Dropdown v-model="difficulty" :options="difficulties" option-label="label" option-value="value"></Dropdown><div style="flex: 1"></div><a v-if="url" target="_blank" :href="realUrl"><Button icon="pi pi-external-link" label="Try it!"/></a></div>
     <div>
       <slot></slot>
       <slot v-if="difficulty===0" name="easy"></slot>
