@@ -997,8 +997,10 @@ function additionalJSCode(){
       return this.actionObject;
     }
     collides(comp){
+      
       let r1=this.$el.getBoundingClientRect();
       let r2=comp.$el.getBoundingClientRect();
+      if(r1.width===0 || r2.width===0 || r1.height===0|| r2.height===0) return false;
       return !(r1.left+r1.width<r2.left || r2.left+r2.width<r1.left || r1.top+r1.height<r2.top || r2.top+r2.height<r1.top);
     }
     show(){
@@ -2701,6 +2703,7 @@ function additionalJSCode(){
       if(this.$running) this.stop();
       this.$running=true;
       let handler=()=>{
+        if($App.debug.paused) return;
         for(let i=0;i<this.actionListeners.length;i++){
           let al=this.actionListeners[i];
           let ev=$new(ActionEvent,this,0,this.actionCommand,Date.now());
