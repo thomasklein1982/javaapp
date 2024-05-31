@@ -946,6 +946,12 @@ function additionalJSCode(){
     getMouseY(){
       return 0;
     }
+    getPixelWidth(){
+      return this.$el.clientWidth;
+    }
+    getPixelHeight(){
+      return this.$el.clientHeight;
+    }
     $updateMousePosition(ev){}
     querySelector(selector){
       try{

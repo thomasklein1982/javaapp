@@ -10,8 +10,11 @@ export function parseJava(src,withoutClazz){
   }else{
     lang=javaLanguage;
   }
-
   let tree=lang.parser.parse(src);
+  if(src.length>0){
+    console.log("parseJava",src.length,src.substring(src.length-300));
+    console.log(tree);
+  }
   return tree;
 }
 

@@ -31,7 +31,7 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 336,
+      version: 337,
       paused: false,
       printMode: false,
       current: {line: -1, name: null, $scope: {local: null, main: null, that: null}},
@@ -57,9 +57,8 @@ export default{
         res.text().then((code)=>{
           //alert(code);
           let p=new Project();
-          p.fromSaveString(code).then(()=>{
-            this.openProject(p);
-          });
+          p.fromSaveString(code);
+          this.openProject(p);
         });
         // const reader = res.body.getReader();
         // reader.read().then((obj)=>{

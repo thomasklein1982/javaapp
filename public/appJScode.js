@@ -3910,7 +3910,7 @@ window.appJScode=function(){
       }
     },'Erlaubt das Speichern und Laden von Daten.',
     [
-      {name: 'keys', type: { baseType: 'double', dimension: 1}, info: 'Ein String-Array mit allen Keys, die von der App verwendet werden.'},
+      {name: 'keys', type: { baseType: 'String', dimension: 1}, info: 'Ein String-Array mit allen Keys, die von der App verwendet werden.'},
       {
         name: 'save', 
         returnType: 'boolean',

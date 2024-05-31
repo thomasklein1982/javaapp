@@ -318,7 +318,7 @@ export default {
             }
             this.size=v.state.doc.length;
             this.src=v.state.doc.toString();
-            if(this.clazz.hasClazzDeclaration){
+            //if(this.clazz.hasClazzDeclaration){
               /**stelle fest, ob alle Änderungen in einer Methode stattgefunden haben: */
               let from=v.changedRanges[0].fromA;
               let to=v.changedRanges[0].toA;
@@ -347,7 +347,7 @@ export default {
                   return;
                 }
               }
-            }
+            //}
             //console.log("not only in method");
 
             let updateImmediately=false;

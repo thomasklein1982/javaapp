@@ -438,7 +438,7 @@ export class Project{
       urls: this.urls
     })+stop;
   }
-  async fromSaveString(appcode){
+  fromSaveString(appcode){
     console.log("from save string");
     this.assets=[];
     let pos=appcode.indexOf(start);
@@ -523,6 +523,7 @@ export class Project{
       }else{
         var c=new Clazz(null,this);
         c.src=src;
+        //console.log("load class",src.length,src.substring(src.length-300));
       }
       this.clazzes.push(c);
     }

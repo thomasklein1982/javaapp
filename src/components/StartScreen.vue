@@ -85,9 +85,9 @@ export default {
       }
       location.reload();
     },
-    async restoreApp(){
+    restoreApp(){
       var p=new Project();
-      await p.fromSaveString(this.lastProject);
+      p.fromSaveString(this.lastProject);
       this.$emit('open-project',p);
     },
     async createNewApp(name,code){

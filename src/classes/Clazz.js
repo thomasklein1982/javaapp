@@ -479,6 +479,7 @@ export class Clazz{
 
   compileDeclarations(fromSource){
     if(fromSource){
+      console.log("compile declarations",this.src);
       this.generateSrcAndTree(this.src);
     }
     this.compileDeclaration();

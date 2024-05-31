@@ -275,6 +275,14 @@ function defineJComponent(Clazz,Java){
     returnType: 'double'
   },Clazz,false,false,Java);
   createMethod({
+    name: 'getPixelWidth',
+    returnType: 'int'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getPixelHeight',
+    returnType: 'int'
+  },Clazz,false,false,Java);
+  createMethod({
     name: 'setStyle',
     args: [
       {name: 'key', type: 'String'},
