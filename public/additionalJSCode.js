@@ -3350,11 +3350,18 @@ function additionalJSCode(){
       isPrimitive=isPrimitive===isPrimitive.toLowerCase();
     }
     let c=v.type;
-    if(v.value===null||v.value===undefined || v.dimension===0 && v.type==="String" || isPrimitive){
+    if(v.value===null||v.value===undefined || v.dimension===0 && (v.type==="String" || isPrimitive)){
       d.v=v.value;
     }else if(template){
       if(v.dimension>0){
-
+        d.v=[];
+        let length=v.value.length;
+        for(let i=0;i<length;i++){
+          //name, dimension, type, value
+          let value=v.value[i];
+          let name="["+i+"]";
+          d.v[i]=$getData(name,{dimension:v.dimension-1,type: v.type,value}, name);
+        }
       }else{
         d.v={};
         let infos=$clazzRuntimeInfos[d.t];

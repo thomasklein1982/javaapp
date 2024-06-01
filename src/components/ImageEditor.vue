@@ -18,19 +18,19 @@
         <OverlayPanel ref="opColor">
           <ColorPicker inline v-model="pen.color"/>
           <div class="p-float-label">
-            <InputText style="width: 100%" v-model="pen.color"/>
+            <InputText type="search" style="width: 100%" v-model="pen.color"/>
             <label>Farbe</label>
           </div>
           <Divider/>
           <Slider :min="0" :max="100" v-model="pen.opacity"/>
           <div class="p-float-label">
-            <InputText style="width: 100%" v-model="pen.opacity"/>
+            <InputText type="search" style="width: 100%" v-model="pen.opacity"/>
             <label>Deckkraft</label>
           </div>
           <Divider/>
           <Slider :min="1" :max="200" v-model="pen.width"/>
           <div class="p-float-label">
-            <InputText style="width: 100%" v-model="pen.width"/>
+            <InputText type="search" style="width: 100%" v-model="pen.width"/>
             <label>Dicke</label>
           </div>
         </OverlayPanel>
@@ -88,7 +88,7 @@
     <Dialog header="Farbe zu Transparenz" v-model:visible="colorToTransparency.show" :modal="true">
       <ColorPicker inline v-model="colorToTransparency.color"/>
       <div class="p-float-label">
-        <InputText style="width: 100%" v-model="colorToTransparency.color"/>
+        <InputText type="search" style="width: 100%" v-model="colorToTransparency.color"/>
         <label>HEX-Wert</label>
       </div>
       

@@ -2,7 +2,7 @@
   <Dialog header="Neue App" v-model:visible="show"  :maximizable="true" :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '50vw'}">
     <div style="margin-top: 0.5rem;">
       Name der neuen App:
-      <InputText placeholdertext="Name der neuen App" v-model="name"/>
+      <InputText type="search" placeholdertext="Name der neuen App" v-model="name"/>
       <small v-if="nameerror" style="display: block; color: red">{{nameerror}}</small>
     </div>
     <div style="margin-top: 0.5rem">Wähle eine Vorlage für die neue App:</div>

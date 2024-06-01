@@ -7,7 +7,7 @@
       <tr><td style="width: 0"></td><td></td></tr>
       <tr v-if="!component.controlComponent">
         <td>Name:</td>
-        <td><InputText spellcheck="false" v-model.trim="component.name" @change="emitRecompile()" style="width: 95%"/></td>
+        <td><InputText type="search" spellcheck="false" v-model.trim="component.name" @change="emitRecompile()" style="width: 95%"/></td>
       </tr>
       <template v-if="uiClazz">
         <tr v-for="(v,i) in uiClazz.variables">
@@ -19,11 +19,11 @@
       </template>
       <tr v-if="component.options!==undefined">
         <td>Optionen:</td>
-        <td><InputText spellcheck="false" @change="emitUpdate()" v-model.trim="component.options" style="width: 95%"/></td>
+        <td><InputText type="search" spellcheck="false" @change="emitUpdate()" v-model.trim="component.options" style="width: 95%"/></td>
       </tr>
       <tr v-if="component.label!==undefined">
         <td>Text:</td>
-        <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.label" style="width: 95%"/></td>
+        <td><InputText type="search" spellcheck="false" @change="emitUpdate()" v-model="component.label" style="width: 95%"/></td>
       </tr>
       <tr v-if="component.inputType!==undefined">
         <td>Eingabetyp:</td>
@@ -35,7 +35,7 @@
           <InputSwitch @change="emitUpdate()" v-model="component.value"/>
         </td>
         <td v-else-if="component.valueType===undefined || component.valueType==='inline-text'">
-          <InputText spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%"/>
+          <InputText type="search" spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%"/>
         </td>
         <td v-else-if="component.valueType==='text' || !maximized">
           <TextArea rows="2" spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%; resize: none"/>
@@ -46,7 +46,7 @@
       </tr>
       <tr v-if="component.placeholder!==undefined">
         <td>Platzhalter:</td>
-        <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.placeholder" style="width: 95%"/></td>
+        <td><InputText type="search" spellcheck="false" @change="emitUpdate()" v-model="component.placeholder" style="width: 95%"/></td>
       </tr>
       <template v-if="component.align!==undefined">
         <tr>

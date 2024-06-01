@@ -4,13 +4,25 @@
       <span :style="{visibility: isExpandable? '':'hidden'}" :class="isExpanded? 'pi pi-angle-down':'pi pi-angle-right'"/><slot name="header">{{ variable.n }}</slot>: {{ value }}
     </div>
     <template v-if="isExpanded">
-      <template v-for="(v,i) in variable.v">
-        <VariableWatcher
-          :variable="v"
-          :template="template[variable.n]"
-          :depth="depth+1"
-          @update-scope="$emit('update-scope')"
-        />
+      <template v-if="isArray">
+        <template v-for="(v,i) in variable.v">
+          <VariableWatcher
+            :variable="v"
+            :template="template[variable.n]"
+            :depth="depth+1"
+            @update-scope="$emit('update-scope')"
+          />
+        </template>
+      </template>
+      <template v-else>
+        <template v-for="(v,i) in variable.v">
+          <VariableWatcher
+            :variable="v"
+            :template="template[variable.n]"
+            :depth="depth+1"
+            @update-scope="$emit('update-scope')"
+          />
+        </template>
       </template>
     </template>
   </div>

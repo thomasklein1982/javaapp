@@ -11,7 +11,7 @@
       <Asset :asset="asset" style="margin: 0.8rem; text-align: center"/>
       <div style="margin: 0.4rem; text-align: center">
         <label for="name">Name: </label>
-        <InputText id="name" v-model="name" />
+        <InputText type="search" id="name" v-model="name" />
       </div>
     </template>
     <template #footer>

@@ -10,7 +10,7 @@
     <Asset :asset="editedAsset" show-image-editor-button style="margin: 0.8rem; text-align: center" @open-image-editor="asset=>$emit('open-image-editor',asset)"/>
     <div style="margin: 0.4rem; text-align: center">
       <label for="name">Name: </label>
-      <InputText id="name" v-model.trim="editedAsset.name" />
+      <InputText type="search" id="name" v-model.trim="editedAsset.name" />
     </div>
     <template #footer>
       <ConfirmPopup/>

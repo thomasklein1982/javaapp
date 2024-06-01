@@ -10,8 +10,11 @@
       @delete="deleteAsset"
       @open-image-editor="asset=>$emit('open-image-editor',asset)"
     />
-    Assets sind statische Ressourcen wie Bilder oder Sounds. Dieses Projekt verwendet {{ assets.length }} Asset{{assets.length!==1? 's':''}} mit einer Gesamtgröße von {{ gesamtGroesse }}.
+    Assets sind statische Ressourcen wie Bilder oder Sounds. Dieses Projekt verwendet <strong style="white-space: nowrap;">{{ assets.length }} Asset{{assets.length!==1? 's':''}}</strong> mit einer Gesamtgröße von <span style="white-space: nowrap; font-weight: bold" :style="{color: farbeGroesse}">{{ gesamtGroesseString }}</span>.
     <Paginator v-model:rows="rows" v-model:first="first" :totalRecords="assets.length" :rowsPerPageOptions="[10, 20, 30]">
+      <template #end>
+        <Button type="button" icon="pi pi-sort" />
+      </template>
     </Paginator>
     <template v-for="i in maxAssets">
       <Asset :asset="assets[first+i-1]" editable @edit="editAssetAt(first+i-1)">
@@ -29,7 +32,7 @@
   import Paginator from "primevue/paginator";
   import Asset from './Asset.vue';
   import EditAssetDialog from './EditAssetDialog.vue';
-  
+  import InlineMessage from 'primevue/inlinemessage';
 
   export default{
     props: {
@@ -47,12 +50,26 @@
       assets(){
         return this.project.assets;
       },
+      farbeGroesse(){
+        let s=this.gesamtGroesse;
+        if(s<1000000){
+          return "lime";
+        }else if(s<5000000){
+          return "yellow";
+        }else{
+          return "red";
+        }
+      },
       gesamtGroesse(){
         let size=0;
         for(let i=0;i<this.assets.length;i++){
           let a=this.assets[i];
           size+=a.file.code.length;
         }
+        return size;
+      },
+      gesamtGroesseString(){
+        let size=this.gesamtGroesse;
         let unit="B";
         if(size>1000000){
           size/=1000000;
@@ -99,7 +116,8 @@
       NewAssetDialog,
       Paginator,
       Asset,
-      EditAssetDialog
+      EditAssetDialog,
+      InlineMessage
     }
   }
   </script>

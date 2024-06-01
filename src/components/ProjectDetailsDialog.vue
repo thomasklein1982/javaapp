@@ -2,7 +2,7 @@
   <Dialog header="Projekt-Details" modal v-model:visible="show">
     <p>Hier kannst du Details zum Projekt festlegen und ein Manifest und einen Service-Worker herunterladen. <Button @click="showHelp=true" icon="pi pi-question" outlined style="float: right"/></p>
     <div class="p-float-label">
-      <InputText style="width: 100%" help="Der Name des Projekts." v-model="name"/>
+      <InputText type="search" style="width: 100%" help="Der Name des Projekts." v-model="name"/>
       <label>Name</label>
     </div>
     <div class="p-float-label">

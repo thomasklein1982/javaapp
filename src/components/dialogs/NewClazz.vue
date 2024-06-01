@@ -2,7 +2,7 @@
 <Dialog :style="{width: '50vw'}" :closable="false" header="Neue Klasse" :visible="show"> 
   Eine Klasse definiert einen neuen Datentypen. Dieser bündelt eine Reihe von Attributen und stellt dazu passende Methoden bereit.
   <div class="p-field">
-    <InputText style="width: 100%" id="name" autofocus placeholder="Name der neuen Klasse" type="text" v-model="name" aria-describedby="name-help"/>
+    <InputText type="search" style="width: 100%" id="name" autofocus placeholder="Name der neuen Klasse" v-model="name" aria-describedby="name-help"/>
     <small style="min-height: 3rem" id="name-help" class="p-error">{{nameFehler}}</small>
   </div>
   <template #footer>

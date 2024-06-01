@@ -1,7 +1,7 @@
 <template>
   <Dialog :closable="false" header="Neues Projekt erstellen" :visible="show"> 
     <div class="p-field">
-      <InputText id="name" placeholder="Name des neuen Projekts" type="text" v-model="name" aria-describedby="name-help"/>
+      <InputText type="search" id="name" placeholder="Name des neuen Projekts" type="text" v-model="name" aria-describedby="name-help"/>
       <small id="name-help">Gib deinem Projekt einen Namen.</small>
     </div>
     <template #footer>

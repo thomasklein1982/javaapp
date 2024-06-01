@@ -5,7 +5,7 @@
   </div>
   <h1>{{type==='class'? 'Neue Klasse':'Neues Interface'}} hinzufügen</h1>
   
-  <InputText clazz="nameError?'':'p-invalid'" v-model.trim="name" :placeholder="type==='class'? 'Name der neuen Klasse': 'Name des neuen Interface'"/>
+  <InputText type="search" clazz="nameError?'':'p-invalid'" v-model.trim="name" :placeholder="type==='class'? 'Name der neuen Klasse': 'Name des neuen Interface'"/>
   <small v-if="nameError" class="p-error">{{nameError}}</small>
   <small v-else>Der Name geht in Ordnung.</small>
   <div v-if="type==='class'" class="p-inputgroup">
