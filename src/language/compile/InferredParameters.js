@@ -1,7 +1,6 @@
 import { CompileFunctions } from "../CompileFunctions";
 
 export function InferredParameters(node,source,scope){
-  console.log("inf",node);
   node=node.firstChild; //(
   node=node.nextSibling;
   let params=[];
@@ -20,7 +19,6 @@ export function InferredParameters(node,source,scope){
     node=node.nextSibling;
   }
   code+=")";
-  console.log(code);
   return {
     code,
     params

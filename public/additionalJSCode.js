@@ -29,6 +29,7 @@ function additionalJSCode(){
   function $v(v){if(Number.isNaN(v*1)){throw $new(Exception,"'"+v+"' ist keine Zahl.")}else{return v*1;}}
   function $i(v){if(Number.isNaN(v*1)){throw $new(Exception,"'"+v+"' ist keine Zahl.")}else{v*=1; return v>=0? Math.floor(v):Math.ceil(v);}}
   function $m(v,message,line){if(v===undefined){throw $new(Exception,message,line)}else{return v;}}
+  function $ret(v){$App.debug.decCallDepth(); return v;}
   function $n(a){return a;}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
 
@@ -2770,7 +2771,7 @@ function additionalJSCode(){
           if(b.keyDown(k)){
           }
         }
-        this.dpad.keyDown(k);
+        this.dpad.keyDown(k,true);
 
       };
       window.addEventListener("keydown",this.keydownListener);
@@ -3074,18 +3075,25 @@ function additionalJSCode(){
     }
     keyDown(key){
       if(this.key===key){
+        let wasPressed=this.isPressed;
         this.isPressed=true;
         this.updateHover();
-        this.gamepad.onButtonEvent(this.name,"press",{});
+        if(!wasPressed){
+          this.gamepad.onButtonEvent(this.name,"press",{});
+        }
+        
         return true;
       }
       return false;
     }
     keyUp(key){
       if(this.key===key){
+        let wasPressed=this.isPressed;
         this.isPressed=false;
         this.updateHover();
-        this.gamepad.onButtonEvent(this.name,"release",{});
+        if(wasPressed){
+          this.gamepad.onButtonEvent(this.name,"release",{});
+        }
         return true;
       }
       return false;
@@ -3156,7 +3164,7 @@ function additionalJSCode(){
           this.dpad.handleEvent(this.dir,"release",ev);
         }
       });
-      this.ui.addEventListener("click",()=>{
+      this.ui.addEventListener("click",(ev)=>{
         this.dpad.handleEvent(this.dir,"click",ev);
       });
       this.dpad.gamepad.rootElement.appendChild(this.ui);
@@ -3166,14 +3174,22 @@ function additionalJSCode(){
     }
     keyDown(key){
       if(this.key===key){
+        let wasPressed=this.isPressed;
         this.isPressed=true;
         this.updateHover();
+        if(!wasPressed){
+          this.dpad.handleEvent(this.dir,"press",{});
+        }
       }
     }
     keyUp(key){
       if(this.key===key){
+        let wasPressed=this.isPressed;
         this.isPressed=false;
         this.updateHover();
+        if(wasPressed){
+          this.dpad.handleEvent(this.dir,"release",{});
+        }
       }
     }
     hide(){

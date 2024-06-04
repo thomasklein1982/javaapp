@@ -128,6 +128,7 @@ window.appJScode=function(){
           this.lastLine=line;
           this.lastName=name;
           if(this.paused || this.breakpoints[line]===name || this.isCallDepthZero() && this.stepAbove){
+            //console.log("pause",this.isCallDepthZero(),this.paused, this.stepAbove);
             this.paused=true;
             this.stepAbove=false;
             this.resetCallDepth();

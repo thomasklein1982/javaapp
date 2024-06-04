@@ -109,6 +109,7 @@
               <Insights 
                 v-if="running"
                 :line="current.line"
+                :step="current.step"
                 :clazz-name="current.name"
                 :scope="current.$scope"
                 :paused="paused"

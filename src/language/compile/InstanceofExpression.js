@@ -4,16 +4,13 @@ import { Java } from "../java";
 import { TypeName } from "./TypeName";
 
 export function InstanceofExpression(node,source,scope){
-  console.log("instanceof",node);
   node=node.firstChild;
   let f=CompileFunctions.get(node,source);
   let objNode=node;
   let obj=f(node,source,scope);
-  console.log(obj);
   node=node.nextSibling;
   if(!node.name==="instanceof") throw source.createError("'instanceof' erwartet",node);
   node=node.nextSibling;
-  console.log(node);
   if(node.name!=="TypeName"){
     throw source.createError("Klasse erwartet",node);
   }

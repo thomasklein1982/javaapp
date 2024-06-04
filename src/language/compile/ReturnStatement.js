@@ -7,7 +7,7 @@ export function ReturnStatement(node,source,scope){
   if(node.name!=="return"){
 
   }
-  let code="$App.debug.decCallDepth();return ";
+  let code="return $ret(";
   if(!node.nextSibling){
     throw (source.createError("';' erwartet.",node));
   }
@@ -24,7 +24,7 @@ export function ReturnStatement(node,source,scope){
       if(!v.type.isSubtypeOf(returnType)){
         throw source.createError("Diese Methode muss ein "+returnType.toString()+" zurückliefern, dies ist aber ein "+v.type.toString()+".",node);
       }
-      code+="await "+v.code+";";
+      code+="(await "+v.code+")";
       node=node.nextSibling;
     }else{
       throw source.createError("Eine void-Methode kann keinen Wert zurückgeben.",node);
@@ -33,8 +33,8 @@ export function ReturnStatement(node,source,scope){
     if(returnType){
       throw source.createError("Diese Methode muss ein "+returnType.toString()+" zurückliefern.",node);
     }
-    code+=";";
   }
+  code+=");";
   if(node.type.isError || node.name!==";"){
     throw (source.createError("';' erwartet.",node));
   }

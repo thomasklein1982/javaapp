@@ -16,6 +16,7 @@ import { CompileFunctions } from "../CompileFunctions";
  * @param {Scope} scope 
  */
 export function MethodInvocation(node,source,scope){
+  let rootNode=node;
   node=node.firstChild;
   
   let mn,al,methods;
@@ -113,6 +114,10 @@ export function MethodInvocation(node,source,scope){
     code+=al.code;
   }
   code="await "+code;
+  if(!scope.optimizeCompiler && !method.isBuiltIn()){
+    let line=source.getLineNumber(rootNode.from);
+    code="await (async (val)=>{await $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",$scope); return val;})("+code+")";
+  }
   let returnType=null;
   if(method.type){
     returnType=method.getRealReturnType(al.replacementTypes,owner.typeArguments);

@@ -55,10 +55,14 @@ export default{
     line: Number,
     clazzName: String,
     scope: Object,
-    paused: Boolean
+    paused: Boolean,
+    step: Number
   },
   watch: {
     line(nv,ov){
+      //this.updateScope();
+    },
+    step(){
       this.updateScope();
     },
     clazzName(nv,ov){

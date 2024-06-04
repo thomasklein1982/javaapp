@@ -51,10 +51,17 @@ export default{
     isArray(){
       return this.variable.d.length>0;
     },
+    isNull(){
+      return this.variable.v===null;
+    },
     isExpandable(){
+      if(this.isNull) return false;
       return this.isArray||this.isObject;
     },
     value(){
+      if(this.isNull){
+        return "null";
+      }
       if(this.isArray){
         return this.variable.t+JSON.stringify(this.variable.d);
       }

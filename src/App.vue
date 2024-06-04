@@ -31,10 +31,10 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 338,
+      version: 339,
       paused: false,
       printMode: false,
-      current: {line: -1, name: null, $scope: {local: null, main: null, that: null}},
+      current: {line: -1, step: 0, name: null, $scope: {local: null, main: null, that: null}},
       difficulty: options.difficulty(),
       tryItMode: location.hash.indexOf("tryit")>=0,
       tryItName: null,
@@ -81,7 +81,8 @@ export default{
     resetCurrent(line,name){
       if(!line) line=this.current.line;
       if(!name) name=this.current.name;
-      this.current={line, name, $scope: this.current.$scope};
+      let step=(this.current.step+1)%2;
+      this.current={line, name, step, $scope: this.current.$scope};
     },
     showScreen: function(name){
       this.screen=name;

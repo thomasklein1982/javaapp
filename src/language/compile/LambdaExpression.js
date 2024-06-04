@@ -21,7 +21,6 @@ export function LambdaExpression(node,source,scope,infos){
   node=node.firstChild;
   let params=CompileFunctions.get(node,source);
   params=params(node,source,scope);
-  console.log(params);
   
   let plist;
   try{
