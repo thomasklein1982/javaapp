@@ -27,6 +27,24 @@
         :code="project.css"
       />
     </template>
+    <template v-if="!project.database.isEmpty()">
+      <h1>Datenbank</h1>
+      <template v-for="(t,i) in project.database.tables">
+        <h2>Relation {{ t.name }}</h2>
+        <table class="database-table" style="font-size: small">
+          <tr>
+            <th v-for="(a,i) in t.attributes">
+              {{a.name}}
+            </th>
+          </tr>
+          <tr v-for="(r,j) in t.records">
+            <td v-for="(v,i) in r">
+              {{ v }}
+            </td>
+          </tr>
+        </table>
+      </template>
+    </template>
   </div>
 </template>
 

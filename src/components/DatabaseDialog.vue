@@ -49,7 +49,7 @@
         </div>
         <Textarea spellcheck="false" :rows="6" v-model="sqlcommand" autoresize/>
         <div style="text-align: right">
-          <Button @click="executeSQL()" icon="pi pi-play" label="SQL-Befehl ausführen"/>
+          <Button @click="recreateDatabase()" icon="pi pi-refresh"/> <Button @click="executeSQL()" icon="pi pi-play" label="SQL-Befehl ausführen"/>
         </div>
       </SplitterPanel>
     </Splitter>
@@ -102,17 +102,22 @@
       addRelation(name){
         this.database.addTable(name);
       },
+      recreateDatabase(){
+        try{
+          this.database.createInMemory();
+          return true;
+        }catch(e){
+          console.error(e);
+          this.sqlExecution.error=e.message;
+          return false;  
+        }
+      },
       executeSQL(){
         this.sqlExecution.error=null;
         this.sqlExecution.result=null;
         if(this.database.changed){
-          try{
-            this.database.createInMemory();
-          }catch(e){
-            console.error(e);
-            this.sqlExecution.error=e.message;
-            return;  
-          }
+          let r=this.recreateDatabase();
+          if(!r) return;
         }
         if(this.sqlcommand.trim().length===0){
           this.sqlExecution.error="keine Suchanfrage gestellt";

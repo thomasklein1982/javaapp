@@ -326,7 +326,8 @@ window.appJScode=function(){
       animationFrame: null,
       canvas: null,
       world: null,
-      showConsoleOnStart: true
+      showConsoleOnStart: true,
+      hideConsoleIfUIPresentAfterSetup: false
     };
     
     window.onerror=function(message, source, lineno, colno, error){
@@ -1331,6 +1332,10 @@ window.appJScode=function(){
         return (this.container.childNodes.length<=1);
       },
       addElement: function(el,cx,cy,width,height, index){
+        if($App.hideConsoleIfUIPresentAfterSetup){
+          //hide console because of ui
+          $App.console.setVisible(false);
+        }
         if(index!==undefined){
           this.container.insertBefore(el,this.container.children[index]);
         }else{
@@ -2956,9 +2961,13 @@ window.appJScode=function(){
         this.setVisible(false);
       },
       hideIfUI: function(){
-        this.rightReducedWidth="100%";
-        this.leftZIndex=0;
-        this.adaptSize();
+        let parent=this.element.parentElement;
+        if(parent){
+          let right=parent.nextElementSibling;
+          if(!right.$canvas.isEmpty()){
+            this.setVisible(false);
+          }
+        }
       },
       setVisible: function(v){
         this.rightReducedWidth="70%";
@@ -2971,9 +2980,9 @@ window.appJScode=function(){
         }
       },
       adaptSize: function(){
-        this.element.style.zIndex=this.leftZIndex;
         let parent=this.element.parentElement;
         if(parent){
+          parent.style.zIndex=this.leftZIndex;
           let right=parent.nextElementSibling;
           if(right.$canvas.isEmpty()){
             right.style.width="0%";

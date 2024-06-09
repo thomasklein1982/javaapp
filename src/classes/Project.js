@@ -12,6 +12,7 @@ export class Project{
   constructor(name,code){
     this.clazzes=[];
     this.css="";
+    this.database=database;
     this.assets=[];
     if(!name){
       name="MyApp";
@@ -177,7 +178,7 @@ export class Project{
         window.language="java";
         window.appJSdebugMode=true;
         ${window.appJScode}
-        ${includeSave? 'console.hideIfUI()':''}
+        ${includeSave? '$App.hideConsoleIfUIPresentAfterSetup=true;':''}
         ${window.additionalJSCode}
         ${databaseCode}
         ${assetsCode}

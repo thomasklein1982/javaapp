@@ -442,6 +442,21 @@ export default {
         this.prettifyCode();
       });
     },
+    // playInNewWindow(includeDevTools){
+    //   this.project.compile(false,true);
+    //   let precode;
+    //   if(includeDevTools){
+    //     precode="$onAfterSetup=function(){$App.loadEruda();};\n";
+    //   }else{
+    //     precode="console.hideIfUI();\n";
+    //   }
+    //   let code=this.project.getFullAppCode(precode);
+    //   const blob = URL.createObjectURL(
+    //     new Blob([code], { type: "text/html" })
+    //   );
+    //   window.open(blob);
+    //   URL.revokeObjectURL(blob);
+    // },
     downloadProject(){
       if(this.project){
         try{
@@ -449,7 +464,8 @@ export default {
         }catch(e){
           console.error(e);
         }
-        download(this.project.getFullAppCode("console.hideIfUI()",true),this.project.getName()+".html","text/html");
+        //console.log("download",this.project.getFullAppCode("console.hideIfUI();",true).length);
+        download(this.project.getFullAppCode("$App.hideConsoleIfUIPresentAfterSetup=true;",true),this.project.getName()+".html","text/html");
       }
     },
     async uploadProject(){
@@ -481,9 +497,10 @@ export default {
       if(includeDevTools){
         precode="$onAfterSetup=function(){$App.loadEruda();};\n";
       }else{
-        precode="console.hideIfUI();\n";
+        precode="$App.hideConsoleIfUIPresentAfterSetup=true;\n";
       }
       let code=this.project.getFullAppCode(precode);
+      //console.log("play",code.length);
       const blob = URL.createObjectURL(
         new Blob([code], { type: "text/html" })
       );

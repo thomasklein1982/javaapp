@@ -59,6 +59,9 @@ export class Table{
             }
             
           }else if(typ.id===Database.Date.id){
+            if(/^(\d\d)\.(\d\d)\.(\d\d\d\d)$/.test(d)){
+              d=d.substring(6)+"-"+d.substring(3,5)+"-"+d.substring(0,2);
+            }
             if(/^\d\d\d\d(?:-\d\d(?:\-\d\d)?)?$/.test(d)){
               code+="'"+d+"'";/*"new Date('"+d+"')";*/
             }else{
