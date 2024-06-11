@@ -342,8 +342,9 @@ export default {
                     method,
                     delta,
                     from
+                  }).then(()=>{
+                    this.updateLinter();
                   });
-                  this.updateLinter();
                   return;
                 }
               }
@@ -370,14 +371,16 @@ export default {
             }
             if(timer) clearTimeout(timer);
             if(updateImmediately){
-              this.update(v);
-              this.updateLinter();
+              this.update(v).then(()=>{
+                this.updateLinter();
+              });
               changed=false;
             }else{
               timer = setTimeout(() => {
                 if (changed) {
-                  this.update(v);
-                  this.updateLinter();
+                  this.update(v).then(()=>{
+                    this.updateLinter();
+                  });
                   //lint.value.source(this.editor);
                   changed=false;
                 }
@@ -417,6 +420,10 @@ export default {
       }
     },
     async update(viewUpdate, methodInformation){
+      if(!this.triggerRecompilation){
+        this.triggerRecompilation=true;
+        return;
+      }
       var state=viewUpdate.state;
       /**direkt nach dem laden darf kein update erfolgen, sonst ist der tree (oft) fehlerhaft: */
       if(viewUpdate.changedRanges.length===1){
@@ -434,16 +441,20 @@ export default {
       }else{
         //console.log("recompile whole clazz",this.clazz);
         this.clazz.setSrcAndTree(src,state.tree);
-        if(this.triggerRecompilation){
-          this.project.compile(false,this.settings.optimizeCompiler);
-        }else{
-          let t1=new Date();
-          await this.clazz.compile(false,this.settings.optimizeCompiler);
-          let t2=new Date();
-          console.log("update parsing done in "+(t2-t1)+"ms ("+this.clazz.name+")");
-        }
-        this.focus();
-        this.triggerRecompilation=true;
+        this.project.compile(false,this.settings.optimizeCompiler).then(()=>{
+          this.focus();
+          this.triggerRecompilation=true;
+        });
+        // }else{
+        //   let t1=new Date();
+        //   this.clazz.compile(false,this.settings.optimizeCompiler).then(()=>{
+        //     let t2=new Date();
+        //     console.log("update parsing done in "+(t2-t1)+"ms ("+this.clazz.name+")");
+        //     this.focus();
+        //     this.triggerRecompilation=true;
+        //   });
+        // }
+        
       }
       //this.updateErrors(viewUpdate.view);
     },

@@ -37,7 +37,7 @@
       </div>
     </div>
     <div ref="canvasWrapper" class="flex" style="overflow: auto">
-      <canvas :style="canvasStyle" ref="canvas"/>
+      <canvas style="border: 1pt solid white" :style="canvasStyle" ref="canvas"/>
     </div>
     <Dialog header="Bild-Eigenschaften" v-model:visible="settings.show" :modal="true">
       <h2>Bild-Größe</h2>
@@ -66,6 +66,16 @@
       <p style="font-size: small">
         Breite &times; Höhe: {{ settingsWidthHeight.w }} &times; {{ settingsWidthHeight.h }}
       </p>
+      <div>
+        <Dropdown
+            v-model="settings.changePolicy"
+            :options="['Anpassen','Nicht anpassen']"
+        />
+        <template v-if="settings.changePolicy=='Anpassen'">Das Bild wird maßstäblich vergrößert/verkleinert.</template>
+        <template v-else>
+          <div>Von links: <InputText type="number" v-model="settings.changePolicySettings.left" placeholder="Abstand von Links"/><Button label="Zentrieren" @click="centerHorizontally()"/></div>
+          <div>Von oben: <InputText type="number" v-model="settings.changePolicySettings.top" placeholder="Abstand von Oben"/><Button label="Zentrieren" @click="centerVertically()"/></div></template>
+      </div>
       <div>
         <h2>Bild-Art</h2>
         <p>Lege fest, ob das Bild als JPG oder als PNG gespeichert werden soll:</p>
@@ -178,7 +188,12 @@ export default{
         lock: true,
         unit: "%",
         imageType: null,
-        imageQuality: 100
+        imageQuality: 100,
+        changePolicy: "Anpassen",
+        changePolicySettings: {
+          left: 0,
+          top: 0
+        }
       },
       colorToTransparency: {
         show: false,
@@ -230,34 +245,49 @@ export default{
       handler(e);
     });
     this.image.onload=(ev)=>{
-      this.width=this.image.width;
-      this.height=this.image.height;
+      this.width=this.image.width*1;
+      this.height=this.image.height*1;
       this.$refs.canvas.width=this.width;
       this.$refs.canvas.height=this.height;
       this.updateCanvasStyle();
       nextTick(()=>{
         this.paintImage();
       });
+      this.image.onload=null;
     };
   },
   methods: {
+    centerHorizontally(){
+      let w=this.width;
+      let W=this.settings.width;
+      let left=(W-w)/2;
+      this.settings.changePolicySettings.left=left;
+    },
+    centerVertically(){
+      let h=this.height;
+      let H=this.settings.height;
+      let top=(H-h)/2;
+      this.settings.changePolicySettings.top=top;
+    },
     confirmSettings(){
       this.imageType=this.settings.imageType;
       this.imageQuality=this.settings.imageQuality;
       let w=this.settings.width;
       let h=this.settings.height;
+      let oldW=this.width;
+      let oldH=this.height;
       if(this.settings.unit==="%"){
         this.width=Math.round(this.width*w/100);
         this.height=Math.round(this.height*h/100);
       }else{
         this.width=w;
-        this.height=h;  
+        this.height=h;
       }
       this.$refs.canvas.width=this.width;
       this.$refs.canvas.height=this.height;
       this.updateCanvasStyle();
       nextTick(()=>{
-        this.paintImage();
+        this.paintImage(oldW,oldH);
         this.saveChanges();
         this.settings.show=false;
       });
@@ -335,6 +365,7 @@ export default{
       this.colorToTransparency.tolerance=0;
     },
     openSettings(){
+      this.settings.changePolicy="Anpassen";
       this.settings.width=100;
       this.settings.height=100;
       this.settings.unit="%";
@@ -371,10 +402,21 @@ export default{
       this.settings.imageType=this.imageType;
       this.settings.imageQuality=100;
     },
-    paintImage(){
+    paintImage(oldWidth,oldHeight){
       if(!this.ctx) return;
       //this.ctx.globalCompositeOperation="source-over";
-      this.ctx.drawImage(this.image, 0, 0,this.width,this.height);
+      let left=0;
+      let top=0;
+      let w=this.width;
+      let h=this.height;
+      if(this.settings.changePolicy!=='Anpassen'){
+        if(oldWidth!==undefined) w=oldWidth;
+        if(oldWidth!==undefined) h=oldHeight;
+        left=this.settings.changePolicySettings.left;
+        top=this.settings.changePolicySettings.top;
+      }
+      console.log(left,top,w,h);
+      this.ctx.drawImage(this.image, left, top,w,h);
       //this.ctx.globalCompositeOperation="destination-over";
     }
   }

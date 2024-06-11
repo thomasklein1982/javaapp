@@ -326,8 +326,9 @@ export default {
       this.$refs.uipreview.clear();
     },
     compileProject(){
-      this.project.compile();
-      this.currentEditor?.updateLinter();
+      this.project.compile().then(()=>{
+        this.currentEditor?.updateLinter();
+      });
     },
     updateSelectedUIComponent(c){
       this.selectedUIComponent=c;
@@ -424,7 +425,7 @@ export default {
     setBreakpoints(breakpoints){
       this.$refs.preview.setBreakpoints(breakpoints);
     },
-    openProject(p){
+    async openProject(p){
       this.stop();
       this.clearRuntimeErrors();
       this.project=p;
@@ -437,7 +438,7 @@ export default {
       let p=new Project(name,code);
       this.database.clear();
       await p.initialize();
-      this.openProject(p);
+      await this.openProject(p);
       nextTick(()=>{
         this.prettifyCode();
       });
@@ -472,7 +473,7 @@ export default {
       this.database.clear();
       let p=await uploadProject();
       if(!p) return;
-      this.openProject(p,this.useBlockEditor);
+      await this.openProject(p,this.useBlockEditor);
     },
     prettifyCode(){
       if(this.currentEditor){

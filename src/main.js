@@ -154,3 +154,12 @@ document.addEventListener("keydown", function(e) {
 }, false);
 
 
+window.startTime=null;
+window.stopTimeStart=function(){
+  window.startTime=Date.now();
+}
+window.stopTimeStop=function(s){
+  let e=Date.now();
+  console.log("time stopped",s,(e-window.startTime)+"ms");
+  window.startTime=e;
+}

@@ -35,7 +35,10 @@ export function Block(node,source,scope){
   }
   scope.pushLayer();
   let open=true;
+  let debugCounter=0;
+  window.stopTimeStart();
   while(node.nextSibling && !node.isBlockEnd){
+    debugCounter++;
     node=node.nextSibling;
     if(scope.isNodeBeyondEndPosition(node)){
       return scope;
@@ -45,6 +48,7 @@ export function Block(node,source,scope){
       break;
     }else{
       try{
+        
         let f=CompileFunctions.get(node,source);
         let res=f(node,source,scope);
         if(res instanceof Scope){
@@ -61,26 +65,6 @@ export function Block(node,source,scope){
             code+="\n";
           }
           code+=res.code;
-          // if(res.updateLocalVariablesAfter && scope.addLocalVariablesUpdates){
-          //   let vnames;
-          //   if(res.updateLocalVariablesAfter===true){
-          //     vnames=[];
-          //     let localVariables=scope.getLocalVariables();
-          //     for(let vname in localVariables){
-          //       vnames.push(localVariables[vname].name);
-          //     }
-          //   }else{
-          //     vnames=res.updateLocalVariablesAfter;
-          //   }
-          //   if(!scope.optimizeCompiler && vnames){
-          //     code+="eval('";
-          //     for(let i=0;i<vnames.length;i++){
-          //       let name=vnames[i];
-          //       code+="$locals["+JSON.stringify(name)+"]="+name+";";
-          //     }
-          //     code+="',$App.console.updateLocalVariables($locals));";
-          //   }
-          // }
         }else{
           code+="\n"+res.code;
         }
@@ -89,6 +73,7 @@ export function Block(node,source,scope){
       }
     }
   }
+  window.stopTimeStop("statements finished");
   if(open){
     errors.push(source.createError("'}' erwartet.",node));
   }

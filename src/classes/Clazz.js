@@ -457,7 +457,7 @@ export class Clazz{
     });
   }
 
-  compile(fromSource,optimizeCompiler){
+  async compile(fromSource,optimizeCompiler){
     this.compileDeclarations(fromSource);
     this.compileMethods(optimizeCompiler);
     this.compileLastChecks();
@@ -748,7 +748,9 @@ export class Clazz{
   compileMethods(optimizeCompiler){
     for(let mi in this.methods){
       let m=this.methods[mi];
+      window.stopTimeStart();
       m.compileBody(this.source,optimizeCompiler);
+      window.stopTimeStop("method "+m.name);
       concatArrays(this.errors,m.getErrors());
     }
     this.compileLastChecks();
