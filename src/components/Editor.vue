@@ -426,6 +426,7 @@ export default {
       this.$refs.preview.setBreakpoints(breakpoints);
     },
     async openProject(p){
+      //Object.seal(p);
       this.stop();
       this.clearRuntimeErrors();
       this.project=p;

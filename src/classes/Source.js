@@ -5,6 +5,7 @@ export class Source{
     this.src=src;
     this.clazz=clazz;
     this.tree=tree;
+    Object.seal(this);
   }
   getPositionShift(){
     if(this.clazz){

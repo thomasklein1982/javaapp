@@ -31,7 +31,7 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 340,
+      version: 342,
       paused: false,
       printMode: false,
       current: {line: -1, step: 0, name: null, $scope: {local: null, main: null, that: null}},
@@ -88,7 +88,7 @@ export default{
       this.screen=name;
     },
     openProject: function(project){
-      Object.seal(project);
+      //Object.seal(project);
       console.log("open project",project);
       this.$refs.editor.openProject(project);
       this.showScreen("editor");

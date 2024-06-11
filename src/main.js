@@ -41,6 +41,8 @@ import router from "./router";
 import { registerSW } from 'virtual:pwa-register'
 import { appjsdata } from './functions/snippets';
 
+"use strict"
+
 const updateSW=registerSW({
   onNeedRefresh(){
     let a=confirm("Eine neue Version ist verfügbar. Willst du aktualisieren (empfohlen!)?");
