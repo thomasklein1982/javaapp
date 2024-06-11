@@ -88,6 +88,7 @@ export default{
       this.screen=name;
     },
     openProject: function(project){
+      Object.seal(project);
       console.log("open project",project);
       this.$refs.editor.openProject(project);
       this.showScreen("editor");

@@ -389,6 +389,8 @@ export class Clazz{
     //   code=src;
     // }
     var tree=parseJava(code,withoutClazzDeclaration);
+    // window.tree=tree;
+    // window.tree2=parseJava(code,withoutClazzDeclaration);
     this.setSrcAndTree(code,tree);
     /**schlechte loesung */
     //this.src=src;
@@ -405,6 +407,7 @@ export class Clazz{
       this.methods={};
     }
     this.source=new Source(src,tree,this);
+    
   }
 
   recompileMethod(methodInformation,src,tree,optimizeCompiler){
@@ -748,9 +751,7 @@ export class Clazz{
   compileMethods(optimizeCompiler){
     for(let mi in this.methods){
       let m=this.methods[mi];
-      window.stopTimeStart();
       m.compileBody(this.source,optimizeCompiler);
-      window.stopTimeStop("method "+m.name);
       concatArrays(this.errors,m.getErrors());
     }
     this.compileLastChecks();

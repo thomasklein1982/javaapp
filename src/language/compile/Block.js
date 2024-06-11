@@ -36,7 +36,6 @@ export function Block(node,source,scope){
   scope.pushLayer();
   let open=true;
   let debugCounter=0;
-  window.stopTimeStart();
   while(node.nextSibling && !node.isBlockEnd){
     debugCounter++;
     node=node.nextSibling;
@@ -73,7 +72,6 @@ export function Block(node,source,scope){
       }
     }
   }
-  window.stopTimeStop("statements finished");
   if(open){
     errors.push(source.createError("'}' erwartet.",node));
   }

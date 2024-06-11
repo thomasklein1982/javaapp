@@ -387,6 +387,7 @@ export class Method{
         this.bodyNode=node;
       }
     }
+    
     return errors;
   }
 
@@ -413,11 +414,8 @@ export class Method{
     if(!this.bodyNode){
       return null;
     }
-    window.stopTimeStart();
     let scope=new Scope(this.clazz.project,this,undefined,{optimizeCompiler: optimizeCompiler});
-    window.stopTimeStop("new scope");
     this.block=Block(this.bodyNode,source,scope);
-    window.stopTimeStop("block");
     this.typeAnnotations=scope.typeAnnotations;
     this.bodyErrors=this.block.errors;
     return this.block;

@@ -163,3 +163,7 @@ window.stopTimeStop=function(s){
   console.log("time stopped",s,(e-window.startTime)+"ms");
   window.startTime=e;
 }
+
+window.clazzSources={
+  
+}
