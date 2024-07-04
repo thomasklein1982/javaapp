@@ -10,7 +10,7 @@
     </ul>
   </p>
   <h2>Der normale Modus</h2>
-  <p>Ziel dieses Modus ist, eine Ecken und Kanten von Java abzuschleifen, die für Anfänger*innen schwierig und unnötig kompliziert sind:
+  <p>Ziel dieses Modus ist, einige Ecken und Kanten von Java abzuschleifen, die für Anfänger*innen schwierig und unnötig kompliziert sind:
     <ul>
       <li>Automatisches Umwandeln primitiver Datentypen und Strings: Jeder primitive Datentyp wird implizit in einen String umgewandelt und anders herum. Es ist also z.B. möglich <code class="line">String s=2;</code> zu schreiben und <code>s</code> erhält dann den Wert <code>"2"</code>. Anders herum gilt das auch, d.h., anstelle von <code class="line">int a = Integer.parseInt("20");</code> kann man <code class="line">int a = "20";</code> schreiben. Bei Problemen wird eine Exception geworfen.</li>
       <li>Strings sind vergleichbar: Strings können mit <code>==</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>&lt;</code> und <code>&gt;</code> verglichen werden. Es ist kein <code>compareTo</code> erforderlich.</li>

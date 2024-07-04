@@ -43,6 +43,7 @@ import about_whatis from "./about/what-is.vue";
   import api_vector from "./api/vector.vue";
   import api_timer from "./api/timer.vue";
   import about_faq from "./about/faq.vue";
+  import advanced_javascript from "./advanced/javascript.vue";
 
   let components={
     about: {
@@ -200,6 +201,15 @@ import about_whatis from "./about/what-is.vue";
         },
       }
     },
+    advanced: {
+      label: "Für Fortgeschrittene",
+      components: {
+        javascript: {
+          label: "JavaScript",
+          comp: advanced_javascript
+        }
+      }
+    }
   }
 
 
