@@ -169,6 +169,7 @@ textarea.code{
 
 a{
   color: orange;
+  cursor: pointer;
 }
 
 /*.cm-editor{

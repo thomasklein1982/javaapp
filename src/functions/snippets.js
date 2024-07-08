@@ -29,10 +29,16 @@ export function createParamsString(params,useArgs){
       if(p.substring){
         text=p;
       }else{
-        text=p.name;
+        if(p.default){
+          text=p.default;
+        }else{
+          text=p.name;
+        }
       }
       if(useArgs){
-        text="${"+text+"}";
+        if(!p.default){
+          text="${"+text+"}";
+        }
       }else{
         let type;
         if(p.getTypeAsString){

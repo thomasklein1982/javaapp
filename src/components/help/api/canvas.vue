@@ -1,16 +1,14 @@
 <template>
-  <h1>Canvas</h1>
+  <ApiDescription
+    doku="Canvas"
+  />
 </template>
 
 <script>
 import Link from "../../Link.vue";
+import ApiDescription from "../../ApiDescription.vue";
 
 export default{
-  components: { Link },
-  data(){
-    return {
-      label: "Canvas"
-    };
-  }
+  components: { Link, ApiDescription }
 }
 </script>

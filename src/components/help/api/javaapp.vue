@@ -1,11 +1,14 @@
 <template>
-  <h1>JavaApp</h1>
+  <ApiDescription
+    doku="JavaApp"
+  />
 </template>
 
 <script>
 import Link from "../../Link.vue";
+import ApiDescription from "../../ApiDescription.vue";
 
 export default{
-  components: { Link }
+  components: { Link, ApiDescription }
 }
 </script>

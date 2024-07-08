@@ -1,11 +1,14 @@
 <template>
-  <h1>Exception</h1>
+  <ApiDescription
+    doku="Exception"
+  />
 </template>
 
 <script>
 import Link from "../../Link.vue";
+import ApiDescription from "../../ApiDescription.vue";
 
 export default{
-  components: { Link }
+  components: { Link, ApiDescription }
 }
 </script>

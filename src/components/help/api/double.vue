@@ -1,11 +1,14 @@
 <template>
-  <h1>Double</h1>
+  <ApiDescription
+    doku="Double"
+  />
 </template>
 
 <script>
 import Link from "../../Link.vue";
+import ApiDescription from "../../ApiDescription.vue";
 
 export default{
-  components: { Link }
+  components: { Link, ApiDescription }
 }
 </script>

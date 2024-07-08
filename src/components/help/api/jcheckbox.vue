@@ -1,11 +1,14 @@
 <template>
-  <h1>JCheckBox</h1>
+  <ApiDescription
+    doku="JCheckBox"
+  />
 </template>
 
 <script>
 import Link from "../../Link.vue";
+import ApiDescription from "../../ApiDescription.vue";
 
 export default{
-  components: { Link }
+  components: { Link, ApiDescription }
 }
 </script>

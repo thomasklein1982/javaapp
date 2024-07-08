@@ -9,6 +9,10 @@ import about_whatis from "./about/what-is.vue";
   import ui_uiclasses from "./ui/ui-classes.vue";
   import ui_programming from "./ui/programming.vue";
   import about_lifecycle from "./about/life-cycle.vue";
+  import datatypes_boolean from "./datatypes/boolean.vue";
+  import datatypes_char from "./datatypes/char.vue";
+  import datatypes_double from "./datatypes/double.vue";
+  import datatypes_int from "./datatypes/int.vue";
   import api_canvas from "./api/canvas.vue";
   import api_datatable from "./api/datatable.vue";
   import api_htmlelement from "./api/htmlelement.vue";
@@ -89,6 +93,27 @@ import about_whatis from "./about/what-is.vue";
         fonts: {
           label: "Schriftarten",
           comp: assets_fonts
+        },
+      }
+    },
+    datatypes: {
+      label: "Primitive Datentypen",
+      components: {
+        boolean: {
+          label: "boolean",
+          comp: datatypes_boolean
+        },
+        char: {
+          label: "char",
+          comp: datatypes_char
+        },
+        double: {
+          label: "double",
+          comp: datatypes_double
+        },
+        int: {
+          label: "int",
+          comp: datatypes_int
         },
       }
     },
@@ -198,6 +223,34 @@ import about_whatis from "./about/what-is.vue";
         object: {
           label: "Object",
           comp: api_object
+        },
+        pattern: {
+          label: "Pattern",
+          comp: api_pattern
+        },
+        random: {
+          label: "Random",
+          comp: api_random
+        },
+        sound: {
+          label: "Sound",
+          comp: api_sound
+        },
+        string: {
+          label: "String",
+          comp: api_string
+        },
+        system: {
+          label: "System",
+          comp: api_system
+        },
+        timer: {
+          label: "Timer",
+          comp: api_timer
+        },
+        vector: {
+          label: "Vector",
+          comp: api_vector
         },
       }
     },

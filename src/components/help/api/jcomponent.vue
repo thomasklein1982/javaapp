@@ -1,11 +1,14 @@
 <template>
-  <h1>JComponent</h1>
+  <ApiDescription
+    doku="JComponent"
+  />
 </template>
 
 <script>
 import Link from "../../Link.vue";
+import ApiDescription from "../../ApiDescription.vue";
 
 export default{
-  components: { Link }
+  components: { Link, ApiDescription }
 }
 </script>

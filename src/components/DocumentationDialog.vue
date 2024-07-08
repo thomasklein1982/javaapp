@@ -6,7 +6,7 @@
           <Menu ref="menu" :model="menuItems"/>
         </div>
       <div style="height: 100%; overflow:hidden; position: relative" :style="{flex: 1}">
-        <div style="padding: 0.5rem; height: 100%;  overflow-y: auto; overflow-x: hidden;">
+        <div ref="content" style="padding: 0.5rem; height: 100%;  overflow-y: auto; overflow-x: hidden;">
           <component :is="currentComponent"/>
         </div>
         <div @click="showSidebar=!showSidebar" :class="showSidebar? 'pi pi-angle-double-left':'pi pi-angle-double-right'" :style="{opacity: 0.7}" style="text-align: center; cursor: pointer; display: grid; align-items: center; background-color: rgb(255, 213, 79); border-bottom-right-radius:100%; border-top-right-radius:100%; position: absolute; top: calc(50% - 1rem); left: 0;width: 1.5rem; height: 2rem;"></div>
@@ -65,13 +65,31 @@
         showSidebar: true,
       };
     },
+    mounted(){
+      window.addEventListener("popstate",(event) => {
+        if(event.state.page){
+          this.changeSite(event.state.page,event.state.scrollTop,true);
+        }
+      });
+    },
     methods: {
       setVisible(v){
         this.show=v;
       },
-      changeSite(name){
-        console.log("changeSite",name);
+      changeSite(name,scrollTop,dontPush){
+        if(!window.onpopstate){
+          
+        }
+        console.log("changeSite",name,history.length);
+        if(!dontPush){
+          history.pushState({
+            page: name,
+            scrollTop: this.$refs.content.scrollTop
+          },"");
+        }
         this.currentComponent=name;
+        if(!scrollTop) scrollTop=0;
+        this.$refs.content.scrollTop=scrollTop;
       }
     }
   }

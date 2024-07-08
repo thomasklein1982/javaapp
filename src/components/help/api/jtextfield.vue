@@ -1,11 +1,14 @@
 <template>
-  <h1>JTextField</h1>
+  <ApiDescription
+    doku="JTextField"
+  />
 </template>
 
 <script>
 import Link from "../../Link.vue";
+import ApiDescription from "../../ApiDescription.vue";
 
 export default{
-  components: { Link }
+  components: { Link, ApiDescription }
 }
 </script>

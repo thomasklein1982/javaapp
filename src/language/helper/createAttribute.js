@@ -23,5 +23,7 @@ export function createAttribute(data,clazz,isStatic,visibility){
   a.modifiers=new Modifiers();
   a.modifiers.visibility=visibility? visibility : 'public';
   a.modifiers.isStatic=isStatic===true;
+  if(clazz.attributeCount===undefined) clazz.attributeCount=0;
+  clazz.attributeCount++;
   return a;
 }

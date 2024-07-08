@@ -35,7 +35,7 @@ function defineJComponent(Clazz,Java){
     name: 'addEventListener',
     args: [
       {name: 'event', type: 'String', info: 'Art des Events, z. B. "click" oder "change".'},
-      {name: '(ev)->{}', type: 'ActionListener'}
+      {name: 'listener', default: '(ev)->{}', type: 'ActionListener'}
     ],
     info: "Fügt einen EventListener hinzu, der aufgerufen wird, wenn man mit der Komponente interagiert."
   },Clazz,false,false);
@@ -57,7 +57,7 @@ function defineJComponent(Clazz,Java){
   createMethod({
     name: 'addActionListener',
     args: [
-      {name: '(ev)->{}', type: 'ActionListener'}
+      {name: "listener", default: '(ev)->{}', type: 'ActionListener'}
     ],
     info: "Fügt einen ActionListener hinzu, der aufgerufen wird, wenn man mit der Komponente interagiert."
   },Clazz,false,false);
@@ -69,13 +69,13 @@ function defineJComponent(Clazz,Java){
     returnType: "HTMLElement",
     info: "Liefert das HTMLElement mit der angegebenen ID zurück."
   },Clazz,false,false);
-  createMethod({
-    name: 'setOnAction',
-    args: [
-      {name: 'handler', type: 'ActionListener'}
-    ],
-    info: "Legt fest, welches Objekt bei einer Aktion die onAction-Methode ausführen soll."
-  },Clazz,false,false);
+  // createMethod({
+  //   name: 'setOnAction',
+  //   args: [
+  //     {name: 'handler', type: 'ActionListener'}
+  //   ],
+  //   info: "Legt fest, welches Objekt bei einer Aktion die onAction-Methode ausführen soll."
+  // },Clazz,false,false);
   createMethod({
     name: 'setCSSClass',
     args: [
@@ -311,8 +311,9 @@ function defineJComponent(Clazz,Java){
   createMethod({
     name: 'setEnabled',
     args: [
-      {name: 'e', type: 'boolean'}
-    ]
+      {name: 'e', type: 'boolean', default: 'false', info: 'true: Komponente ist aktiviert, false: Komponente ist deaktiviert.'}
+    ],
+    info: "Aktiviert bzw. deaktiviert die Komponente. Eine deaktivierte Komponente kann vom User nicht verwendet werden, wird aber weiterhin angezeigt."
   },Clazz,false,false,Java);
   createMethod({
     name: 'isEnabled',

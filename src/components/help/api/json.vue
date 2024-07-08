@@ -1,11 +1,14 @@
 <template>
-  <h1>JSON</h1>
+  <ApiDescription
+    doku="JSON"
+  />
 </template>
 
 <script>
 import Link from "../../Link.vue";
+import ApiDescription from "../../ApiDescription.vue";
 
 export default{
-  components: { Link }
+  components: { Link, ApiDescription }
 }
 </script>

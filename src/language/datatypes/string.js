@@ -3,6 +3,7 @@ import { createMethod } from "../helper/createMethod";
 
 export function defineString(StringClazz,Java){
   StringClazz.name="String";
+  StringClazz.description=`Ein String ist eine Zeichenkette. Strings werden in Java mit doppelten Anführungszeichen geschrieben, also z. B. "Hallo Welt".`;
   createMethod({
     name: "length",
     info: "Liefert die Anzahl der Zeichen des Strings zurück.",
