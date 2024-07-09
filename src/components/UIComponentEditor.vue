@@ -76,15 +76,15 @@
           <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.maxY" style="width: 95%"/></td>
         </tr>
       </template>
-      <template v-if="component.imageWidth!==undefined">
+      <template v-if="component.imageZoom!==undefined">
         <tr>
-          <td>Bild-Breite:</td>
-          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.imageWidth" style="width: 95%"/></td>
+          <td>Bild-Zoom:</td>
+          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.imageZoom" style="width: 95%"/></td>
         </tr>
-        <tr>
+        <!-- <tr>
           <td>Bild-Höhe:</td>
           <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.imageHeight" style="width: 95%"/></td>
-        </tr>
+        </tr> -->
         <tr>
           <td>Bild-Verschiebung-X:</td>
           <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.imageTranslationX" style="width: 95%"/></td>

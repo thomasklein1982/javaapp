@@ -109,12 +109,14 @@ export class Parameter{
     this.name=null;
     this.optional=false;
     this.default=null;
+    this.info=null;
   }
 
   getCopy(typeArguments,copyList){
     let p=new Parameter(copyList);
     p.name=this.name;
     p.optional=this.optional;
+    p.info=this.info;
     p.default=this.default;
     if(this.type && this.type.baseType && this.type.baseType.isGeneric){
       if(this.list.method.typeParameters){
@@ -147,6 +149,7 @@ export class Parameter{
     p.optional=this.optional;
     p.default=this.default;
     p.type=this.type;
+    p.info=this.info;
     if(p.type.baseType.isGeneric){
       if(typeArguments && typeArguments.length===1){
         p.type.baseType=typeArguments[0].baseType;

@@ -73,7 +73,7 @@
           {type: "JCheckBox", value: true, label: "JCheckBox", valueType: "Boolean", onAction: true, actionCommand: "", disabled: false}, 
           {type: "JComboBox", value: "Ja", options: '["Ja","Nein","Vielleicht"]',valueType: "text", onAction: false, actionCommand: "", disabled: false}, 
           {type: "DataTable"}, 
-          {type: "JImage", value: "https://thomaskl.uber.space/Webapps/Assets/graphics/overworld/house-front.png", valueType: "text", onAction: false, actionCommand: "", imageWidth: "100%", imageHeight: "100%", imageTranslationX: "0%", imageTranslationY: "0%"}, 
+          {type: "JImage", value: "https://thomaskl.uber.space/Webapps/Assets/graphics/overworld/house-front.png", valueType: "text", onAction: false, actionCommand: "", imageZoom: 1, imageTranslationX: "0%", imageTranslationY: "0%"}, 
           {type: "Canvas", components: [], minX: 0, maxX: 100, minY: 0, maxY: 100, onAction: false, actionCommand: "", onMouseUp: true, onMouseDown: true, onMouseMove: true, sizePolicy: "fit"}, 
           {type: "For", controlComponent: {min: 1, max: 10, variable: "i"}}, 
           {type: "If", controlComponent: {condition: "true"}}, 

@@ -8,13 +8,15 @@ export function defineString(StringClazz,Java){
     name: "length",
     info: "Liefert die Anzahl der Zeichen des Strings zurück.",
     returnType: 'int',
-    jsName: "len"
+    jsName: "len",
+    returnInfo: 'Die Anzahl der Zeichen des Strings, z. B. "Hallo".length() &rarr; 5.'
   },StringClazz,false,false,Java);
   createMethod({
     name: "indexOf",
-    args: [{name: "search",type: "String"}],
+    args: [{name: "search",type: "String", info: "Zeichenkette, die gesucht wird."}],
     info: "Liefert die (erste) Position des gesuchten Strings innerhalb dieses Strings zurück oder -1, wenn der gesuchte String nicht vorkommt.",
-    returnType: 'int'
+    returnType: 'int',
+    returnInfo: 'Die erste Position des gesuchten Strings oder -1, wenn der gesuchte String nicht vorkommt.'
   },StringClazz,false,false,Java);
   createMethod({
     name: "lastIndexOf",

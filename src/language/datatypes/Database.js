@@ -11,7 +11,7 @@ function defineRecord(Clazz,Java){
   createConstructor ({
     args: [
       {type: 'String', name: 'label'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
-    ]
+    ],
   },Clazz,Java);
   createMethod({
     name: "get",
@@ -26,7 +26,8 @@ function defineRecord(Clazz,Java){
 function defineDatabase(Clazz,Java){
   createConstructor ({
     args: [
-    ]
+    ],
+    info: 'Erzeugt ein neues Database-Objekt, das eine Verbindung zur Datenbank herstellt.'
   },Clazz,Java);
   createMethod({
     name: "sql",

@@ -53,6 +53,40 @@ export class Clazz{
       this.typeSnippet=null;
     }
   }
+  sortMembers(){
+    let as=[];
+    let ms=[];
+    for(let v in this.attributes){
+      let a=this.attributes[v];
+      as.push(a);
+    }
+    for(let v in this.methods){
+      let m=this.methods[v];
+      ms.push(m);
+    }
+    as.sort((a,b)=>{
+      if(a.name<b.name){
+        return -1;
+      }else{
+        return 1;
+      }
+    });
+    ms.sort((a,b)=>{
+      if(a.name<b.name){
+        return -1;
+      }else{
+        return 1;
+      }
+    });
+    this.attributes={};
+    for(let i=0;i<as.length;i++){
+      this.attributes[as[i].name]=as[i];
+    }
+    this.methods={};
+    for(let i=0;i<ms.length;i++){
+      this.methods[ms[i].name]=ms[i];
+    }
+  }
   setWrappedPrimitiveType(ptype){
     this.wrappedPrimitiveType=ptype;
   }

@@ -20,6 +20,7 @@ export function createMethod(data,clazz,isStatic,isConstructor){
   m.params=new ParameterList(m);
   let minCount=-1;
   if(data.args){
+    let optional=false;
     m.params.reverseOrder=data.reverseArgsOrder;
     for(let j=0;j<data.args.length;j++){
       let a=data.args[j];
@@ -29,8 +30,10 @@ export function createMethod(data,clazz,isStatic,isConstructor){
       //   a=data.args[j];
       // }
       let p=new Parameter(m.params);
-      p.optional=a.optional;
+      if(a.optional) optional=true;
+      p.optional=optional;
       p.default=a.default;
+      p.info=a.info;
       let types;
       if(Array.isArray(a.type)){
         types=a.type;
@@ -85,6 +88,7 @@ export function createMethod(data,clazz,isStatic,isConstructor){
         m.type=new Type(baseType,0);
       }
     }
+    m.returnInfo=data.returnInfo;
   }else{
     m.type=null;
   }
@@ -100,5 +104,7 @@ export function createMethod(data,clazz,isStatic,isConstructor){
       code: data.jscode
     };
   }
+  if(clazz.methodCount===undefined) clazz.methodCount=0;
+  if(!isConstructor) clazz.methodCount++;
   return m;
 }

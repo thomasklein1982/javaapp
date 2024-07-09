@@ -24,6 +24,7 @@ function defineJComponent(Clazz,Java){
   createAttribute({
     name: "actionCommand",
     type: Java.datatypes.String,
+    info: 'Jede Komponente kann ein ActionCommand erhalten. Dieses kann man verwenden, um festzulegen, was passieren soll, wenn mit der Komponente interagiert wird.'
   },Clazz,false);
   createMethod({
     name: 'setValue',
@@ -444,30 +445,23 @@ function defineJImage(Clazz,Java){
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
   createMethod({
-    name: 'setImageWidth',
+    name: 'setZoom',
     args: [
-      {name: '"100%"', type: 'String', info: 'Breite des Bildes.'}
+      {name: 'factor', default: '1', type: 'double', info: 'Zoom-Faktor (1 = 100%)'}
     ],
-    info: 'Legt die Breite des Bildes fest.'
-  },Clazz,false,false,Java);
-  createMethod({
-    name: 'setImageHeight',
-    args: [
-      {name: '"100%"', type: 'String', info: 'Höhe des Bildes.'}
-    ],
-    info: 'Legt die Höhe des Bildes fest.'
+    info: 'Legt den Zoomfaktor des Bildes fest.'
   },Clazz,false,false,Java);
   createMethod({
     name: 'setImageTranslationX',
     args: [
-      {name: '"0%"', type: 'String', info: 'Verschiebung des Bildes nach rechts/links.'}
+      {name: 'dx', default: '"0%"', type: 'String', info: 'Verschiebung des Bildes nach rechts/links.'}
     ],
     info: 'Legt die Verschiebung des Bildes in x-Richtung fest.'
   },Clazz,false,false,Java);
   createMethod({
     name: 'setImageTranslationY',
     args: [
-      {name: '"0%"', type: 'String', info: 'Verschiebung des Bildes nach oben/unten.'}
+      {name: 'dy', default: '"0%"', type: 'String', info: 'Verschiebung des Bildes nach oben/unten.'}
     ],
     info: 'Legt die Verschiebung des Bildes in y-Richtung fest.'
   },Clazz,false,false,Java);

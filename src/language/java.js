@@ -187,3 +187,8 @@ defineTimer(Timer);
 defineJSON(JSON);
 defineRandom(Random);
 defineInterfaces();
+
+for(let v in clazzes){
+  let c=clazzes[v];
+  if(c instanceof Clazz) c.sortMembers();
+}

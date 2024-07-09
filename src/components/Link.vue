@@ -20,8 +20,7 @@ export default {
   },
   methods: {
     click(){
-      console.log(this.siteName);
-      app.$refs.dialogHelp.changeSite(this.siteName);
+      this.$root.$refs.dialogHelp.changeSite(this.siteName);
     }
   }
 }

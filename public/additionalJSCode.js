@@ -1250,6 +1250,11 @@ function additionalJSCode(){
         }
       }
     }
+    setZoom(z){
+      let w=z*100+"%";
+      this.setImageWidth(w);
+      this.setImageHeight(w);
+    }
     setImageWidth(w){
       this.dimension.width=w;
       this.$el.style.backgroundSize=this.dimension.width+" "+this.dimension.height;

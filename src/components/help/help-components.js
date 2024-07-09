@@ -31,16 +31,20 @@ import about_whatis from "./about/what-is.vue";
   import api_char from "./api/char.vue";
   import api_double from "./api/double.vue";
   import api_exception from "./api/exception.vue";
+  import api_database from "./api/database.vue";
   import api_file from "./api/file.vue";
   import api_integer from "./api/integer.vue";
+  import api_inputstream from "./api/inputstream.vue";
   import api_javaapp from "./api/javaapp.vue";
   import api_json from "./api/json.vue";
   import api_matcher from "./api/matcher.vue";
   import api_math from "./api/math.vue";
   import api_matrix from "./api/matrix.vue";
   import api_object from "./api/object.vue";
+  import api_printstream from "./api/printstream.vue";
   import api_pattern from "./api/pattern.vue";
   import api_random from "./api/random.vue";
+  import api_record from "./api/record.vue";
   import api_sound from "./api/sound.vue";
   import api_string from "./api/string.vue";
   import api_system from "./api/system.vue";
@@ -140,6 +144,10 @@ import about_whatis from "./about/what-is.vue";
           label: "Char",
           comp: api_char
         },
+        database: {
+          label: "Database",
+          comp: api_database
+        },
         datatable: {
           label: "DataTable",
           comp: api_datatable
@@ -159,6 +167,10 @@ import about_whatis from "./about/what-is.vue";
         htmlelement: {
           label: "HTMLElement",
           comp: api_htmlelement
+        },
+        inputstream: {
+          label: "InputStream",
+          comp: api_inputstream
         },
         integer: {
           label: "Integer",
@@ -192,7 +204,7 @@ import about_whatis from "./about/what-is.vue";
           label: "JLabel",
           comp: api_jlabel
         },
-        jcpanel: {
+        jpanel: {
           label: "JPanel",
           comp: api_jpanel
         },
@@ -228,9 +240,17 @@ import about_whatis from "./about/what-is.vue";
           label: "Pattern",
           comp: api_pattern
         },
+        printstream: {
+          label: "PrintStream",
+          comp: api_printstream
+        },
         random: {
           label: "Random",
           comp: api_random
+        },
+        record: {
+          label: "Record",
+          comp: api_record
         },
         sound: {
           label: "Sound",

@@ -719,12 +719,8 @@ export class UIClazz extends Clazz{
           updateCode+="\ncomponent"+code;
         }
       }
-      if(c.imageWidth){
-        let code=".setImageWidth("+JSON.stringify(c.imageWidth)+")";
-        newCode+="\n"+last+code;
-      }
-      if(c.imageHeight){
-        let code=".setImageHeight("+JSON.stringify(c.imageHeight)+")";
+      if(c.imageZoom){
+        let code=".setZoom("+c.imageZoom+")";
         newCode+="\n"+last+code;
       }
       if(c.imageTranslationX){
