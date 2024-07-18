@@ -7,7 +7,23 @@
 import { UIClazz } from '../classes/UIClazz';
   export default {
     props: {
-      uiClazz: Object
+      uiClazz: Object,
+      selectedComponent: {
+        type: Object,
+        default: null
+      }
+    },
+    watch: {
+      selectedComponent(nv,ov){
+        let msg={
+          type: "select",
+          id: null
+        };
+        if(nv && nv.previewID){
+          msg.id=nv.previewID;
+        }
+        this.sendMessage(msg);
+      }
     },
     data: function(){
       return {
@@ -19,6 +35,10 @@ import { UIClazz } from '../classes/UIClazz';
         if(this.frame){
           this.frame.focus();
         }
+      },
+      sendMessage(msg){
+        if(!this.$refs.wrapper.firstChild) return;
+        this.$refs.wrapper.firstChild.contentWindow.postMessage(msg);
       },
       clear(){
         if(!(this.uiClazz instanceof UIClazz)) return;

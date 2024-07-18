@@ -9,9 +9,6 @@
         <template v-if="type==='JLabel'">
           <div class="component jlabel">{{component.value}}</div>
         </template>
-        <template v-if="type==='JHtml'">
-          <div class="component jhtml">{{component.value}}</div>
-        </template>
         <template v-if="type==='JTextField'">
           <input type="text" size="1" class="component jtextfield" :value="isEditable? component.value:'JTextField'" :placeholder="component.placeholder"/>
         </template>
@@ -68,7 +65,7 @@
         </template>
         <div v-else class="jpanel-color" :style="{display: 'flex'}">
           <button @click="toggleHideContent()">{{hideContent? '+':'-'}}</button>
-          <div v-if="type==='JPanel' || type==='Canvas' || type==='UIClazz'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">{{containerDisplayType}}
+          <div v-if="type==='JPanel' || type==='Canvas' || type==='UIClazz'|| type==='HTMLElement'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">{{containerDisplayType}}
             <Badge v-if="showActionCommand" :value="'\u00BB'+component.actionCommand+'\u00AB'" severity="warning" ></Badge>
             <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
           </div>
@@ -87,7 +84,7 @@
           <span class="pi handle pi-arrows-alt"/>
         </div>
         <div v-show="!hideContent" style="width: 100%" :class="isUIClazz? 'ui-clazz-body':''" :style="{display: 'flex', 'flex-direction': 'row'}">
-          <div v-if="!isUIClazz" @click="handleClick" class="jpanel-left">&nbsp;</div>
+          <div v-if="!isUIClazz && !hideContent" @click="handleClick" class="jpanel-left">&nbsp;</div>
           <Sortable
             v-if="renderSortable"
             ref="sortable"
@@ -132,7 +129,7 @@
             </template>
           </Sortable>
         </div>
-        <div v-if="!isUIClazz" @click="handleClick" class="jpanel-bottom">&nbsp;</div>
+        <div v-if="!isUIClazz && !hideContent" @click="handleClick" class="jpanel-bottom">&nbsp;</div>
       </div>
     </template>
     
@@ -159,10 +156,18 @@ import { nextTick } from "vue";
       }
     },
     computed: {
+      hideContent(){
+        if(!this.component) return false;
+        if(this.component.hideContent===undefined) this.component.hideContent=false;
+        return this.component.hideContent;
+      },
       containerDisplayType(){
         if(this.type==="UIClazz"){
           return this.customComponentName;
         }else{
+          if(this.type==="HTMLElement" && this.isEditable){
+            return this.component.tag;
+          }
           return this.type;
         }
       },
@@ -218,7 +223,7 @@ import { nextTick } from "vue";
         return this.component.type;
       },
       isContainer(){
-        return this.type==="Canvas" || this.type==="JPanel" || this.type==="UIClazz" || this.component instanceof UIClazz || this.component.controlComponent;
+        return this.type==="HTMLElement" || this.type==="Canvas" || this.type==="JPanel" || this.type==="UIClazz" || this.component instanceof UIClazz || this.component.controlComponent;
       },
       label(){
         if(this.isEditable && this.component.name){
@@ -235,12 +240,21 @@ import { nextTick } from "vue";
     },
     data(){
       return {
-        hideContent: false,
+        id: null,
         renderSortable: true,
         list: this.component.components? JSON.parse(JSON.stringify(this.component.components)): []
       }
     },
+    mounted(){
+      if(!this.component.previewID){
+        this.component.previewID=this.getRandomId();
+      }
+      this.id=this.component.previewID;
+    },
     methods: {
+      getRandomId(){
+        return "P"+Math.floor(Math.random()*10000000);
+      },
       getIndexOfChildComponent(comp){
         for(let i=0;i<this.component.components.length;i++){
           let c=this.component.components[i];
@@ -279,7 +293,7 @@ import { nextTick } from "vue";
         this.component.components.splice(index+1,0,copy);
       },
       toggleHideContent(){
-        this.hideContent=!this.hideContent;
+        this.component.hideContent=!this.hideContent;
       }, 
       removeChildComponent(index){
         this.component.components.splice(index,1);

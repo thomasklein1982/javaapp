@@ -1485,10 +1485,21 @@ function additionalJSCode(){
       this.$el.textContent=text;
     }
     getAttribute(name){
-      return this.$el[name];
+      return this.$el.getAttribute(name);
     }
     setAttribute(name, value){
-      this.$el[name]=value;
+      this.$el.setAttribute(name,value);
+    }
+    setAttributes(namesValues){
+      for(let i=0;i<namesValues.length;i++){
+        let c=namesValues[i];
+        let pos=c.indexOf("=");
+        if(pos<1) continue;
+        let name=c.substring(0,pos);
+        let value=c.substring(pos+1);
+        value=JSON.parse(value);
+        this.setAttribute(name,value);
+      }
     }
     getValue(){
       if(!this.$el) return null;

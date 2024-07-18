@@ -39,6 +39,12 @@ export function defineString(StringClazz,Java){
     returnType: 'int'
   },StringClazz,false,false,Java);
   createMethod({
+    name: "fromCodePoint",
+    args: [{name: "codePoint",type: "int"}],
+    info: "Erzeugt einen neuen String, der aus einem einzigen Zeichen besteht.",
+    returnType: 'String'
+  },StringClazz,true,false,Java);
+  createMethod({
     name: "substring",
     args: [{name: "index1",type: "int"}, {name: "index2", type: "int", optional: true}],
     info: "Liefert einen Teilstring zurück und zwar ab der Position index1. Wenn der zweite Index angegeben ist, ist dies die Position des ersten Zeichens, das NICHT mehr mit ausgeschnitten wird.",

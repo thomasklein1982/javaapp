@@ -70,6 +70,13 @@ export class UIClazz extends Clazz{
         maxY: "Maximale y-Koordinate.",
         sizePolicy: "Anpassung"
       }
+    },
+    HTMLElement: {
+      params: ["tag","x","y","width","height"],
+      labels: {
+        tag: "HTML-Tag",
+        value: "Der innerHTML-Wert"
+      }
     }
   };
 
@@ -298,7 +305,7 @@ export class UIClazz extends Clazz{
   }
 
   getUIPreviewCode(){
-    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;\nconsole.hide();\nconsole.log('set onstart');setTimeout(async ()=>{await $App.setup();var sheet = window.document.styleSheets[0];sheet.insertRule('.__jcomponent:hover{ background: cyan;opacity: 0.5; }', sheet.cssRules.length);\nconsole.log('start preview');\n(new "+this.name+"("+")).$constructor();},100);",false,true);
+    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;$uiSelectedComponent=null;\nconsole.hide();\nconsole.log('set onstart');setTimeout(async ()=>{await $App.setup();var sheet = window.document.styleSheets[0];sheet.insertRule('.__jcomponent:hover{ background: cyan;opacity: 0.5; }', sheet.cssRules.length);\nwindow.addEventListener('message',function(ev){if(ev.data.type==='select'){if($uiSelectedComponent){let c=$uiSelectedComponent;\nc.style.filter='none';c.style.backgroundColor=c.oldBackground;}\nlet c=document.querySelector('[data-id='+ev.data.id+']');\nif(c){\nc.oldBackground=c.style.backgroundColor;\nc.style.backgroundColor='gray';\nc.style.filter='opacity(0.5)';\n$uiSelectedComponent=c;\n}else{\n$uiSelectedComponent=null;\n}\n}\nconsole.log('message',ev)});\nconsole.log('start preview');\n(new "+this.name+"("+")).$constructor();},100);",false,true);
     return code;
   }
 
@@ -314,18 +321,36 @@ export class UIClazz extends Clazz{
     // //code+="\n"+JSON.this.components
     // //code+="\n$App.canvas.addElement(this.$el,this.x,this.y,this.width,this.height);";
     // code+="\n}";
-    code+="\nasync $constructor(){";
-    code+="super.$constructor("+JSON.stringify(this.template)+","+this.x+","+this.y+","+this.width+","+this.height+");";
+    let attributesCode="";
+    //let attributesInitCode="";
     for(let i in this.attributes){
       let a=this.attributes[i];
-      if(!a.isNamedComponent){
-        code+="\n"+a.getJavaScriptCode();
-        if(a.initialValue){
-          code+="\nthis."+a.name+"="+a.initialValue+";";
-        }
-      }
+      attributesCode+="\n"+a.getJavaScriptCode()+";";
     }
-    code+="\nthis.rerender();"
+    code+=attributesCode;
+    let callInit=false;
+    for(let i in this.methods){
+      let m=this.methods[i];
+      if(m.name==="init"){
+        callInit=true;
+      }
+      code+="\n"+m.getJavaScriptCode();
+    }
+    code+="\nasync $constructor(){";
+    code+="super.$constructor("+JSON.stringify(this.template)+","+this.x+","+this.y+","+this.width+","+this.height+");";
+    // for(let i in this.attributes){
+    //   let a=this.attributes[i];
+    //   if(!a.isNamedComponent){
+    //     code+="\n"+a.getJavaScriptCode();
+    //     if(a.initialValue){
+    //       code+="\nthis."+a.name+"="+a.initialValue+";";
+    //     }
+    //   }
+    // }
+    code+="\nthis.rerender();";
+    if(callInit){
+      code+="\nthis.init();";
+    }
     code+="\nreturn this;"
     code+="\n}";
     code+="\nrerender(){\nlet lastComponent,component=this;";
@@ -339,10 +364,7 @@ export class UIClazz extends Clazz{
     code+="\nvar c=this.$el.childNodes[i];";
     code+="\nif(c.component.$update) \nc.component.$update.call(c.component,c.component);";
     code+="\n}\n}";
-    for(let i in this.methods){
-      let m=this.methods[i];
-      code+="\n"+m.getJavaScriptCode();
-    }
+    
     code+="\n}";
     return code;
   }  
@@ -551,6 +573,7 @@ export class UIClazz extends Clazz{
       }else{
         var res={code: src};
       }
+      res.code=res.code.replace(/this./g,"this.uiClazz.");
       res.code="(()=>{try{return "+res.code+"}catch(e){}})()";
       return res;
     }catch(e){
@@ -666,6 +689,7 @@ export class UIClazz extends Clazz{
       newCode+="\n"+last+".setY("+c.y+");";
       newCode+="\n"+last+".setWidth("+c.width+");";
       newCode+="\n"+last+".setHeight("+c.height+");";
+      newCode+="\nif("+last+".$el){"+last+".$el.setAttribute('data-id',"+JSON.stringify(c.previewID)+");}\n";
       if(c.onAction===true || c.onAction===false){
         let code=".setTriggerOnAction("+(c.onAction===true)+");";
         newCode+="\n"+last+code;
@@ -696,6 +720,11 @@ export class UIClazz extends Clazz{
       }
       if(c.align!==undefined){
         let code=".setAlignContent('"+c.align+"');";
+        newCode+="\n"+last+code;
+      }
+      if(c.attributes!==undefined){
+        let array=c.attributes.split("\n");
+        let code=".setAttributes("+JSON.stringify(array)+");";
         newCode+="\n"+last+code;
       }
       if(c.disabled===true){
@@ -763,7 +792,7 @@ export class UIClazz extends Clazz{
       }
       if(updateCode.length>0){
         newCode+="\n"+last+".$update=function(component){"+updateCode+"};";
-        newCode+="\n"+last+".$update();";
+        newCode+="\n"+last+".$update("+last+");";
       }
       newCode+="}\n"; //Klammer zu für den Scope
     }

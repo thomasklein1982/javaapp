@@ -17,6 +17,16 @@
           </td>
         </tr>
       </template>
+      <template v-if="component.tag!==undefined">
+        <tr>
+          <td>Tag:</td>
+          <td><InputText type="search" spellcheck="false" @change="emitUpdate()" v-model.trim="component.tag" style="width: 95%"/></td>
+        </tr>
+        <tr>  
+          <td>Attribute:</td>
+          <td><TextArea rows="2" spellcheck="false" @change="emitUpdate()" v-model="component.attributes" style="width: 95%; resize: none"/></td>
+        </tr>
+      </template>
       <tr v-if="component.options!==undefined">
         <td>Optionen:</td>
         <td><InputText type="search" spellcheck="false" @change="emitUpdate()" v-model.trim="component.options" style="width: 95%"/></td>

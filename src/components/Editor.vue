@@ -102,7 +102,12 @@
         <SplitterPanel :size="100-sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">  
           <Splitter :gutter-size="splitterSize" layout="vertical" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
             <SplitterPanel style="overflow: hidden;">
-              <UIPreview ref="uipreview" v-show="!running && isCurrentClazzUIClazz" :ui-clazz="currentClazz"/>
+              <UIPreview 
+                ref="uipreview" 
+                v-show="!running && isCurrentClazzUIClazz" 
+                :ui-clazz="currentClazz"
+                :selected-component="selectedUIComponent"
+              />
               <AppPreview v-show="running || !isCurrentClazzUIClazz" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
             </SplitterPanel>
             <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
