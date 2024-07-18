@@ -79,7 +79,7 @@ export default {
               separator:true
             },
             {
-              label: 'Details',
+              label: 'App-Details',
               icon: 'pi pi-ellipsis-v',
               command: (ev)=>{
                 this.$emit('details');

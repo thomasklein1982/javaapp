@@ -5,10 +5,16 @@
     </div>
     <table style="width: 100%">
       <tr><td style="width: 0"></td><td></td></tr>
-      <tr v-if="!component.controlComponent">
-        <td>Name:</td>
-        <td><InputText type="search" spellcheck="false" v-model.trim="component.name" @change="emitRecompile()" style="width: 95%"/></td>
-      </tr>
+      <template v-if="!component.controlComponent">
+        <tr>
+          <td>Name:</td>
+          <td><InputText type="search" spellcheck="false" v-model.trim="component.name" @change="emitRecompile()" style="width: 95%"/></td>
+        </tr>
+        <tr>
+          <td>Array:</td>
+          <td><InputText type="search" spellcheck="false" v-model.trim="component.array" @change="emitRecompile()" style="width: 95%"/></td>
+        </tr>
+      </template>
       <template v-if="uiClazz">
         <tr v-for="(v,i) in uiClazz.variables">
           <td>{{ v.name }}:</td>

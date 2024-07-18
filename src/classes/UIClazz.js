@@ -270,6 +270,9 @@ export class UIClazz extends Clazz{
           names[c.name]=c;
         }
       }
+      if(c.array){
+        names[c.array]=c;
+      }
       if(c.components){
         UIClazz.getAllAttributesFromComponent(c,names,standardValue);
       }
@@ -305,7 +308,7 @@ export class UIClazz extends Clazz{
   }
 
   getUIPreviewCode(){
-    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;$uiSelectedComponent=null;\nconsole.hide();\nconsole.log('set onstart');setTimeout(async ()=>{await $App.setup();var sheet = window.document.styleSheets[0];sheet.insertRule('.__jcomponent:hover{ background: cyan;opacity: 0.5; }', sheet.cssRules.length);\nwindow.addEventListener('message',function(ev){if(ev.data.type==='select'){if($uiSelectedComponent){let c=$uiSelectedComponent;\nc.style.filter='none';c.style.backgroundColor=c.oldBackground;}\nlet c=document.querySelector('[data-id='+ev.data.id+']');\nif(c){\nc.oldBackground=c.style.backgroundColor;\nc.style.backgroundColor='gray';\nc.style.filter='opacity(0.5)';\n$uiSelectedComponent=c;\n}else{\n$uiSelectedComponent=null;\n}\n}\nconsole.log('message',ev)});\nconsole.log('start preview');\n(new "+this.name+"("+")).$constructor();},100);",false,true);
+    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;$uiSelectedComponent=null;\nconsole.hide();\nconsole.log('set onstart');setTimeout(async ()=>{await $App.setup();var sheet = window.document.styleSheets[0];sheet.insertRule('.__jcomponent:hover{ background: cyan;opacity: 0.5; }', sheet.cssRules.length);\nwindow.addEventListener('message',function(ev){if(ev.data.type==='select'){if($uiSelectedComponent){let c=$uiSelectedComponent;\nc.style.filter='none';c.style.backgroundColor=c.oldBackground;\nc.style.borderWidth=c.oldBorderWidth;\nc.style.borderStyle=c.oldBorderStyle;\nc.style.borderColor=c.oldBorderColor;}\nlet c=document.querySelector('[data-id='+ev.data.id+']');\nif(c){\nc.oldBackground=c.style.backgroundColor;\nc.oldBorderWidth=c.style.borderWidth;\nc.oldBorderStyle=c.style.borderStyle;\nc.oldBorderColor=c.style.borderColor;\nc.style.backgroundColor='gray';\nc.style.borderWidth='1';\nc.style.borderStyle='dashed';\nc.style.borderColor='gold';\nc.style.filter='opacity(0.5)';\n$uiSelectedComponent=c;\n}else{\n$uiSelectedComponent=null;\n}\n}\n});\nconsole.log('start preview');\n(new "+this.name+"("+")).$constructor();},100);",false,true);
     return code;
   }
 
@@ -355,9 +358,11 @@ export class UIClazz extends Clazz{
     code+="\n}";
     code+="\nrerender(){\nlet lastComponent,component=this;";
     code+="\nif(this.$el.replaceChildren) this.$el.replaceChildren(); else this.$el.innerHTML='';";
+    code+="\nthis.componentArrays={};";
     code+="\n"+this.componentCode;
-    // code+="\nlet elements=document.querySelectorAll('*[id]');";
-    // code+="\nfor(let e of elements){e.id='"+this.name+"-'+e.id;}";
+    code+="\nfor(let i in this.componentArrays){";
+    code+="\nthis[i]=$createArray('JComponent',1,this.componentArrays[i]);";
+    code+="\n}";
     code+="\nthis.$update();}";
     code+="\n$update(){\nif(!this.$el) return;\n";
     code+="\nfor(var i=0;i<this.$el.childNodes.length;i++){";
@@ -413,7 +418,7 @@ export class UIClazz extends Clazz{
       }
       let a=createAttribute({
         name,
-        type: c.array? {baseType: type, dimension: 1} : type
+        type: c.array? {baseType: Java.datatypes.JComponent, dimension: 1} : type
       },this,false);
       a.isNamedComponent=true;
       this.attributes[name]=a;
@@ -679,6 +684,9 @@ export class UIClazz extends Clazz{
       let updateCode="";
       if(c.name){
         newCode+="\nthis."+c.name+"= "+last+";";
+      }
+      if(c.array){
+        newCode+="\nif(this.uiClazz.componentArrays["+JSON.stringify(c.array)+"]===undefined){this.uiClazz.componentArrays["+JSON.stringify(c.array)+"]=[];}\nthis.uiClazz.componentArrays["+JSON.stringify(c.array)+"].push("+last+");";
       }
       // if(c.type==="JCheckBox" || c.type==="JComboBox" || c.type==="JTextField"){
       //   newCode+="\n"+last+".$el.onchange=function(){\nif(this.component.$triggerOnAction){$main.onAction(this.component);}}";

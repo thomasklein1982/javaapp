@@ -436,6 +436,10 @@ export default {
       this.clearRuntimeErrors();
       this.project=p;
       p.compile(true);
+      setTimeout(()=>{
+        this.compileProjectAndUpdateUIPreview();
+      },100);
+      
     },
     getProject(){
       return this.project;

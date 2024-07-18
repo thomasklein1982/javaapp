@@ -39,6 +39,7 @@
         <div style="position: absolute; top: 0; right: 0">
           <Badge v-if="showActionCommand" :value="'\u00BB'+component.actionCommand+'\u00AB'" severity="warning" ></Badge>
           <Badge v-if="showName" :value="component.name" severity="info" ></Badge>
+          <Badge v-if="showArray" :value="component.array+'[]'" severity="info" ></Badge>
         </div>
         <div @click="handleClick" style="cursor: pointer; position: absolute; left: 0; right: 0; top: 0; bottom: 0"></div>
       </div>
@@ -216,6 +217,15 @@ import { nextTick } from "vue";
         }
         return true;
       },
+      showArray(){
+        if(this.component instanceof UIClazz){
+          return false;
+        }
+        if(!this.component.array){
+          return false;
+        }
+        return true;
+      },
       isUIClazz(){
         return this.component instanceof UIClazz;
       },
@@ -246,10 +256,12 @@ import { nextTick } from "vue";
       }
     },
     mounted(){
-      if(!this.component.previewID){
-        this.component.previewID=this.getRandomId();
-      }
-      this.id=this.component.previewID;
+      this.id=this.getRandomId();
+      this.component.previewID=this.id;
+      // if(!this.component.previewID){
+      //   this.component.previewID=this.getRandomId();
+      // }
+      // this.id=this.component.previewID;
     },
     methods: {
       getRandomId(){
