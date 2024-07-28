@@ -28,7 +28,6 @@
       components[cat+"_"+a]=help[cat].components[a].comp;
     }
   }
-  console.log(components);
 
   export default {
     props: {
@@ -80,7 +79,6 @@
         if(!window.onpopstate){
           
         }
-        console.log("changeSite",name,history.length);
         if(!dontPush){
           history.pushState({
             page: name,

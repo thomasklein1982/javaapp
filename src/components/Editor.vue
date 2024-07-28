@@ -85,6 +85,7 @@
                 :project="project"
                 :settings="settings"
                 :font-size="fontSize"
+                @recompilepreview="compileProjectAndUpdateUIPreview()"
                 :current="paused && i===activeTab ? current : null"
                 @caretupdate="updateCaretPosition"
                 ref="editor"

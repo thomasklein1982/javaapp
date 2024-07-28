@@ -87,10 +87,6 @@ export class UIClazz extends Clazz{
     this.components=[];
     this.componentCode="";
     this.hasClazzDeclaration=false;
-    this.rerenderMethod=createMethod({
-      name: "rerender",
-      params: []
-    },this,false,false);
     this.cssClass="";
     this.template="1";
     this.forceAbsolute=false;
@@ -166,7 +162,6 @@ export class UIClazz extends Clazz{
     if(!scope) scope=new Scope(this.project,undefined,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
     this.variables=[];
     this.variablesErrors=[];
-    this.methods={};
     let source=this.variablesRaw;
     if(source){
       source=source.trim(); 
@@ -192,24 +187,6 @@ export class UIClazz extends Clazz{
             a.isNamedComponent=false;
             this.variables.push(a);
             this.attributes[a.name]=a;
-            let setterMethodName=this.getSetterMethodName(a.name);
-            this.methods[setterMethodName]=createMethod({
-              name: setterMethodName,
-              args: [
-                {
-                  name: a.name,
-                  type: a.type
-                }
-              ],
-              jscode: "this."+a.name+"="+a.name+";\nif(arguments[1]!==true){this.$update();}"
-            },this,false,false);
-            let getterMethodName=this.getGetterMethodName(a.name);
-            this.methods[getterMethodName]=createMethod({
-              name: getterMethodName,
-              args: [],
-              jscode: "return this."+a.name+";",
-              returnType: a.type
-            },this,false,false);
           }
         }catch(e){
           this.variablesErrors.push(e);
@@ -308,7 +285,8 @@ export class UIClazz extends Clazz{
   }
 
   getUIPreviewCode(){
-    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;$uiSelectedComponent=null;\nconsole.hide();\nconsole.log('set onstart');setTimeout(async ()=>{await $App.setup();var sheet = window.document.styleSheets[0];sheet.insertRule('.__jcomponent:hover{ background: cyan;opacity: 0.5; }', sheet.cssRules.length);\nwindow.addEventListener('message',function(ev){if(ev.data.type==='select'){if($uiSelectedComponent){let c=$uiSelectedComponent;\nc.style.filter='none';c.style.backgroundColor=c.oldBackground;\nc.style.borderWidth=c.oldBorderWidth;\nc.style.borderStyle=c.oldBorderStyle;\nc.style.borderColor=c.oldBorderColor;}\nlet c=document.querySelector('[data-id='+ev.data.id+']');\nif(c){\nc.oldBackground=c.style.backgroundColor;\nc.oldBorderWidth=c.style.borderWidth;\nc.oldBorderStyle=c.style.borderStyle;\nc.oldBorderColor=c.style.borderColor;\nc.style.backgroundColor='gray';\nc.style.borderWidth='1';\nc.style.borderStyle='dashed';\nc.style.borderColor='gold';\nc.style.filter='opacity(0.5)';\n$uiSelectedComponent=c;\n}else{\n$uiSelectedComponent=null;\n}\n}\n});\nconsole.log('start preview');\n(new "+this.name+"("+")).$constructor();},100);",false,true);
+    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;\nconsole.hide();\nconsole.log('set onstart');setTimeout(async ()=>{await $App.setup();var sheet = window.document.styleSheets[0];sheet.insertRule('.__jcomponent:hover{ background: cyan;opacity: 0.5; }', sheet.cssRules.length);\nwindow.addEventListener('message',function(ev){if(ev.data.type==='select'){$changePreviewSelection(ev.data.id)}});\nconsole.log('start preview');\n(new "+this.name+"("+")).$constructor();},100);",false,true);
+    
     return code;
   }
 
@@ -350,26 +328,19 @@ export class UIClazz extends Clazz{
     //     }
     //   }
     // }
-    code+="\nthis.rerender();";
-    if(callInit){
-      code+="\nthis.init();";
-    }
-    code+="\nreturn this;"
-    code+="\n}";
-    code+="\nrerender(){\nlet lastComponent,component=this;";
+    code+="\nlet lastComponent,component=this;";
     code+="\nif(this.$el.replaceChildren) this.$el.replaceChildren(); else this.$el.innerHTML='';";
     code+="\nthis.componentArrays={};";
     code+="\n"+this.componentCode;
     code+="\nfor(let i in this.componentArrays){";
     code+="\nthis[i]=$createArray('JComponent',1,this.componentArrays[i]);";
     code+="\n}";
-    code+="\nthis.$update();}";
-    code+="\n$update(){\nif(!this.$el) return;\n";
-    code+="\nfor(var i=0;i<this.$el.childNodes.length;i++){";
-    code+="\nvar c=this.$el.childNodes[i];";
-    code+="\nif(c.component.$update) \nc.component.$update.call(c.component,c.component);";
-    code+="\n}\n}";
-    
+    if(callInit){
+      code+="\nawait this.init();";
+    }
+    code+="\nreturn this;"
+    code+="\n}";
+
     code+="\n}";
     return code;
   }  
@@ -403,8 +374,8 @@ export class UIClazz extends Clazz{
     super.compile(fromSource,optimizeCompiler);
     
     let scope=new Scope(this.project,undefined,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
-    this.attributes={};
-    this.methods={};
+    // this.attributes={};
+    // this.methods={};
     this.compileVariables(scope);
     let namedComponents=UIClazz.getAllAttributesFromComponent(this,{},undefined);
     for(let name in namedComponents){
@@ -425,9 +396,8 @@ export class UIClazz extends Clazz{
     }
     
     this.componentCode="";
-    let codeObject={code: "let container0=this;\nwindow.$insertPosition=0;\n", nextUIControlStatementIndex:1};
-    scope=new Scope(this.project,this.rerenderMethod,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
-    codeObject.code+=this.generateJavaScriptCodeForComponent(scope,this,codeObject,0,null);
+    let codeObject={code: "let container0=this;\nwindow.$insertPosition=0;\n"};
+    codeObject.code+=this.generateJavaScriptCodeForComponent(this,codeObject,0,null);
 
     if(this.onAction===true){
       codeObject.code+="\ncontainer0.setTriggerOnAction("+(c.onAction===true)+");";
@@ -446,16 +416,13 @@ export class UIClazz extends Clazz{
       newCode+="\n"+last+code;
     }
     if(this.actionCommand){
-      scope.clearReferencedVariables();
-      codeObject.code+="\ncontainer0.setActionCommand("+this.parseInterpolatedString(scope, this.actionCommand)+");";
+      codeObject.code+="\ncontainer0.setActionCommand("+JSON.stringify(this.actionCommand)+");";
     }
     if(this.cssClass){
-      scope.clearReferencedVariables();
-      codeObject.code+="\ncontainer0.setCSSClass("+this.parseInterpolatedString(scope,this.cssClass)+");";
+      codeObject.code+="\ncontainer0.setCSSClass("+JSON.stringify(this.cssClass)+");";
     }
     if(this.cssCode){
-      scope.clearReferencedVariables();
-      codeObject.code+="\ncontainer0.$el.style.cssText=container0.$el.style.cssText+';'+"+this.parseInterpolatedString(scope,this.project.prepareCSS(this.cssCode))+";";
+      codeObject.code+="\ncontainer0.$el.style.cssText=container0.$el.style.cssText+';'+"+JSON.stringify(this.project.prepareCSS(this.cssCode))+";";
     }
 
     /**insertPosition: falls >=0: index des Einfuegens, ansonsten wird angehängt */
@@ -502,9 +469,8 @@ export class UIClazz extends Clazz{
     }
     
     this.componentCode="";
-    let codeObject={code: "let container0=this;\nwindow.$insertPosition=0;\n", nextUIControlStatementIndex:1};
-    scope=new Scope(this.project,this.rerenderMethod,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
-    codeObject.code+=this.generateJavaScriptCodeForComponent(scope,this,codeObject,0,null);
+    let codeObject={code: "let container0=this;\nwindow.$insertPosition=0;\n"};
+    codeObject.code+=this.generateJavaScriptCodeForComponent(this,codeObject,0,null);
 
     if(this.onAction===true){
       console.log("on action");
@@ -512,121 +478,32 @@ export class UIClazz extends Clazz{
       newCode+="\n"+last+code;
     }
     if(this.actionCommand){
-      scope.clearReferencedVariables();
-      codeObject.code+="\ncontainer0.setActionCommand("+this.parseInterpolatedString(scope, this.actionCommand)+");";
+      codeObject.code+="\ncontainer0.setActionCommand("+JSON.stringify(this.actionCommand)+");";
     }
     if(this.cssClass){
-      scope.clearReferencedVariables();
-      codeObject.code+="\ncontainer0.setCSSClass("+this.parseInterpolatedString(scope,this.cssClass)+");";
+      codeObject.code+="\ncontainer0.setCSSClass("+JSON.stringify(this.cssClass)+");";
     }
     if(this.cssCode){
-      scope.clearReferencedVariables();
-      codeObject.code+="\ncontainer0.$el.style.cssText=container0.$el.style.cssText+';'+"+this.parseInterpolatedString(scope,this.project.prepareCSS(this.cssCode))+";";
+      codeObject.code+="\ncontainer0.$el.style.cssText=container0.$el.style.cssText+';'+"+JSON.stringify(this.project.prepareCSS(this.cssCode))+";";
     }
 
     /**insertPosition: falls >=0: index des Einfuegens, ansonsten wird angehängt */
     this.componentCode=codeObject.code;
   }
 
-  parseInterpolatedString(scope,src){
-    if(!src) return '""';
-    src=src.trim();
-    let parts=[];
-    let pos2=-1;
-    let pos=src.indexOf("{{");
-    let lastPos2=0;
-    while(pos>=0){
-      pos2=src.indexOf("}}",pos);
-      if(pos2>=pos){
-        if(lastPos2<pos){
-          parts.push(JSON.stringify(src.substring(lastPos2,pos)));
-        }
-        let code=src.substring(pos+2,pos2);
-        let res=this.parseJavaStatement(scope,code);
-        parts.push(res.code);
-        pos=src.indexOf("{{",pos2+1);
-        lastPos2=pos2+2;
-      }else{
-        pos=-1;
-      }
-    }
-    if(parts.length===0){
-      return JSON.stringify(src);
-    }
-    if(pos2+2<src.length){
-      parts.push(JSON.stringify(src.substring(pos2+2)));
-    }
-    return parts.join("+");
-  }
-
-  parseJavaStatement(scope,src){
-    if(src===undefined || src===null) return "";
-    src+="";
-    if(!src) return "";
-    try{
-      let tree=parseJava(src);
-      let node=tree.topNode.firstChild;
-      if(node.name!=="ExpressionStatement"){
-        throw "Kein Java-Ausdruck";
-      }
-      node=node.firstChild;
-      let source=new Source(src,tree,this);
-      let f=CompileFunctions.get(node,source);
-      if(f){
-        var res=f(node,source,scope);
-        res.referencedVariables=scope.referencedVariables;
-      }else{
-        var res={code: src};
-      }
-      res.code=res.code.replace(/this./g,"this.uiClazz.");
-      res.code="(()=>{try{return "+res.code+"}catch(e){}})()";
-      return res;
-    }catch(e){
-      console.error(e);
-      return {code: src};
-    }
-  }
-
-  generateJavaScriptCodeForComponent(scope,comp,codeObject,containerIndex,parentUIControlStatementIndex){
+  generateJavaScriptCodeForComponent(comp,codeObject,containerIndex){
     let newCode="";
     for(let i=0;i<comp.components.length;i++){
       let c=comp.components[i];
       if(c.controlComponent){
-        let updateCode;
-        newCode+="\n{\n";
-        let uiControlStatementIndex=codeObject.nextUIControlStatementIndex;
-        newCode+="\nlet uiControlStatement"+uiControlStatementIndex+"=$new(UIControlStatement,"+JSON.stringify(c.type)+");";
-        newCode+="\ncontainer"+containerIndex+".add(uiControlStatement"+codeObject.nextUIControlStatementIndex+",$insertPosition);";
-        newCode+="\n$insertPosition++;if("+parentUIControlStatementIndex+"){uiControlStatement"+parentUIControlStatementIndex+".attachComponent(uiControlStatement"+uiControlStatementIndex+")}";
-        codeObject.nextUIControlStatementIndex++;
-        newCode+="\nuiControlStatement"+uiControlStatementIndex+".uiClazz=this;";
         if(c.type==='For'){
-          scope.pushLayer();
-          let min=this.parseJavaStatement(scope,c.controlComponent.min);
-          let max=this.parseJavaStatement(scope,c.controlComponent.max);
-          let variable=c.controlComponent.variable;
-          scope.pushLocalVariable(variable,new Type(Java.datatypes.int, 0));
-          let code="\nfor(let "+variable+"= "+min.code+";"+variable+"<= "+max.code+";"+variable+"++){\n";
-          code+=this.generateJavaScriptCodeForComponent(scope, c,codeObject,containerIndex,uiControlStatementIndex);
-          code+="\n}\n";
-          scope.popLayer();
-          updateCode=code;
-          newCode+="";
-        }else if(c.type==='If'){
-          let condition=this.parseJavaStatement(scope,c.controlComponent.condition);
-          let code="if( "+condition.code+"){\n";
-          code+=this.generateJavaScriptCodeForComponent(scope, c,codeObject,containerIndex,uiControlStatementIndex);
-          code+="\n}\n";
-          updateCode=code;
-          newCode+=code;
+          let max=c.controlComponent.max;
+          let code="";
+          for(let i=0; i < max; i++) {
+            code+=this.generateJavaScriptCodeForComponent(c,codeObject,containerIndex);
+          }
+          newCode+="\n(()=>{\n"+code+"\n})();";
         }
-        if(updateCode){
-          newCode+="\nuiControlStatement"+uiControlStatementIndex+".$update=function(component){";
-          newCode+="\ncomponent.prepareForUpdate();";
-          newCode+=updateCode+"};";
-          //newCode+="\nuiControlStatement"+uiControlStatementIndex+".$update();"
-        }
-        newCode+="\n}";
         continue;
       }
       let last="component";
@@ -647,15 +524,11 @@ export class UIClazz extends Clazz{
               c.variablesValues[v.name]=v.initialValue;
             }
             let value=c.variablesValues[v.name];
-            if(value!=null){
-              value=this.parseJavaStatement(scope,value);
-            }
             newCode+="\n"+last+"."+setterName+"("+value+",true);";
           }
         }else{
 
         }
-        newCode+="\n"+last+".rerender();";
       }else{
         newCode+="$new("+c.type+",";
         let clazz=UIClazz.UIClazzes[c.type];
@@ -680,19 +553,13 @@ export class UIClazz extends Clazz{
       }
       newCode+="\n"+last+".uiClazz=this;";
       newCode+="\ncontainer"+containerIndex+".add("+last+",$insertPosition);";
-      newCode+="\n$insertPosition++;if("+parentUIControlStatementIndex+"){uiControlStatement"+parentUIControlStatementIndex+".attachComponent(component)}";
-      let updateCode="";
+      newCode+="\n$insertPosition++;";
       if(c.name){
         newCode+="\nthis."+c.name+"= "+last+";";
       }
       if(c.array){
-        newCode+="\nif(this.uiClazz.componentArrays["+JSON.stringify(c.array)+"]===undefined){this.uiClazz.componentArrays["+JSON.stringify(c.array)+"]=[];}\nthis.uiClazz.componentArrays["+JSON.stringify(c.array)+"].push("+last+");";
+        newCode+="\nif(this.componentArrays["+JSON.stringify(c.array)+"]===undefined){this.componentArrays["+JSON.stringify(c.array)+"]=[];}\nthis.componentArrays["+JSON.stringify(c.array)+"].push("+last+");";
       }
-      // if(c.type==="JCheckBox" || c.type==="JComboBox" || c.type==="JTextField"){
-      //   newCode+="\n"+last+".$el.onchange=function(){\nif(this.component.$triggerOnAction){$main.onAction(this.component);}}";
-      // }else{
-      //   newCode+="\n"+last+".$el.onclick=function(ev){\nif(this.component.$triggerOnAction){ev.stopPropagation();$main.onAction(this.component);}}";
-      // }
       newCode+="\n"+last+".setX("+c.x+");";
       newCode+="\n"+last+".setY("+c.y+");";
       newCode+="\n"+last+".setWidth("+c.width+");";
@@ -719,12 +586,8 @@ export class UIClazz extends Clazz{
         newCode+="\n"+last+code;
       }
       if(c.actionCommand){
-        scope.clearReferencedVariables();
-        let code=".setActionCommand("+this.parseInterpolatedString(scope, c.actionCommand)+");";
+        let code=".setActionCommand("+JSON.stringify(c.actionCommand)+");";
         newCode+="\n"+last+code;
-        if(scope.referencedVariablesCount>0){
-          updateCode+="\ncomponent"+code;
-        }
       }
       if(c.align!==undefined){
         let code=".setAlignContent('"+c.align+"');";
@@ -740,24 +603,15 @@ export class UIClazz extends Clazz{
         newCode+="\n"+last+code;
       }
       if(c.cssClass){
-        scope.clearReferencedVariables();
-        let code=".setCSSClass("+this.parseInterpolatedString(scope,c.cssClass)+");";
+        let code=".setCSSClass("+JSON.stringify(c.cssClass)+");";
         newCode+="\n"+last+code;
-        if(scope.referencedVariablesCount>0){
-          updateCode+="\ncomponent"+code;
-        }
       }
       if(c.cssCode){
-        scope.clearReferencedVariables();
-        //let code=".$el.style.cssText="+last+".$el.style.cssText+';'+"+this.parseInterpolatedString(scope,this.project.prepareCSS(c.cssCode))+";";
-        let code=".setCSS("+last+".$el.style.cssText+';'+"+this.parseInterpolatedString(scope,c.cssCode)+")";
+        let code=".setCSS("+last+".$el.style.cssText+';'+"+JSON.stringify(c.cssCode)+")";
         newCode+="\n"+last+code;
-        if(scope.referencedVariablesCount>0){
-          updateCode+="\ncomponent"+code;
-        }
       }
       if(c.imageZoom){
-        let code=".setZoom("+c.imageZoom+")";
+        let code=".setZoom("+JSON.stringify(c.imageZoom)+")";
         newCode+="\n"+last+code;
       }
       if(c.imageTranslationX){
@@ -768,39 +622,21 @@ export class UIClazz extends Clazz{
         let code=".setImageTranslationY("+JSON.stringify(c.imageTranslationY)+")";
         newCode+="\n"+last+code;
       }
-      // if(c.forceAbsolute){
-      //   newCode+="\n"+last+".setStyle('position','absolute');";
-      //   newCode+="\n"+last+".$el.updatePosition();";
-      // }
       if(c.value!==null && c.value!==undefined){
         let code;
         if(c.valueType==="Boolean"){
           code=".setValue("+c.value+");";
         }else{
-          scope.clearReferencedVariables();
-          code=".setValue("+this.parseInterpolatedString(scope,c.value)+");";
-          if(scope.referencedVariablesCount>0){
-            updateCode+="\ncomponent"+code;
-          }
+          code=".setValue("+JSON.stringify(c.value)+");";
         }
         newCode+="\n"+last+code;
       }
       if(c.components){
         newCode+="\nlet container"+(containerIndex+1)+"="+last+";";
-        newCode+=this.generateJavaScriptCodeForComponent(scope,c,codeObject,containerIndex+1);
-        updateCode+="\nif(!component || !component.$el) return;"
-        updateCode+="\nfor(var i=0;i<component.$el.childNodes.length;i++){";
-        updateCode+="\nvar c=component.$el.childNodes[i];";
-        updateCode+="\nif(c && c.component && c.component.$update){\nc.component.$update.call(c.component,c.component);}";
-        updateCode+="\n}";
-        
+        newCode+=this.generateJavaScriptCodeForComponent(c,codeObject,containerIndex+1);
       }
       if(c.invisible){
         newCode+="\n"+last+".setVisible(false);";
-      }
-      if(updateCode.length>0){
-        newCode+="\n"+last+".$update=function(component){"+updateCode+"};";
-        newCode+="\n"+last+".$update("+last+");";
       }
       newCode+="}\n"; //Klammer zu für den Scope
     }

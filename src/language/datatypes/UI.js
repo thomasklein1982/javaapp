@@ -447,7 +447,7 @@ function defineJImage(Clazz,Java){
   createMethod({
     name: 'setZoom',
     args: [
-      {name: 'factor', default: '1', type: 'double', info: 'Zoom-Faktor (1 = 100%)'}
+      {name: 'factor', default: '100%', type: 'String', info: 'Zoom-Faktor (1 = 100%)'}
     ],
     info: 'Legt den Zoomfaktor des Bildes fest.'
   },Clazz,false,false,Java);

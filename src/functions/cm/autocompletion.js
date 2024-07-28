@@ -187,7 +187,7 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
         options.push({
           label: vname,
           type: "variable",
-          info: "Eine lokale Variable des Typs "+locals[vname].type.toString(),
+          info: "Eine lokale Variable des Typs "+locals[vname]?.type?.toString(),
           boost: 100
         });
       }

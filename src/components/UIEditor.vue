@@ -76,10 +76,7 @@
           {type: "JImage", value: "https://thomaskl.uber.space/Webapps/Assets/graphics/overworld/house-front.png", valueType: "text", onAction: false, actionCommand: "", imageZoom: 1, imageTranslationX: "0%", imageTranslationY: "0%"}, 
           {type: "Canvas", components: [], minX: 0, maxX: 100, minY: 0, maxY: 100, onAction: false, actionCommand: "", onMouseUp: false, onMouseDown: false, onMouseMove: false, sizePolicy: "fit"}, 
           {type: "HTMLElement", tag: "div", attributes: "", value: "", valueType: "html", components: [], onAction: false, actionCommand: "", hideContent: true},
-          {type: "For", controlComponent: {min: 1, max: 10, variable: "i"}}, 
-          {type: "If", controlComponent: {condition: "true"}}, 
-          //{type: "ElseIf", controlComponent: {condition: "true"}}, 
-          //{type: "Else", controlComponent: {}}
+          {type: "For", controlComponent: {max: 10}}, 
         ],
         selectedComponent: null
       };

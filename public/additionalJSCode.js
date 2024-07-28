@@ -33,6 +33,37 @@ function additionalJSCode(){
   function $n(a){return a;}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
 
+  function $changePreviewSelection(previewID){
+    console.log(previewID);
+    // if($uiSelectedComponent){let c=$uiSelectedComponent;\nc.style.filter='none';c.style.backgroundColor=c.oldBackground;\nc.style.borderWidth=c.oldBorderWidth;\nc.style.borderStyle=c.oldBorderStyle;\nc.style.borderColor=c.oldBorderColor;}\nlet c=document.querySelectorAll('[data-id='+ev.data.id+']');\nif(c){\nc.oldBackground=c.style.backgroundColor;\nc.oldBorderWidth=c.style.borderWidth;\nc.oldBorderStyle=c.style.borderStyle;\nc.oldBorderColor=c.style.borderColor;\nc.style.backgroundColor='gray';\nc.style.borderWidth='1pt';\nc.style.borderStyle='dashed';\nc.style.borderColor='gold';\nc.style.filter='opacity(0.5)';\n$uiSelectedComponent=c;\n}else{\n$uiSelectedComponent=null;\n}\n}\n
+    if(!window.$previewSelectedComponents){
+      window.$previewSelectedComponents=[];
+    }
+    for(let i=0;i<window.$previewSelectedComponents.length;i++){
+      let c=window.$previewSelectedComponents[i];
+      for(let a in c.oldStyle){
+        c.style[a]=c.oldStyle[a];
+      }
+      delete c.oldStyle;
+    }
+    window.$previewSelectedComponents=document.querySelectorAll('[data-id='+previewID+']');
+    let style={
+      backgroundColor: "gray",
+      opacity: "0.5",
+      borderWidth: "1pt",
+      borderColor: "gold",
+      borderStyle: "dashed"
+    };
+    for(let i=0;i<window.$previewSelectedComponents.length;i++){
+      let c=window.$previewSelectedComponents[i];
+      c.oldStyle={};
+      for(let a in style){
+        c.oldStyle[a]=c.style[a];
+        c.style[a]=style[a];
+      }
+    }
+  }
+
   function $new(constructor){
     let o;
     try{
@@ -1251,9 +1282,10 @@ function additionalJSCode(){
       }
     }
     setZoom(z){
-      let w=z*100+"%";
-      this.setImageWidth(w);
-      this.setImageHeight(w);
+      // let w=z*100+"%";
+      // this.setImageWidth(w);
+      // this.setImageHeight(w);
+      this.$el.style.backgroundSize=z;
     }
     setImageWidth(w){
       this.dimension.width=w;
@@ -1271,6 +1303,15 @@ function additionalJSCode(){
       this.dimension.translate.y=y;
       this.$el.style.backgroundPosition="calc(50% + "+this.dimension.translate.x+") calc(50% - "+this.dimension.translate.y+")";
     }
+    // setSizePolicy(policy){
+    //   let c;
+    //   if(policy==="fit"){
+    //     c="contain";
+    //   }else{
+    //     c="";
+    //   }
+    //   this.$el.style.backgroundSize=c;
+    // }
   }
 
   class JPanel extends JComponent{

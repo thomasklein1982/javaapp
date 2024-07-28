@@ -68,9 +68,12 @@
           <button @click="toggleHideContent()">{{hideContent? '+':'-'}}</button>
           <div v-if="type==='JPanel' || type==='Canvas' || type==='UIClazz'|| type==='HTMLElement'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">{{containerDisplayType}}
             <Badge v-if="showActionCommand" :value="'\u00BB'+component.actionCommand+'\u00AB'" severity="warning" ></Badge>
-            <Badge v-if="showName" :value="component.name" severity="info" style="position: absolute; top: 0; right: 0"></Badge>
+            <span style="position: absolute; top: 0; right: 0">
+              <Badge v-if="showName" :value="component.name" severity="info" ></Badge>
+              <Badge v-if="showArray" :value="component.array+'[]'" severity="info" ></Badge>
+            </span>
           </div>
-          <div v-else-if="type==='For'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Wiederhole <template v-if="isEditable">für <strong>{{component.controlComponent.variable}}</strong> = <strong>{{component.controlComponent.min}}</strong> bis <strong>{{component.controlComponent.max}}</strong>:</template>
+          <div v-else-if="type==='For'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Wiederhole <template v-if="isEditable"><strong>{{component.controlComponent.max}}</strong></template> mal:
           </div>
           <div v-else-if="type==='If'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">Falls <template v-if="isEditable"><strong>{{component.controlComponent.condition}}</strong>:</template>
           </div>

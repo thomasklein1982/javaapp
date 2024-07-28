@@ -36,8 +36,11 @@ export default {
     return {
       show: false,
       myFontSize: this.fontSize,
-      bodyFontSize: 20
+      bodyFontSize: 15
     };
+  },
+  mounted(){
+    this.changeBodyFontSize(0);
   },
   methods: {
     changeFontSize(ds){
