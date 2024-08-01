@@ -188,6 +188,7 @@ window.appJScode=function(){
             $App.debug.resetCallDepth();
             this.resolve();
           }else if(data.type==="getScope"){
+            console.log("get scope",this.$scope);
             let $scope=this.$scope.getData(JSON.parse(data.template));
             window.parent.postMessage({type: "getScope", data: $scope});
           }

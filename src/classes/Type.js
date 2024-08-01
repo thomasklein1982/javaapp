@@ -170,6 +170,12 @@ export class Type{
   isNumericOrString(){
     return this.isNumeric() || this.isString();
   }
+  checkCompatibility(type){
+    if(!type) return this;
+    if(this.isSubtypeOf(type)) return type;
+    if(type.isSubtypeOf(this)) return this;
+    return false;
+  }
   isSubtypeOf(type){
     if(!type){
       return true;

@@ -54,4 +54,10 @@ export class Source{
   getText(node){
     return this.src.substring(node.from,node.to);
   }
+  log(node){
+    if(!node) console.log("undefinierter Node");
+    let t=this.getText(node);
+    console.log(node,t);
+    return t;
+  }
 }

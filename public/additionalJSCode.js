@@ -3676,8 +3676,9 @@ function additionalJSCode(){
           for(let a in layer){
             if(a in local) continue;
             let v=layer[a];
-            let d=$getData(a,v,template.local[a]);
             
+            let d=$getData(a,v,template.local[a]);
+            //console.log("getData",a,v,d);
             local[a]=d;
           }
         }

@@ -35,7 +35,9 @@ export function ArrayAccess(node,source,scope){
   //code+=".get("+index.code+")";
   codeSet="$setInArray("+codeUpdate+","+index.code+",";
   //codeSet+=".checkBounds("+index.code+").set("+index.code+",";
-  codeUpdate="$setInArray("+codeUpdate+","+index.code+",$getFromArray("+codeUpdate+","+index.code+")";
+  //codeUpdate="$setInArray("+codeUpdate+","+index.code+",$getFromArray("+codeUpdate+","+index.code+")";
+  codeUpdate=object.code+"["+index.code+"]";
+  codeUpdate="($u("+codeUpdate+")|"+codeUpdate;
   //codeUpdate+=".set("+index.code+","+object.code+".get("+index.code+")";
   let returnType=object.type.baseType;
   if(returnType.isGeneric && object.owner){
