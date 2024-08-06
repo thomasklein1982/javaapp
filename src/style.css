@@ -172,6 +172,10 @@ a{
   cursor: pointer;
 }
 
+.p-multiselect{
+  width: 100%;
+}
+
 /*.cm-editor{
   cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAACxCAYAAAAIwae7AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAACtJREFUWIXtyUENAAAIBCC1f+czgQHc4EsnlTrMFVJKKaWUUkoppZRSyne52TEEX6YBkucAAAAASUVORK5CYII=), auto;
 }*/
@@ -245,6 +249,10 @@ a{
   display: flex;
   overflow: hidden;
   flex-direction: column;
+}
+
+.fullwidth{
+  width: 100%;
 }
 
 .panel-full{

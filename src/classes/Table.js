@@ -108,10 +108,10 @@ export class Table{
     var lines=s.split("\n");
     this.attributes=[];
     this.records=[];
+    this.name=lines[0].trim();
     if(lines.length===1){
       return false;
     }
-    this.name=lines[0].trim();
     var attributes=lines[1].split(sep);
     for(var i=0;i<attributes.length;i++){
       var a=attributes[i].trim();

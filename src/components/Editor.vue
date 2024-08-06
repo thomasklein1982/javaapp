@@ -55,7 +55,7 @@
       />
       <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
       <AssetsDialog :project="project" ref="dialogAssets" @open-image-editor="asset=>$refs.imageEditor.open(asset)"/>
-      <DatabaseDialog :database="database" ref="dialogDatabase"/>
+      <DatabaseDialog v-if="project" :database="project.database" ref="dialogDatabase"/>
       <CSSDialog :project="project" ref="dialogCSS"/>
       <TerminalDialog :project="project" ref="dialogTerminal" @run="stopAndPlay"/>
       <TryItDialog ref="tryItDialog"/>
@@ -174,10 +174,10 @@ import { uploadProject } from "../functions/uploadProject.js";
 import LinksDialog from "./LinksDialog.vue";
 import ProjectDetailsDialog from "./ProjectDetailsDialog.vue";
 import NewAppDialog from "./NewAppDialog.vue";
+
 import DatabaseDialog from "./DatabaseDialog.vue";
 import CSSDialog from "./CSSDialog.vue";
 import AssetsDialog from "./AssetsDialog.vue";
-import {database} from "../classes/Database.js";
 import UIPreview from "./UIPreview.vue";
 import SettingsDialog from "./SettingsDialog.vue";
 import { nextTick } from "vue";
@@ -187,6 +187,7 @@ import Insights from "./Insights.vue";
 import TerminalDialog from "./TerminalDialog.vue";
 import DocumentationDialog from "./DocumentationDialog.vue";
 import TryItDialog from "./TryItDialog.vue";
+import OpenProjectDialog from "./OpenProjectDialog.vue";
 
 export default {
   props: {
@@ -212,7 +213,6 @@ export default {
       rightClosed: false,
       sizeCodeSaved: 60,
       closeRightAfterStopping: false,
-      database: database,
       selectedUIComponent: null
     };
   },
@@ -431,23 +431,41 @@ export default {
     setBreakpoints(breakpoints){
       this.$refs.preview.setBreakpoints(breakpoints);
     },
+    openProjectDialog(p,allowImporting){
+      this.$emit("open-project-dialog",p);
+    },
     async openProject(p){
       //Object.seal(p);
       this.stop();
       this.clearRuntimeErrors();
+      //this.database.clear();
       this.project=p;
       p.compile(true);
       setTimeout(()=>{
         this.compileProjectAndUpdateUIPreview();
+        this.activeTab=0;
       },100);
       
+    },
+    importToProject(p){
+      this.stop();
+      this.clearRuntimeErrors();
+      this.project.add(p);
+      for(let i=0;i<p.clazzes.length;i++){
+        let c=p.clazzes[i];
+        let ed=this.getEditorByName(c.name);
+        if(!ed) continue;
+        console.log("set code",ed,c);
+        ed.setCode(c.src);
+      }
+      this.project.compile();
     },
     getProject(){
       return this.project;
     },
     async createNewApp(name,code){
       let p=new Project(name,code);
-      this.database.clear();
+      //this.database.clear();
       await p.initialize();
       await this.openProject(p);
       nextTick(()=>{
@@ -481,10 +499,10 @@ export default {
       }
     },
     async uploadProject(){
-      this.database.clear();
+      //this.database.clear();
       let p=await uploadProject();
-      if(!p) return;
-      await this.openProject(p,this.useBlockEditor);
+      this.openProjectDialog(p,true);
+      //await this.openProject(p,this.useBlockEditor);
     },
     prettifyCode(){
       if(this.currentEditor){
@@ -612,7 +630,8 @@ export default {
     Insights,
     TerminalDialog,
     DocumentationDialog,
-    TryItDialog
+    TryItDialog,
+    OpenProjectDialog
   }
 }
 </script>

@@ -1,24 +1,27 @@
+import App from "../App.vue";
 import { getMimeFromDataURL } from "../functions/getMimeFromDataURL.js";
 import { Java } from "../language/java.js";
 import { Clazz } from "./Clazz";
-import {database} from "./Database";
 import { options } from "./Options.js";
 import { UIClazz } from "./UIClazz.js";
+import { Database } from "./Database.js";
 
 let start="Project Code Start";
 let stop="Project Code Stop";
 
 export class Project{
   constructor(name,code){
+    this.javaappVersion=app.version;
     this.clazzes=[];
     this.css="";
-    this.database=database;
+    this.database=new Database();
     this.assets=[];
     if(!name){
       name="MyApp";
       code="class MyApp{\n  \n  void onStart(){\n    \n  }\n\n  public static void main(String[] args){\n    new MyApp();\n  }\n}";
     }
     this.name=name;
+    this.date=new Date();
     if(code && code.splice){
       for(let i=0;i<code.length;i++){
         let c;
@@ -90,20 +93,28 @@ export class Project{
     return this.handleAssetsInCode(cssText,"url(",")");
   }
   getAssetByName(name){
+    let i=this.getAssetIndexByName(name);
+    if(i>=0){
+      return this.assets[i];
+    }
+    return null;
+  }
+  getAssetIndexByName(name){
     for(let i=0;i<this.assets.length;i++){
       let a=this.assets[i];
       if(a.name===name){
-        return a;
+        return i;
       }
     }
-    return null;
+    return -1;
   }
   // let code="\<script\>window.language='java';"+window.appJScode+" "+window.additionalJSCode;
   //       code+='\n\</script\>\n\<script\>'+src+'\n\</script\>';
   getFullAppCode(additionalCode, includeSave, dontCallMain, args){
     if(!additionalCode) additionalCode="";
+    this.date=new Date();
     let databaseCode="";
-    let cmds=database.createInMemory(true);
+    let cmds=this.database.createInMemory(true);
     if(cmds && cmds.length>1){
       databaseCode+=alasql_code+"\nalasql_code();alasql.options.casesensitive=false;\n";
       databaseCode+=`alasql.fn.datepart=function(date_part,date){
@@ -415,17 +426,55 @@ export class Project{
   deleteAssetAt(index){
     this.assets.splice(index,1);
   }
+  /**
+   * fuegt die Klassen, Assets und Datenbank-Relationen diesem Projekt hinzu. Überschreibt gleichnamiges.
+   * @param {*} p 
+   */
+  add(p){
+    console.log("add project",p,this);
+    for(let i=0;i<p.clazzes.length;i++){
+      let c=p.clazzes[i];
+      let index=this.getClazzIndexByName(c.name);
+      if(index>=0){
+        this.clazzes[index]=c;
+        console.log("replace",c.name);
+      }else{
+        this.clazzes.push(c);
+        console.log("add",c.name);
+      }
+    }
+    for(let i=0;i<p.assets.length;i++){
+      let a=p.assets[i];
+      let index=this.getAssetIndexByName(a.name);
+      if(index>=0){
+        this.assets[index]=a;
+        console.log("replace",a.name);
+      }else{
+        this.assets.push(a);
+        console.log("add",a.name);
+      }
+    }
+    for(let i=0;i<p.database.tables.length;i++){
+      let t=p.database.tables[i];
+      let index=this.database.getTableIndexByName(t.name);
+      if(index>=0){
+        this.database.tables[index]=t;
+        console.log("replace",t.name);
+      }else{
+        this.database.tables.push(t);
+        console.log("add",t.name);
+      }
+      this.database.changed=true;
+      this.compile(true);
+    }
+  }
   toSaveString(excludeAssets){
     var t=[];
     for(var i=0;i<this.clazzes.length;i++){
       var c=this.clazzes[i];
-      if(c instanceof UIClazz){
-        t.push(c.getSaveObject())
-      }else{
-        t.push(c.src);
-      }
+      t.push(c.getSaveObject());
     }
-    let db=database.toCSVString();
+    let db=this.database.toCSVString();
     return start+JSON.stringify({
       clazzesSourceCode: t,
       database: db,
@@ -436,7 +485,9 @@ export class Project{
       theme_color: this.theme_color,
       background_color: this.background_color,
       icon: this.icon,
-      urls: this.urls
+      urls: this.urls,
+      date: new Date(),
+      javaappVersion: app.version
     })+stop;
   }
   fromSaveString(appcode){
@@ -445,10 +496,10 @@ export class Project{
     let pos=appcode.indexOf(start);
     let saveString;
     if(pos<0){
-      saveString=appcode;
+      return false;
     }else{
       var pos2=appcode.indexOf(stop,pos);
-      if(pos2<0) return null;
+      if(pos2<0) return false;
       saveString=appcode.substring(pos+start.length,pos2);
     }
     try{
@@ -456,7 +507,7 @@ export class Project{
       var o=JSON.parse(saveString);
       console.log(o);
       if(o.database){
-        database.fromCSVString(o.database);
+        this.database.fromCSVString(o.database);
       }
       if(o.css){
         this.css=o.css;
@@ -511,8 +562,18 @@ export class Project{
       if(o.urls){
         this.urls=o.urls;
       }
+      if(o.date){
+        this.date=o.date;
+      }else{
+        this.date=null;
+      }
+      if(o.javaappVersion){
+        this.javaappVersion=o.javaappVersion;
+      }else{
+        this.javaappVersion=null;
+      }
     }catch(e){
-      return;
+      return false;
     }
     this.deleteClazzes();
     for(var i=0;i<o.clazzesSourceCode.length;i++){
@@ -523,7 +584,11 @@ export class Project{
         c.restoreFromSaveObject(src);
       }else{
         var c=new Clazz(null,this);
-        c.src=src;
+        if(src.substring){
+          c.src=src;
+        }else{
+          c.restoreFromSaveObject(src);
+        }
         //console.log("load class",src.length,src.substring(src.length-300));
       }
       this.clazzes.push(c);
@@ -531,5 +596,6 @@ export class Project{
     if(this.clazzes.length>0){
       this.clazzes[0].setAsFirstClazz();
     }
+    return true;
   }
 }

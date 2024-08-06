@@ -53,6 +53,25 @@ export class Clazz{
       this.typeSnippet=null;
     }
   }
+  getSaveObject(){
+    let o={};
+    o.name=this.name;
+    o.src=this.src;
+    return o;
+  }
+
+  restoreFromSaveObject(obj){
+    if(obj.name){
+      this.name=obj.name;
+    }else{
+      this.name=null;
+    }
+    if(obj.src){
+      this.src=obj.src;
+    }else{
+      this.src="";
+    }
+  }
   sortMembers(){
     let as=[];
     let ms=[];

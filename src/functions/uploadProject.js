@@ -8,6 +8,12 @@ export async function uploadProject(){
   // console.log(s.code.substring(0,300));
   // console.log(s.code.substring(s.code.length-300));
   let p=new Project();
-  p.fromSaveString(s.code);
-  return p;
+  let ok=true;
+  try{
+    ok=p.fromSaveString(s.code);
+  }catch(e){
+    ok=false;
+  }
+  if(ok) return p;
+  else return null;
 }

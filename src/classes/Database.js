@@ -32,7 +32,7 @@ export class Database{
   static Date={name: "Date", id: "date", value: "1970-01-01", icon: "pi pi-calendar", comment: "Ein Datum in der Form jjjj-mm-tt. Funktionen wie YEAR, MONTH und DAY sind anwendbar."};
   static Time={name: "Time", id: "TIME", value: "13:45:30", icon: "pi pi-clock", comment: "Eine Uhrzeit in der Form hh:mm:ss. Aggregatfunktionen wie YEAR, MONTH und DAY sind anwendbar."};
   constructor(sourceCSV,fileName){
-    this.clearFromMemory();
+    //this.clearFromMemory();
     this.tables=[];
     this.separator=";";
     this.changed=false;
@@ -58,18 +58,23 @@ export class Database{
     this.changed=true;
   }
   getTableByName(name){
+    let index=this.getTableIndexByName(name);
+    if(index>=0) return this.tables[index];
+    return null;
+  }
+  getTableIndexByName(name){
     for(var i=0;i<this.tables.length;i++){
       var t=this.tables[i];
       if(t.name===name){
-        return t;
+        return i;
       }
     }
-    return null;
+    return -1;
   }
   isEmpty(){
     return this.tables.length===0;
   }
-  clearFromMemory(){
+  static clearFromMemory(){
     var tables=Object.keys(alasql.tables);
     if(tables){
       for(var i=0;i<tables.length;i++){
@@ -83,14 +88,14 @@ export class Database{
     }
   }
   clear(){
-    this.clearFromMemory();
+    Database.clearFromMemory();
     this.tables=[];
     this.separator=";";
     this.changed=true;
   }
   createInMemory(commandsOnly){
     if(!commandsOnly){
-      this.clearFromMemory();
+      Database.clearFromMemory();
     }
     var s=[];
     for(var i=0;i<this.tables.length;i++){
@@ -264,6 +269,6 @@ export class Database{
   }
 };
 
-export const database=new Database();
+// export const database=new Database();
 
-window.database=database;
+// window.database=database;

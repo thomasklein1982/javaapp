@@ -97,8 +97,7 @@ export default {
     },
     async clickUploadApp(){
       let p=await uploadProject();
-      if(!p) return;
-      this.$emit('open-project',p);
+      this.$emit('uploaded-project',p);
     }
   },
   components: {

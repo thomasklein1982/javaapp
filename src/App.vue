@@ -4,6 +4,7 @@
       v-if="screen==='start'"
       :difficulty="difficulty"
       @open-project="openProject"
+      @uploaded-project="openProjectDialogWithoutImporting"
     />
     <Editor
       v-show="screen==='editor'"
@@ -12,9 +13,15 @@
       :difficulty="difficulty"
       ref="editor"
       @help="$refs.dialogHelp.setVisible(true)"
+      @open-project-dialog="openProjectDialog"
     />
     <DocumentationDialog
       ref="dialogHelp"
+    />
+    <OpenProjectDialog 
+      ref="dialogOpenProject"
+      @open-project="openProject"
+      @import-project="importProject"
     />
   </div>
 </template>
@@ -26,12 +33,13 @@ import DocumentationDialog from "./components/DocumentationDialog.vue";
 import { nextTick } from '@vue/runtime-core';
 import { options } from "./classes/Options";
 import {Project} from "./classes/Project";
+import OpenProjectDialog from "./components/OpenProjectDialog.vue";
 
 export default{
   data(){
     return {
       screen: 'start',
-      version: 349,
+      version: 350,
       paused: false,
       printMode: false,
       current: {line: -1, step: 0, name: null, $scope: {local: null, main: null, that: null}},
@@ -93,6 +101,15 @@ export default{
       this.$refs.editor.openProject(project);
       this.showScreen("editor");
     },
+    importProject: function(project){
+      this.$refs.editor.importToProject(project);
+    },
+    openProjectDialog(p){
+      this.$refs.dialogOpenProject.open(p,true);
+    },
+    openProjectDialogWithoutImporting(p){
+      this.$refs.dialogOpenProject.open(p,false);
+    },
     getProject(){
       return this.$refs.editor.getProject();
     },
@@ -119,7 +136,8 @@ export default{
   components: {
     StartScreen,
     Editor,
-    DocumentationDialog
+    DocumentationDialog,
+    OpenProjectDialog
   }
 }
 
