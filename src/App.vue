@@ -46,6 +46,7 @@ export default{
       difficulty: options.difficulty(),
       tryItMode: location.hash.indexOf("tryit")>=0,
       tryItName: null,
+      exerciseMode: options.exerciseMode
     };
   },
   mounted(){
@@ -68,24 +69,24 @@ export default{
           p.fromSaveString(code);
           this.openProject(p);
         });
-        // const reader = res.body.getReader();
-        // reader.read().then((obj)=>{
-        //   const utf8Decoder = new TextDecoder("utf-8");
-        //   let code = obj.value ? utf8Decoder.decode(obj.value) : "";
-        //   console.log(code);
-        //   let p=new Project();
-        //   p.fromSaveString(code).then(()=>{
-        //     this.openProject(p);
-        //   });
-        // }).catch((err)=>{
-        //   console.log(err);
-        // });
       }).catch((err)=>{
         alert(err);
       });
     }
   },
   methods: {
+    handleExerciseTest(data){
+      console.log("handle exercise test");
+      if(this.exerciseMode && window.parent){
+        data.project=this.project;
+        window.parent.postMessage({type: "submit-exercise",data: data},"*");
+      }
+    },
+    setupExercise(project){
+      let p=new Project();
+      p.fromJSON(project);
+      this.openProject(p);
+    },
     resetCurrent(line,name){
       if(!line) line=this.current.line;
       if(!name) name=this.current.name;

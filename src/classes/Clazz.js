@@ -19,6 +19,7 @@ export class Clazz{
     this.name=name;
     this.cannotBeInstantiated=false;
     this.isAbstract=false;
+    this.isHidden=false;
     this.isInterface=isInterface===true;
     this.wrappedPrimitiveType=null;
     this.description="";
@@ -70,6 +71,9 @@ export class Clazz{
       this.src=obj.src;
     }else{
       this.src="";
+    }
+    if(obj.isHidden){
+      this.isHidden=true;
     }
   }
   sortMembers(){

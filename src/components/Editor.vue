@@ -64,32 +64,37 @@
           <TabView v-model:activeIndex="activeTab" :scrollable="true" class="editor-tabs" >
             <TabPanel v-for="(c,i) in project.clazzes" :key="'tab-'+i">
               <template #header>
-                <span v-if="c.isInterface" class="pi pi-info-circle" style="font-size: small; margin-right: 0.2rem"/>{{i!==activeTab && c?.name?.length>10? c?.name?.substring(0,10)+"...":c?.name}} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span>
+                <span v-if="c.isInterface" class="pi pi-info-circle" style="font-size: small; margin-right: 0.2rem"/><span v-if="c.isHidden">(</span>{{i!==activeTab && c?.name?.length>10? c?.name?.substring(0,10)+"...":c?.name}} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span><span v-if="c.isHidden">)</span>
               </template>
-              <UIEditor 
-                v-if="isUIClazz(c)"
-                v-show="c.showUIEditor" 
-                :clazz="c"
-                :settings="settings"
-                @select="updateSelectedUIComponent"
-                @recompile="compileProjectAndUpdateUIPreview()"
-                @isolatedupdate="compileUIClazzAndUpdatePreview()"
-                ref="uiEditor"
-              >
-              </UIEditor>
-              <CodeMirror
-                v-show="!c.showUIEditor"
-                :clazz="c"
-                :tab-index="i"
-                :disabled="paused"
-                :project="project"
-                :settings="settings"
-                :font-size="fontSize"
-                @recompilepreview="compileProjectAndUpdateUIPreview()"
-                :current="paused && i===activeTab ? current : null"
-                @caretupdate="updateCaretPosition"
-                ref="editor"
-              />
+              <template v-if="c.isHidden">
+                Der Code dieser Klasse ist versteckt.
+              </template>
+              <template v-else>
+                <UIEditor 
+                  v-if="isUIClazz(c)"
+                  v-show="c.showUIEditor" 
+                  :clazz="c"
+                  :settings="settings"
+                  @select="updateSelectedUIComponent"
+                  @recompile="compileProjectAndUpdateUIPreview()"
+                  @isolatedupdate="compileUIClazzAndUpdatePreview()"
+                  ref="uiEditor"
+                >
+                </UIEditor>
+                <CodeMirror
+                  v-show="!c.showUIEditor"
+                  :clazz="c"
+                  :tab-index="i"
+                  :disabled="paused"
+                  :project="project"
+                  :settings="settings"
+                  :font-size="fontSize"
+                  @recompilepreview="compileProjectAndUpdateUIPreview()"
+                  :current="paused && i===activeTab ? current : null"
+                  @caretupdate="updateCaretPosition"
+                  ref="editor"
+                />
+              </template>
             </TabPanel>
             <TabPanel>
               <template #header>
@@ -281,6 +286,9 @@ export default {
       setTimeout(()=>{
         this.$refs.tryItDialog.setVisible(true);
       },1000);
+      return;
+    }
+    if(this.$root.exerciseMode){
       return;
     }
     let timer=setInterval(()=>{

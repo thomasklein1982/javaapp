@@ -3723,4 +3723,120 @@ function additionalJSCode(){
       v.value=value;
     }
   }
+
+  class $Exercise{
+    static sendMessage(type, data){
+      if(window.parent){
+        console.log("send message zu editor",type, data);
+        window.parent.postMessage({type: type, data: data});
+      }
+    }
+    static sendFeedback(testCaseIndex,testCaseCount,testCaseInfo){
+      //console.log("feedback",points,maxPoints);
+      $Exercise.sendMessage("exercise-tested",{testCaseIndex,testCaseCount,testCaseInfo});
+    }
+    static sendCompleted(testCaseCount,infos){
+      $Exercise.sendMessage("exercise-tested",{testCaseIndex: testCaseCount, testCaseCount, testCaseInfo: infos});
+    }
+    static random(min,max){
+      return Math.floor(Math.random()*(max-min+1))+min;
+    }
+    static swap(array, i1,i2){
+      let c=array[i1];
+      array[i1]=array[i2];
+      array[i2]=c;
+    }
+    static randomize(array){
+      for(let i=0;i<array.length;i++){
+        let index=$Exercise.random(0,array.length-1);
+        $Exercise.swap(array,i,index);
+      }
+    }
+    static getRandomizedCopy(array){
+      let copy=JSON.parse(JSON.stringify(array));
+      $Exercise.randomize(copy);
+      return copy;
+    }
+    static getRange(min,max,step){
+      if(!step) step=1;
+      let array=[];
+      let i=min;
+      while(i<max){
+        array.push(i);
+        i+=step;
+      }
+      return array;
+    }
+    static randomFrom(array,k){
+      let r=$Exercise.getRandomizedCopy(array);
+      let drawn=[];
+      for(let i=0;i<k;i++){
+        drawn.push(r[i]);
+      }
+      return drawn;
+    }
+    static getRandomInts(min,max,k){
+      let r=$Exercise.getRange(min,max);
+      return $Exercise.randomFrom(r,k);
+    }
+    static getRandomIntArray(length,options){
+      let min,max,forbidMultiple, forceMultiple,sorted,maxStep,minStep;
+      if(!options) options={};
+      if(options.min!==undefined){
+        min=options.min;
+      }else{
+        min=0;
+      }
+      if(options.max!==undefined){
+        max=options.max;
+      }else{
+        max=min+1000*length;
+      }
+      if(options.forbidMultiple!==undefined){
+        forbidMultiple=options.forbidMultiple;
+      }else{
+        forbidMultiple=false;
+      }
+      if(options.forceMultiple!==undefined){
+        forceMultiple=options.forceMultiple;
+      }else{
+        forceMultiple=false;
+      }
+      if(options.sorted!==undefined){
+        sorted=options.sorted;
+      }else{
+        sorted=false;
+      }
+      if(options.maxStep!==undefined){
+        maxStep=options.maxStep;
+      }else{
+        maxStep=10;
+      }
+      if(options.minStep!==undefined){
+        minStep=options.minStep;
+      }else{
+        if(forbidMultiple){
+          minStep=1;
+        }else{
+          minStep=0;
+        }
+      }
+      let array=[];
+      let x=min;
+      for(let i=0;i<length;i++){
+        let sMax=Math.min(maxStep,max-x);
+        let dx=$Exercise.random(minStep,maxStep);
+        x+=dx;
+        array.push(x);
+      }
+      if(forceMultiple){
+        let index=$Exercise.random(1,length-1);
+        array[index]=array[index-1];
+      }
+      if(!sorted){
+        $Exercise.randomize(array);
+      }
+      return array;
+    }
+  }
 }

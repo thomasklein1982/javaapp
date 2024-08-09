@@ -136,6 +136,10 @@ window.onmessage=function(message){
     app.current.$scope.main=data.data.main;
   }else if(data.type==="update-scope-main"){
     app.current.$scope.main=data.data;
+  }else if(data.type==="setup-exercise"){
+    app.setupExercise(data.data);
+  }else if(data.type==="exercise-tested"){
+    app.handleExerciseTest(data.data);
   }
 }
 
@@ -168,4 +172,10 @@ window.stopTimeStop=function(s){
 
 window.clazzSources={
   
+}
+
+if(window.parent){
+  window.parent.postMessage({
+    type: "LOADING-COMPLETE"
+  },"*");
 }

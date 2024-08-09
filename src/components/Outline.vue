@@ -1,6 +1,8 @@
 <template>
   <div id="root">
-    <UmlClazz v-for="(c,i) in clazzes" :key="'clazz'+i" :clazz="c"></UmlClazz>
+    <template v-for="(c,i) in clazzes">
+      <UmlClazz  v-if="!c.isHidden" :key="'clazz'+i" :clazz="c"></UmlClazz>
+    </template>
   </div>
 </template>
 

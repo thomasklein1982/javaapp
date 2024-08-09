@@ -39,7 +39,7 @@ import { ContinueStatement } from "./compile/ContinueStatement";
 import { GenericType } from "./compile/GenericType";
 import { LambdaExpression } from "./compile/LambdaExpression";
 import { FormalParameters } from "./compile/FormalParameters";
-import { InstanceofExpression } from "./compile/InstanceOfExpression";
+import { InstanceofExpression } from "./compile/InstanceofExpression";
 import { MethodReference } from "./compile/MethodReference.js";
 import { TryStatement } from "./compile/TryStatement.js";
 import { Definition } from "./compile/Definition.js";

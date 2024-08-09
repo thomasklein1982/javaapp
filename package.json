@@ -19,7 +19,7 @@
     "codemirror": "^6.0.1",
     "json5": "^2.2.3",
     "primeicons": "^6.0.1",
-    "primevue": "^3.40.1",
+    "primevue": "^3.53.0",
     "sortablejs": "^1.15.0",
     "sortablejs-vue3": "^1.2.10",
     "vite-plugin-pwa": "^0.16.7",

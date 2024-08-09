@@ -8,7 +8,6 @@ export function BlockComment(node,source,scope,errors){
   }else{
     code=text;
   }
-  console.log(code);
   return {
     code,
     type: null

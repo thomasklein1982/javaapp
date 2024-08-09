@@ -21,6 +21,7 @@ class Options{
     this.stringCharAtDeliversString=false;
     this.stringIsComparable=false;
     this.autoextendJavaApp=false;
+    this.exerciseMode=false;
   }
   isEasyMode(){
     return this.classOptional||this.voidOptional||this.mainOptional;
@@ -43,6 +44,11 @@ class Options{
         options[a]=obj[a]===true;
       }
     }
+    return options;
+  }
+  static async createFromStorageAndHash(){
+    let options=await Options.createFromStorage();
+    options.applyHash();
     return options;
   }
   async changeToEasy(dontSave){
@@ -84,30 +90,33 @@ class Options{
   async saveToStorage(){
     await saveLocally(STORAGE_STRING, this);
   }
-  static createFromHash(){
-    let options=new Options();
+  applyHash(){
     let hashes=[location.hash,location.search];
     for(let i=0;i<hashes.length;i++){
       let hash=hashes[i];
       if(hash.length>0){
         hash=hash.toLowerCase();
-        for(let a in options){
+        for(let a in this){
           if(hash.indexOf(a.toLowerCase())>=0){
-            options[a]=true;
+            this[a]=true;
           }
         }
         if(hash.indexOf("easy")>=0){
-          options.changeToEasy(true);
+          this.changeToEasy(true);
         }else if(hash.indexOf("hard")>=0){
-          options.changeToHard(true);
+          this.changeToHard(true);
+        }else if(hash.indexOf("normal")>=0){
+          this.changeToNormal(true);
+        }
+        if(hash.startsWith("#exercise-mode")){
+          this.exerciseMode=true;
         }
       }
     }
-    return options;
   }
 }
 
-export const options=await Options.createFromStorage();
+export const options=await Options.createFromStorageAndHash();
 let hash=location.hash;
 if(hash.indexOf("tryit")){
   if(hash.indexOf(";easy")>=0){

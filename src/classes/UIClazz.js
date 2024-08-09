@@ -361,7 +361,7 @@ export class UIClazz extends Clazz{
   }
 
   restoreFromSaveObject(obj){
-    let props=["name","src","components","cssClass","template","cssCode"];
+    let props=["name","src","components","cssClass","template","cssCode","isHidden"];
     for(let i=0;i<props.length;i++){
       let p=props[i];
       if(obj[p]!==undefined){

@@ -490,6 +490,117 @@ export class Project{
       javaappVersion: app.version
     })+stop;
   }
+  fromJSON(o){
+    if(o.database){
+      this.database.fromCSVString(o.database);
+    }
+    if(o.css){
+      this.css=o.css;
+    }
+    if(o.assets){
+      if(o.assets.splice){
+        this.assets=o.assets;
+      }else if(o.assets===true){
+        let pos=appcode.indexOf("/****** ASSETS START ******/");
+        if(pos>=0){
+          let pos2=appcode.indexOf("/****** ASSETS END ******/",pos+12);
+          if(pos2>=0){
+            let assetsCode=appcode.substring(pos+28,pos2);
+            pos=assetsCode.indexOf("(");
+            while(pos>=0){
+              let sep=assetsCode.charAt(pos+1);
+              let pos2=assetsCode.indexOf(sep,pos+2);
+              if(pos2<0) break;
+              let pos3=assetsCode.indexOf(")",pos2);
+              if(pos3<0) break;
+              let data=assetsCode.substring(pos+2,pos2);
+              let name=assetsCode.substring(pos2+3,pos3-1);
+              let mime=getMimeFromDataURL(data);
+              this.assets.push({
+                name,
+                file: {
+                  code: data,
+                  mime
+                }
+              });
+              pos=assetsCode.indexOf("(",pos3+1);
+            }
+          }
+        }
+      }
+    }
+    if(o.name){
+      this.name=o.name;
+    }
+    if(o.description){
+      this.description=o.description;
+    }
+    if(o.theme_color){
+      this.theme_color=o.theme_color;
+    }
+    if(o.background_color){
+      this.background_color=o.background_color;
+    }
+    if(o.icon){
+      this.icon=o.icon;
+    }
+    if(o.urls){
+      this.urls=o.urls;
+    }
+    if(o.date){
+      this.date=o.date;
+    }else{
+      this.date=null;
+    }
+    if(o.javaappVersion){
+      this.javaappVersion=o.javaappVersion;
+    }else{
+      this.javaappVersion=null;
+    }
+    this.deleteClazzes();
+    let clazzes=o.clazzesSourceCode||o.clazzes;
+    for(var i=0;i<clazzes.length;i++){
+      var src=clazzes[i];
+      if(!src) continue;
+      if(src.components){
+        var c=new UIClazz(null,this);
+        c.restoreFromSaveObject(src);
+      }else{
+        var c=new Clazz(null,this);
+        if(src.substring){
+          c.src=src;
+        }else{
+          c.restoreFromSaveObject(src);
+        }
+        //console.log("load class",src.length,src.substring(src.length-300));
+      }
+      this.clazzes.push(c);
+    }
+    if(o.hiddenClazzes){
+      clazzes=o.hiddenClazzes;
+      for(var i=0;i<clazzes.length;i++){
+        var src=clazzes[i];
+        if(!src) continue;
+        if(src.components){
+          var c=new UIClazz(null,this);
+          c.restoreFromSaveObject(src);
+        }else{
+          var c=new Clazz(null,this);
+          if(src.substring){
+            c.src=src;
+          }else{
+            c.restoreFromSaveObject(src);
+          }
+          //console.log("load class",src.length,src.substring(src.length-300));
+        }
+        c.isHidden=true;
+        this.clazzes.push(c);
+      }
+    }
+    if(this.clazzes.length>0){
+      this.clazzes[0].setAsFirstClazz();
+    }
+  }
   fromSaveString(appcode){
     console.log("from save string");
     this.assets=[];
@@ -506,96 +617,11 @@ export class Project{
       console.log("parse");
       var o=JSON.parse(saveString);
       console.log(o);
-      if(o.database){
-        this.database.fromCSVString(o.database);
-      }
-      if(o.css){
-        this.css=o.css;
-      }
-      if(o.assets){
-        if(o.assets.splice){
-          this.assets=o.assets;
-        }else if(o.assets===true){
-          let pos=appcode.indexOf("/****** ASSETS START ******/");
-          if(pos>=0){
-            let pos2=appcode.indexOf("/****** ASSETS END ******/",pos+12);
-            if(pos2>=0){
-              let assetsCode=appcode.substring(pos+28,pos2);
-              pos=assetsCode.indexOf("(");
-              while(pos>=0){
-                let sep=assetsCode.charAt(pos+1);
-                let pos2=assetsCode.indexOf(sep,pos+2);
-                if(pos2<0) break;
-                let pos3=assetsCode.indexOf(")",pos2);
-                if(pos3<0) break;
-                let data=assetsCode.substring(pos+2,pos2);
-                let name=assetsCode.substring(pos2+3,pos3-1);
-                let mime=getMimeFromDataURL(data);
-                this.assets.push({
-                  name,
-                  file: {
-                    code: data,
-                    mime
-                  }
-                });
-                pos=assetsCode.indexOf("(",pos3+1);
-              }
-            }
-          }
-        }
-      }
-      if(o.name){
-        this.name=o.name;
-      }
-      if(o.description){
-        this.description=o.description;
-      }
-      if(o.theme_color){
-        this.theme_color=o.theme_color;
-      }
-      if(o.background_color){
-        this.background_color=o.background_color;
-      }
-      if(o.icon){
-        this.icon=o.icon;
-      }
-      if(o.urls){
-        this.urls=o.urls;
-      }
-      if(o.date){
-        this.date=o.date;
-      }else{
-        this.date=null;
-      }
-      if(o.javaappVersion){
-        this.javaappVersion=o.javaappVersion;
-      }else{
-        this.javaappVersion=null;
-      }
+      this.fromJSON(o);
     }catch(e){
       return false;
     }
-    this.deleteClazzes();
-    for(var i=0;i<o.clazzesSourceCode.length;i++){
-      var src=o.clazzesSourceCode[i];
-      if(!src) continue;
-      if(src.components){
-        var c=new UIClazz(null,this);
-        c.restoreFromSaveObject(src);
-      }else{
-        var c=new Clazz(null,this);
-        if(src.substring){
-          c.src=src;
-        }else{
-          c.restoreFromSaveObject(src);
-        }
-        //console.log("load class",src.length,src.substring(src.length-300));
-      }
-      this.clazzes.push(c);
-    }
-    if(this.clazzes.length>0){
-      this.clazzes[0].setAsFirstClazz();
-    }
+    
     return true;
   }
 }
