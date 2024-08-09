@@ -58,6 +58,7 @@ export class Clazz{
     let o={};
     o.name=this.name;
     o.src=this.src;
+    o.isHidden=this.isHidden;
     return o;
   }
 
@@ -72,6 +73,7 @@ export class Clazz{
     }else{
       this.src="";
     }
+    this.isHidden=false;
     if(obj.isHidden){
       this.isHidden=true;
     }

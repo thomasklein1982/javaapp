@@ -78,7 +78,7 @@ export default{
     handleExerciseTest(data){
       console.log("handle exercise test");
       if(this.exerciseMode && window.parent){
-        data.project=this.project;
+        data.project=this.getProject().toJSON();
         window.parent.postMessage({type: "submit-exercise",data: data},"*");
       }
     },

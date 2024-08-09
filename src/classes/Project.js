@@ -468,27 +468,37 @@ export class Project{
       this.compile(true);
     }
   }
-  toSaveString(excludeAssets){
+  toJSON(excludeAssets){
     var t=[];
     for(var i=0;i<this.clazzes.length;i++){
       var c=this.clazzes[i];
       t.push(c.getSaveObject());
     }
     let db=this.database.toCSVString();
-    return start+JSON.stringify({
-      clazzesSourceCode: t,
+    return {
+      clazzes: t,
       database: db,
       css: this.css,
-      assets: !excludeAssets? this.assets: this.assets.length>0,
+      assets: !excludeAssets? JSON.parse(JSON.stringify(this.assets)): this.assets.length>0,
       name: this.name,
       description: this.description,
       theme_color: this.theme_color,
       background_color: this.background_color,
       icon: this.icon,
-      urls: this.urls,
+      urls: JSON.parse(JSON.stringify(this.urls)),
       date: new Date(),
       javaappVersion: app.version
-    })+stop;
+    };
+  }
+  toSaveString(excludeAssets){
+    let o=this.toJSON(excludeAssets);
+    // var t=[];
+    // for(var i=0;i<this.clazzes.length;i++){
+    //   var c=this.clazzes[i];
+    //   t.push(c.getSaveObject());
+    // }
+    // let db=this.database.toCSVString();
+    return start+JSON.stringify(o)+stop;
   }
   fromJSON(o){
     if(o.database){

@@ -91,6 +91,7 @@ class Options{
     await saveLocally(STORAGE_STRING, this);
   }
   applyHash(){
+    this.exerciseMode=false;
     let hashes=[location.hash,location.search];
     for(let i=0;i<hashes.length;i++){
       let hash=hashes[i];
