@@ -91,7 +91,8 @@ function createSnippets(data){
   snippets.inMethod.push(autocomplete.snippetCompletion("System.out.println( ${} );", {
     label: "sysout",
     info: "Konsolen-Ausgabe",
-    type: "macro"
+    type: "macro",
+    boost: 10
   }));
 
   snippets.inMethod.push(autocomplete.snippetCompletion("System.console().readLine();", {
