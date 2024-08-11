@@ -3725,6 +3725,46 @@ function additionalJSCode(){
   }
 
   class $Exercise{
+    static getCopy(array){
+      return JSON.parse(JSON.stringify(array));
+    }
+    static async checkTestCases(initData,testcases,applyTestFunc){
+      let max=testcases.length;
+      let infos=[];
+      for(let i=0;i<testcases.length;i++){
+        let tc=testcases[i];
+        let count=1;
+        infos.push(tc.info);
+        if(tc.count) count=tc.count;
+        for(let j=0;j<count;j++){
+          let data;
+          if(tc.data){
+            if(typeof tc.data==="function"){
+              data=tc.data();
+            }else{
+              data=tc.data;
+            }
+          }else{
+            data=null;
+          }
+          
+          let res;
+          try{
+            res=await applyTestFunc(data,initData);
+          }catch(e){
+            res=false;
+          }
+          if(!res){
+            $Exercise.sendFeedback(i,max,infos);
+            return;
+          }
+        }
+      }
+      $Exercise.sendCompleted(max,infos);
+    }
+    static getConsoleContent(){
+      return $App.console.getTextContent();
+    }
     static sendMessage(type, data){
       if(window.parent){
         console.log("send message zu editor",type, data);

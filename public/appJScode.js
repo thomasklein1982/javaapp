@@ -2558,6 +2558,7 @@ window.appJScode=function(){
       this.watchedVariables=[];
       this.visible=false;
       this.readResolve=null;
+      this.output="";
       this.outputDiv=document.createElement("div");
       this.outputDiv.style="height: 100%; overflow: auto;";
       this.element.appendChild(this.outputDiv);
@@ -2652,11 +2653,15 @@ window.appJScode=function(){
         this.outputDiv.appendChild(this.currentLineDiv);
         this.outputDiv.scrollTop=this.outputDiv.scrollHeight;
         this.outputDiv.scrollLeft=0;
+        this.output+="\n";
+      },
+      getTextContent(){
+        return this.output.trim();
       },
       /**println */
       log: function(){
         let div=this.currentLineDiv;
-        let args=[]
+        let args=[];
         for(let i=0;i<arguments.length;i++){
           let obj=arguments[i];
           if(obj===undefined) obj="&nbsp;";
@@ -2670,6 +2675,7 @@ window.appJScode=function(){
             //item.style.marginRight="1em";
             item.innerHTML=obj;
           }
+          this.output+=item.textContent;
           div.appendChild(item);
         }
         this.nextLine();
@@ -2690,6 +2696,7 @@ window.appJScode=function(){
             //item.style.marginRight="1em";
             item.innerHTML=obj;
           }
+          this.output+=item.textContent;
           div.appendChild(item);
         }
         //this.outputDiv.appendChild(div);
@@ -2735,6 +2742,7 @@ window.appJScode=function(){
         return q;
       },
       clear: function(){
+        this.output="";
         while(this.outputDiv.firstChild){
           this.outputDiv.removeChild(this.outputDiv.firstChild);
         }
@@ -5047,6 +5055,7 @@ window.appJScode=function(){
         console.log.apply(console,arguments);
         $App.console.print.apply($App.console,arguments);
       },
+
       clear: function(){
         console.realClear();
         $App.console.clear();
