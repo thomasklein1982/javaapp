@@ -353,7 +353,7 @@ export class UIClazz extends Clazz{
     let o={};
     o.name=this.name;
     o.src=this.src;
-    o.components=this.components;
+    o.components=JSON.parse(JSON.stringify(this.components));
     o.cssClass=this.cssClass;
     o.cssCode=this.cssCode;
     o.template=this.template;

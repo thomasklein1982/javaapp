@@ -47,7 +47,7 @@ export default{
       tryItMode: location.hash.indexOf("tryit")>=0,
       tryItName: null,
       exerciseMode: options.exerciseMode,
-      exerciseCheckerCode: "alert('Hallo Checker!')"
+      exerciseCheckerCode: ""
     };
   },
   mounted(){

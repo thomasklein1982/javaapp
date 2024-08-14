@@ -3738,8 +3738,36 @@ function additionalJSCode(){
   }
 
   class $Exercise{
+    static setUIBlocked(b){
+      if(b){
+        if($Exercise.blocker) return;
+        //blocke UI mit overlay
+        let blocker=document.createElement("div");
+        blocker.style.background="blue";
+        blocker.style.opacity=0.5;
+        blocker.style.position="fixed";
+        blocker.style.top=0;
+        blocker.style.left=0;
+        blocker.style.right=0;
+        blocker.style.bottom=0;
+        blocker.style.zIndex=20000;
+        $Exercise.blocker=blocker;
+        document.body.appendChild(blocker);
+      }else{
+        //entblocke UI
+        if(!$Exercise.blocker) return;
+        document.body.removeChild($Exercise.blocker);
+        delete $Exercise.blocker;
+      }
+    }
     static getCopy(array){
       return JSON.parse(JSON.stringify(array));
+    }
+    static deleteMain(){
+      $App.console.clear();
+      if($main){
+        delete window.$main;
+      }
     }
     static async checkTestCases(initData,testcases,applyTestFunc){
       let resArray=[];
@@ -3779,6 +3807,42 @@ function additionalJSCode(){
     }
     static showCheckButton(){
       $Exercise.sendMessage("show-check-exercise-button");
+    }
+    /**
+     * 
+     * @param {*} type JLabel, JButton, ... 
+     * @param {*} value Wert, den das Element haben muss
+     * @param {*} key value, placeholder, ..., optional
+     */
+    static getComponent(type,value,key){
+      let keyIsAttribute=false;
+      if(!key){
+        if(type.startsWith("JText")){
+          key="placeholder";
+        }else{
+          key="value";
+        }
+      }
+      if(key==="placeholder"){
+        keyIsAttribute=true;
+      }
+      value=value.toLowerCase();
+      let root=$Exercise.getUIRoot();
+      let elements=root.querySelectorAll(".__"+type.toLowerCase());
+      for(let i=0;i<elements.length;i++){
+        let e=elements[i].component;
+        if(!e) continue;
+        let compare;
+        if(keyIsAttribute){
+          compare=e.$el[key];
+        }else{
+          compare=e[key];
+        }
+        if(compare && compare.trim && compare.trim().toLowerCase()===value){
+          return e;
+        }
+      }
+      return null;
     }
     static getUIRoot(){
       return $App.canvas.container;
