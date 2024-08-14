@@ -18,7 +18,7 @@
     "@lezer/java": "^1.1.0",
     "codemirror": "^6.0.1",
     "json5": "^2.2.3",
-    "primeicons": "^6.0.1",
+    "primeicons": "^7.0.0",
     "primevue": "^3.53.0",
     "sortablejs": "^1.15.0",
     "sortablejs-vue3": "^1.2.10",

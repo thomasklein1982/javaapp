@@ -2558,7 +2558,7 @@ window.appJScode=function(){
       this.watchedVariables=[];
       this.visible=false;
       this.readResolve=null;
-      this.output="";
+      this.output=[""];
       this.outputDiv=document.createElement("div");
       this.outputDiv.style="height: 100%; overflow: auto;";
       this.element.appendChild(this.outputDiv);
@@ -2653,10 +2653,11 @@ window.appJScode=function(){
         this.outputDiv.appendChild(this.currentLineDiv);
         this.outputDiv.scrollTop=this.outputDiv.scrollHeight;
         this.outputDiv.scrollLeft=0;
-        this.output+="\n";
+        //this.output+="\n";
+        this.output.push("");
       },
       getTextContent(){
-        return this.output.trim();
+        return this.output;
       },
       /**println */
       log: function(){
@@ -2675,7 +2676,7 @@ window.appJScode=function(){
             //item.style.marginRight="1em";
             item.innerHTML=obj;
           }
-          this.output+=item.textContent;
+          this.output[this.output.length-1]+=item.textContent;
           div.appendChild(item);
         }
         this.nextLine();
@@ -2696,7 +2697,7 @@ window.appJScode=function(){
             //item.style.marginRight="1em";
             item.innerHTML=obj;
           }
-          this.output+=item.textContent;
+          this.output[this.output.length-1]+=item.textContent;
           div.appendChild(item);
         }
         //this.outputDiv.appendChild(div);
@@ -2742,11 +2743,11 @@ window.appJScode=function(){
         return q;
       },
       clear: function(){
-        this.output="";
         while(this.outputDiv.firstChild){
           this.outputDiv.removeChild(this.outputDiv.firstChild);
         }
         this.log("");
+        this.output=[""];
       },
       update: function(){
         //console.log("update global 1");

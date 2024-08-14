@@ -153,6 +153,7 @@
       </Splitter>
       <span style="position: fixed; bottom: 0.5rem; right: 0.5rem; z-index: 101">
         <span class="p-buttonset" v-if="!running">
+          <Button class="p-button-lg" v-if="$root.exerciseCheckerCode && (!running || paused)" @click="runExerciseChecker()" icon="pi pi-list-check" />
           <Button class="p-button-lg" v-if="!running || paused" @click="resume()" icon="pi pi-play" />
         </span>
       </span>
@@ -544,6 +545,13 @@ export default {
       );
       window.open(blob);
       URL.revokeObjectURL(blob);
+    },
+    runExerciseChecker(){
+      this.stop();
+      this.$root.resetCurrent(-1);
+      this.clearRuntimeErrors();
+      this.running=true;
+      this.$refs.preview.reload(false,null,`window.$exerciseChecker=async ()=>{${this.$root.exerciseCheckerCode}}`);
     },
     stopAndPlay(infos){
       this.stop();

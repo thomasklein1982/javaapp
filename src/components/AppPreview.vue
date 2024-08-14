@@ -81,7 +81,7 @@
         }
         this.frame=null;
       },
-      reload(noDebugging, args){
+      reload(noDebugging, args, additionalCode){
         this.project.compile();
         let frame=document.createElement('iframe');
         frame.style="background-color: white; width: 100%; height: 100%;";
@@ -91,6 +91,7 @@
         this.$refs.wrapper.appendChild(frame);
         console.log("start app",this.breakpoints);
         let prefix=noDebugging?"console.hide();":"$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");";
+        prefix+=additionalCode;
         let code=this.project.getFullAppCode(prefix,false,false,args);
 
         const blob = URL.createObjectURL(

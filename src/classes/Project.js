@@ -161,11 +161,14 @@ export class Project{
     if(mainClazz){
       if(mainClazz.hasStaticMainMethod()){
         if(!args) args=[];
-        codeMainCall="(async function(){await $App.setup();\nawait "+mainClazz.name+".main("+JSON.stringify(args)+");})();";
+        codeMainCall="(async function(){await $App.setup();\nawait "+mainClazz.name+".main("+JSON.stringify(args)+");";
       }else{
-        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.setup();\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);})();";
+        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.setup();\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);";
       }
+    }else{
+      codeMainCall="\n(async function(){await $App.setup();\n";
     }
+    codeMainCall+="\nsetTimeout(async ()=>{await window.$exerciseChecker();},100);})();";
     let css=this.prepareCSS(this.css);
     codeMainCall="window.addEventListener('DOMContentLoaded',async function(){"+codeMainCall+"});";
     if(dontCallMain){
@@ -193,6 +196,7 @@ export class Project{
         ${window.additionalJSCode}
         ${databaseCode}
         ${assetsCode}
+        window.$exerciseChecker=async()=>{};
         ${additionalCode}
         ${js}
         ${codeMainCall}

@@ -1257,6 +1257,7 @@ function additionalJSCode(){
   class JButton extends JComponent{
     $constructor(label,x,y,width,height){
       super.$constructor(x,y,width,height);
+      this.standardCSSClasses+=" __jbutton";
       this.$el=ui.button(label,x,y,width,height);
       this.$el.component=this;
       this.$triggerOnAction=true;
@@ -1268,6 +1269,7 @@ function additionalJSCode(){
   class JImage extends JComponent{
     $constructor(url,x,y,width,height){
       super.$constructor(x,y,width,height);
+      this.standardCSSClasses+=" __jimage";
       url=$getAssetObjectURL(url);
       this.$el=ui.image(url,x,y,width,height);
       this.$el.component=this;
@@ -1317,6 +1319,7 @@ function additionalJSCode(){
   class JPanel extends JComponent{
     $constructor(template,x,y,width,height){
       super.$constructor(x,y,width,height);
+      this.standardCSSClasses+=" __jpanel";
       this.template=template;
       this.$el=ui.panel(template,x,y,width,height);
       this.$el.component=this;
@@ -1473,6 +1476,7 @@ function additionalJSCode(){
   class JFrame extends JPanel{
     $constructor(template){
       super.$constructor(template);
+      this.standardCSSClasses+=" __jframe";
       this.$el.style="left: 0; right: 0; top: 0; bottom: 0; position: absolute;";
       $App.canvas.addElement(this.$el,50,50,100,100);
       $App.console.adaptSize();
@@ -1482,6 +1486,7 @@ function additionalJSCode(){
   class JLabel extends JComponent{
     $constructor(text,x,y,width,height){
       super.$constructor(x,y,width,height);
+      this.standardCSSClasses+=" __jlabel";
       this.$el=ui.label(text,x,y,width,height);
       this.setValue(text);
       this.$el.component=this;
@@ -1493,6 +1498,7 @@ function additionalJSCode(){
   class HTMLElement extends JComponent{
     $constructor(tag){
       //super.$constructor(0,0,0,0);
+      this.standardCSSClasses="__jcomponent __htmlelement";
       if(tag && tag.substring){
         tag=document.createElement(tag);
       }
@@ -1584,7 +1590,8 @@ function additionalJSCode(){
   class Canvas extends JPanel{
     $constructor(minX,maxX,minY,maxY,x,y,width,height){
       super.$constructor(x,y,width,height);
-      this.standardCSSClasses="_java-app-canvas __jcomponent";
+      //this.standardCSSClasses="_java-app-canvas __jcomponent";
+      this.standardCSSClasses+=" __canvas";
       if(this.$el && this.$el.parentNode) this.$el.parentNode.removeChild(this.$el);
       this.$el=ui.canvas(maxX-minX,maxY-minY,x,y,width,height);
       this.$el.style.touchAction="none";
@@ -1814,6 +1821,7 @@ function additionalJSCode(){
   class JComboBox extends JComponent{
     $constructor(options,x,y,width,height){
       super.$constructor(x,y,width,height);
+      this.standardCSSClasses+=" __jcombobox";
       if(!options){
         options=[];
       }
@@ -1848,6 +1856,7 @@ function additionalJSCode(){
   class JCheckBox extends JComponent{
     $constructor(label,x,y,width,height){
       super.$constructor(x,y,width,height);
+      this.standardCSSClasses+=" __jcheckbox";
       this.$el=ui.input("checkbox",label,x,y,width,height);
       this.$el.component=this;
       this.$el.onchange = $handleOnAction;
@@ -1857,6 +1866,7 @@ function additionalJSCode(){
   class JTextComponent extends JComponent{
     $constructor(x,y,width,height){
       super.$constructor(x,y,width,height);
+      this.standardCSSClasses+=" __jtextcomponent";
     }
     getSelectionStart(){
       return this.$el.selectionStart;
@@ -1878,6 +1888,7 @@ function additionalJSCode(){
       if(!type) type="text";
       if(!placeholder) placeholder="";
       super.$constructor(x,y,width,height);
+      this.standardCSSClasses+=" __jtextfield";
       this.$el=ui.input(type,placeholder,x,y,width,height);
       this.$el.spellcheck=false;
       this.$el.component=this;
@@ -1888,6 +1899,7 @@ function additionalJSCode(){
   class JTextArea extends JTextComponent{
     $constructor(placeholder,x,y,width,height){
       super.$constructor(x,y,width,height);
+      this.standardCSSClasses+=" __jtextarea";
       this.$el=ui.textarea(placeholder,x,y,width,height);
       this.$el.spellcheck=false;
       this.$el.component=this;
@@ -1898,6 +1910,7 @@ function additionalJSCode(){
   class DataTable extends JComponent{
     $constructor(x,y,width,height){
       super.$constructor(x,y,width,height);
+      this.standardCSSClasses+=" __datatable";
       this.$el=ui.datatable(null,x,y,width,height);
       this.$el.component=this;
     }
@@ -3729,13 +3742,12 @@ function additionalJSCode(){
       return JSON.parse(JSON.stringify(array));
     }
     static async checkTestCases(initData,testcases,applyTestFunc){
-      let max=testcases.length;
-      let infos=[];
+      let resArray=[];
       for(let i=0;i<testcases.length;i++){
         let tc=testcases[i];
         let count=1;
-        infos.push(tc.info);
         if(tc.count) count=tc.count;
+        let res=true;
         for(let j=0;j<count;j++){
           let data;
           if(tc.data){
@@ -3748,22 +3760,28 @@ function additionalJSCode(){
             data=null;
           }
           
-          let res;
           try{
             res=await applyTestFunc(data,initData);
           }catch(e){
             res=false;
           }
           if(!res){
-            $Exercise.sendFeedback(i,max,infos);
-            return;
+            break;
           }
         }
+        resArray.push(res);
       }
-      $Exercise.sendCompleted(max,infos);
+      $Exercise.sendFeedback(resArray);
+      //$Exercise.sendCompleted(max,infos);
     }
     static getConsoleContent(){
       return $App.console.getTextContent();
+    }
+    static showCheckButton(){
+      $Exercise.sendMessage("show-check-exercise-button");
+    }
+    static getUIRoot(){
+      return $App.canvas.container;
     }
     static sendMessage(type, data){
       if(window.parent){
@@ -3771,12 +3789,9 @@ function additionalJSCode(){
         window.parent.postMessage({type: type, data: data});
       }
     }
-    static sendFeedback(testCaseIndex,testCaseCount,testCaseInfo){
+    static sendFeedback(resArray){
       //console.log("feedback",points,maxPoints);
-      $Exercise.sendMessage("exercise-tested",{testCaseIndex,testCaseCount,testCaseInfo});
-    }
-    static sendCompleted(testCaseCount,infos){
-      $Exercise.sendMessage("exercise-tested",{testCaseIndex: testCaseCount, testCaseCount, testCaseInfo: infos});
+      $Exercise.sendMessage("exercise-tested",{resArray});
     }
     static random(min,max){
       return Math.floor(Math.random()*(max-min+1))+min;

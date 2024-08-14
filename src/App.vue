@@ -39,14 +39,15 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 350,
+      version: 351,
       paused: false,
       printMode: false,
       current: {line: -1, step: 0, name: null, $scope: {local: null, main: null, that: null}},
       difficulty: options.difficulty(),
       tryItMode: location.hash.indexOf("tryit")>=0,
       tryItName: null,
-      exerciseMode: options.exerciseMode
+      exerciseMode: options.exerciseMode,
+      exerciseCheckerCode: "alert('Hallo Checker!')"
     };
   },
   mounted(){
@@ -82,10 +83,11 @@ export default{
         window.parent.postMessage({type: "submit-exercise",data: data},"*");
       }
     },
-    setupExercise(project){
+    setupExercise(data){
       let p=new Project();
-      p.fromJSON(project);
+      p.fromJSON(data.project);
       this.openProject(p);
+      this.exerciseCheckerCode=data.checker;
     },
     resetCurrent(line,name){
       if(!line) line=this.current.line;
