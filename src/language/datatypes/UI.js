@@ -430,7 +430,7 @@ function defineJFrame(Clazz,Java){
 function defineJButton(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'String', name: 'label'}//, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+      {type: 'String', name: 'label', optional: true, showAtCompletion: true}//, {type: 'double', name: 'x', optional: true}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;

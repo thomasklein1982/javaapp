@@ -125,6 +125,12 @@ export class Clazz{
         return m;
       }
     }
+    return null;
+  }
+  hasUnparameterizedConstructor(){
+    let c=this.getConstructor();
+    if(!c) return true;
+    return !c.hasMandatoryParameters();
   }
   isNative(){
     return this.project===undefined;

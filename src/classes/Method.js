@@ -94,6 +94,9 @@ export class Method{
       let p=this.params.parameters[i];
       code+="$scope.pushVariable("+JSON.stringify(p.name)+","+JSON.stringify(p.type.baseType.name)+","+p.type.dimension+","+p.name+");";
     }
+    if(this.isConstructor() && this.clazz.superClazz && this.clazz.superClazz.hasUnparameterizedConstructor()){
+      code+="\nsuper.$constructor();";
+    }
     if(additionalJSCode) code+=additionalJSCode;
     if(this.block){
       code+="\n"+this.block.code;
@@ -114,7 +117,9 @@ export class Method{
   isPrivate(){
     return (this.modifiers && this.modifiers.visibility==="private");
   }
-
+  hasMandatoryParameters(){
+    return this.params.hasMandatoryParameters();
+  }
   matchesArgumentList(argumentList){
     return this.params.matchesArgumentList(argumentList);
   }

@@ -21,6 +21,7 @@ export function createMethod(data,clazz,isStatic,isConstructor){
   let minCount=-1;
   if(data.args){
     let optional=false;
+    let showAtCompletion=false;
     m.params.reverseOrder=data.reverseArgsOrder;
     for(let j=0;j<data.args.length;j++){
       let a=data.args[j];
@@ -32,6 +33,8 @@ export function createMethod(data,clazz,isStatic,isConstructor){
       let p=new Parameter(m.params);
       if(a.optional) optional=true;
       p.optional=optional;
+      if(a.showAtCompletion) showAtCompletion=true;
+      p.showAtCompletion=showAtCompletion;
       p.default=a.default;
       p.info=a.info;
       let types;

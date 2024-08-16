@@ -19,12 +19,16 @@ export function createParamsString(params,useArgs){
     if(params.params){
       params=params.params.parameters;
     }
+    let breakAtNext=false;
     for(let i=0;i<params.length;i++){
       let p=params[i];
       if(p===undefined || p===null){
         console.log("createParamsString","Parameter ist undefiniert",params,useArgs);
       }
-      if(p.optional) break;
+      if(breakAtNext || p.optional){
+        if(!p.showAtCompletion) break;
+        breakAtNext=true;
+      }
       let text;
       if(p.substring){
         text=p;

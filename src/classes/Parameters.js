@@ -9,6 +9,9 @@ export class ParameterList{
     this.minCount=-1;
     this.reverseOrder=false;
   }
+  hasMandatoryParameters(){
+    return (this.parameters && this.parameters.length>0 && !this.parameters[0].optional);
+  }
   getCopy(typeArguments){
     let params=new ParameterList(this.method);
     params.minCount=this.minCount;

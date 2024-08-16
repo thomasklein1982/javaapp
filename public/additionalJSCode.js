@@ -1258,6 +1258,7 @@ function additionalJSCode(){
     $constructor(label,x,y,width,height){
       super.$constructor(x,y,width,height);
       this.standardCSSClasses+=" __jbutton";
+      if(!label) label="";
       this.$el=ui.button(label,x,y,width,height);
       this.$el.component=this;
       this.$triggerOnAction=true;
