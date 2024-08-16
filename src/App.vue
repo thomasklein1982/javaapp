@@ -35,11 +35,13 @@ import { options } from "./classes/Options";
 import {Project} from "./classes/Project";
 import OpenProjectDialog from "./components/OpenProjectDialog.vue";
 
+import {version} from "../package.json";
+
 export default{
   data(){
     return {
       screen: 'start',
-      version: 356,
+      version: version,
       paused: false,
       printMode: false,
       current: {line: -1, step: 0, name: null, $scope: {local: null, main: null, that: null}},

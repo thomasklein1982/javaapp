@@ -2558,67 +2558,10 @@ window.appJScode=function(){
       this.watchedVariables=[];
       this.visible=false;
       this.readResolve=null;
-      this.output=[""];
+      this.output=[];
       this.outputDiv=document.createElement("div");
       this.outputDiv.style="height: 100%; overflow: auto;";
       this.element.appendChild(this.outputDiv);
-      // this.input=document.createElement("input");
-      // this.input.style="width: 100%; height: 0.8cm; background-color: #222222; outline: none;border: none; color: white; box-sizing: border-box;";
-      // this.input.currentPosition=-1;
-      // this.input.spellcheck=false;
-      // this.input.autocapitalize="none";
-      // this.input.autocorrect="off";
-      // this.input.placeholder="gib einen Befehl ein...";
-      // this.input.onchange=async ()=>{
-      //   var v=this.input.value;
-      //   if(v.trim().length===0) return;
-      //   if(!(this.history.length>0 && this.history[this.history.length-1]===v)){
-      //     this.history.push(v);
-      //     this.saveHistory();
-      //   }
-      //   //var w;
-      //   let func;
-      //   if(window.$main){
-      //     func="with($main){return "+v+";}";
-      //     //eval("with($main){w="+v+"}");
-      //   }else{
-      //     func="return "+v+";";
-      //     //eval("w="+v);
-      //   }
-      //   func=Function("return (async function anonym(){"+func+"}());");
-      //   var w=await func();
-      //   console.log(">",v);
-      //   if(w!==undefined){
-      //     console.log("<",w);
-      //   }
-      //   this.input.value="";
-      //   this.input.currentPosition=-1;
-      // };
-      // this.input.onkeydown=(ev)=>{
-      //   ev.stopPropagation();
-      //   if(ev.keyCode===40 || ev.keyCode===38 || ev.keyCode===13){
-      //     if(ev.keyCode===13){
-      //       this.input.onchange();
-      //     }else if(ev.keyCode===38){
-            
-      //       if(this.input.currentPosition<this.history.length-1){
-      //         this.input.currentPosition++;
-      //       }
-      //     }else if(ev.keyCode===40){
-      //       if(this.input.currentPosition>=0){
-      //         this.input.currentPosition--;
-      //       }
-      //     }
-      //     if(this.input.currentPosition>=0){
-      //       this.input.value=this.history[this.history.length-this.input.currentPosition-1];
-      //     }else{
-      //       this.input.value="";
-      //     }
-      //   }
-      // };
-      // this.element.appendChild(this.input);
-      // this.localVariables=null;
-      // this.loadHistory();
       this.nextLine();
     };
     

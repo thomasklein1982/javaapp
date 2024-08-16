@@ -3808,6 +3808,10 @@ function additionalJSCode(){
             }else{
               data=tc.data;
             }
+            data.$run={
+              index: j,
+              count: count
+            };
           }else{
             data=null;
           }
@@ -3830,7 +3834,8 @@ function additionalJSCode(){
       $App.console.clear();
     }
     static getConsoleContent(){
-      return $App.console.getTextContent();
+      let array=$App.console.getTextContent();
+      return array.join("\n").split("\n");
     }
     static showCheckButton(){
       $Exercise.sendMessage("show-check-exercise-button");
