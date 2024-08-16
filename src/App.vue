@@ -39,7 +39,7 @@ export default{
   data(){
     return {
       screen: 'start',
-      version: 351,
+      version: 356,
       paused: false,
       printMode: false,
       current: {line: -1, step: 0, name: null, $scope: {local: null, main: null, that: null}},
@@ -76,6 +76,12 @@ export default{
     }
   },
   methods: {
+    sendExerciseData(){
+      if(this.exerciseMode && window.parent){
+        let project=this.getProject().toJSON();
+        window.parent.postMessage({type: "send-exercise-data",data: {project}},"*");
+      }
+    },
     handleExerciseTest(data){
       console.log("handle exercise test");
       if(this.exerciseMode && window.parent){

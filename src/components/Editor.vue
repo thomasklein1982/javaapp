@@ -152,9 +152,9 @@
         </SplitterPanel>
       </Splitter>
       <span style="position: fixed; bottom: 0.5rem; right: 0.5rem; z-index: 101">
-        <span class="p-buttonset" v-if="!running">
-          <Button class="p-button-lg" v-if="$root.exerciseCheckerCode && (!running || paused)" @click="runExerciseChecker()" icon="pi pi-list-check" />
-          <Button class="p-button-lg" v-if="!running || paused" @click="resume()" icon="pi pi-play" />
+        <span  v-if="!running">
+          <Button style="margin-right: 0.2rem" v-if="$root.exerciseCheckerCode && (!running || paused)" label="Prüfen" @click="runExerciseChecker()" icon="pi pi-list-check" />
+          <Button v-if="!running || paused" @click="resume()" icon="pi pi-play" />
         </span>
       </span>
     </template>

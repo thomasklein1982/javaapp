@@ -1282,6 +1282,7 @@ function additionalJSCode(){
           y: "0%"
         }
       }
+      this.setCSSClass("");
     }
     setZoom(z){
       // let w=z*100+"%";
@@ -1325,6 +1326,7 @@ function additionalJSCode(){
       this.$el.component=this;
       this.$el.onclick = $handleOnAction;
       this.lastRowAndColumnCount=null;
+      this.setCSSClass("");
     }
     setLayout(layout){
       this.$el.setTemplate(layout);
@@ -1480,6 +1482,7 @@ function additionalJSCode(){
       this.$el.style="left: 0; right: 0; top: 0; bottom: 0; position: absolute;";
       $App.canvas.addElement(this.$el,50,50,100,100);
       $App.console.adaptSize();
+      this.setCSSClass("");
     }
   }
 
@@ -1511,7 +1514,7 @@ function additionalJSCode(){
       }else{
         this.$el.onclick = $handleOnAction;
       }
-      
+      this.setCSSClass("");
     }
     getChildElements(){
 
@@ -1828,6 +1831,7 @@ function additionalJSCode(){
       this.$el=ui.select(options,x,y,width,height);
       this.$el.component=this;
       this.$el.onchange = $handleOnAction;
+      this.setCSSClass("");
     }
     getSelectedIndex(){
       return this.$el.selectedIndex;
@@ -1860,6 +1864,7 @@ function additionalJSCode(){
       this.$el=ui.input("checkbox",label,x,y,width,height);
       this.$el.component=this;
       this.$el.onchange = $handleOnAction;
+      this.setCSSClass("");
     }
   }
 
@@ -1881,6 +1886,9 @@ function additionalJSCode(){
     setPlaceholder(text){
       this.$el.placeholder=text;
     }
+    getPlaceholder(){
+      return this.$el.placeholder;
+    }
   }
 
   class JTextField extends JTextComponent{
@@ -1893,6 +1901,7 @@ function additionalJSCode(){
       this.$el.spellcheck=false;
       this.$el.component=this;
       this.$el.onchange = $handleOnAction;
+      this.setCSSClass("");
     }
   }
 
@@ -1904,6 +1913,7 @@ function additionalJSCode(){
       this.$el.spellcheck=false;
       this.$el.component=this;
       this.$el.onchange = $handleOnAction;
+      this.setCSSClass("");
     }
   }
 
@@ -1913,6 +1923,7 @@ function additionalJSCode(){
       this.standardCSSClasses+=" __datatable";
       this.$el=ui.datatable(null,x,y,width,height);
       this.$el.component=this;
+      this.setCSSClass("");
     }
     setArray(array){
       this.$el.array=array;
@@ -3769,6 +3780,19 @@ function additionalJSCode(){
         delete window.$main;
       }
     }
+    static async sleep(millis){
+      let p=new Promise((resolve,reject)=>{
+        setTimeout(()=>{
+          resolve();
+        },millis);
+      });
+      await p;
+    }
+    static error(message){
+      return {
+        message
+      }
+    }
     static async checkTestCases(initData,testcases,applyTestFunc){
       let resArray=[];
       for(let i=0;i<testcases.length;i++){
@@ -3780,7 +3804,7 @@ function additionalJSCode(){
           let data;
           if(tc.data){
             if(typeof tc.data==="function"){
-              data=tc.data();
+              data=tc.data(initData);
             }else{
               data=tc.data;
             }
@@ -3802,6 +3826,9 @@ function additionalJSCode(){
       $Exercise.sendFeedback(resArray);
       //$Exercise.sendCompleted(max,infos);
     }
+    static clearConsole(){
+      $App.console.clear();
+    }
     static getConsoleContent(){
       return $App.console.getTextContent();
     }
@@ -3811,38 +3838,31 @@ function additionalJSCode(){
     /**
      * 
      * @param {*} type JLabel, JButton, ... 
-     * @param {*} value Wert, den das Element haben muss
-     * @param {*} key value, placeholder, ..., optional
      */
-    static getComponent(type,value,key){
-      let keyIsAttribute=false;
-      if(!key){
-        if(type.startsWith("JText")){
-          key="placeholder";
-        }else{
-          key="value";
-        }
-      }
-      if(key==="placeholder"){
-        keyIsAttribute=true;
-      }
-      value=value.toLowerCase();
+    static getComponent(type,filter){
       let root=$Exercise.getUIRoot();
       let elements=root.querySelectorAll(".__"+type.toLowerCase());
       for(let i=0;i<elements.length;i++){
         let e=elements[i].component;
         if(!e) continue;
-        let compare;
-        if(keyIsAttribute){
-          compare=e.$el[key];
-        }else{
-          compare=e[key];
-        }
-        if(compare && compare.trim && compare.trim().toLowerCase()===value){
+        if(filter(e)){
           return e;
         }
       }
       return null;
+    }
+    static getComponents(type,filter){
+      let root=$Exercise.getUIRoot();
+      let elements=root.querySelectorAll(".__"+type.toLowerCase());
+      let comps=[];
+      for(let i=0;i<elements.length;i++){
+        let e=elements[i].component;
+        if(!e) continue;
+        if(filter(e)){
+          comps.push(e);
+        }
+      }
+      return comps;
     }
     static getUIRoot(){
       return $App.canvas.container;
@@ -3897,6 +3917,25 @@ function additionalJSCode(){
     static getRandomInts(min,max,k){
       let r=$Exercise.getRange(min,max);
       return $Exercise.randomFrom(r,k);
+    }
+    static getRandomObjectArray(attributes,length){
+      let attributes2={};
+      for(let a in attributes){
+        let prop=$Exercise.getRandomizedCopy(attributes[a]);
+        attributes2[a]=prop;
+        if(prop.length<length){
+          console.error("getRandomObjectArray","Dieses Array ist zu klein: ",attributes[a]);
+        }
+      }
+      let array=[];
+      for(let i=0;i<length;i++){
+        let o={};
+        for(let a in attributes2){
+          o[a]=attributes2[a][i];
+        }
+        array.push(o);
+      }
+      return array;
     }
     static getRandomIntArray(length,options){
       let min,max,forbidMultiple, forceMultiple,sorted,maxStep,minStep;

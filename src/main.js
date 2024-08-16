@@ -143,6 +143,8 @@ window.onmessage=function(message){
     app.handleExerciseTest(data.data);
   }else if(data.type==="show-check-exercise-button"){
     app.showCheckExerciseButton();
+  }else if(data.type==="give-exercise-data"){
+    app.sendExerciseData();
   }
 }
 
