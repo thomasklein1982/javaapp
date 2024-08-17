@@ -1,5 +1,6 @@
 <template>
   <Dialog header="Einstellungen" v-model:visible="show"  :maximizable="true" :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '50vw'}">
+    <p>JavaApp version {{ $root.version }} von Thomas Klein (<a href="https://mathe-info.com" target="_blank">mathe-info.com</a>)</p>
     <Button label="Neu starten" @click="restart()"/>
     <div style="padding: 0.2rem">
       <InputSwitch id="optimizeCompiler" v-model="settings.optimizeCompiler"/><label for="optimizeCompiler">Compiler optimieren</label>
