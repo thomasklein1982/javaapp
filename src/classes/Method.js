@@ -95,7 +95,7 @@ export class Method{
       code+="$scope.pushVariable("+JSON.stringify(p.name)+","+JSON.stringify(p.type.baseType.name)+","+p.type.dimension+","+p.name+");";
     }
     if(this.isConstructor() && this.clazz.superClazz && this.clazz.superClazz.hasUnparameterizedConstructor()){
-      code+="\nsuper.$constructor();";
+      code+="\nif(super.$constructor){super.$constructor();}\n";
     }
     if(additionalJSCode) code+=additionalJSCode;
     if(this.block){

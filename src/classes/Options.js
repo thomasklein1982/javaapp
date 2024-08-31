@@ -13,7 +13,7 @@ class Options{
    * @param {*} instantiateUIClasses für jede UI-Klasse wird automatisch ein Attribut in der Hauptklasse mit gleichem Namen erzeugt, das eine Instanz der UI-Klasse enthält. Alle diese UI-Klassen sind zu Beginn unsichtbar, außer, es gibt genau eine UI-Klasse.
    */
   constructor(){
-    this.classOptional=false;
+    this.classOptional=true;//Java 21, yeah!
     this.voidOptional=false;
     this.mainOptional=false;
     this.autocast=false;
@@ -22,6 +22,7 @@ class Options{
     this.stringIsComparable=false;
     this.autoextendJavaApp=false;
     this.exerciseMode=false;
+    this.exerciseMainClassName="Main";
   }
   isEasyMode(){
     return this.classOptional||this.voidOptional||this.mainOptional;
@@ -41,6 +42,7 @@ class Options{
       options.changeToNormal();
     }else{
       for(let a in options){
+        if(a==="exerciseMainClassName" || a==="classOptional") continue;
         options[a]=obj[a]===true;
       }
     }
@@ -64,7 +66,7 @@ class Options{
     await this.saveToStorage();
   }
   async changeToNormal(dontSave){
-    this.classOptional=false;
+    this.classOptional=true;
     this.voidOptional=false;
     this.mainOptional=false;
     this.autocast=true;
@@ -76,7 +78,7 @@ class Options{
     await this.saveToStorage();
   }
   async changeToHard(dontSave){
-    this.classOptional=false;
+    this.classOptional=true;
     this.voidOptional=false;
     this.mainOptional=false;
     this.autocast=false;

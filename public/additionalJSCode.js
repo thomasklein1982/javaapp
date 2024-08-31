@@ -3818,10 +3818,12 @@ function additionalJSCode(){
           }
           
           try{
+            $Exercise.clearConsole();
             res=await applyTestFunc(data,initData);
           }catch(e){
             res=false;
           }
+          $Exercise.clearConsole();
           if(!res){
             break;
           }
@@ -3830,6 +3832,13 @@ function additionalJSCode(){
       }
       $Exercise.sendFeedback(resArray);
       //$Exercise.sendCompleted(max,infos);
+    }
+    static async createInstance(constructor){
+      let args=[null];
+      for(let i=1;i<arguments.length;i++){
+        args.push(arguments[i]);
+      }
+      return await $App.asyncFunctionCall(new constructor(), "$constructor",args);
     }
     static clearConsole(){
       $App.console.clear();

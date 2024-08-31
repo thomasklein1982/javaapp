@@ -94,6 +94,9 @@ export default{
     setupExercise(data){
       let p=new Project();
       p.fromJSON(data.project);
+      if(data.project.clazzes && data.project.clazzes[0] && data.project.clazzes[0].name){
+        options.exerciseMainClassName=data.project.clazzes[0].name;
+      }
       this.openProject(p);
       this.exerciseCheckerCode=data.checker;
     },

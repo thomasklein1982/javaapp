@@ -337,6 +337,12 @@ export class Clazz{
     }
   }
 
+  hasDynamicMainMethod(){
+    let m=this.methods['main'];
+    if(!m) return false;
+    else return true;
+  }
+
   getMethod(name,staticAccess){
     if(name==="toString"){
       name="$toString";
@@ -576,7 +582,7 @@ export class Clazz{
         this.hasClazzDeclaration=false;
         // this.generateSrcAndTree(this.src);
         // this.clazzBody=this.source.tree.topNode.firstChild.firstChild.nextSibling.nextSibling.firstChild.nextSibling;
-        this.name="Main";
+        this.name=options.exerciseMainClassName;//"Main";
         this.clazzBody=node;
       }
     }else{
