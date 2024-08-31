@@ -158,19 +158,30 @@ export class Project{
     }
     let mainClazz=this.getMainClazz();
     let codeMainCall="";
+
+    let uiclazzesString="[";
+    let uiclazzes=this.getUIClazzes();
+    for(let i=0;i<uiclazzes.length;i++){
+      let c=uiclazzes[i];
+      uiclazzesString+=c.name+",";
+    }
+    uiclazzesString+="]";
+
     if(mainClazz){
       if(mainClazz.hasStaticMainMethod()){
         if(!args) args=[];
-        codeMainCall="(async function(){await $App.setup();\nawait "+mainClazz.name+".main("+JSON.stringify(args)+");";
+        codeMainCall="(async function(){await $App.setup();\n$createAllUIClazzes("+uiclazzesString+");\nawait "+mainClazz.name+".main("+JSON.stringify(args)+");";
       }else if(mainClazz.hasDynamicMainMethod()){
         if(!args) args=[];
-        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.setup();\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);\nawait $main.main("+JSON.stringify(args)+");";
+        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.setup();\n\n$createAllUIClazzes("+uiclazzesString+");\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);\nawait $main.main("+JSON.stringify(args)+");";
       }else{
-        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.setup();\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);\nif($main.main){await $main.main("+JSON.stringify(args)+");}\n";
+        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.setup();\n\n$createAllUIClazzes("+uiclazzesString+");\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);\nif($main.main){await $main.main("+JSON.stringify(args)+");}\n";
       }
     }else{
       codeMainCall="\n(async function(){await $App.setup();\n";
     }
+    
+    //codeMainCall+="\n$createAllUIClazzes("+uiclazzesString+");";
     codeMainCall+="\nsetTimeout(async ()=>{await window.$exerciseChecker();},100);})();";
     let css=this.prepareCSS(this.css);
     codeMainCall="window.addEventListener('DOMContentLoaded',async function(){"+codeMainCall+"});";
@@ -257,6 +268,17 @@ export class Project{
     return code;
   }
   
+  getUIClazzes(){
+    let array=[];
+    for(let i=0;i<this.clazzes.length;i++){
+      let c=this.clazzes[i];
+      if(c instanceof UIClazz){
+        array.push(c);
+      }
+    }
+    return array;
+  }
+
   getMainClazz(){
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];

@@ -161,18 +161,19 @@ export class Clazz{
       attributesCode+="\n"+a.getJavaScriptCode();
     }
     /**Falls option aktiv, wird in der Hauptklasse für jede UI-Klasse 1 Attribut mit einer Instanz der UI-Klasse erzeugt: */
+    /** geändert: UI-Klassen werden prinzipiell als statische Singletons erzeugt */
     let onStartPrecode="";
-    if(this.isFirstClazz && options.instantiateUIClasses){
-      for(var i=0;i<this.project.clazzes.length;i++){
-        var c=this.project.clazzes[i];
-        if(!(c.isUIClazz())) continue;
-        let name=c.name;
-        onStartPrecode+="\nthis."+name+"=(await $App.asyncFunctionCall(new "+c.name+"(),'$constructor',[{$hideFromConsole:true},]));";
-        if(this.project.getUiClazzCount()>1){
-          onStartPrecode+="\nthis."+name+".setVisible(false);";
-        }
-      }
-    }
+    // if(this.isFirstClazz && options.instantiateUIClasses){
+    //   for(var i=0;i<this.project.clazzes.length;i++){
+    //     var c=this.project.clazzes[i];
+    //     if(!(c.isUIClazz())) continue;
+    //     let name=c.name;
+    //     onStartPrecode+="\nthis."+name+"=(await $App.asyncFunctionCall(new "+c.name+"(),'$constructor',[{$hideFromConsole:true},]));";
+    //     if(this.project.getUiClazzCount()>1){
+    //       onStartPrecode+="\nthis."+name+".setVisible(false);";
+    //     }
+    //   }
+    // }
     
     let hasConstructor=false;
     let hasOnStart=false;

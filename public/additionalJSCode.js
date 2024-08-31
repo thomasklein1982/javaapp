@@ -64,6 +64,18 @@ function additionalJSCode(){
     }
   }
 
+  function $createAllUIClazzes(constructors){
+    window.uiClazzObjects=[];
+    for(let i=0;i<constructors.length;i++){
+      let c=constructors[i];
+      c.$createSelf();
+      window.uiClazzObjects.push(c.$self);
+      if(constructors.length>1){
+        c.$self.setVisible(false);
+      }
+    }
+  }
+
   function $new(constructor){
     let o;
     try{
@@ -1484,6 +1496,32 @@ function additionalJSCode(){
       $App.canvas.addElement(this.$el,50,50,100,100);
       $App.console.adaptSize();
       this.setCSSClass("");
+    }
+  }
+
+  class UIClazz extends JFrame{
+    $constructor(template){
+      super.$constructor(template);
+    }
+    static setVisible(v){
+      
+      if(v){
+        //mache alle anderen UI-Klassen unsichtbar, sodass immer hoechstens eine sichtbar ist
+        for(let i=0;i<window.uiClazzObjects.length;i++){
+          let o=window.uiClazzObjects[i];
+          o.setVisible(false);
+        }
+      }
+      this.$self.setVisible(v);
+    }
+    static show(){
+      this.setVisible(true);
+    }
+    static hide(){
+      this.setVisible(false);
+    }
+    static isVisible(){
+      return this.$self.isVisible();
     }
   }
 

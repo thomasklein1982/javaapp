@@ -95,7 +95,7 @@ export class UIClazz extends Clazz{
     this.width=100;
     this.height=100;
     this.cssCode="";
-    this.superClazz=Java.clazzes.JPanel;
+    this.superClazz=Java.clazzes.UIClass;
     this.attributes={};
     this.showUIEditor=true;
     /**Komponente:
@@ -197,11 +197,7 @@ export class UIClazz extends Clazz{
   }
 
   getAttribute(name,staticAccess){
-    if(staticAccess){
-      return {
-        error: "Die Klasse '"+this.name+"' hat kein "+(staticAccess? "statisches ":"")+"Attribut namens '"+name+"'."
-      };
-    } 
+    
     let a=this.attributes[name];
     if(!a && this.superClazz){
       a=this.superClazz.getAttribute(name,staticAccess);
@@ -214,15 +210,29 @@ export class UIClazz extends Clazz{
         error: "Die Klasse '"+this.name+"' hat kein "+(staticAccess? "statisches ":"")+"Attribut namens '"+name+"'."
       };
     }
-    return a;
+    if(staticAccess){
+      if(a.isStatic && a.isStatic() || a.static){
+        return a;
+      }else{
+        return {
+          error: "Das Attribut '"+name+"' ist nicht statisch.",
+          clazzHasAttribute: true
+        };
+      }
+    }else{
+      if(a.isStatic && a.isStatic() || a.static){
+        return {
+          error: "Das Attribut '"+name+"' ist statisch. Verwende '"+this.name+"."+name+"' um darauf zuzugreifen.",
+          clazzHasAttribute: true
+        };
+      }else{
+        return a;
+      }
+    }
   }
 
   getMethod(name,staticAccess){
-    if(staticAccess){
-      return {
-        error: "Die Klasse '"+this.name+"' hat keine "+(staticAccess? "statische ":"")+"Methode namens '"+name+"'."
-      };
-    }
+    
     let m=this.methods[name];
     if(m) return m;
     m=this.superClazz.getMethod(name,staticAccess);
@@ -234,7 +244,23 @@ export class UIClazz extends Clazz{
         error: "Die Klasse '"+this.name+"' hat keine "+(staticAccess? "statische ":"")+"Methode namens '"+name+"'."
       };
     }
-    return m;
+    if(staticAccess){
+      if(m.isStatic && m.isStatic() || m.static){
+        return m;
+      }else{
+        return {
+          error: "Die Methode '"+name+"' ist nicht statisch."
+        };
+      }
+    }else{
+      if(m.isStatic && m.isStatic() || m.static){
+        return {
+          error: "Die Methode '"+name+"' ist statisch. Verwende '"+this.name+"."+name+"(...)' um darauf zuzugreifen."
+        };
+      }else{
+        return m;
+      }
+    }
   }
 
   static getAllAttributesFromComponent(component,names,standardValue){
@@ -291,8 +317,12 @@ export class UIClazz extends Clazz{
   }
 
   getJavaScriptCode(){
-    let code="class "+this.name+" extends JFrame";
+    let code="class "+this.name+" extends UIClazz";
     code+="{";
+    code+="\nstatic $self;\n";//=$new("+this.name+");";
+    code+=`static $createSelf(){
+      ${this.name}.$self=$new(${this.name});
+    }`;
     // code+="\n$constructor(){";
     // code+="super("+JSON.stringify(this.template)+","+this.x+","+this.y+","+this.width+","+this.height+");";
     // for(let i in this.attributes){
@@ -306,7 +336,7 @@ export class UIClazz extends Clazz{
     //let attributesInitCode="";
     for(let i in this.attributes){
       let a=this.attributes[i];
-      attributesCode+="\n"+a.getJavaScriptCode()+";";
+      attributesCode+="\n"+a.getDeclarationJavaScriptCode()+";";
     }
     code+=attributesCode;
     let callInit=false;
@@ -318,7 +348,7 @@ export class UIClazz extends Clazz{
       code+="\n"+m.getJavaScriptCode();
     }
     code+="\nasync $constructor(){";
-    code+="super.$constructor("+JSON.stringify(this.template)+","+this.x+","+this.y+","+this.width+","+this.height+");";
+    code+="await super.$constructor("+JSON.stringify(this.template)+","+this.x+","+this.y+","+this.width+","+this.height+");";
     // for(let i in this.attributes){
     //   let a=this.attributes[i];
     //   if(!a.isNamedComponent){
@@ -376,6 +406,7 @@ export class UIClazz extends Clazz{
     let scope=new Scope(this.project,undefined,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
     // this.attributes={};
     // this.methods={};
+    
     this.compileVariables(scope);
     let namedComponents=UIClazz.getAllAttributesFromComponent(this,{},undefined);
     for(let name in namedComponents){
@@ -390,7 +421,7 @@ export class UIClazz extends Clazz{
       let a=createAttribute({
         name,
         type: c.array? {baseType: Java.datatypes.JComponent, dimension: 1} : type
-      },this,false);
+      },this,true);
       a.isNamedComponent=true;
       this.attributes[name]=a;
     }
@@ -463,7 +494,7 @@ export class UIClazz extends Clazz{
       let a=createAttribute({
         name,
         type: c.array? {baseType: type, dimension: 1} : type
-      },this,false);
+      },this,true);
       a.isNamedComponent=true;
       this.attributes[name]=a;
     }
@@ -555,7 +586,7 @@ export class UIClazz extends Clazz{
       newCode+="\ncontainer"+containerIndex+".add("+last+",$insertPosition);";
       newCode+="\n$insertPosition++;";
       if(c.name){
-        newCode+="\nthis."+c.name+"= "+last+";";
+        newCode+="\n"+this.name+"."+c.name+"= "+last+";";
       }
       if(c.array){
         newCode+="\nif(this.componentArrays["+JSON.stringify(c.array)+"]===undefined){this.componentArrays["+JSON.stringify(c.array)+"]=[];}\nthis.componentArrays["+JSON.stringify(c.array)+"].push("+last+");";

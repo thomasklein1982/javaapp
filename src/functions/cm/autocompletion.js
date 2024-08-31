@@ -283,7 +283,7 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
       let clazzes=app.$refs.editor.project.clazzes;
       for(let i=0;i<clazzes.length;i++){
         let c=clazzes[i];
-        if(c.isUIClazz()) continue;
+        //if(c.isUIClazz()) continue;
         options.push({
           label: c.name,
           type: "class",

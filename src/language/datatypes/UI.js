@@ -17,6 +17,7 @@ export function defineUIClazzes(Java){
   defineJPanel(Java.datatypes.JPanel,Java);
   defineCanvas(Java.datatypes.Canvas,Java);
   defineJFrame(Java.datatypes.JFrame,Java);
+  defineUIClass(Java.datatypes.UIClass,Java.datatypes.JPanel,Java.datatypes.JComponent);
 }
 
 function defineJComponent(Clazz,Java){
@@ -610,6 +611,30 @@ function defineDataTable(Clazz,Java){
     ]
   },Clazz,false,false,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
+}
+
+function defineUIClass(Clazz,JPanel,JComponent){
+  Clazz.superClazz=JPanel;
+  createMethod({
+    name: 'setVisible',
+    args: [
+      {name: 'v', type: 'boolean'}
+    ]
+  },Clazz,true,false);
+  createMethod({
+    name: 'show',
+    args: [
+    ]
+  },Clazz,true,false);
+  createMethod({
+    name: 'hide',
+    args: [
+    ]
+  },Clazz,true,false);
+  createMethod({
+    name: 'isVisible',
+    returnType: 'boolean'
+  },Clazz,true,false);
 }
 
 function defineJPanel(Clazz,Java){
