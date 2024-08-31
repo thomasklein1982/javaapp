@@ -189,7 +189,7 @@ export default {
         return;
       }
       if(ov.isUIClazz() && !nv.isUIClazz()){
-        if(!(nv.isFirstClazz && options.isEasyMode())){
+        if(!(nv.isFirstClazz)){
           console.log("wechsle zu java mit klasse");
           this.setLanguage(javaWithClazz);
         }
@@ -278,7 +278,7 @@ export default {
     });
     let editorTheme=new Compartment();
     let language;
-    if(this.clazz.isFirstClazz && options.isEasyMode() || this.clazz.isUIClazz()){
+    if(this.clazz.isFirstClazz || this.clazz.isUIClazz()){
       console.log("use easy without clazz");
       language=javaWithoutClazz;
     }else{

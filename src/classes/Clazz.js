@@ -149,6 +149,7 @@ export class Clazz{
     if(this.superClazz){
       code+="super();";
     }
+    code+="\n}";
     // if(this.hasStaticMainMethod()){
     //   code+="if(!window.$main){window.$main=this;}";
     // }
@@ -156,7 +157,8 @@ export class Clazz{
     //let attributesInitCode="";
     for(let i in this.attributes){
       let a=this.attributes[i];
-      attributesCode+="\n"+a.getJavaScriptCode()+";";
+      code+="\n"+a.getDeclarationJavaScriptCode()+";";
+      attributesCode+="\n"+a.getJavaScriptCode();
     }
     /**Falls option aktiv, wird in der Hauptklasse für jede UI-Klasse 1 Attribut mit einer Instanz der UI-Klasse erzeugt: */
     let onStartPrecode="";
@@ -171,17 +173,16 @@ export class Clazz{
         }
       }
     }
-    code+="\n}";
-    code+=attributesCode;
+    
     let hasConstructor=false;
     let hasOnStart=false;
     for(let i in this.methods){
       let m=this.methods[i];
       if(m.isConstructor()){
-        code+="\n"+m.getJavaScriptCode();
+        code+="\n"+m.getJavaScriptCode(attributesCode);
         hasConstructor=true;
       }else{
-        if(m.name==="onStart"){
+        if(m.name==="main"){
           hasOnStart=true;
           code+="\n"+m.getJavaScriptCode(onStartPrecode);
         }else{
@@ -191,10 +192,10 @@ export class Clazz{
     }
     if(onStartPrecode && !hasOnStart){
       //eigene onStart-Methode hinzufuegen:
-      code+="\nasync onStart(){"+onStartPrecode+"\n}";
+      code+="\nasync main(){"+onStartPrecode+"\n}";
     }
     if(!hasConstructor){
-      code+="\nasync $constructor(typeArguments){\nthis.$typeArguments=typeArguments;\nreturn this;}";
+      code+="\nasync $constructor(typeArguments){\nthis.$typeArguments=typeArguments;\n"+attributesCode+"\nreturn this;}";
     }
     code+="\n$getType(infos){\nif(infos.isGeneric){\nreturn this.$typeArguments[infos.name];}\nreturn infos;}";
     code+="\n}";

@@ -29,13 +29,37 @@ export class Attribute{
     return (this.modifiers && this.modifiers.visibility==="private");
   }
 
-  getJavaScriptCode(){
+  getDeclarationJavaScriptCode(){
     let code;
     if(this.isStatic()){
       code="static "+this.name;
     }else{
       code=this.name;
     }
+    code+="=";
+    let v;
+    if(this.isStatic() && this.initialValue){
+      v=this.initialValue;
+    }else{
+      if(!this.type){
+        return "";
+      }
+      if(this.type.baseType instanceof Clazz || this.type.dimension>0){
+        v="null";
+      }else{
+        v=JSON.stringify(this.type.baseType.initialValue);
+      }
+    }
+    code+=v+";";
+    return code;
+  }
+
+  getJavaScriptCode(){
+    let code;
+    if(this.isStatic()){
+      return "";
+    }
+    code="this."+this.name;
     code+="=";
     let v;
     if(this.initialValue){

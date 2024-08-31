@@ -46,14 +46,14 @@ export default {
       templates: [
         {
           name: "Leere App",
-          description: "Eine normale, leere App. Bereit zu coden!",
-          code: "class NAME{\n  \n  public static void main(String[] args){\n    new NAME();\n  }\n}"
+          description: "Eine App mit main-Methode. Bereit zu coden!",
+          code: "void main( ){\n  \n}"
         },
         {
           name: "App mit UI",
-          description: "Eine leere App mit einer UI-Klasse.",
+          description: "Eine App mit main-Methode und einer UI-Klasse.",
           code: [
-            'class NAME extends JavaApp{\n  Screen screen;\n  void onStart( ) {\n    screen = new Screen( );\n  }\n  \n  void onAction( JComponent trigger ) {\n    \n  }\n\n  public static void main(String[] args){\n    new NAME();\n  }\n}',
+            'Screen screen;\nvoid main( ) {\n  screen = new Screen( );\n}\n\nvoid onAction( JComponent trigger ) {\n  \n}',
             {
               type: "UI",
               code: '{"name":"Screen","components":[{"type":"JButton","value":"Klicken","x":50,"y":50,"width":100,"height":100,"name":""}]}'
@@ -99,7 +99,6 @@ export default {
       if(this.nameerror || !this.template){
         return;
       }
-      console.log(this.template);
       let name=this.name;
       let c=name.charAt(0).toUpperCase();
       name=c+name.substring(1);
@@ -109,26 +108,26 @@ export default {
       }else{
         code=[this.template.code];
       }
-      if(options.mainOptional){
-        code[0]=code[0].replace(/\n\s*\n\s*public static void main\(String\[\] args\)\{\s*new NAME\(\);\s*\}/,"");
-      }
+      // if(options.mainOptional){
+      //   code[0]=code[0].replace(/\n\s*\n\s*public static void main\(String\[\] args\)\{\s*new NAME\(\);\s*\}/,"");
+      // }
       code[0]=code[0].replace(/NAME/g,name);
       if(options.voidOptional){
         code[0]=code[0].replace(/void /g,"");
       }
-      if(options.autoextendJavaApp){
-        code[0]=code[0].replace(" extends JavaApp","");
-      }
+      // if(options.autoextendJavaApp){
+      //   code[0]=code[0].replace(" extends JavaApp","");
+      // }
       if(options.instantiateUIClasses){
-        code[0]=code[0].replace("\n  Screen screen;","");
+        code[0]=code[0].replace("Screen screen;","");
         code[0]=code[0].replace("screen = new Screen( );","");
       }
-      if(options.classOptional){
-        let pos=code[0].indexOf("{");
-        let pos2=code[0].lastIndexOf("}");
-        code[0]=code[0].substring(pos+1,pos2);
-        code[0]=code[0].trim();
-      }
+      // if(options.classOptional){
+      //   let pos=code[0].indexOf("{");
+      //   let pos2=code[0].lastIndexOf("}");
+      //   code[0]=code[0].substring(pos+1,pos2);
+      //   code[0]=code[0].trim();
+      // }
       code[0]=js_beautify(code[0],{
         "indent_size": 2,
         "max_preserve_newlines": 2,

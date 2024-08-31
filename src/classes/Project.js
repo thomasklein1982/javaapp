@@ -166,7 +166,7 @@ export class Project{
         if(!args) args=[];
         codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.setup();\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);\nawait $main.main("+JSON.stringify(args)+");";
       }else{
-        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.setup();\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);";
+        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.setup();\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);\nif($main.main){await $main.main("+JSON.stringify(args)+");}\n";
       }
     }else{
       codeMainCall="\n(async function(){await $App.setup();\n";
@@ -376,7 +376,7 @@ export class Project{
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
       if(fromSource){
-        c.generateSrcAndTree(c.src,c.isFirstClazz && options.isEasyMode()||c.isUIClazz());
+        c.generateSrcAndTree(c.src,c.isFirstClazz||c.isUIClazz());
       }
       toCompile.push(c);
     }

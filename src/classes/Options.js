@@ -25,10 +25,10 @@ class Options{
     this.exerciseMainClassName="Main";
   }
   isEasyMode(){
-    return this.classOptional||this.voidOptional||this.mainOptional;
+    return this.voidOptional;
   }
   isHardMode(){
-    return !this.classOptional && !this.voidOptional && !this.mainOptional && !this.autocast && !this.instantiateUIClasses && !this.stringCharAtDeliversString && !this.stringIsComparable && !this.autoextendJavaApp;
+    return !this.voidOptional && !this.mainOptional && !this.autocast && !this.instantiateUIClasses && !this.stringCharAtDeliversString && !this.stringIsComparable && !this.autoextendJavaApp;
   }
   difficulty(){
     if(this.isEasyMode())return 0;
