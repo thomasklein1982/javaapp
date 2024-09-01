@@ -70,9 +70,9 @@ function additionalJSCode(){
       let c=constructors[i];
       c.$createSelf();
       window.uiClazzObjects.push(c.$self);
-      if(constructors.length>1){
-        c.$self.setVisible(false);
-      }
+      // if(constructors.length>1){
+      //   c.$self.setVisible(false);
+      // }
     }
   }
 
@@ -1386,12 +1386,6 @@ function additionalJSCode(){
         }
       }
       return null;
-      // let el=this.$el.children[index];
-      // if(el && el.component){
-      //   return el.component;
-      // }else{
-      //   return null;
-      // }
     }
     getChildInGrid(row,col,colCount){
       if(row<0 || col<0) return null;
@@ -1492,7 +1486,7 @@ function additionalJSCode(){
     $constructor(template){
       super.$constructor(template);
       this.standardCSSClasses+=" __jframe";
-      this.$el.style="left: 0; right: 0; top: 0; bottom: 0; position: absolute;";
+      this.$el.style="left: 0; right: 0; top: 0; bottom: 0; position: absolute;background-color: white";
       $App.canvas.addElement(this.$el,50,50,100,100);
       $App.console.adaptSize();
       this.setCSSClass("");
@@ -1506,11 +1500,11 @@ function additionalJSCode(){
     static setVisible(v){
       
       if(v){
-        //mache alle anderen UI-Klassen unsichtbar, sodass immer hoechstens eine sichtbar ist
-        for(let i=0;i<window.uiClazzObjects.length;i++){
-          let o=window.uiClazzObjects[i];
-          o.setVisible(false);
-        }
+        let el=this.$self.$el;
+        //entferne die UI-Klasse und füge sie als oberstes Kind wieder ein, sodass sie sichtbar ist
+        let parent=el.parentNode;
+        parent.removeChild(el);
+        parent.appendChild(el);
       }
       this.$self.setVisible(v);
     }
@@ -1522,6 +1516,12 @@ function additionalJSCode(){
     }
     static isVisible(){
       return this.$self.isVisible();
+    }
+    static getChildCount(){
+      return this.$self.getChildCount();
+    }
+    static getChild(index){
+      return this.$self.getChild(index);
     }
   }
 

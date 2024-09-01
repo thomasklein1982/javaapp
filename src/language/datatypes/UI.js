@@ -635,6 +635,21 @@ function defineUIClass(Clazz,JPanel,JComponent){
     name: 'isVisible',
     returnType: 'boolean'
   },Clazz,true,false);
+  createMethod({
+    name: 'getChild',
+    args: [
+      {name: 'index', type: 'int', info: 'Der Index der gesuchten Kind-Komponente, beginnt bei 0.'}
+    ],
+    info: "Liefert die n-te Kind-Komponente der UI-Klasse zurück.",
+    returnType: 'JComponent'
+  },Clazz,true,false);
+  createMethod({
+    name: 'getChildCount',
+    args: [
+    ],
+    info: "Liefert die Anzahl der Kind-Komponenten dieses Panels zurück.",
+    returnType: 'int'
+  },Clazz,true,false);
 }
 
 function defineJPanel(Clazz,Java){
