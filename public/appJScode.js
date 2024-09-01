@@ -2617,7 +2617,7 @@ window.appJScode=function(){
           }else{
             item=document.createElement("span");
             //item.style.marginRight="1em";
-            item.innerHTML=obj;
+            item.textContent=obj;
           }
           this.output[this.output.length-1]+=item.textContent;
           div.appendChild(item);
@@ -2638,7 +2638,7 @@ window.appJScode=function(){
           }else{
             item=document.createElement("span");
             //item.style.marginRight="1em";
-            item.innerHTML=obj;
+            item.textContent=obj;
           }
           this.output[this.output.length-1]+=item.textContent;
           div.appendChild(item);
