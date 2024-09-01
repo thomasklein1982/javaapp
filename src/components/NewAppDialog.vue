@@ -53,7 +53,7 @@ export default {
           name: "App mit UI",
           description: "Eine App mit main-Methode und einer UI-Klasse.",
           code: [
-            'Screen screen;\nvoid main( ) {\n  screen = new Screen( );\n}\n\nvoid onAction( JComponent trigger ) {\n  \n}',
+            'void main( ) {\n  \n}\n\n$onAction',
             {
               type: "UI",
               code: '{"name":"Screen","components":[{"type":"JButton","value":"Klicken","x":50,"y":50,"width":100,"height":100,"name":""}]}'
@@ -108,26 +108,15 @@ export default {
       }else{
         code=[this.template.code];
       }
-      // if(options.mainOptional){
-      //   code[0]=code[0].replace(/\n\s*\n\s*public static void main\(String\[\] args\)\{\s*new NAME\(\);\s*\}/,"");
-      // }
       code[0]=code[0].replace(/NAME/g,name);
+      if(options.autoextendJavaApp){
+        code[0]=code[0].replace(/\$onAction/g,"void onAction( JComponent trigger ){\n\t\n}");
+      }else{
+        code[0]=code[0].replace(/\$onAction/g,"");
+      }
       if(options.voidOptional){
         code[0]=code[0].replace(/void /g,"");
       }
-      // if(options.autoextendJavaApp){
-      //   code[0]=code[0].replace(" extends JavaApp","");
-      // }
-      if(options.instantiateUIClasses){
-        code[0]=code[0].replace("Screen screen;","");
-        code[0]=code[0].replace("screen = new Screen( );","");
-      }
-      // if(options.classOptional){
-      //   let pos=code[0].indexOf("{");
-      //   let pos2=code[0].lastIndexOf("}");
-      //   code[0]=code[0].substring(pos+1,pos2);
-      //   code[0]=code[0].trim();
-      // }
       code[0]=js_beautify(code[0],{
         "indent_size": 2,
         "max_preserve_newlines": 2,
