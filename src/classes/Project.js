@@ -527,13 +527,6 @@ export class Project{
   }
   toSaveString(excludeAssets){
     let o=this.toJSON(excludeAssets);
-    console.log(excludeAssets);
-    // var t=[];
-    // for(var i=0;i<this.clazzes.length;i++){
-    //   var c=this.clazzes[i];
-    //   t.push(c.getSaveObject());
-    // }
-    // let db=this.database.toCSVString();
     return start+JSON.stringify(o)+stop;
   }
   fromJSON(o){

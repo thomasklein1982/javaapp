@@ -30,7 +30,7 @@
         </tr>
         <tr>  
           <td>Attribute:</td>
-          <td><TextArea rows="2" spellcheck="false" @change="emitUpdate()" v-model="component.attributes" style="width: 95%; resize: none"/></td>
+          <td><TextArea rows="2" spellcheck="false" @change="emitUpdate()" v-model="component.attributes" style="width: 95%; resize: vertical"/></td>
         </tr>
       </template>
       <tr v-if="component.options!==undefined">
@@ -54,7 +54,7 @@
           <InputText type="search" spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%"/>
         </td>
         <td v-else-if="component.valueType==='text' || !maximized">
-          <TextArea rows="2" spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%; resize: none"/>
+          <TextArea rows="2" spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%; resize: vertical"/>
         </td>
         <td v-else>
           <CodeMirrorEditor style="max-width: 95%" :language="component.valueType" v-model="component.value"/>
@@ -154,7 +154,7 @@
         <tr>
           <td>CSS-Regeln:</td>
           <td v-if="!maximized">
-            <InputText spellcheck="false" @change="emitUpdate()" v-model.trim="component.cssCode" style="width: 95%"/>
+            <TextArea spellcheck="false" @change="emitUpdate()" v-model.trim="component.cssCode" style="width: 95%; resize: vertical;"/>
           </td>
           <td v-else>
             <CodeMirrorEditor language="css" v-model.trim="component.cssCode" style="max-width: 95%"/>
