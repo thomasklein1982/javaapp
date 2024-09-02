@@ -621,7 +621,12 @@ export class UIClazz extends Clazz{
         newCode+="\n"+last+code;
       }
       if(c.align!==undefined){
-        let code=".setAlignContent('"+c.align+"');";
+        let align=c.align;
+        if(align!=="center"){
+          align=align.substring(0,align.length-1).trim();
+        }
+        console.log(align,c.align);
+        let code=".setAlignContent('"+align+"');";
         newCode+="\n"+last+code;
       }
       if(c.attributes!==undefined){

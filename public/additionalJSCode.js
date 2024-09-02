@@ -3788,6 +3788,28 @@ function additionalJSCode(){
   }
 
   class $Exercise{
+    static isLeftRight(){
+      for(let i=1;i<arguments.length;i++){
+        let e1=arguments[i-1];
+        let e2=arguments[i];
+        if(!e1||!e2) return false;
+        let r1=e1.getBoundingClientRect();
+        let r2=e2.getBoundingClientRect();
+        if(r1.right>r2.left) return false;
+      }
+      return true;
+    }
+    static isTopBottom(e1,e2){
+      for(let i=1;i<arguments.length;i++){
+        let e1=arguments[i-1];
+        let e2=arguments[i];
+        if(!e1||!e2) return false;
+        let r1=e1.getBoundingClientRect();
+        let r2=e2.getBoundingClientRect();
+        if(r1.bottom>r2.top) return false;
+      }
+      return true;
+    }
     static getComputedStyle(el){
       return getComputedStyle(el);
     }
@@ -3862,10 +3884,11 @@ function additionalJSCode(){
             $Exercise.clearConsole();
             res=await applyTestFunc(data,initData);
           }catch(e){
-            res=false;
+            console.log("check test cases exception",e);
+            res=e;
           }
           $Exercise.clearConsole();
-          if(!res){
+          if(res!==true){
             break;
           }
         }

@@ -468,10 +468,13 @@ window.appJScode=function(){
         // }
         if(a.h==="center"){
           this.style.justifyItems="center";
+          this.style.textAlign="center";
         }else if(a.h==="left"){
           this.style.justifyItems="start";
+          this.style.textAlign="left";
         }else{
           this.style.justifyItems="end";
+          this.style.textAlign="right";
         }
         if(a.v==="middle"){
           this.style.alignItems="center";
