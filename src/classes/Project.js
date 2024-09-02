@@ -527,6 +527,7 @@ export class Project{
   }
   toSaveString(excludeAssets){
     let o=this.toJSON(excludeAssets);
+    console.log(excludeAssets);
     // var t=[];
     // for(var i=0;i<this.clazzes.length;i++){
     //   var c=this.clazzes[i];
@@ -545,33 +546,6 @@ export class Project{
     if(o.assets){
       if(o.assets.splice){
         this.assets=o.assets;
-      }else if(o.assets===true){
-        let pos=appcode.indexOf("/****** ASSETS START ******/");
-        if(pos>=0){
-          let pos2=appcode.indexOf("/****** ASSETS END ******/",pos+12);
-          if(pos2>=0){
-            let assetsCode=appcode.substring(pos+28,pos2);
-            pos=assetsCode.indexOf("(");
-            while(pos>=0){
-              let sep=assetsCode.charAt(pos+1);
-              let pos2=assetsCode.indexOf(sep,pos+2);
-              if(pos2<0) break;
-              let pos3=assetsCode.indexOf(")",pos2);
-              if(pos3<0) break;
-              let data=assetsCode.substring(pos+2,pos2);
-              let name=assetsCode.substring(pos2+3,pos3-1);
-              let mime=getMimeFromDataURL(data);
-              this.assets.push({
-                name,
-                file: {
-                  code: data,
-                  mime
-                }
-              });
-              pos=assetsCode.indexOf("(",pos3+1);
-            }
-          }
-        }
       }
     }
     if(o.name){
@@ -662,6 +636,33 @@ export class Project{
       console.log("parse");
       var o=JSON.parse(saveString);
       console.log(o);
+      let pos=appcode.indexOf("/****** ASSETS START ******/");
+      if(pos>=0){
+        let pos2=appcode.indexOf("/****** ASSETS END ******/",pos+12);
+        if(pos2>=0){
+          let assetsCode=appcode.substring(pos+28,pos2);
+          pos=assetsCode.indexOf("(");
+          o.assets=[];
+          while(pos>=0){
+            let sep=assetsCode.charAt(pos+1);
+            let pos2=assetsCode.indexOf(sep,pos+2);
+            if(pos2<0) break;
+            let pos3=assetsCode.indexOf(")",pos2);
+            if(pos3<0) break;
+            let data=assetsCode.substring(pos+2,pos2);
+            let name=assetsCode.substring(pos2+3,pos3-1);
+            let mime=getMimeFromDataURL(data);
+            o.assets.push({
+              name,
+              file: {
+                code: data,
+                mime
+              }
+            });
+            pos=assetsCode.indexOf("(",pos3+1);
+          }
+        }
+      }
       this.fromJSON(o);
     }catch(e){
       return false;

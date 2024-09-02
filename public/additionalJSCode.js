@@ -3788,6 +3788,9 @@ function additionalJSCode(){
   }
 
   class $Exercise{
+    static getComputedStyle(el){
+      return getComputedStyle(el);
+    }
     static setUIBlocked(b){
       if(b){
         if($Exercise.blocker) return;
