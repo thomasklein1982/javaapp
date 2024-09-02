@@ -766,18 +766,18 @@ export class Clazz{
    */
   compileMemberDeclarations(){
     this.attributes={};
-    if(this.isFirstClazz && options.instantiateUIClasses){
-      for(var i=0;i<this.project.clazzes.length;i++){
-        var c=this.project.clazzes[i];
-        if(!(c.isUIClazz())) continue;
-        let name=c.name;
-        let a=createAttribute({
-          name,
-          type: c
-        },this,false);
-        this.attributes[name]=a;
-      }
-    }
+    // if(this.isFirstClazz && options.instantiateUIClasses){
+    //   for(var i=0;i<this.project.clazzes.length;i++){
+    //     var c=this.project.clazzes[i];
+    //     if(!(c.isUIClazz())) continue;
+    //     let name=c.name;
+    //     let a=createAttribute({
+    //       name,
+    //       type: c
+    //     },this,false);
+    //     this.attributes[name]=a;
+    //   }
+    // }
     this.methods={};
     // if(!this.deserializeMethod){
     //   if(!this.isInterface){ 
