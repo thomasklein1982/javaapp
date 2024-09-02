@@ -3793,9 +3793,11 @@ function additionalJSCode(){
         let e1=arguments[i-1];
         let e2=arguments[i];
         if(!e1||!e2) return false;
+        if(e1.$el) e1=e1.$el;
+        if(e2.$el) e2=e2.$el;
         let r1=e1.getBoundingClientRect();
         let r2=e2.getBoundingClientRect();
-        if(r1.right>r2.left) return false;
+        if(r1.right>r2.left+1) return false;
       }
       return true;
     }
@@ -3804,9 +3806,16 @@ function additionalJSCode(){
         let e1=arguments[i-1];
         let e2=arguments[i];
         if(!e1||!e2) return false;
+        if(e1.$el) e1=e1.$el;
+        if(e2.$el) e2=e2.$el;
         let r1=e1.getBoundingClientRect();
         let r2=e2.getBoundingClientRect();
-        if(r1.bottom>r2.top) return false;
+        
+        if(r1.bottom>r2.top+1){ 
+          console.log("top bottom",r1,r2)
+          return false;
+
+        }
       }
       return true;
     }
