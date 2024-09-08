@@ -259,18 +259,59 @@ export class Clazz{
     return names;
   }
 
-  getAllDynamicAttributeNamesAndTypes(names){
+  getAttributeRuntimeInfos(names){
     if(!names) names={};
     for(let a in this.attributes){
       let at=this.attributes[a];
-      if(at.isStatic() || !at.type) continue;
+      
+      if(!at.type) continue;
       names[at.name]={
-        baseType: at.type.baseType.name,
-        dimension: at.type.dimension
+        type: {
+          baseType: at.type.baseType.name,
+          dimension: at.type.dimension,
+        },
+        static: at.isStatic(),
+        vis: at.modifiers.visibility
       };
     }
-    if(this.superClazz && this.superClazz.getAllDynamicAttributeNamesAndTypes){
-      return this.superClazz.getAllDynamicAttributeNamesAndTypes(names);
+    if(this.superClazz && this.superClazz.getAttributeRuntimeInfos){
+      return this.superClazz.getAttributeRuntimeInfos(names);
+    }
+    return names;
+  }
+
+  getMethodRuntimeInfos(names){
+    if(!names) names={};
+    for(let a in this.methods){
+      let m=this.methods[a];
+      let args;
+      if(m.params){
+        args=[];
+        for(let i=0;i<m.params.parameters.length;i++){
+          let a=m.params.parameters[i];
+          args.push({
+            name: a.name,
+            type: {
+              baseType: a.type.baseType.name,
+              dimension: a.type.dimension
+            }
+          });
+        }
+      }else{
+        args: []
+      }
+      names[m.name]={
+        type: m.type? {
+          baseType: m.type.baseType.name,
+          dimension: m.type.dimension,
+        }:null,
+        static: m.isStatic(),
+        vis: m.modifiers.visibility,
+        args
+      };
+    }
+    if(this.superClazz && this.superClazz.getMethodRuntimeInfos){
+      return this.superClazz.getMethodRuntimeInfos(names);
     }
     return names;
   }
@@ -434,7 +475,8 @@ export class Clazz{
       }
     }
     let infos={
-      attributes: this.getAllDynamicAttributeNamesAndTypes(),
+      attributes: this.getAttributeRuntimeInfos(),
+      methods: this.getMethodRuntimeInfos(),
       name: this.name,
       superClazzName: superClazz? superClazz.name : null,
       typeParameters

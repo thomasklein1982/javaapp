@@ -3787,6 +3787,144 @@ function additionalJSCode(){
     }
   }
 
+  /**Reflection API */
+  function $object_getClass(obj){
+    let name=obj.constructor?.name;
+    let infos=$clazzRuntimeInfos[name];
+    if(!infos){
+      return null;
+    }
+    if(!(infos instanceof Class)){
+      let c=new Class();
+      c.name=name;
+      for(let a in infos){
+        c[a]=infos[a];
+      }
+      $clazzRuntimeInfos[name]=c;
+      return c;
+    }else{
+      return infos;
+    }
+  }
+  
+  class Class{
+    getDeclaredFields(){
+      let array=[];
+      for(let a in this.attributes){
+        let at=this.attributes[a];
+        let f=new Field();
+        f.attribute=at;
+        f.name=a;
+        array.push(f);
+      }
+      let fields=$createArray("Field",1,array);
+      return fields;
+    }
+    getDeclaredField(name){
+      for(let a in this.attributes){
+        let at=this.attributes[a];
+        if(a===name){
+          let f=new Field();
+          f.attribute=at;
+          f.name=a;
+          return f;
+        }
+      }
+      return null;
+    }
+    getFields(){
+      let array=[];
+      for(let a in this.attributes){
+        let at=this.attributes[a];
+        if(at.vis==="private") continue;
+        let f=new Field();
+        f.attribute=at;
+        f.name=a;
+        array.push(f);
+      }
+      let fields=$createArray("Field",[array.length],array);
+      return fields;
+    }
+    getField(name){
+      for(let a in this.attributes){
+        let at=this.attributes[a];
+        if(a===name){
+          if(at.vis==="private") return null;
+          let f=new Field();
+          f.attribute=at;
+          f.name=a;
+          return f;
+        }
+      }
+      return null;
+    }
+    getDeclaredMethods(){
+      let array=[];
+      for(let a in this.methods){
+        let met=this.methods[a];
+        let m=new Method();
+        m.method=met;
+        m.name=a;
+        array.push(m);
+      }
+      let methods=$createArray("Method",1,array);
+      return methods;
+    }
+    getDeclaredMethod(name){
+      for(let a in this.methods){
+        if(a===name){
+          let met=this.methods[a];
+          let m=new Method();
+          m.method=met;
+          m.name=a;
+          return m;
+        }
+      }
+      return null;
+    }
+    getMethods(){
+      let array=[];
+      for(let a in this.methods){
+        let met=this.methods[a];
+        if(met.vis==="private") continue;
+        let m=new Method();
+        m.method=met;
+        m.name=a;
+        array.push(m);
+      }
+      let methods=$createArray("Method",1,array);
+      return methods;
+    }
+    getMethod(name){
+      for(let a in this.methods){
+        if(a===name){
+          let met=this.methods[a];
+          if(met.vis==="private") return null;
+          let m=new Method();
+          m.method=met;
+          m.name=a;
+          return m;
+        }
+      }
+      return null;
+    }
+  }
+
+  class Field{
+    get(object){
+      return object[this.attribute.name];
+    }
+    getName(){
+      return this.name;
+    }
+  }
+
+  class Method{
+    getName(){
+      return this.name;
+    }
+  }
+
   class $Exercise{
     static isLeftRight(){
       for(let i=1;i<arguments.length;i++){
@@ -3905,6 +4043,87 @@ function additionalJSCode(){
       }
       $Exercise.sendFeedback(resArray);
       //$Exercise.sendCompleted(max,infos);
+    }
+    static areTypesEqual(type1,type2){
+      return ($Exercise.typeToString(type1)===$Exercise.typeToString(type2));
+    }
+    static typeToString(type){
+      if(!type) return null;
+      if(type.substring){
+        type={
+          baseType: type,
+          dimension: 0
+        };
+      }
+
+      return type.baseType+type.dimension>0? "[]":"";
+    }
+    static compareAttributes(c,obj){
+      let errors=[];
+      if(!c.attributes){
+        errors.push("Die Klasse deklariert keine Attribute.");
+        return errors;
+      }
+      for(let a in obj.attributes){
+        let atIst=c.attributes[a];
+        let atSoll=obj.attributes[a];
+        if(!atIst){
+          errors.push("Die Klasse deklariert kein Attribut namens '"+a+"'.");
+          continue;
+        }
+        if(atIst.vis!==atSoll.vis){
+          errors.push("Das Attribut '"+a+"' ist "+atIst.vis+", es soll aber "+atSoll.vis+" sein.");
+        }
+        if(!$Exercise.areTypesEqual(atIst.type, atSoll.type)){
+          errors.push("Das Attribut '"+a+"' hat den falschen Datentyp.");
+        }
+      }
+      return errors;
+    }
+    static compareMethods(c,obj){
+      let errors=[];
+      if(!c.methods){
+        errors.push("Die Klasse deklariert keine Methoden.");
+        return errors;
+      }
+      for(let a in obj.methods){
+        let mIst=c.methods[a];
+        let mSoll=obj.methods[a];
+        if(!mIst){
+          errors.push("Die Klasse deklariert keine Methode namens '"+a+"'.");
+          continue;
+        }
+        if(mSoll.vis && mIst.vis!==mSoll.vis){
+          errors.push("Die Methode '"+a+"' ist "+mIst.vis+", es soll aber "+mSoll.vis+" sein.");
+        }
+        if(!$Exercise.areTypesEqual(mIst.type, mSoll.type)){
+          errors.push("Die Methode '"+a+"' hat den falschen Rückgabetyp.");
+        }
+        let paramsIst=mIst.args? mIst.args: [];
+        let paramsSoll=mSoll.args? mSoll.args: [];
+        if(paramsIst.length!==paramsSoll.length){
+          errors.push("Die Methode '"+a+"' hat eine falsche Anzahl von Parametern.");
+        }else{
+          for(let i=0;i<paramsSoll.length;i++){
+            let pSoll=paramsSoll[i];
+            let pIst=paramsIst[i];
+            console.log("params",pSoll,pIst);
+            if(pSoll.name!==pIst.name){
+              errors.push("Der Parameter '"+pIst.name+"' der Methode '"+a+"' soll '"+pSoll.name+"' heißen.");
+            }
+            if(!$Exercise.areTypesEqual(pSoll.type,pIst.type)){
+              errors.push("Der Parameter '"+pIst.name+"' der Methode '"+a+"' hat den falschen Datentyp.");
+            }
+          }
+        }
+        
+      }
+      return errors;
+    }
+    static compareClass(c, obj){
+      let errors=$Exercise.compareAttributes(c,obj);
+      errors=errors.concat($Exercise.compareMethods(c,obj));
+      return errors;
     }
     static async createInstance(constructor){
       let args=[null];

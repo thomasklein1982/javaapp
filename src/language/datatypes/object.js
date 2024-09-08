@@ -25,4 +25,11 @@ export function defineObject(clazz){
     isExtraFunction: true,
     jsName: "$object_toString"
   },clazz,false,false);
+  createMethod({
+    name: "getClass",
+    info: "Liefert ein Objekt zurück, über das man Informationen über die Klasse dieses Objekts erhält.",
+    returnType: 'Class',
+    isExtraFunction: true,
+    jsName: "$object_getClass"
+  },clazz,false,false);
 }

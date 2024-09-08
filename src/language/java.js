@@ -29,6 +29,7 @@ import { defineJSON } from "./datatypes/JSON.js";
 import { defineRandom } from "./datatypes/Random.js";
 import { defineGamepad } from "./datatypes/Gamepad.js";
 import { defineWorld } from "./datatypes/World.js";
+import { defineReflectionAPI } from "./datatypes/reflection.js";
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
 let boolean=new PrimitiveType("boolean",null,false,"Ein 'boolean' (dt: 'Wahrheitswert') kann nur true oder false sein.",true);
@@ -124,12 +125,17 @@ let JSON=new Clazz("JSON");
 
 let Random=new Clazz("Random");
 
+//reflection api:
+let Class= new Clazz("Class");
+let Field=new Clazz("Field");
+let Method=new Clazz("Method");
+
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, ActionListener, JavaApp, InputStream, Comparable, ActionEvent, Timer, JSON, Random, TileHandler, UIClass
+  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, ActionListener, JavaApp, InputStream, Comparable, ActionEvent, Timer, JSON, Random, TileHandler, UIClass, Class, Field, Method
 };
 
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, JavaApp, InputStream, Comparable, ActionEvent, Timer, JSON, Random, TileHandler, UIClass
+  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, JavaApp, InputStream, Comparable, ActionEvent, Timer, JSON, Random, TileHandler, UIClass, Class, Field, Method
 }
 
 let interfaces={
@@ -188,6 +194,7 @@ defineTimer(Timer);
 defineJSON(JSON);
 defineRandom(Random);
 defineInterfaces();
+defineReflectionAPI();
 
 for(let v in clazzes){
   let c=clazzes[v];

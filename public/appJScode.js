@@ -2596,6 +2596,7 @@ window.appJScode=function(){
       nextLine: function(){
         this.currentLineDiv=document.createElement("div");
         this.currentLineDiv.style.whiteSpace="pre-wrap";
+        this.currentLineDiv.style.height="2ex";
         this.outputDiv.appendChild(this.currentLineDiv);
         this.outputDiv.scrollTop=this.outputDiv.scrollHeight;
         this.outputDiv.scrollLeft=0;
@@ -2611,7 +2612,7 @@ window.appJScode=function(){
         let args=[];
         for(let i=0;i<arguments.length;i++){
           let obj=arguments[i];
-          if(obj===undefined) obj="&nbsp;";
+          if(obj===undefined) obj="";
           let item;
           if(typeof obj==="object"){
             item=$App.console.createConsoleItem(null,false,true);
@@ -2632,7 +2633,7 @@ window.appJScode=function(){
         let div=this.currentLineDiv;
         for(let i=0;i<arguments.length;i++){
           let obj=arguments[i];
-          if(obj===undefined) obj="&nbsp;";
+          if(obj===undefined) obj="";
           let item;
           if(typeof obj==="object"){
             item=$App.console.createConsoleItem(null,false,true);
