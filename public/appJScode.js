@@ -2596,7 +2596,7 @@ window.appJScode=function(){
       nextLine: function(){
         this.currentLineDiv=document.createElement("div");
         this.currentLineDiv.style.whiteSpace="pre-wrap";
-        this.currentLineDiv.style.height="2ex";
+        this.currentLineDiv.style.minHeight="2ex";
         this.outputDiv.appendChild(this.currentLineDiv);
         this.outputDiv.scrollTop=this.outputDiv.scrollHeight;
         this.outputDiv.scrollLeft=0;

@@ -198,7 +198,7 @@ export class Clazz{
     if(!hasConstructor){
       code+="\nasync $constructor(typeArguments){\nthis.$typeArguments=typeArguments;\n"+attributesCode+"\nreturn this;}";
     }
-    code+="\n$getType(infos){\nif(infos.isGeneric){\nreturn this.$typeArguments[infos.name];}\nreturn infos;}";
+    code+="\n$getType(infos){\nif(infos.isGeneric){\nreturn this.$typeArguments[infos.name];}\nif(!infos){infos={name: 'Object',initialValue: null};}\nreturn infos;}";
     code+="\n}";
     return code;
   }
@@ -701,6 +701,7 @@ export class Clazz{
     }
     if(this.implementedInterfaces){
       let scope=new Scope(this.project);
+      scope.clazz=this;
       try{
         let list=SuperInterfaces(this.implementedInterfaces, this.source, scope);
         this.implementedInterfaces=list.list.types;
@@ -842,6 +843,7 @@ export class Clazz{
     if(!node) return;
     /**Klassenkoerper parsen: */
     let scope=new Scope(this.project);
+    scope.clazz=this;
     this.compileMemberNodes(scope,node);
     if(options.autoextendJavaApp && !this.superClazz && this.hasStaticMainMethod()){
       console.log("auto extend javaapp",this.name);

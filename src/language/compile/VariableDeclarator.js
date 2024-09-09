@@ -17,7 +17,7 @@ export function VariableDeclarator(node,source,scope,vType){
     }
     node=node.nextSibling;
     let f=CompileFunctions.get(node,source);
-    val=f(node,source,scope);
+    val=f(node,source,scope,{assignTarget: {type: vType}});//let val=f(node,source,scope,{assignTarget: v.object});
     if(!val.type){
       throw source.createError("Dieser Ausdruck hat keinen Wert, der zugewiesen werden könnte.",node);
     }

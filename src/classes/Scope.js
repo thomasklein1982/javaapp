@@ -8,6 +8,7 @@ export class Scope{
   constructor(project,method,endPosition,compileOptions){
     this.project=project;
     this.method=method;
+    this.clazz=null;
     this.endPosition=endPosition;
     this.stack=[];
     this.methodStack=[];
@@ -74,6 +75,8 @@ export class Scope{
   getClazz(){
     if(this.method){
       return this.method.clazz;
+    }else if(this.clazz){
+      return this.clazz;
     }else{
       return null;
     }
@@ -255,9 +258,9 @@ export class Scope{
   }
 
   getTypeByName(name){
-    let c;
-    if(this.method && this.method.clazz){
-      c=this.method.getClazzByName(name);
+    let c=this.getClazz();
+    if(c){
+      c=c.getClazzByName(name);
     }else{
       c=this.project.getClazzByName(name);
     }

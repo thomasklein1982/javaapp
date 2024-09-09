@@ -85,7 +85,8 @@ function additionalJSCode(){
       return o;
     }
     if(!o.$constructor){
-      console.error("error in $new!!!",constructor);
+      return o;
+      //console.error("error in $new!!!",constructor);
     }
     let args=[];
     for(let i=1;i<arguments.length;i++){
