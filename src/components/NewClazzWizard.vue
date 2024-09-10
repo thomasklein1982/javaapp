@@ -7,6 +7,7 @@
   
   <InputText type="search" clazz="nameError?'':'p-invalid'" v-model.trim="name" :placeholder="type==='class'? 'Name der neuen Klasse': 'Name des neuen Interface'"/>
   <small v-if="nameError" class="p-error">{{nameError}}</small>
+  <small v-else-if="nameWarning" class="p-warning">{{nameWarning}}</small>
   <small v-else>Der Name geht in Ordnung.</small>
   <div v-if="type==='class'" class="p-inputgroup">
       <span class="p-inputgroup-addon">
@@ -66,10 +67,19 @@ export default {
       if(this.realName==='App'){
         return "Der Name 'App' ist reserviert. Wähle einen anderen Namen.";
       }
-      if(this.project.getClazzByName(this.name)){
+      let c=this.project.getClazzByName(this.name);
+      if(c && !c.isNative()){
         return "Es gibt bereits eine Klasse mit diesem Namen.";
       }
       return false;
+    },
+    nameWarning(){
+      if(this.nameError) return null;
+      let c=this.project.getClazzByName(this.name);
+      if(c && c.isNative()){
+        return "Wenn du diesen Namen verwendest, kannst du die eingebaute Klasse '"+this.name+"' nicht mehr verwenden.";
+      }
+      return null;
     }
   },
   methods: {
