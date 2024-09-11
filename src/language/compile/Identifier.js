@@ -106,7 +106,7 @@ export function Identifier(node,source,scope,infos){
       throw source.createError("'"+name+"' ist undefiniert",node);
     }
   }
-  
+  //scope.setNodeInfo(node,type);
   return {
     code: code,
     codeAssign,

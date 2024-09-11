@@ -5,7 +5,7 @@ import { Clazz } from "./Clazz";
 import { VariableDeclarator } from "../language/compile/VariableDeclarator";
 
 export class Attribute{
-  constructor(clazz){
+  constructor(clazz,comment){
     this.clazz=clazz;
     this.type=null;
     this.name=null;
@@ -15,6 +15,7 @@ export class Attribute{
     this.initialValue=null;
     this.errors=null;
     this.nodeOffset=0;
+    this.comment=comment;
   }
 
   getFrom(){
@@ -135,7 +136,7 @@ export class Attribute{
       if(node.name==="VariableDeclarator"){
         try{
           let vdekl=VariableDeclarator(node,source,scope,this.type);
-          let a=new Attribute(this.clazz);
+          let a=new Attribute(this.clazz,this.comment);
           a.type=this.type;
           a.name=vdekl.name;
           a.modifiers=this.modifiers;

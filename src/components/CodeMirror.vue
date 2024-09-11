@@ -35,6 +35,77 @@ import { nextTick } from '@vue/runtime-core';
 import {createAutocompletion } from '../functions/cm/autocompletion';
 import { options } from "../classes/Options";
 
+import {hoverTooltip} from "@codemirror/view"
+
+  export const wordHover = hoverTooltip((view, pos, side) => {
+    console.log(view);
+    let clazz=app.$refs.editor.currentClazz;
+    let node = view.viewState.state.tree.resolveInner(pos, side);
+    console.log(node,clazz);
+    let infos=clazz.nodeInfos[node.index];
+    console.log(infos);
+    return;
+    let {from, to, text} = view.state.doc.lineAt(pos)
+    let start = pos, end = pos
+    let regexp=/[=+\-*\/%&|]/;
+    let c=text[start-from-1];
+    console.log(c);
+    if(c===" "){
+      start++;
+      regexp=/[=+\-*\/%&|]/;
+      c=text[start-from-1];
+    }
+    if(!regexp.test(c)){
+      regexp=/\w|\./;
+    }
+    while (start > from && regexp.test(text[start - from - 1])) start--
+    while (end < to && regexp.test(text[end - from])) end++
+    if (start == pos && side < 0 || end == pos && side > 0){
+      return null
+    }
+    let word=text.slice(start - from, end - from);
+    let tip;
+    if(word==="new"){
+      tip="erzeugt ein neues Objekt";
+    }else if(word==="Object"){
+      tip="ein Objekt fasst mehrere Variablen zu einer zusammen";
+    }else if(word==="=="){
+      tip="vergleicht die beiden Objekte";
+    }else if(word==="+"){
+      tip="addiert die beiden Zahlen oder verkettet die beiden Zeichenketten";
+    }else if(word==="="){
+      tip="weist der Variablen links den Wert rechts zu";
+    }else{
+      for(let i=0;i<snippets.inFunction.length;i++){
+        let s=snippets.inFunction[i];
+        if(s.label===word+"(...)"||s.label===word){
+          tip=s.info;
+          break;
+        }
+      }
+      for(let i=0;i<snippets.everywhere.length;i++){
+        let s=snippets.everywhere[i];
+        if(s.label===word+"(...)"||s.label===word){
+          tip=s.info;
+          break;
+        }
+      }
+    }
+    if(tip){
+      return {
+        pos: start,
+        above: true,
+        create(view) {
+          let dom = document.createElement("div");
+          dom.textContent = tip;
+          return {dom};
+        }
+      };
+    }else{
+      return null;
+    }
+  });
+
 const breakpointEffect = StateEffect.define({
   map: (val, mapping) => ({pos: mapping.mapPos(val.pos), on: val.on})
 })
@@ -295,6 +366,7 @@ export default {
           lint,
           lintGutter(),
           editorTheme.of(oneDark),
+          //wordHover,
           indentUnit.of("  "),
           languageConf.of(language),
           autocompletion({override: [createAutocompletion()]}),

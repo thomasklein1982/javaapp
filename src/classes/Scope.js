@@ -38,6 +38,12 @@ export class Scope{
     }
   }
 
+  // setNodeInfo(node,info){
+  //   let c=this.getClazz();
+  //   if(!c) return;
+  //   c.nodeInfos[node.index]=info;
+  // }
+
   pushAssignmentTargetObject(obj){
     this.assignmentTargetObjectStack.push(obj);
   }

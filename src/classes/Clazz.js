@@ -13,16 +13,18 @@ import { Source } from "./Source";
 import { Type } from "./Type";
 import  * as autocomplete  from "@codemirror/autocomplete";
 import { createMethod } from "../language/helper/createMethod";
+import { parseComments } from "../functions/parseComments";
 
 export class Clazz{
   constructor(name,project,isInterface){
     this.name=name;
+    //this.nodeInfos={};
     this.cannotBeInstantiated=false;
     this.isAbstract=false;
     this.isHidden=false;
     this.isInterface=isInterface===true;
     this.wrappedPrimitiveType=null;
-    this.description="";
+    this.comment="";
     this.hasClazzDeclaration=true;
     this.project=project;
     this.superClazz=null;
@@ -618,14 +620,16 @@ export class Clazz{
     this.typeParametersNode=null;
     this.implementedInterfaces=null;
     var node=this.source.tree.topNode.firstChild;
+    this.comment="";
+    let comments=parseComments(this.source,node);
+    node=comments.node;
+    this.comment=comments.text;
     if(!node || (node.type.name!=="ClassDeclaration" && node.type.name!=="InterfaceDeclaration")){
       if(!(options.classOptional && this.isFirstClazz)){
         errors.push(this.source.createError("Du musst mit der Deklaration einer Klasse beginnen.",this.source.tree.topNode));
         return errors;
       }else{
         this.hasClazzDeclaration=false;
-        // this.generateSrcAndTree(this.src);
-        // this.clazzBody=this.source.tree.topNode.firstChild.firstChild.nextSibling.nextSibling.firstChild.nextSibling;
         this.name=options.exerciseMainClassName;//"Main";
         this.clazzBody=node;
       }
@@ -721,12 +725,16 @@ export class Clazz{
       //     continue;
       //   }
       // }
+      let comments=parseComments(this.source,node);
+      node=comments.node;
+      let description=comments.text;
       if(node.name==="FieldDeclaration"){
         if(this.isInterface){
           this.errors.push(this.source.createError("Ein Interface kann keine Attribute deklarieren.",node));
           continue;
         }
-        var a=new Attribute(this);
+        var a=new Attribute(this,description);
+
         this.errors=this.errors.concat(a.compile(node,this.source,scope));
         let attr=a.getSingleAttributes();
         if(!attr){
@@ -746,7 +754,7 @@ export class Clazz{
           }
         }
       }else if(node.name==='MethodDeclaration'){
-        let m=new Method(this,false);
+        let m=new Method(this,false,description);
         this.errors=this.errors.concat(m.compileDeclaration(node,this.source));
         if(m.name){
           if(this.methods[m.name]){
@@ -762,7 +770,7 @@ export class Clazz{
         if(!options.voidOptional && hasConstructor){
           this.errors.push(this.source.createError("Eine Klasse kann höchstens einen Konstruktor besitzen.",node));
         }else{
-          let m=new Method(this,true);
+          let m=new Method(this,true,description);
           this.errors=this.errors.concat(m.compileDeclaration(node,this.source));
           let isConstructor=m.isConstructor();
           if(hasConstructor){

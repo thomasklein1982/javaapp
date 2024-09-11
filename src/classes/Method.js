@@ -15,7 +15,7 @@ import { TypeParameters } from "../language/compile/TypeParameters";
 import { Java } from "../language/java";
 
 export class Method{
-  constructor(clazz, isConstructorNode){
+  constructor(clazz, isConstructorNode, comment){
     this.clazz=clazz;
     this.isConstructorNode=isConstructorNode;
     this.name=null;
@@ -33,6 +33,7 @@ export class Method{
     this.bodyErrors=null;
     this.nodeOffset=0;
     this.hide=false;
+    this.comment=comment;
   }
   getFrom(){
     return this.node.from+this.nodeOffset;
