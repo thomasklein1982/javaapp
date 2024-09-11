@@ -69,7 +69,8 @@ export function createAutocompletion(){
       for(let i=0;i<project.clazzes.length;i++){
         let c=project.clazzes[i];
         let s=autocomplete.snippetCompletion(c.name,{
-          label: c.name
+          label: c.name,
+          info: c.comment
         });
         options.push(s);
       }
