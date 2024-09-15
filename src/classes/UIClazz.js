@@ -567,6 +567,7 @@ export class UIClazz extends Clazz{
         for(let j=0;j<clazz.params.length;j++){
           let p=clazz.params[j];
           if(p==="x" || p==="y" || p==="width" || p==="height"){
+            if(!c[p]) c[p]=0;
             args.push(c[p]);
           }else if(p==="options"){
             try{
