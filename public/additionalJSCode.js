@@ -3959,7 +3959,25 @@ function additionalJSCode(){
       return true;
     }
     static getComputedStyle(el){
-      return getComputedStyle(el);
+      return window.getComputedStyle(el.$el);
+    }
+    static compareStyles(el1,el2,keysArray){
+      let cs1=$Exercise.getComputedStyle(el1);
+      let cs2=$Exercise.getComputedStyle(el2);
+      console.log(cs1,cs2);
+      let res=[];
+      let ok=true;
+      for(let i=0;i<keysArray.length;i++){
+        let keyOK=cs1[keysArray[i]]===cs2[keysArray[i]];
+        if(!keyOK){
+          res.push(keysArray[i]);
+        }
+        if(!keyOK) ok=false;
+      }
+      return {
+        ok,
+        keys: res
+      };
     }
     static setUIBlocked(b){
       if(b){
