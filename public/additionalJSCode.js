@@ -136,7 +136,6 @@ function additionalJSCode(){
         al.actionPerformed(event);
         //source,id,command,when
       }
-      console.log("actionlistener handle");
       return;
     }
     let listener=comp["$triggerOn"+eventname];

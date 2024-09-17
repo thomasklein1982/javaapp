@@ -78,6 +78,15 @@ export class Scope{
     
   }
 
+  getProject(){
+    let p;
+    let c=this.getClazz();
+    if(c) p=c.project;
+    if(p) return p;
+    if(window.app?.getProject ) p=window.app.getProject();
+    return p;
+  }
+
   getClazz(){
     if(this.method){
       return this.method.clazz;

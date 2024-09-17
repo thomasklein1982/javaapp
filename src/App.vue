@@ -36,6 +36,7 @@ import {Project} from "./classes/Project";
 import OpenProjectDialog from "./components/OpenProjectDialog.vue";
 
 import {version} from "../package.json";
+import { CompileFunctions } from "./language/CompileFunctions";
 
 export default{
   data(){
@@ -54,7 +55,6 @@ export default{
   },
   mounted(){
     let hash=location.hash;
-    console.log(hash);
     if(hash.indexOf("help")>=0){
       this.$refs.dialogHelp.setVisible(true);
     }
@@ -76,6 +76,9 @@ export default{
         alert(err);
       });
     }
+    setInterval(()=>{
+      this.sendExerciseData();
+    },1000);
   },
   methods: {
     sendExerciseData(){
@@ -92,6 +95,19 @@ export default{
       }
     },
     setupExercise(data){
+      if(data.project.constraints){
+        let constraints=data.project.constraints;
+        if(constraints.loops){
+          constraints.ForStatement=true;
+          constraints.WhileStatement=true;
+          constraints.DoStatement=true;
+          delete constraints.loops;
+        }
+        console.log("constraints",constraints);
+        for(let a in constraints){
+          delete CompileFunctions.functions[a];
+        }
+      }
       let p=new Project();
       p.fromJSON(data.project);
       if(data.project.clazzes && data.project.clazzes[0] && data.project.clazzes[0].name){
