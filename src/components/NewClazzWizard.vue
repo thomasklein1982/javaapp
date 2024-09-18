@@ -68,8 +68,12 @@ export default {
         return "Der Name 'App' ist reserviert. Wähle einen anderen Namen.";
       }
       let c=this.project.getClazzByName(this.name);
-      if(c && !c.isNative()){
-        return "Es gibt bereits eine Klasse mit diesem Namen.";
+      if(c){
+        if(c.isNative()){
+          return "Es gibt bereits eine eingebaute Klasse mit diesem Namen.";
+        }else{
+          return "Es gibt bereits eine Klasse mit diesem Namen.";
+        }
       }
       return false;
     },
