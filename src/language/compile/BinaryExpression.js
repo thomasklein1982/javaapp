@@ -86,12 +86,28 @@ function resolveTermOperations(term,operations,source){
           throw source.createError("Der Operator '"+op+"' funktioniert nur mit Wahrheitswerten (boolean).",left.node.parent);
         }
       }else if(op==="=="||op==="!="){
+        if(left.type.isChar()){
+          left.code=left.code+".int";
+          left.type=new Type(Java.datatypes.int,0);
+        }
+        if(right.type.isChar()){
+          right.code=right.code+".int";
+          right.type=new Type(Java.datatypes.int,0);
+        }
         if(!left.type.isSubtypeOf(right.type) && !right.type.isSubtypeOf(left.type)){
           throw source.createError("Die Datentypen '"+left.type+"' und '"+right.type+"' sind nicht kompatibel.",left.node.parent);
         }
         code=left.code+op+"="+right.code;
         type=new Type(Java.datatypes.boolean,0);
       }else if(op==="<" || op==="<=" ||op===">" ||op===">="){
+        if(left.type.isChar()){
+          left.code=left.code+".int";
+          left.type=new Type(Java.datatypes.int,0);
+        }
+        if(right.type.isChar()){
+          right.code=right.code+".int";
+          right.type=new Type(Java.datatypes.int,0);
+        }
         if(left.type.isNumericOrString() && right.type.isNumericOrString()){
           code=left.code+op+right.code;
           type=new Type(Java.datatypes.boolean,0);
