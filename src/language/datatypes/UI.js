@@ -525,6 +525,13 @@ function defineJTextArea(Clazz, Java){
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JTextComponent;
+  createMethod({
+    name: 'append',
+    args: [
+      {name: 'text', type: 'String', info: 'Der Text, der angefügt werdne soll.'}
+    ],
+    info: "Fügt einen Text am Ende hinzu."
+  },Clazz,false,false,Java);
 }
 
 function defineJComboBox(Clazz,Java){

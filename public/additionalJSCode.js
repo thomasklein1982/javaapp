@@ -1954,6 +1954,9 @@ function additionalJSCode(){
       this.$el.onchange = $handleOnAction;
       this.setCSSClass("");
     }
+    append(s){
+      this.setValue(this.getValue()+s);
+    }
   }
 
   class DataTable extends JComponent{

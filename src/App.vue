@@ -37,6 +37,7 @@ import OpenProjectDialog from "./components/OpenProjectDialog.vue";
 
 import {version} from "../package.json";
 import { CompileFunctions } from "./language/CompileFunctions";
+import { Java } from "./language/java";
 
 export default{
   data(){
@@ -97,15 +98,26 @@ export default{
     setupExercise(data){
       if(data.project.constraints){
         let constraints=data.project.constraints;
-        if(constraints.loops){
-          constraints.ForStatement=true;
-          constraints.WhileStatement=true;
-          constraints.DoStatement=true;
-          delete constraints.loops;
+        if(!constraints.java) constraints.java={};
+        if(!constraints.clazzes) constraints.clazzes={};
+        if(constraints.java.loops){
+          constraints.java.ForStatement=true;
+          constraints.java.WhileStatement=true;
+          constraints.java.DoStatement=true;
+          delete constraints.java.loops;
+        }
+        if(constraints.java.arrays){
+          constraints.java.ArrayCreationExpression=true;
+          constraints.clazzes.ArrayList=true;
+          delete constraints.java.arrays;
         }
         console.log("constraints",constraints);
-        for(let a in constraints){
+        for(let a in constraints.java){
           delete CompileFunctions.functions[a];
+        }
+        for(let a in constraints.clazzes){
+          delete Java.datatypes[a];
+          delete Java.clazzes[a];
         }
       }
       let p=new Project();
