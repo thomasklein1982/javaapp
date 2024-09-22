@@ -7,6 +7,13 @@ export function ReturnStatement(node,source,scope){
   if(node.name!=="return"){
 
   }
+  if(scope.method && scope.method.isConstructor()){
+    return {
+      code: "return this;",
+      type: null
+    };
+  }
+  console.log("return");
   let code="return $ret(";
   if(!node.nextSibling){
     throw (source.createError("';' erwartet.",node));
