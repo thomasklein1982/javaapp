@@ -160,7 +160,7 @@ export class Type{
       return true;
     }else if(this.isString()&&options.autocast){
       if(value.type.baseType!==Java.datatypes.nullType){
-        value.code="("+value.code+"+'')";
+        value.code="$s("+value.code+")";
       }
       value.type=this;
       return true;

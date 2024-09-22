@@ -31,6 +31,7 @@ function additionalJSCode(){
   function $m(v,message,line){if(v===undefined){throw $new(Exception,message,line)}else{return v;}}
   function $ret(v){$App.debug.decCallDepth(); return v;}
   function $n(a){return a;}
+  function $s(v){if(v) return v+"";else return v;}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
 
   function $changePreviewSelection(previewID){
