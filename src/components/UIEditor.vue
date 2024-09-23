@@ -109,7 +109,7 @@
           suffix++;
         }
         clazz.name=name+"_"+suffix;
-        this.clazz.project.clazzes.push(clazz);
+        this.clazz.project.addClazz(clazz);//clazzes.push(clazz);
         //this.emitRecompile();
       },
       removeUIClazz(){

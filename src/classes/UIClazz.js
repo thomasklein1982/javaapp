@@ -466,7 +466,11 @@ export class UIClazz extends Clazz{
 
   compileDeclaration(){
     this.errors=[];
-    this.clazzBody=this.source.tree.topNode.firstChild;
+    if(this.source && this.source.tree){
+      this.clazzBody=this.source.tree.topNode.firstChild;
+    }else{
+      this.clazzBody=null;
+    }
   }
 
   compileDeclarations(fromSource){
