@@ -4154,6 +4154,21 @@ function additionalJSCode(){
       }
       return await $App.asyncFunctionCall(new constructor(), "$constructor",args);
     }
+    static async createInstanceWithTypeParameters(constructor,typeParams){
+      let args=[typeParams];
+      for(let a in typeParams){
+        let t=typeParams[a];
+        typeParams[a]={
+          name: t,
+          initialValue: null
+        };
+        
+      }
+      for(let i=2;i<arguments.length;i++){
+        args.push(arguments[i]);
+      }
+      return await $App.asyncFunctionCall(new constructor(), "$constructor",args);
+    }
     static clearConsole(){
       $App.console.clear();
     }
@@ -4246,6 +4261,13 @@ function additionalJSCode(){
     static getRandomInts(min,max,k){
       let r=$Exercise.getRange(min,max);
       return $Exercise.randomFrom(r,k);
+    }
+    static getRandomString(length){
+      let t="";
+      for(let i=0;i<length;i++){
+        t+=String.fromCodePoint(48+$Exercise.random(0,72));
+      }
+      return t;
     }
     static getRandomObjectArray(attributes,length){
       let attributes2={};

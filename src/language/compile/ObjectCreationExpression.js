@@ -84,7 +84,7 @@ export function ObjectCreationExpression(node,source,scope,infos){
           let soll=shouldTypeArguments[i];
           let ist=typeArguments[i];
           if(soll.baseType.name!==ist.baseType.name){
-            throw source.createError("Datentyp '"+ist.baseType.name+"' gefunden, aber Datentyp '"+soll.baseType.name+"' gefunden.",argNode);
+            throw source.createError("Datentyp '"+ist.baseType.name+"' gefunden, aber Datentyp '"+soll.baseType.name+"' erwartet.",argNode);
           }
           argNode=argNode?.nextSibling?.nextSibling;
         }

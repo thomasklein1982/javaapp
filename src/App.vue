@@ -96,6 +96,7 @@ export default{
       }
     },
     setupExercise(data){
+      console.log("setup exercise",data);
       if(data.project.constraints){
         let constraints=data.project.constraints;
         if(!constraints.java) constraints.java={};
