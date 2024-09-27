@@ -46,7 +46,15 @@ export function getVariableName(node,source){
     throw source.createError("Ein Variablenname muss mit einem Buchstaben oder einem Unterstrich beginnen.",node);
   }
   node=node.firstChild;
-  let name=source.getText(node);
+  let name=source.getText(node).trim();
+  if(name.length===0){
+    let from=Math.min(node.to,node.from);
+    let n={
+      from: from,
+      to: from+1
+    };
+    throw source.createError("Hier fehlt der Name der Variablen.",n);
+  }
   if(/[^a-zA-Z_]/.test(name.charAt(0))){
     throw source.createError("Ein Variablenname muss mit einem Buchstaben oder einem Unterstrich beginnen.",node);
   }

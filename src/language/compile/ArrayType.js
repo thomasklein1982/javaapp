@@ -9,6 +9,9 @@ export function ArrayType(node,source,scope){
   let dim=0;
   node=node.nextSibling;
   while(node){
+    if(node.firstChild?.nextSibling?.type.isError){
+      throw source.createError("Innerhalb von [] darf nichts stehen.",node);
+    }
     node=node.nextSibling;
     dim++;
   }
