@@ -3864,13 +3864,13 @@ window.appJScode=function(){
       upload: async function(){
         var p=new Promise(function(resolve,reject){
           $App.$uploadCallback(function(data,fileName,mime){
-            data=data.replace(/\r\n/g,"\n");
+            //data=data.replace(/\r\n/g,"\n");
             resolve({
               data: data,
               fileName: fileName,
               mime: mime
             });
-          });
+          },{dataURL: true});
         });
         var q=await p;
         return q;

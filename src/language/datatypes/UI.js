@@ -466,6 +466,32 @@ function defineJImage(Clazz,Java){
     ],
     info: 'Legt die Verschiebung des Bildes in y-Richtung fest.'
   },Clazz,false,false,Java);
+  createMethod({
+    name: 'getPixelData',
+    args: [
+      {name: 'left',  type: 'int', info: 'Abstand von links.'},
+      {name: 'top',  type: 'int', info: 'Abstand von oben.'},
+    ],
+    returnType: {
+      baseType: "int",
+      dimension: 3
+    },
+    info: 'Liefert ein Array mit den RGBA-Werten an der gegebenen Stelle zurück.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getPixelWidth',
+    args: [
+    ],
+    returnType: "int",
+    info: 'Liefert die Breite des Bildes in Pixeln zurück.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getPixelHeight',
+    args: [
+    ],
+    returnType: "int",
+    info: 'Liefert die Höhe des Bildes in Pixeln zurück.'
+  },Clazz,false,false,Java);
 }
 
 function defineJLabel(Clazz,Java){

@@ -230,6 +230,11 @@ function additionalJSCode(){
     }
   }
 
+  /*
+   * String type: 'int' etc.
+   * int dim
+   * type[] values
+   */
   $createArray=function(type, dim, values){
     let array;
     if(Array.isArray(dim)){
@@ -433,6 +438,16 @@ function additionalJSCode(){
   }
 
   function $getFileContentAsString(obj){
+    let data=obj.data;
+    console.log(data);
+    data=data.split(",");
+    data=data[data.length-1];
+    data=window.atob(data);
+    data=data.replace(/\r\n/g,"\n")
+    return data;
+  }
+
+  function $getFileContent(obj){
     return obj.data;
   }
 
@@ -1281,11 +1296,42 @@ function additionalJSCode(){
   }
 
   class JImage extends JComponent{
-    $constructor(url,x,y,width,height){
+    async $constructor(url,x,y,width,height){
       super.$constructor(x,y,width,height);
       this.standardCSSClasses+=" __jimage";
-      url=$getAssetObjectURL(url);
-      this.$el=ui.image(url,x,y,width,height);
+      let asset=$App.assets[url];
+      this.$img=null;
+      if(asset){
+        this.url=$getAssetObjectURL(url);
+        this.$img=asset.object;
+      }else{
+        if(url instanceof File){
+          this.url=url.getContentAsString();
+        }else{
+          this.url=url;
+        }
+      }
+      this.$el=ui.image(this.url,x,y,width,height);
+      if(!this.$img){
+        this.$img=new Image();
+        let p=new Promise((resolve,reject)=>{
+          this.$img.onload=(ev)=>{
+            resolve();
+          };
+          this.$img.onerror=(ev)=>{
+            let message="Bild '"+url+"' konnte nicht geladen werden";
+            $App.handleError({
+              message: message,
+              line: $App.debug.lastLine,
+              name: $App.debug.lastName
+            });
+            throw message;
+          }
+        });
+        this.$img.src=this.url;
+        await p;
+      }
+      this.$imageData=null;
       this.$el.component=this;
       this.$el.onclick = $handleOnAction;
       this.dimension={
@@ -1297,6 +1343,33 @@ function additionalJSCode(){
         }
       }
       this.setCSSClass("");
+      return this;
+    }
+    getPixelWidth(){
+      return this.$img.naturalWidth;
+    }
+    getPixelHeight(){
+      return this.$img.naturalHeight;
+    }
+    getPixelData(left,top){
+      let w=this.getPixelWidth();
+      let h=this.getPixelHeight();
+      if(left>=w) return null;
+      if(top>=h) return null;
+      if(!this.$imageData){
+        let canvas=document.createElement("canvas");
+        
+        canvas.width=w;
+        canvas.height=h;
+        let c=canvas.getContext("2d");
+        c.drawImage(this.$img,0,0);
+        this.$imageData=c.getImageData(0,0,w,h);
+      }
+      let index=top*w+left;
+      let intsPerPixel=4;
+      let array=$createArray("int",1,[this.$imageData.data[index*intsPerPixel],this.$imageData.data[index*intsPerPixel+1], this.$imageData.data[index*intsPerPixel+2], this.$imageData.data[index*intsPerPixel+3] ]);
+      return array;
+
     }
     setZoom(z){
       // let w=z*100+"%";

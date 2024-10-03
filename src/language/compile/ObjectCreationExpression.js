@@ -116,7 +116,10 @@ export function ObjectCreationExpression(node,source,scope,infos){
     static: false,
   }
   let al=ArgumentList(node,source,scope,clazz.getConstructorParameters(),null,owner);
-  if(!clazz.isNative()){
+  if(clazz.name==="JImage"){
+    code="new "+typename.code;
+    code="await $App.asyncFunctionCall("+code+"(),'$constructor',["+al.code.substring(1,al.code.length-1)+"])";
+  }else if(!clazz.isNative()){
     code="new "+typename.code;
     code="await $App.asyncFunctionCall("+code+"(),'$constructor',["+JSON.stringify(runtimeTypeArguments)+","+al.code.substring(1,al.code.length-1)+"])";
   }else{

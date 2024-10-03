@@ -20,4 +20,12 @@ export function defineFile(clazz){
     returnType: 'String',
     jsName: "$getFileContentAsString",
   },clazz,false,false);
+  createMethod({
+    name: "getContentAsDataURL",
+    isExtraFunction: true,
+    args: [],
+    info: "Liefert den Inhalt dieser Datei als DataURL zurück.",
+    returnType: 'String',
+    jsName: "$getFileContent",
+  },clazz,false,false);
 }
