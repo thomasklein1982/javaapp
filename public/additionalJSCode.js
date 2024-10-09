@@ -1094,7 +1094,7 @@ function additionalJSCode(){
       this.$el.value=v;
     }
     getValue(){
-      return this.$el.value;
+      return this.$el.value+"";
     }
     setX(v){
       this.x=v;
@@ -4130,6 +4130,7 @@ function additionalJSCode(){
             res=e;
           }
           $Exercise.clearConsole();
+          $Exercise.setUIBlocked(false);
           if(res!==true){
             break;
           }

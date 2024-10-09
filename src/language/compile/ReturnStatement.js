@@ -13,7 +13,6 @@ export function ReturnStatement(node,source,scope){
       type: null
     };
   }
-  console.log("return");
   let code="return $ret(";
   if(!node.nextSibling){
     throw (source.createError("';' erwartet.",node));
