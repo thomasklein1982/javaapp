@@ -2,6 +2,7 @@ import { createMethod } from "../helper/createMethod";
 
 
 export function defineObject(clazz){
+  clazz.description=`In Java ist <code>Object</code> die Oberklasse für alle anderen Klassen.`;
   clazz.info="'Object' ist die grundlegende Klasse in Java: Jede andere Klasse ist eine Unterklasse von 'Object'.";
   // createMethod({
   //   name: "serialize",

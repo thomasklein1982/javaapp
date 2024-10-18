@@ -2,6 +2,7 @@ import { createMethod } from "../helper/createMethod";
 import { createConstructor } from "../helper/createConstructor";
 
 export function defineActionEvent(clazz){
+  clazz.description="Ein ActionEvent wird erzeugt, wenn eine Aktion des Users stattgefunden hat. Es enthält Informationen darüber, wer das Ereignis zu welchem Zeitpunkt ausgelöst hat und wie das zugehörige ActionCommand lautet.";
   createMethod({
     name: "getSource",
     args: [],
@@ -11,7 +12,7 @@ export function defineActionEvent(clazz){
   createMethod({
     name: "getWhen",
     args: [],
-    info: "Liefert die Zeit, zu der das Event ausgelöst wurde.",
+    info: "Liefert den Zeitpunkt (in ms), zu der das Event ausgelöst wurde.",
     returnType: 'int'
   },clazz,false,false);
   createMethod({

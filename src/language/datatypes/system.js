@@ -3,7 +3,7 @@ import { createMethod } from "../helper/createMethod";
 import { Java } from "../java";
 
 export function defineSystem(clazz){
-  
+  clazz.description="Die System-Klasse enthält statische Objekte und Methoden zur Kommunikation mit dem Betriebssystem bzw. dem Browser, in dem die App läuft."
   createAttribute({
     name: "out",
     info: "Der Standard-Printstream des Systems.",

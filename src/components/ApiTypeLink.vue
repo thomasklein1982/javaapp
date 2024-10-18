@@ -54,7 +54,7 @@ export default{
         return null;
       }
       if(!Java.datatypes[name]) return null;
-      name=name.toLowerCase();
+      //name=name.toLowerCase();
       if(bt instanceof PrimitiveType){
         return "datatypes/"+name;
       }else{

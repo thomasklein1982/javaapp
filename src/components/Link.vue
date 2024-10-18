@@ -3,6 +3,8 @@
 </template>
 
 <script>
+import { Java } from '../language/java';
+
 export default {
   props: {
     href: String
@@ -10,6 +12,10 @@ export default {
   computed: {
     siteName(){
       let s=this.href.split("/");
+      if(s[0]==="api"){
+        let clazz=Java.datatypes[s[1]];
+        return clazz;
+      }
       return s[0]+"_"+s[1];
     }
   },

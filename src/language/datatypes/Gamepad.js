@@ -4,6 +4,32 @@ import { createConstructor } from "../helper/createConstructor";
 import { createMethod } from "../helper/createMethod";
 
 export function defineGamepad(Clazz,Java){
+  Clazz.description=`Mit Hilfe dieser Klasse können On-Screen-Gamepads erzeugt werden, die dann Eingaben durch einen oder mehrere Nutzer*innen zulassen.
+  <h3>Beispiel</h3>
+<pre><code>//Minimale UI:
+JFrame frame = new JFrame( "1" );
+Canvas canvas = new Canvas( 0, 100, 0, 100 );
+frame.add( canvas );
+JLabel figur = new JLabel( "😊" );
+figur.setX( 50 );
+figur.setY( 50 );
+canvas.add( figur );
+Gamepad gp = new Gamepad( );
+//Timer für die Bewegung:
+Timer timer = new Timer( 1000 / 60, ( ev ) -> {
+  if ( gp.isLeftPressed( ) ) {
+    figur.changeX( -1 );
+  }
+  if ( gp.isRightPressed( ) ) {
+    figur.changeX( 1 );
+  }
+} );
+timer.start( );
+//Event-Listener für das Drücken einer Taste:
+gp.setEventListener( "A", "press", ( ev ) -> {
+  System.out.println( "Schuss!" );
+} );
+</code></pre>`;
   createConstructor({
     args: [
       

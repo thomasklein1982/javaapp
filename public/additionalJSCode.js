@@ -4002,6 +4002,84 @@ function additionalJSCode(){
     }
   }
 
+  
+
+  class Voice{
+    static $voices=null;
+    $constructor(){
+      const synth = window.speechSynthesis;
+      if(!synth) throw $new(Exception,"Dieses System unterstützt kein SpeechSynthesis.");
+      this.pitch=1;
+      this.rate=1;
+      this.language="de";
+      this.voice=null;
+      this.volume=1.0;
+    }
+    static $loadVoices(){
+      if(Voice.$voices) return;
+      const synth = window.speechSynthesis;
+      Voice.$voices = synth.getVoices();
+    }
+    static getVoiceByName(name){
+      for (const voice of Voice.$voices) {
+        if (voice.name === name) {
+          return voice;
+        }
+      }
+      return null;
+    }
+    setLanguage(lang){
+      this.language=lang;
+    }
+    setPitch(p){
+      this.pitch=p;
+    }
+    setRate(r){
+      this.rate=r;
+    }
+    setVolume(v){
+      this.volume=v;
+    }
+    setName(names){
+      this.names=names;
+      for(let i=0;i<names.length;i++){
+        let v=Voice.getVoiceByName(names[i]);
+        if(v){
+          this.voice=v;
+          break;
+        }
+      }
+      this.voice=null;
+    }
+    speak(text){
+      const utterThis = new SpeechSynthesisUtterance(text);
+      if(this.voice){
+        utterThis.voice = this.voice;
+      }
+      utterThis.lang=this.language;
+      utterThis.pitch = this.pitch;
+      utterThis.rate = this.rate;
+      utterThis.volume=this.volume;
+      window.speechSynthesis.speak(utterThis);
+    }
+  }
+
+  if(window.speechSynthesis){
+    const synth = window.speechSynthesis;
+    Voice.$loadVoices();
+    if (synth.onvoiceschanged !== undefined) {
+      synth.onvoiceschanged = ()=>{
+        Voice.$loadVoices();
+      }
+    }
+  }
+
+  class Thread{
+    static async sleep(millis){
+      await $Exercise.sleep(millis);
+    }
+  }
+
   class $Exercise{
     static isLeftRight(){
       for(let i=1;i<arguments.length;i++){

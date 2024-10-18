@@ -1,7 +1,7 @@
 <template>
   <h1>{{ title }}</h1>
   <h2 v-if="object.superClazz">extends <ApiTypeLink :type="object.superClazz"/></h2>
-  <p>{{ object.description }}</p>
+  <p v-html="object.description"></p>
   <template v-if="object.attributeCount>0">
     <h2>Attribute</h2>
     <template v-for="(a,i) in object.attributes">
@@ -40,18 +40,17 @@ export default{
     ApiMethodDescription, ApiTypeLink, ApiAttributeDescription
   },
   props: {
-    doku: String,
+    doku: Object,
   },
   computed: {
     title(){
-      
-      return this.object.name;
+      return (this.object.isInterface? "Interface ":"") +this.object.name;
     },
     constructor(){
       return (this.object.getConstructor());
     },
     object(){
-      return Java.datatypes[this.doku];
+      return this.doku;
     }
   },
   data(){

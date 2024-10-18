@@ -21,7 +21,7 @@ export function defineUIClazzes(Java){
 }
 
 function defineJComponent(Clazz,Java){
-  
+  Clazz.description=`Diese Klasse bildet die Oberklasse aller UI-Komponenten (JButton, JTextField, JFrame, ...). Sie implementiert viele Methoden, die dann für alle Unterklassen zur Verfügung stehen.`;
   createAttribute({
     name: "actionCommand",
     type: Java.datatypes.String,
@@ -474,7 +474,7 @@ function defineJImage(Clazz,Java){
     ],
     returnType: {
       baseType: "int",
-      dimension: 3
+      dimension: 1
     },
     info: 'Liefert ein Array mit den RGBA-Werten an der gegebenen Stelle zurück.'
   },Clazz,false,false,Java);

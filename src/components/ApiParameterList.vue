@@ -30,7 +30,6 @@ export default{
       }
     },
     realParameters(){
-      console.log(this.parameters);
       return this.parameters.parameters;
     }
   },
