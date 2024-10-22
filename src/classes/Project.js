@@ -15,6 +15,7 @@ export class Project{
     this.clazzes=[];
     this.css="";
     this.database=new Database();
+    this.includeAlaSQL=false;
     this.assets=[];
     if(!name){
       name="MyApp";
@@ -114,8 +115,7 @@ export class Project{
     if(!additionalCode) additionalCode="";
     this.date=new Date();
     let databaseCode="";
-    let cmds=this.database.createInMemory(true);
-    if(cmds && cmds.length>1){
+    if(this.includeAlaSQL){
       databaseCode+=alasql_code+"\nalasql_code();alasql.options.casesensitive=false;\n";
       databaseCode+=`alasql.fn.datepart=function(date_part,date){
         if(/^\\d\\d(?:\\:\\d\\d(?:\\:\\d\\d)?)?$/.test(date)){
@@ -139,8 +139,11 @@ export class Project{
         return null;
       };`;
       databaseCode+="$clearAlaSQL();\ntry{";
-      for(var i=0;i<cmds.length;i++){
-        databaseCode+="alasql("+JSON.stringify(cmds[i])+");\n";
+      let cmds=this.database.createInMemory(true);
+      if(cmds && cmds.length>1){
+        for(var i=0;i<cmds.length;i++){
+          databaseCode+="alasql("+JSON.stringify(cmds[i])+");\n";
+        }
       }
       databaseCode+="}catch(e){console.log('** Datenbank-Fehler: **');console.log(e);console.log('**************')}\n";
     }
@@ -387,6 +390,7 @@ export class Project{
   }
   /**Kompiliert das gesamte Projekt */
   async compile(fromSource,optimizeCompiler){
+    this.includeAlaSQL=false;
     /**
      * 1. Alle Klassendeklarationen parsen
      * 2. Alle Memberdeklarationen parsen

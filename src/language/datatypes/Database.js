@@ -1,18 +1,20 @@
 import { createAttribute } from "../helper/createAttribute";
 import { createConstructor } from "../helper/createConstructor";
 import { createMethod } from "../helper/createMethod";
+import { Java } from "../java";
 
 export function defineDatabaseClazzes(Java){
   defineRecord(Java.datatypes.Record,Java);
   defineDatabase(Java.datatypes.Database,Java);
 }
 
-function defineRecord(Clazz,Java){
+function defineRecord(Clazz){
+  //Clazz.superClazz=Java.clazzes.JSON;
   createConstructor ({
     args: [
       {type: 'String', name: 'label'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
     ],
-  },Clazz,Java);
+  },Clazz);
   createMethod({
     name: "get",
     info: "Liefert einen bestimmten Wert des Datensatzes zurück.",
@@ -20,12 +22,13 @@ function defineRecord(Clazz,Java){
     args: [
       {name: "attribute", type: "String", info: "Der Name des abgefragten Attributs."}
     ],
-  },Clazz,false,false,Java);
+  },Clazz,false,false);
 }
 
 function defineDatabase(Clazz,Java){
   createConstructor ({
     args: [
+      {type: 'String', name: 'name', info: 'Name der Datenbank', optional: true}
     ],
     info: 'Erzeugt ein neues Database-Objekt, das eine Verbindung zur Datenbank herstellt.'
   },Clazz,Java);
@@ -39,6 +42,11 @@ function defineDatabase(Clazz,Java){
     args: [
       {name: "sqlcommand", type: "String", info: "Der SQL-Befehl."}
     ],
+  },Clazz,false,false,Java);
+  createMethod({
+    name: "isEmpty",
+    info: "Prüft, ob die Datenbank Tabellen enthält.",
+    returnType: 'boolean',
   },Clazz,false,false,Java);
   createMethod({
     name: "areResultsEqual",

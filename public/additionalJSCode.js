@@ -2338,8 +2338,144 @@ function additionalJSCode(){
     }
   }
 
+  class $IndexedDB{
+    constructor(name,version,db){
+      this.name=name;
+      this.version=version;
+      this.db=db;
+    }
+    static async create(name, version){
+      let openRequest= window.indexedDB.open(name, version);;
+      // Register two event handlers to act on the database being opened successfully, or not
+      let p=new Promise((fulfill,reject)=>{
+        
+        openRequest.onerror = (event) => {
+          throw new Exception("Datenbank konnte nicht geladen werden");
+        };
+
+        openRequest.onsuccess = (ev) => {
+          let db = ev.target.result;
+          console.log("open success",db);
+          if(true || db.objectStoreNames.length===1){
+            console.log("fulfill open");
+            fulfill(db);
+          }
+        };
+
+        // This event handles the event whereby a new version of the database needs to be created
+        // Either one has not been created before, or a new version number has been submitted via the
+        // window.indexedDB.open line above
+        //it is only implemented in recent browsers
+        openRequest.onupgradeneeded = (event) => {
+          let db = event.target.result;
+          db.onerror = (event) => {
+            throw $new(Exception,"Datenbank konnte nicht geladen werden");
+          };
+          console.log("upgrade success",db);
+          let objectStore=db.createObjectStore('items', { keyPath: null });
+          //objectStore.createIndex('item', 'item', { unique: false });
+          console.log("fulfill upgrade");
+          //fulfill(db);
+        }; 
+      });
+      let db=await p;
+      return new $IndexedDB(name,version,db);
+    }
+    
+    async getItem(key){
+      const transaction = this.db.transaction(['items']);
+      let p=new Promise((fulfill,reject)=>{
+        const objectStore = transaction.objectStore('items');
+        let request=objectStore.get(key,"key");
+        request.onsuccess=(ev)=>{
+          console.log("get success",ev);
+          fulfill(ev.target.result);
+        };
+      });
+      let q=await p;
+      return q;
+    }
+
+    async setItem(key,item){
+      const transaction = this.db.transaction(['items'], 'readwrite');
+      let p=new Promise((fulfill,reject)=>{
+      
+        // Report on the success of the transaction completing, when everything is done
+        transaction.oncomplete = () => {
+          fulfill();
+        };
+
+        // Handler for any unexpected error
+        transaction.onerror = (ev) => {
+          throw $new(Exception,"Datenbank-Fehler set item");
+        };
+
+        // Call an object store that's already been added to the database
+        const objectStore = transaction.objectStore('items');
+
+        // Make a request to add our newItem object to the object store
+        const objectStoreRequest = objectStore.put(item,key);
+        objectStoreRequest.onsuccess = (event) => {
+          fulfill();
+        };
+        objectStoreRequest.onerror = (event) => {
+          fulfill();
+        };
+      });
+      await p;
+    }
+
+    async reflectSQL(ast){
+      for(let i=0;i<ast.statements.length;i++){
+        await this.reflectSQLStatement(ast.statements[i]);
+      }
+    }
+    async reflectSQLStatement(s){
+      if(s instanceof window.alasqlX.CreateTable){
+        //await this.createObjectStore(s.table.tableid,s.columns);
+      }
+    }
+  }
+
   class Database{
-    $constructor(){}
+    $constructor(name){
+      
+    }
+    
+    static async create(name){
+      let db=new Database();
+      if(name){
+        db.$db=new alasql.Database(name);
+        db.$indexedDB=await $IndexedDB.create(name,1);
+      }else{
+        db.$db=alasql;
+      }
+      return db;
+    }
+    saveTable(table){
+      this.$indexedDB.setItem("Hallo","Test");
+    }
+    save(){
+
+    }
+    load(){
+      
+    }
+    tableCount(){
+      let tables=this.$db.tables;
+      let s=0;
+      for(let a in tables){
+        s++;
+      }
+      return s;
+    }
+    isEmpty(){
+      let tables=this.$db.tables;
+      for(let a in tables){
+        return false;
+      }
+      return true;
+    }
     prepareStatement(sqlSource){
       /**muss kopiert werden in additionalJScode! */
       let ast=alasql.parse(sqlSource);
@@ -2351,8 +2487,12 @@ function additionalJSCode(){
        * an der Stelle:
        * X=(T.Recordset=function(e){q(this,e)},y.yy=T.yy={});window.alasqlX=X;X.extend=
        */
+      let sql="";
       for(let i=0;i<ast.statements.length;i++){
         let s=ast.statements[i];
+        if(!(s instanceof alasqlX.Select)){
+          continue;
+        }
         if(!s.columns || !s.from || s.from.length===0) continue;
         let tables={};
         for(let j=0;j<s.from.length;j++){
@@ -2366,7 +2506,7 @@ function additionalJSCode(){
           for(let j=0;j<s.from.length;j++){
             let t=s.from[j];
             let label=t.as? t.as:t.tableid;
-            let table=alasql.tables[t.tableid];
+            let table=this.$db.tables[t.tableid];
             if(!table) continue;
             for(let k=0;k<table.columns.length;k++){
               let c=table.columns[k];
@@ -2401,17 +2541,16 @@ function additionalJSCode(){
           }
         }
       }
-      return ast.toString();
+      return ast;
     }
     query(sqlSource){
       try{
         let prep;
-        if(sqlSource.trim().toLowerCase().startsWith("insert")){
-          prep=sqlSource;
-        }else{
-          prep=this.prepareStatement(sqlSource);
+        prep=this.prepareStatement(sqlSource);
+        var r=this.$db.exec(prep.toString());
+        if(this.$indexedDB){
+          this.$indexedDB.reflectSQL(prep);
         }
-        var r=alasql(prep);
         return r;
       }catch(e){
         console.log(e.message);
@@ -2436,7 +2575,7 @@ function additionalJSCode(){
     }
     sqlError(cmd){
       try{
-        alasql(cmd);
+        this.$db.exec(cmd);
         return null;
       }catch(e){
         return e.message;
