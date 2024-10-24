@@ -6,7 +6,7 @@
           <Menu ref="menu" :model="menuItems"/>
         </div>
       <div style="height: 100%; overflow:hidden; position: relative" :style="{flex: 1}">
-        <div ref="content" style="padding: 0.5rem; height: 100%;  overflow-y: auto; overflow-x: hidden;">
+        <div ref="content" style="padding: 0.5rem; height: 100%;  overflow: auto;">
           <template v-if="isCurrentComponentApi">
             <ApiDescription :doku="currentComponent"/>
           </template>

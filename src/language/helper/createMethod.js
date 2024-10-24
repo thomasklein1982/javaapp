@@ -45,6 +45,10 @@ export function createMethod(data,clazz,isStatic,isConstructor){
       }
       for(let i=0;i<types.length;i++){
         let type=types[i];
+        if(!type){
+          console.log(name);
+          continue;
+        }
         if(type instanceof Type){
         }else if(type.baseType){
           type=new Type(Java.datatypes[type.baseType],type.dimension);

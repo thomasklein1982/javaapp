@@ -160,7 +160,7 @@ export class Project{
       body=`<textarea style="display: none">${save}</textarea>`;
     }
     let mainClazz=this.getMainClazz();
-    let codeMainCall="";
+    
 
     let uiclazzesString="[";
     let uiclazzes=this.getUIClazzes();
@@ -169,22 +169,23 @@ export class Project{
       uiclazzesString+=c.name+",";
     }
     uiclazzesString+="]";
-
+    let codeMainCall="(async function(){await $App.setup();\n$createAllUIClazzes("+uiclazzesString+");";;
+    let mainObjectCode; /**der Name der Klasse oder des Objekts, das die Main-Methode enthält */
     if(mainClazz){
       if(mainClazz.hasStaticMainMethod()){
         if(!args) args=[];
-        codeMainCall="(async function(){await $App.setup();\n$createAllUIClazzes("+uiclazzesString+");\nawait "+mainClazz.name+".main("+JSON.stringify(args)+");";
-      }else if(mainClazz.hasDynamicMainMethod()){
+        mainObjectCode=mainClazz.name;
+      }else {
         if(!args) args=[];
-        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.setup();\n\n$createAllUIClazzes("+uiclazzesString+");\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);\nawait $main.main("+JSON.stringify(args)+");";
-      }else{
-        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n(async function(){await $App.setup();\n\n$createAllUIClazzes("+uiclazzesString+");\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);\nif($main.main){await $main.main("+JSON.stringify(args)+");}\n";
+        mainObjectCode="$main";
+        codeMainCall="\nwindow.$main=new "+mainClazz.name+"();\n"+codeMainCall+"\nawait $App.asyncFunctionCall(window.$main,'$constructor',[{$hideFromConsole:true}]);";
       }
     }else{
-      codeMainCall="\n(async function(){await $App.setup();\n";
+      mainObjectCode="$main";
     }
-    
-    //codeMainCall+="\n$createAllUIClazzes("+uiclazzesString+");";
+    /* alle Funktionen aus window.$asyncInitFunctions werden aufgerufen:*/
+    codeMainCall+="\nfor(let i=0;i<window.$asyncInitFunctions.length;i++){await window.$asyncInitFunctions[i]();}";
+    codeMainCall+="\nif("+mainObjectCode+"?.main){await "+mainObjectCode+".main("+JSON.stringify(args)+");}\n";
     codeMainCall+="\nsetTimeout(async ()=>{await window.$exerciseChecker();},100);})();";
     let css=this.prepareCSS(this.css);
     codeMainCall="window.addEventListener('DOMContentLoaded',async function(){"+codeMainCall+"});";
@@ -208,6 +209,7 @@ export class Project{
         }
         window.language="java";
         window.appJSdebugMode=true;
+        window.$asyncInitFunctions=[];
         ${window.appJScode}
         ${includeSave? '$App.hideConsoleIfUIPresentAfterSetup=true;':''}
         ${window.additionalJSCode}

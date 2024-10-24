@@ -19,6 +19,7 @@ export class Clazz{
   constructor(name,project,isInterface){
     this.name=name;
     //this.nodeInfos={};
+    this.staticConstructorMethod=null;
     this.cannotBeInstantiated=false;
     this.isAbstract=false;
     this.isHidden=false;
@@ -49,12 +50,16 @@ export class Clazz{
     this._isBuiltIn=project===undefined;
     if(this.name){
       this.typeSnippet=autocomplete.snippetCompletion(this.name, {
-          label: this.name,
-          type: "function"
+        label: this.name,
+        type: "function"
       });
     }else{
       this.typeSnippet=null;
     }
+  }
+  getJsName(){
+    if(this.jsName) return this.jsName;
+    else return this.name;
   }
   getSaveObject(){
     let o={};
@@ -138,7 +143,7 @@ export class Clazz{
     return this.project===undefined;
   }
   getJavaScriptCode(){
-    let code="class "+this.name;
+    let code="class "+this.getJsName();
     if(this.superClazz){
       if(this.superClazz.splice){
         code+=" extends "+this.superClazz;

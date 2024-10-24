@@ -12,6 +12,7 @@ export function TypeName(node,source,scope,infos){
     if(clazz.typeParameters && (!infos || !infos.genericType)){
       throw (source.createError("Die Klasse '"+name+"' erfordert die Angabe eines Datentypen in spitzen Klammern <>.",node));
     }
+    code=clazz.getJsName();
     type=new Type(clazz,0);
     if(clazz.isGeneric){
       code="window[this.$getType({name: '"+name+"', isGeneric: true}).name]";

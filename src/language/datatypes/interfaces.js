@@ -6,7 +6,6 @@ import { Java } from "../java";
 export function defineInterfaces(){
   defineActionListener(Java.interfaces.ActionListener);
   defineComparable(Java.interfaces.Comparable);
-  defineTileHandler(Java.interfaces.TileHandler);
 }
 
 function defineActionListener(clazz){
@@ -29,9 +28,3 @@ function defineComparable(clazz){
   m.params.parameters[1].type.baseType=c;
 }
 
-function defineTileHandler(clazz){
-  let m=createMethod({
-    name: "handleTile",
-    args: [{name: "x",type: "double"}, {name: "y",type: "double"}, {name: "type",type: "String"}]
-  },clazz,false,false);
-}

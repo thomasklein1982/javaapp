@@ -16,6 +16,9 @@ export class PrimitiveType{
       info: info
     });
   }
+  getJsName(){
+    return this.name;
+  }
   setWrapperClass(clazz){
     this.wrapperClass=clazz;
     clazz.setWrappedPrimitiveType(this);

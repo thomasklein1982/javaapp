@@ -446,6 +446,13 @@ function defineJImage(Clazz,Java){
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JComponent;
   createMethod({
+    name: 'toDataURL',
+    args: [
+    ],
+    info: "Liefert eine DataURL des Bildes zurück.",
+    returnType: "String"
+  },Clazz,false,false);
+  createMethod({
     name: 'setZoom',
     args: [
       {name: 'factor', default: '100%', type: 'String', info: 'Zoom-Faktor (1 = 100%)'}

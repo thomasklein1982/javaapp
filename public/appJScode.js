@@ -3921,22 +3921,22 @@ window.appJScode=function(){
         return (new Date()).getTime();
       },
       get sec(){
-        return (new Date()).getUTCSeconds();
+        return (new Date()).getSeconds();
       },
       get min(){
-        return (new Date()).getUTCMinutes();
+        return (new Date()).getMinutes();
       },
       get h(){
-        return (new Date()).getUTCHours();
+        return (new Date()).getHours();
       },
       get day(){
-        return (new Date()).getUTCDate();
+        return (new Date()).getDate();
       },
       get month(){
-        return (new Date()).getUTCMonth()+1;
+        return (new Date()).getMonth()+1;
       },
       get year(){
-        return (new Date()).getUTCFullYear();
+        return (new Date()).getFullYear();
       },
       start(millis,name){
         if(!$App.timer){
@@ -4001,24 +4001,11 @@ window.appJScode=function(){
     },'Liefert dir Informationen ueber die Zeit und erlaubt es dir, Timer zu stellen und zu stoppen.',
     [
       {name: 'now', info: 'Die aktuelle Zeit in Millisekunden seit dem 1.1.1970.', type: 'int'},
-      {name: 'sec', info: 'Die Sekundenzahl der aktuellen Uhrzeit.', type: 'int'},
-      {name: 'min', type: 'int', info: 'Die Minutenzahl der aktuellen Uhrzeit.'},
-      {name: 'h', type: 'int', info: 'Die Stundenzahl der aktuellen Uhrzeit.'},
-      {name: 'day', type: 'int', info: 'Der aktuelle Tag im Monat.'},
+      {name: 'sec', info: 'Die Sekundenzahl der aktuellen Uhrzeit (0-59).', type: 'int'},
+      {name: 'min', type: 'int', info: 'Die Minutenzahl der aktuellen Uhrzeit (0-59).'},
+      {name: 'h', type: 'int', info: 'Die Stundenzahl der aktuellen Uhrzeit (0-23).'},
+      {name: 'day', type: 'int', info: 'Der aktuelle Tag im Monat (1-31).'},
       {name: 'month', type: 'int', info: 'Der aktuelle Monat (1-12).'},{name: 'year', type: 'int', info: 'Die aktuelle Jahreszahl.'}, 
-      {
-        name: 'start', 
-        returnType: null, 
-        args: [{name: 'millis', type: 'int', info: 'Anzahl Millisekunden bis der Timer ausloest.'}, {name: 'name', type: 'String', info: "Name des Timers, mit dem onTimeout aufgerufen wird.", optional: true}], 
-        info: 'Startet einen Timer, der millis Millisekunden lang laeuft. Wenn er ablaeuft, loest er die Funktion <code>onTimeout</code> aus.'
-      }, 
-      {
-        name: 'stop', 
-        returnType: null,
-        args: [{name: 'name', type: 'String', info: 'Name des Timers, der gestoppt werden soll.', optional: true}], 
-        info: 'Stoppt den Timer mit dem angegebenen Namen. Wenn du keinen Namen angibst, werden alle laufenden Timer gestoppt.'
-      },
-      {name: 'year', type: 'int', info: 'Die aktuelle Jahreszahl (vierstellig).'}
     ], "everywhere");
     
     $App.addObject('path',false,{

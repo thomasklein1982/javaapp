@@ -122,7 +122,12 @@ export function ObjectCreationExpression(node,source,scope,infos){
   }else if(clazz.name==="Database"){
     scope.project.includeAlaSQL=true;
     code="await Database.create"+al.code;
-    //code="await $App.asyncFunctionCall("+code+"(),'$constructor',["+al.code.substring(1,al.code.length-1)+"])";
+  }else if(clazz.staticConstructorMethod){
+    if(clazz.staticConstructorMethod.isExtraFunction){
+      code="await "+clazz.staticConstructorMethod.functionName+al.code;  
+    }else{
+      code="await "+clazz.name+"."+clazz.staticConstructorMethod+al.code;
+    }
   }else if(!clazz.isNative()){
     code="new "+typename.code;
     code="await $App.asyncFunctionCall("+code+"(),'$constructor',["+JSON.stringify(runtimeTypeArguments)+","+al.code.substring(1,al.code.length-1)+"])";

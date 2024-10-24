@@ -2,6 +2,15 @@ import { createMethod } from "../helper/createMethod";
 import { createConstructor } from "../helper/createConstructor";
 
 export function defineTimer(clazz){
+  clazz.description=`Ein Timer kann verwendet werden, um regelmäßig oder einmalig eine Methode auszuführen, nachdem eine gewisse Zeitspanne verstrichen ist.
+  <h3>Beispiel</h3>
+<pre><code>int sekunden = 0;
+Timer t = new Timer ( 1000, (ev)->{
+  sekunden++;
+  System.out.println( sekunden );
+} );
+t.start();
+</code></pre>`;
   createConstructor({
     args: [
       {

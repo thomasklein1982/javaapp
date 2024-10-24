@@ -1,6 +1,5 @@
 import {PrimitiveType} from "../classes/PrimitiveType";
 import { Clazz } from "../classes/Clazz";
-import { defineApp } from "./datatypes/App.js";
 import { defineGenericClazz } from "./datatypes/GenericClazz";
 import { appjsdata } from "../functions/snippets";
 import { defineString } from "./datatypes/string";
@@ -11,7 +10,7 @@ import {defineDatabaseClazzes} from "./datatypes/Database";
 import {definePattern} from "./datatypes/pattern";
 import { defineMatcher } from "./datatypes/matcher";
 import { defineFile } from "./datatypes/file";
-import { defineStorage } from "./datatypes/storage";
+import { defineStorage } from "./datatypes/Storage.js";
 import { defineObject } from "./datatypes/object";
 import { defineMatrix, defineVector } from "./datatypes/Matrix";
 import { defineSystem } from "./datatypes/system";
@@ -28,7 +27,6 @@ import { defineTimer } from "./datatypes/Timer.js";
 import { defineJSON } from "./datatypes/JSON.js";
 import { defineRandom } from "./datatypes/Random.js";
 import { defineGamepad } from "./datatypes/Gamepad.js";
-import { defineWorld } from "./datatypes/World.js";
 import { defineReflectionAPI } from "./datatypes/reflection.js";
 import { defineVoice } from "./datatypes/Voice.js";
 import { defineThread } from "./datatypes/Thread.js";
@@ -50,7 +48,6 @@ let ActionEvent=new Clazz("ActionEvent");
 
 let ActionListener=new Clazz("ActionListener",undefined,true);
 let Comparable=new Clazz("Comparable",undefined,true);
-let TileHandler=new Clazz("TileHandler",undefined,true);
 
 let JavaApp=new Clazz("JavaApp");
 //JavaApp.implementedInterfaces=[ActionListener];
@@ -64,8 +61,6 @@ let Path=new Clazz("Path");
 Path.cannotBeInstantiated=true;
 let Console=new Clazz("Console");
 Console.cannotBeInstantiated=true;
-let World=new Clazz("World");
-World.cannotBeInstantiated=true;
 let Time=new Clazz("Time");
 Time.cannotBeInstantiated=true;
 let JComponent=new Clazz("JComponent");
@@ -85,8 +80,6 @@ let JPanel=new Clazz("JPanel");
 let DataTable=new Clazz("DataTable");
 let Canvas=new Clazz("Canvas");
 let UIClass=new Clazz("UIClass");
-let App=new Clazz("App");
-App.cannotBeInstantiated=true;
 let Database=new Clazz("Database");
 let Record=new Clazz("Record");
 Record.cannotBeInstantiated=true;
@@ -97,9 +90,8 @@ let Matcher=new Clazz("Matcher");
 Matcher.cannotBeInstantiated=true;
 
 let File=new Clazz("File");
-File.cannotBeInstantiated=true;
 let Storage=new Clazz("Storage");
-Storage.cannotBeInstantiated=true;
+Storage.staticConstructorMethod="create";
 
 let Session=new Clazz("Session");
 Session.cannotBeInstantiated=true;
@@ -137,15 +129,23 @@ let Voice=new Clazz("Voice");
 let Thread=new Clazz("Thread");
 
 let datatypes={
-  nullType,boolean, double, int, char, Object, String,Math, App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent, JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, ActionListener, JavaApp, InputStream, Comparable, ActionEvent, Timer, JSON, Random, TileHandler, UIClass, Class, Field, Method, Voice, Thread
+  ActionEvent,ActionListener,ArrayList,Boolean,Canvas,Char,Class,Comparable,Console,DataTable,Database,Double,Exception,Field,File,Gamepad,HTMLElement,InputStream,Integer,JButton,JCheckBox,JComboBox,JComponent,JFrame,JImage,JLabel,JPanel,JSON,JTextArea,JTextComponent,JTextField,JavaApp,Matcher,Math,Matrix,Method,Object,Path,Pattern,PrintStream,Random,Record,Session,Sound,Storage,String,System,Thread,Time,Timer,UIClass,Vector,Voice,boolean,char,double,int,nullType
 };
 
+//sortieren der Datentypen:
+// let array=[];
+// for(let a in datatypes){
+//   array.push(a);
+// }
+// array.sort();
+// console.log(array.toString());
+
 let clazzes={
-  nullType,Object, String, Math,App, Gamepad, Time, Console, World, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, JavaApp, InputStream, Comparable, ActionEvent, Timer, JSON, Random, TileHandler, UIClass, Class, Field, Method, Voice, Thread
+  nullType,Object, String, Math, Gamepad, Time, Console, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, Sound, Exception, Integer, Double, Char, Boolean, JFrame, JavaApp, InputStream, Comparable, ActionEvent, Timer, JSON, Random, UIClass, Class, Field, Method, Voice, Thread
 }
 
 let interfaces={
-  ActionListener, Comparable, TileHandler
+  ActionListener, Comparable
 }
 
 export const Java={
@@ -179,13 +179,10 @@ defineJavaApp(JavaApp);
 defineGamepad(Gamepad);
 defineGenericClazz(Console,appjsdata.objects.console,Java);
 defineGenericClazz(Path,appjsdata.objects.path,Java);
-defineWorld(World);
-//defineGenericClazz(World,appjsdata.objects.world,Java);
+
 defineGenericClazz(Time,appjsdata.objects.time,Java);
-defineGenericClazz(Storage,appjsdata.objects.storage,Java);
 defineGenericClazz(Session,appjsdata.objects.session,Java);
 defineStorage(Storage);
-defineApp(App,Java);
 defineUIClazzes(Java);
 defineDatabaseClazzes(Java);
 definePattern(Pattern,Java);

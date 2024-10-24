@@ -34,6 +34,7 @@ export function CastExpression(node,source,scope){
   if(destType.isChar()){
     code="(new $Char("+code+"))";
   }
+  //code="(async (v)=>{if(!$isInstanceOf(v,"+destType.toString()+")){throw $new(Exception,'Typen nicht kompatibel')} return v;})("+value.code+")";
   return {
     code,
     type: destType

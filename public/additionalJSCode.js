@@ -33,6 +33,10 @@ function additionalJSCode(){
   function $n(a){return a;}
   function $s(v){if(v) return v+"";else return v;}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
+  function $isInstanceOf(obj,typename){
+
+  }
+
 
   function $changePreviewSelection(previewID){
     console.log(previewID);
@@ -235,7 +239,7 @@ function additionalJSCode(){
    * int dim
    * type[] values
    */
-  $createArray=function(type, dim, values){
+  function $createArray(type, dim, values){
     let array;
     if(Array.isArray(dim)){
       array=$createArrayValues(type,dim);
@@ -324,7 +328,12 @@ function additionalJSCode(){
       }
       return array;
     }
-    var dest;
+    let destPrimitive=destTypeName.charAt(0)===destTypeName.charAt(0).toLowerCase();
+    let isType=typeof object;
+    let isPrimitive=isType!=="object" && isType!=="string";
+    
+    var instOf;
+    eval("instOf=(object instanceof "+destTypeName+");");
     var destRuntimeInfos=$clazzRuntimeInfos[destTypeName];
     if(destRuntimeInfos){
       eval("dest=new "+destTypeName+"();");
@@ -433,6 +442,14 @@ function additionalJSCode(){
     return await objectWithMethod[methodname].apply(object,argumentsArray);
   };
 
+  class $File{
+    $constructor(name){
+      this.fileName=name;
+      this.data="";
+      this.contentIsDataURL=false;
+    }
+  }
+
   function $getFileName(obj){
     return obj.fileName;
   }
@@ -447,8 +464,105 @@ function additionalJSCode(){
     return data;
   }
 
+  function $setFileContentAsString(obj,data){
+    if(!data) data="";
+    obj.contentIsDataURL=false;
+    obj.data=window.btoa(data.replace(/\r\n/g,"\n"));
+  }
+
+  function $setFileContent(obj,data){
+    obj.data=data;
+    obj.contentIsDataURL=true;
+  }
   function $getFileContent(obj){
     return obj.data;
+  }
+
+  function $downloadFile(obj){
+    let data=obj.data;
+    console.log("download",obj);
+    if(obj instanceof $File && !obj.contentIsDataURL){
+      data=window.atob(data);
+    }
+    $download(data,obj.fileName,obj.contentIsDataURL);
+  }
+
+  function $download(data,filename,isDataURL){
+    window.URL =  window.URL || window.webkitURL;
+    if(!filename) filename="Download.txt";
+    let blob,mime;
+    if(isDataURL){
+      let pos=data.indexOf(",");
+      let before=data.substring(0,pos);
+      let after=data.substring(pos+1);
+      let byteString=window.atob(after);
+      mime=before.split(":")[1].split(";")[0];
+      let ab=new ArrayBuffer(byteString.length);
+      let ia=new Uint8Array(ab);
+      for(let i=0;i<byteString.length;i++){
+        ia[i]=byteString.charCodeAt(i);
+      }
+      blob=new Blob([ab],{type: mime});
+    }else{
+      var split=filename.split(".");
+      if(split.length>0){
+        var extension=split[split.length-1].toLowerCase();
+        //mime="text/"+extension;
+      }else{
+        var extension="txt";
+        //mime="text";
+        filename+=extension;
+      }
+      let mimes={
+        png: "image/png",
+        jpg: "image/jpg",
+        jpeg: "image/jpg",
+        txt: "text/plain",
+        html: "text/html",
+        htm: "text/html",
+        js: "text/javascript",
+        json: "application/json",
+        mp3: "audio/mpeg",
+        mp4: "video/mp4",
+        otf: "font/otf",
+        pdf: "application/pdf",
+        svg: "image/svg+xml",
+        tif: "image/tiff",
+        tiff: "image/tiff",
+        ttf: "font/ttf",
+      };
+      mime=mimes[extension];
+      if(!mime) mime="text/plain";
+      
+      blob = new Blob([data], {type: mime});
+    }
+    var downloadAnchor=document.createElement("a");
+    downloadAnchor.style.display="none";
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.download = filename;
+    let objectURL=window.URL.createObjectURL(blob);
+    downloadAnchor.href=objectURL;
+    downloadAnchor.dataset.downloadurl = [mime, downloadAnchor.download, downloadAnchor.href].join(':');
+    downloadAnchor.click();
+    setTimeout(()=>{
+      window.URL.revokeObjectURL(objectURL);
+    },200);
+    document.body.removeChild(downloadAnchor);
+  }
+
+  async function $upload(){
+    var p=new Promise(function(resolve,reject){
+      $App.$uploadCallback(function(data,fileName,mime){
+        //data=data.replace(/\r\n/g,"\n");
+        resolve({
+          data: data,
+          fileName: fileName,
+          mime: mime
+        });
+      },{dataURL: true});
+    });
+    var q=await p;
+    return q;
   }
 
   function $toRadians(obj,x){
@@ -947,11 +1061,165 @@ function additionalJSCode(){
     }
   }
 
+  class Storage{
+    constructor(name,db){
+      this.name=name;
+      this.db=db;
+    }
+    static async getStorageNames(){
+      if(!window.indexedDB) return null;
+      let bases=await indexedDB.databases();
+      let array=[];
+      for(let i=0;i<bases.length;i++){
+        array.push(bases[i].name);
+      }
+      return $createArray("String",array.length,array);
+    }
+    static deleteStorage(name){
+      if(!window.indexedDB) return;
+      indexedDB.deleteDatabase(name);
+    }
+    static async create(name){
+      if(!window.indexedDB) return;
+      let openRequest= window.indexedDB.open(name, 1);
+      // Register two event handlers to act on the database being opened successfully, or not
+      let p=new Promise((fulfill,reject)=>{
+        
+        openRequest.onerror = (event) => {
+          throw $new(Exception,"Datenbank konnte nicht geladen werden");
+        };
+
+        openRequest.onsuccess = (ev) => {
+          let db = ev.target.result;
+          fulfill(db);
+        };
+
+        // This event handles the event whereby a new version of the database needs to be created
+        // Either one has not been created before, or a new version number has been submitted via the
+        // window.indexedDB.open line above
+        //it is only implemented in recent browsers
+        openRequest.onupgradeneeded = (event) => {
+          let db = event.target.result;
+          db.onerror = (event) => {
+            throw $new(Exception,"Datenbank konnte nicht geladen werden");
+          };
+          let objectStore=db.createObjectStore('items', { keyPath: null });
+        }; 
+      });
+      let db=await p;
+      return new Storage(name,db);
+    }
+    async getKeys(){
+      let keys;
+      if(!window.indexedDB){
+        keys=[];
+        for (let i = 0; i < localStorage.length; i++) {
+          keys.push(localStorage.key(i));
+        }
+      }else{
+        const transaction = this.db.transaction(['items']);
+        let p=new Promise((fulfill,reject)=>{
+          const objectStore = transaction.objectStore('items');
+          let request=objectStore.getAllKeys();
+          request.onsuccess=(ev)=>{
+            fulfill(ev.target.result);
+          };
+          request.onerror=(ev)=>{
+            throw $new(Exception,"Die Keys konnten nicht abgerufen werden.");
+          };
+        });
+        keys=await p;
+      }
+      return $createArray("String",1,keys);
+    }
+    async load(key){
+      let item=await this.getItem(key);
+      return item+"";
+    }
+    async loadObject(key){
+      let item=await this.getItem(key);
+      return item;
+    }
+    async save(key, value){
+      return await this.setItem(key,value+"");
+    }
+    async saveObject(key, value){
+      await this.setItem(key,value);
+    }
+    async getItem(key){
+      if(!window.indexedDB) return localStorage.getItem(key);
+      const transaction = this.db.transaction(['items']);
+      let p=new Promise((fulfill,reject)=>{
+        const objectStore = transaction.objectStore('items');
+        let request=objectStore.get(key,"key");
+        request.onsuccess=(ev)=>{
+          fulfill(ev.target.result);
+        };
+      });
+      let q=await p;
+      return q;
+    }
+    remove(key){
+      if(!window.indexedDB){
+        localStorage.removeItem(key);
+      }else{
+        const transaction = this.db.transaction(['items'],'readwrite');
+        const objectStore = transaction.objectStore('items');
+        objectStore.delete(key);
+      }
+    }
+    removeAll(){
+      if(!window.indexedDB){
+        localStorage.clear();
+      }else{
+        const transaction = this.db.transaction(['items'],'readwrite');
+        const objectStore = transaction.objectStore('items');
+        objectStore.clear();
+      }
+    }
+    async setItem(key,item){
+      if(!window.indexedDB) {
+        try{
+          localStorage.setItem(key,item);
+          return true;
+        }catch(e){
+          return false;
+        }
+      }
+      const transaction = this.db.transaction(['items'], 'readwrite');
+      let p=new Promise((fulfill,reject)=>{
+      
+        // Report on the success of the transaction completing, when everything is done
+        transaction.oncomplete = () => {
+          fulfill();
+        };
+
+        // Handler for any unexpected error
+        transaction.onerror = (ev) => {
+          throw $new(Exception,"Datenbank-Fehler set item");
+        };
+
+        // Call an object store that's already been added to the database
+        const objectStore = transaction.objectStore('items');
+
+        // Make a request to add our newItem object to the object store
+        const objectStoreRequest = objectStore.put(item,key);
+        objectStoreRequest.onsuccess = (event) => {
+          fulfill(true);
+        };
+        objectStoreRequest.onerror = (event) => {
+          fulfill(false);
+        };
+      });
+      //await p;
+    }
+  }
+
   class System{
     $constructor(){}
     static out=$new(PrintStream);
     static in=$new(InputStream);
-    static storage=App.storage;
+    static storage=null;
     static time=App.time;
     static console(){
       return $App.console;
@@ -975,6 +1243,10 @@ function additionalJSCode(){
       return await App.toast(message, position, duration);
     }
   }
+
+  window.$asyncInitFunctions.push(async ()=>{
+    System.storage=await Storage.create("javaapp-standard-storage");
+  });
 
   class JComponent{
     $constructor(x,y,width,height){
@@ -1370,6 +1642,16 @@ function additionalJSCode(){
       let array=$createArray("int",1,[this.$imageData.data[index*intsPerPixel],this.$imageData.data[index*intsPerPixel+1], this.$imageData.data[index*intsPerPixel+2], this.$imageData.data[index*intsPerPixel+3] ]);
       return array;
 
+    }
+    toDataURL(){
+      let w=this.getPixelWidth();
+      let h=this.getPixelHeight();
+      let canvas=document.createElement("canvas");
+      canvas.width=w;
+      canvas.height=h;
+      let c=canvas.getContext("2d");
+      c.drawImage(this.$img,0,0);
+      return canvas.toDataURL();
     }
     setZoom(z){
       // let w=z*100+"%";
@@ -2338,105 +2620,6 @@ function additionalJSCode(){
     }
   }
 
-  class $IndexedDB{
-    constructor(name,version,db){
-      this.name=name;
-      this.version=version;
-      this.db=db;
-    }
-    static async create(name, version){
-      let openRequest= window.indexedDB.open(name, version);;
-      // Register two event handlers to act on the database being opened successfully, or not
-      let p=new Promise((fulfill,reject)=>{
-        
-        openRequest.onerror = (event) => {
-          throw new Exception("Datenbank konnte nicht geladen werden");
-        };
-
-        openRequest.onsuccess = (ev) => {
-          let db = ev.target.result;
-          console.log("open success",db);
-          if(true || db.objectStoreNames.length===1){
-            console.log("fulfill open");
-            fulfill(db);
-          }
-        };
-
-        // This event handles the event whereby a new version of the database needs to be created
-        // Either one has not been created before, or a new version number has been submitted via the
-        // window.indexedDB.open line above
-        //it is only implemented in recent browsers
-        openRequest.onupgradeneeded = (event) => {
-          let db = event.target.result;
-          db.onerror = (event) => {
-            throw $new(Exception,"Datenbank konnte nicht geladen werden");
-          };
-          console.log("upgrade success",db);
-          let objectStore=db.createObjectStore('items', { keyPath: null });
-          //objectStore.createIndex('item', 'item', { unique: false });
-          console.log("fulfill upgrade");
-          //fulfill(db);
-        }; 
-      });
-      let db=await p;
-      return new $IndexedDB(name,version,db);
-    }
-    
-    async getItem(key){
-      const transaction = this.db.transaction(['items']);
-      let p=new Promise((fulfill,reject)=>{
-        const objectStore = transaction.objectStore('items');
-        let request=objectStore.get(key,"key");
-        request.onsuccess=(ev)=>{
-          console.log("get success",ev);
-          fulfill(ev.target.result);
-        };
-      });
-      let q=await p;
-      return q;
-    }
-
-    async setItem(key,item){
-      const transaction = this.db.transaction(['items'], 'readwrite');
-      let p=new Promise((fulfill,reject)=>{
-      
-        // Report on the success of the transaction completing, when everything is done
-        transaction.oncomplete = () => {
-          fulfill();
-        };
-
-        // Handler for any unexpected error
-        transaction.onerror = (ev) => {
-          throw $new(Exception,"Datenbank-Fehler set item");
-        };
-
-        // Call an object store that's already been added to the database
-        const objectStore = transaction.objectStore('items');
-
-        // Make a request to add our newItem object to the object store
-        const objectStoreRequest = objectStore.put(item,key);
-        objectStoreRequest.onsuccess = (event) => {
-          fulfill();
-        };
-        objectStoreRequest.onerror = (event) => {
-          fulfill();
-        };
-      });
-      await p;
-    }
-
-    async reflectSQL(ast){
-      for(let i=0;i<ast.statements.length;i++){
-        await this.reflectSQLStatement(ast.statements[i]);
-      }
-    }
-    async reflectSQLStatement(s){
-      if(s instanceof window.alasqlX.CreateTable){
-        //await this.createObjectStore(s.table.tableid,s.columns);
-      }
-    }
-  }
-
   class Database{
     $constructor(name){
       
@@ -2459,7 +2642,7 @@ function additionalJSCode(){
 
     }
     load(){
-      
+
     }
     tableCount(){
       let tables=this.$db.tables;
