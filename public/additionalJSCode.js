@@ -4403,6 +4403,16 @@ function additionalJSCode(){
   }
 
   class $Exercise{
+    static isComponentBeforeComponent(comp1,comp2){
+      let node=comp1.$el.nextSibling;
+      while(node){
+        if(node===comp2.$el){
+          return true;
+        }
+        node=node.nextSibling;
+      }
+      return false;
+    }
     static isLeftRight(){
       for(let i=1;i<arguments.length;i++){
         let e1=arguments[i-1];

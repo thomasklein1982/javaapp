@@ -565,7 +565,13 @@ export class UIClazz extends Clazz{
 
         }
       }else{
-        newCode+="$new("+c.type+",";
+        let additionalEnd="";
+        if(c.type==="JImage"){
+          newCode+="await $App.asyncFunctionCall(new "+c.type+"(),'$constructor',[";
+          additionalEnd="]";
+        }else{
+          newCode+="$new("+c.type+",";
+        }
         let clazz=UIClazz.UIClazzes[c.type];
         let args=[];
         for(let j=0;j<clazz.params.length;j++){
@@ -585,7 +591,7 @@ export class UIClazz extends Clazz{
           }
         }
         newCode+=args.join(",");
-        newCode+=");";
+        newCode+=additionalEnd+");";
       }
       newCode+="\n"+last+".uiClazz=this;";
       newCode+="\ncontainer"+containerIndex+".add("+last+",$insertPosition);";
