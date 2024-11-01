@@ -5,6 +5,7 @@ import { Clazz } from "./Clazz";
 import { options } from "./Options.js";
 import { UIClazz } from "./UIClazz.js";
 import { Database } from "./Database.js";
+import { SourceFile } from "./SourceFile.js";
 
 let start="Project Code Start";
 let stop="Project Code Stop";
@@ -169,7 +170,7 @@ export class Project{
       uiclazzesString+=c.name+",";
     }
     uiclazzesString+="]";
-    let codeMainCall="(async function(){await $App.setup();\n$createAllUIClazzes("+uiclazzesString+");";;
+    let codeMainCall="(async function(){await $App.setup();\nawait $createAllUIClazzes("+uiclazzesString+");";;
     let mainObjectCode; /**der Name der Klasse oder des Objekts, das die Main-Methode enthält */
     if(mainClazz){
       if(mainClazz.hasStaticMainMethod()){
@@ -277,7 +278,7 @@ export class Project{
     let array=[];
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
-      if(c instanceof UIClazz){
+      if(c instanceof UIClazz || c.fileType==="html"){
         array.push(c);
       }
     }
@@ -582,6 +583,9 @@ export class Project{
       if(!src) continue;
       if(src.components){
         var c=new UIClazz(null,this);
+        c.restoreFromSaveObject(src);
+      }else if(src.fileType){
+        var c=new SourceFile(null,src.fileType,this);
         c.restoreFromSaveObject(src);
       }else{
         var c=new Clazz(null,this);

@@ -9,6 +9,7 @@ import { Java } from "../java";
 import { Type } from "../../classes/Type";
 import { ArrayAccess } from "./ArrayAccess";
 import { CompileFunctions } from "../CompileFunctions";
+import { SourceFile } from "../../classes/SourceFile";
 /**
  * 
  * @param {*} node 
@@ -49,7 +50,7 @@ export function MethodInvocation(node,source,scope){
       let id=Identifier(node,source,scope);
       code+="$N("+id.code+",'"+id.name+"')";
       //code+=id.code;
-      if(id.object instanceof Clazz){
+      if(id.object instanceof Clazz || id.object instanceof SourceFile && id.object.fileType==="html"){
         owner={
           clazz: id.object,
           static: true

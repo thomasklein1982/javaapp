@@ -69,11 +69,11 @@ function additionalJSCode(){
     }
   }
 
-  function $createAllUIClazzes(constructors){
+  async function $createAllUIClazzes(constructors){
     window.uiClazzObjects=[];
     for(let i=0;i<constructors.length;i++){
       let c=constructors[i];
-      c.$createSelf();
+      await c.$createSelf();
       window.uiClazzObjects.push(c.$self);
       // if(constructors.length>1){
       //   c.$self.setVisible(false);
@@ -1878,6 +1878,68 @@ function additionalJSCode(){
     }
     static getChild(index){
       return this.$self.getChild(index);
+    }
+  }
+
+  class HtmlPage{
+    $constructor(){
+      this.$el=document.createElement("iframe");
+      $App.canvas.addElement(this.$el,50,50,100,100);
+      this.$el.style="background-color: white; left: 0; top: 0; width: 100%; height: 100%; position: absolute;border: none;margin:0;padding:0;";
+      $App.console.adaptSize();
+    }
+    static async setVisible(v){
+      if(v){
+        let el=this.$self.$el;
+        //entferne die UI-Klasse und füge sie als oberstes Kind wieder ein, sodass sie sichtbar ist
+        let parent=el.parentNode;
+        parent.removeChild(el);
+        parent.appendChild(el);
+        let p=new Promise((fulfill,reject)=>{
+          el.onload=async (ev)=>{
+            fulfill();
+          }
+          el.onerror=(ev)=>{
+            reject();
+          } 
+        }); 
+        await p;
+      }
+      
+    }
+    static querySelector(selector){
+      try{
+        let e = this.$self.$el.contentWindow.document.querySelector(selector);
+        if(!e) return null;
+        if(!e.component) e.component=$new(HTMLElement,e);
+        return e.component;
+      }catch(e){
+        throw $new(Exception,"Fehlerhafter Selektor\n"+e);
+      }
+    }
+    static querySelectorAll(selector){
+      try{
+        let es=this.$self.$el.contentWindow.document.querySelectorAll(selector);
+        if(!es) return null;
+        let array=[];
+        for(let i=0;i<es.length;i++){
+          let e=es[i];
+          if(!e.component) e.component=$new(HTMLElement,e)
+          array[i]=e.component;
+        }
+        return $createArray("HTMLElement",1,array);
+      }catch(e){
+        throw $new(Exception,"Fehlerhafter Selektor\n"+e);
+      }
+    }
+    static async show(){
+      await this.setVisible(true);
+    }
+    static async hide(){
+      await this.setVisible(false);
+    }
+    static isVisible(){
+      return this.$self.isVisible();
     }
   }
 

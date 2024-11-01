@@ -1265,6 +1265,7 @@ window.appJScode=function(){
         this.resize(fullWidth,fullHeight,true);
       },
       updateElementPosition: function(el,cx,cy,width,height,align){
+        if(!el.appJSData) return;
         el.appJSData.cx=cx;
         el.appJSData.cy=cy;
         el.appJSData.width=width;

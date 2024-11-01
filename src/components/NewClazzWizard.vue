@@ -1,23 +1,19 @@
 <template>
-  <div class="p-buttonset" :style="{display: 'grid', 'grid-template':'1fr/1fr 1fr'}">
+  <div class="p-buttonset" :style="{display: 'grid', gap: '0.2rem', 'grid-template':'1fr 1fr/1fr 1fr 1fr'}">
     <Button :severity="type==='class'?'primary':'secondary'" label="Klasse" @click="type='class'"/>
     <Button :severity="type==='interface'?'primary':'secondary'" label="Interface" @click="type='interface'"/>
+    <Button :severity="type==='uiclass'?'primary':'secondary'" label="UI-Klasse" @click="type='uiclass'"/>
+    <Button :severity="type==='html'?'primary':'secondary'" label="HTML" @click="type='html'"/>
+    <Button :severity="type==='css'?'primary':'secondary'" label="CSS" @click="type='css'"/>
+    <Button :severity="type==='js'?'primary':'secondary'" label="JavaScript" @click="type='js'"/>
   </div>
-  <h1>{{type==='class'? 'Neue Klasse':'Neues Interface'}} hinzufügen</h1>
+  <h1>{{labelAdd}}</h1>
   
-  <InputText type="search" clazz="nameError?'':'p-invalid'" v-model.trim="name" :placeholder="type==='class'? 'Name der neuen Klasse': 'Name des neuen Interface'"/>
+  <InputText type="search" clazz="nameError?'':'p-invalid'" v-model.trim="name" :placeholder="labelName"/>
   <small v-if="nameError" class="p-error">{{nameError}}</small>
   <small v-else-if="nameWarning" class="p-warning">{{nameWarning}}</small>
   <small v-else>Der Name geht in Ordnung.</small>
-  <div v-if="type==='class'" class="p-inputgroup">
-      <span class="p-inputgroup-addon">
-        <InputSwitch v-model="uiClazz"/>
-      </span>
-      <span class="p-inputgroup-addon" :style="{color: uiClazz? '':'lightgray'}">
-        UI-Klasse
-      </span>
-  </div>
-  <Button label="Hinzufügen" :disabled="disableConfirm" icon="pi pi-check" @click="confirm()"/>
+  <p><Button label="Hinzufügen" :disabled="disableConfirm" icon="pi pi-check" @click="confirm()"/></p>
 </template>
 
 <script>
@@ -31,11 +27,30 @@ export default {
   data: function(){
     return {
       name: '',
-      type: "class",
-      uiClazz: false
+      type: "class"
     };
   },
   computed: {
+    labelAdd(){
+      return {
+        'class': "Neue Klasse hinzufügen",
+        'interface': "Neues Interface hinzufügen",
+        'uiclass': "Neue UI-Klasse hinzufügen",
+        'html': "Neue HTML-Datei hinzufügen",
+        'css': "Neue CSS-Datei hinzufügen",
+        'js': "Neue JavaScript-Datei hinzufügen"
+      }[this.type];
+    },
+    labelName(){
+      return {
+        'class': "Name der neuen Klasse",
+        'interface': "Name des neuen Interface",
+        'uiclass': "Name der neuen UI-Klasse",
+        'html': "Name der neuen HTML-Datei",
+        'css': "Name der neuen CSS-Datei",
+        'js': "Name der neuen JavaScript-Datei"
+      }[this.type];
+    },
     typeName(){
       if(type==="class"){
         return "Klasse";
@@ -88,7 +103,7 @@ export default {
   },
   methods: {
     confirm(){
-      this.$emit("confirm",{name: this.realName, ui: this.uiClazz, type: this.type});
+      this.$emit("confirm",{name: this.realName, type: this.type});
     }
   }
 }

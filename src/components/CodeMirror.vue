@@ -4,10 +4,6 @@
     <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px'}"></div>
     <div v-show="disabled" @click="clickDisabled()" style="cursor: not-allowed" :style="disableDivStyle" id="disable-div"></div>
     <Message v-if="displayedRuntimeError" severity="error" @close="dismissRuntimeError()">Z{{displayedRuntimeError.line}}: {{displayedRuntimeError.message}}</Message>
-    <span style="position: absolute; top: 0; right: 0" v-if="isUIClazz">
-      <Button @click="$emit('recompilepreview',true)" icon="pi pi-refresh"/>
-      <Button icon="pi pi-table" @click="clazz.showUIEditor=true"/>
-    </span>
   </div>
   
 </template>

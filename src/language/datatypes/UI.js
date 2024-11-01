@@ -18,6 +18,7 @@ export function defineUIClazzes(Java){
   defineCanvas(Java.datatypes.Canvas,Java);
   defineJFrame(Java.datatypes.JFrame,Java);
   defineUIClass(Java.datatypes.UIClass,Java.datatypes.JPanel,Java.datatypes.JComponent);
+  defineHtmlPage(Java.datatypes.HtmlPage);
 }
 
 function defineJComponent(Clazz,Java){
@@ -689,6 +690,57 @@ function defineUIClass(Clazz,JPanel,JComponent){
     ],
     info: "Liefert die Anzahl der Kind-Komponenten dieses Panels zurück.",
     returnType: 'int'
+  },Clazz,true,false);
+}
+
+function defineHtmlPage(Clazz,JPanel){
+  createMethod({
+    name: 'setVisible',
+    args: [
+      {name: 'v', type: 'boolean'}
+    ]
+  },Clazz,true,false);
+  createMethod({
+    name: 'show',
+    args: [
+    ]
+  },Clazz,true,false);
+  createMethod({
+    name: 'hide',
+    args: [
+    ]
+  },Clazz,true,false);
+  createMethod({
+    name: 'isVisible',
+    returnType: 'boolean'
+  },Clazz,true,false);
+  createMethod({
+    name: 'getChild',
+    args: [
+      {name: 'index', type: 'int', info: 'Der Index der gesuchten Kind-Komponente, beginnt bei 0.'}
+    ],
+    info: "Liefert die n-te Kind-Komponente der UI-Klasse zurück.",
+    returnType: 'JComponent'
+  },Clazz,true,false);
+  createMethod({
+    name: 'querySelector',
+    args: [
+      {
+        name: "selector", type: "String", info: "gültiger CSS-Selektor"
+      }
+    ],
+    returnType: "HTMLElement",
+    info: "Liefert das erste Kind-Element in dieser Html-Seite, das den CSS-Selektor erfüllt."
+  },Clazz,true,false);
+  createMethod({
+    name: 'querySelectorAll',
+    args: [
+      {
+        name: "selector", type: "String", info: "gültiger CSS-Selektor"
+      }
+    ],
+    returnType: {baseType: "HTMLElement", dimension: 1},
+    info: "Liefert ein Array aller Kind-Elemente in dieser Html-Seite, die den CSS-Selektor erfüllen."
   },Clazz,true,false);
 }
 

@@ -72,7 +72,6 @@
               <template v-else>
                 <UIEditor 
                   v-if="isUIClazz(c)"
-                  v-show="c.showUIEditor" 
                   :clazz="c"
                   :settings="settings"
                   @select="updateSelectedUIComponent"
@@ -81,8 +80,13 @@
                   ref="uiEditor"
                 >
                 </UIEditor>
+                <CodeMirrorEditor
+                  language="html"
+                  v-model="c.src"
+                  v-else-if="isSourceFile(c)"
+                />
                 <CodeMirror
-                  v-show="!c.showUIEditor"
+                  v-else-if="isJava(c)"
                   :clazz="c"
                   :tab-index="i"
                   :disabled="paused"
@@ -110,11 +114,11 @@
             <SplitterPanel style="overflow: hidden;">
               <UIPreview 
                 ref="uipreview" 
-                v-show="!running && isCurrentClazzUIClazz" 
+                v-show="!running && (isCurrentClazzUIClazz ||isCurrentClazzHtml)" 
                 :ui-clazz="currentClazz"
                 :selected-component="selectedUIComponent"
               />
-              <AppPreview v-show="running || !isCurrentClazzUIClazz" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
+              <AppPreview v-show="running || isJava(currentClazz)" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
             </SplitterPanel>
             <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
               <Insights 
@@ -194,6 +198,8 @@ import TerminalDialog from "./TerminalDialog.vue";
 import DocumentationDialog from "./DocumentationDialog.vue";
 import TryItDialog from "./TryItDialog.vue";
 import OpenProjectDialog from "./OpenProjectDialog.vue";
+import { SourceFile } from "../classes/SourceFile.js";
+import CodeMirrorEditor from "./CodeMirrorEditor.vue";
 
 export default {
   props: {
@@ -277,6 +283,9 @@ export default {
         }
       });
       return this.isUIClazz(this.currentClazz);
+    },
+    isCurrentClazzHtml(){
+      return this.isSourceFile(this.currentClazz)&&this.currentClazz.fileType==="html";
     },
     showUIEditor(){
       return (this.currentClazz && this.currentClazz instanceof UIClazz);
@@ -598,12 +607,18 @@ export default {
       this.$root.resetCurrent(-1);
     },
     addNewClazz(clazzData){
+      let c;
       if(clazzData.type==='interface'){
-        var c=new Clazz(clazzData.name,this.project,true);
-      }else if(clazzData.ui){
-        var c=new UIClazz(clazzData.name,this.project);
+        c=new Clazz(clazzData.name,this.project,true);
+      }else if(clazzData.type==='uiclass'){
+        c=new UIClazz(clazzData.name,this.project);
+      }else if(clazzData.type==='class'){
+        c=new Clazz(clazzData.name,this.project,false);
+      }else if(clazzData.type==='html'||clazzData.type==="css"||clazzData.type==="js"){
+        c=new SourceFile(clazzData.name,clazzData.type,this.project);
       }else{
-        var c=new Clazz(clazzData.name,this.project,false);
+        alert("Dieses Feature ist noch in Entwicklung");
+        return;
       }
       this.project.addClazz(c);
     },
@@ -621,11 +636,18 @@ export default {
     },
     isUIClazz(c){
       return (c instanceof UIClazz);
+    },
+    isSourceFile(c){
+      return (c instanceof SourceFile);
+    },
+    isJava(c){
+      return (c instanceof Clazz);
     }
   },
   components: {
     EditorMenubar,
     CodeMirror,
+    CodeMirrorEditor,
     BlockEditor,
     ProjectExplorer,
     Outline,
