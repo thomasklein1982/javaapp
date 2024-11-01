@@ -1859,8 +1859,14 @@ function additionalJSCode(){
         let el=this.$self.$el;
         //entferne die UI-Klasse und füge sie als oberstes Kind wieder ein, sodass sie sichtbar ist
         let parent=el.parentNode;
-        parent.removeChild(el);
-        parent.appendChild(el);
+        for(let i=0;i<parent.children.length;i++){
+          let c=parent.children[i];
+          if(c===el){
+            c.style.zIndex=1;
+          }else{
+            c.style.zIndex=0;
+          }
+        }
       }
       this.$self.setVisible(v);
     }
@@ -1893,17 +1899,14 @@ function additionalJSCode(){
         let el=this.$self.$el;
         //entferne die UI-Klasse und füge sie als oberstes Kind wieder ein, sodass sie sichtbar ist
         let parent=el.parentNode;
-        parent.removeChild(el);
-        parent.appendChild(el);
-        let p=new Promise((fulfill,reject)=>{
-          el.onload=async (ev)=>{
-            fulfill();
+        for(let i=0;i<parent.children.length;i++){
+          let c=parent.children[i];
+          if(c===el){
+            c.style.zIndex=1;
+          }else{
+            c.style.zIndex=0;
           }
-          el.onerror=(ev)=>{
-            reject();
-          } 
-        }); 
-        await p;
+        }
       }
       
     }
