@@ -20,6 +20,16 @@ function additionalJSCode(){
     document.body.addEventListener("pointerleave",(ev)=>{
       window.mousePressed=ev.buttons>0;
     },false);
+    window.addEventListener("message", (ev)=>{
+      let message=ev.data;
+      if(message.type==="showPage"){
+        console.log("show Page",message.data);
+        let pageName=message.data;
+        let page=window.uiClazzObjects[pageName];
+        if(!page) return;
+        page.show();
+      }
+    }, true);
   }, false);
 
   JSON.$constructor=function(){ };
@@ -70,11 +80,11 @@ function additionalJSCode(){
   }
 
   async function $createAllUIClazzes(constructors){
-    window.uiClazzObjects=[];
+    window.uiClazzObjects={};
     for(let i=0;i<constructors.length;i++){
       let c=constructors[i];
       await c.$createSelf();
-      window.uiClazzObjects.push(c.$self);
+      window.uiClazzObjects[c.name]=c;
       // if(constructors.length>1){
       //   c.$self.setVisible(false);
       // }
@@ -1958,10 +1968,9 @@ function additionalJSCode(){
     }
   }
 
-  class HTMLElement extends JComponent{
+  class HTMLElement{
     $constructor(tag){
       //super.$constructor(0,0,0,0);
-      this.standardCSSClasses="__jcomponent __htmlelement";
       if(tag && tag.substring){
         tag=document.createElement(tag);
       }
@@ -1974,7 +1983,6 @@ function additionalJSCode(){
       }else{
         this.$el.onclick = $handleOnAction;
       }
-      this.setCSSClass("");
     }
     getChildElements(){
 

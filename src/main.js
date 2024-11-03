@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
+import './style.css';
 import App from './App.vue'
-import  * as PrimeVue  from "primevue/config";
+import PrimeVue  from "primevue/config";
+import Aura from "@primevue/themes/aura";
 import  Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
 import InputText from "primevue/inputtext";
@@ -30,16 +32,17 @@ import Listbox from 'primevue/listbox';
 import TextArea from 'primevue/textarea';
 import Tooltip from 'primevue/tooltip';
 
-import 'primevue/resources/themes/vela-orange/theme.css';
-import 'primevue/resources/primevue.min.css';
+// import 'primevue/resources/themes/vela-orange/theme.css';
+// import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
-import './style.css';
+
 import './lib/lzstring.js';
 import './lib/localforage.min.js';
 import router from "./router";
 
 import { registerSW } from 'virtual:pwa-register'
 import { appjsdata } from './functions/snippets';
+import { definePreset } from '@primevue/themes';
 
 "use strict"
 
@@ -57,7 +60,62 @@ const updateSW=registerSW({
 
 let app=createApp(App);
 app.use(router);
-app.use(PrimeVue.default);
+let MyPreset=definePreset(Aura, {
+  semantic: {
+    primary: {
+        50: '{amber.50}',
+        100: '{amber.100}',
+        200: '{amber.200}',
+        300: '{amber.300}',
+        400: '{amber.400}',
+        500: '{amber.500}',
+        600: '{amber.600}',
+        700: '{amber.700}',
+        800: '{amber.800}',
+        900: '{amber.900}',
+        950: '{amber.950}'
+    },
+    colorScheme: {
+      dark: {
+        surface: {
+          50: '#E2E2F2',
+          100: '#C7C7D7',
+          200: '#B3B3C3',
+          300: '#9999A9',
+          400: '#848494',
+          500: '#707080',
+          600: '#5B5B6B',
+          700: '#464656',
+          800: '#313141',
+          900: '#242434',
+          950: '#101020'
+        },
+        
+    }
+    },
+    surface: {
+      50: '{amber.50}',
+        100: '{amber.100}',
+        200: '{amber.200}',
+        300: '{amber.300}',
+        400: '{amber.400}',
+        500: '{amber.500}',
+        600: '{amber.600}',
+        700: '{amber.700}',
+        800: '{amber.800}',
+        900: '{amber.900}',
+        950: '{amber.950}'
+    }
+  }
+});
+app.use(PrimeVue, {
+  theme: {
+    preset: MyPreset,
+    options: {
+      darkModeSelector: '.my-app-dark',
+    }
+  }
+});
 app.use(ConfirmationService);
 app.use(ToastService);
 app.directive('tooltip', Tooltip);

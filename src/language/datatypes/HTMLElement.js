@@ -4,7 +4,6 @@ import { Java } from "../java";
 import { createConstructor } from "../helper/createConstructor";
 
 export function defineHTMLElement(clazz){
-  clazz.superClazz=Java.clazzes.JComponent;
   createConstructor({
     args: [
       {
@@ -17,9 +16,9 @@ export function defineHTMLElement(clazz){
   createMethod({
     name: 'add',
     args: [
-      {name: 'component', type: 'JComponent', info: 'Die Komponente, die hinzugefügt werden soll.'}
+      {name: 'element', type: 'HTMElement', info: 'Die Komponente, die hinzugefügt werden soll.'}
     ],
-    info: 'Fügt dem HTMLElement eine (weitere) Komponente hinzu.'
+    info: 'Fügt dem HTMLElement ein HTMLElement hinzu.'
   },clazz,false,false,Java);
   createMethod({
     name: 'setAttribute',

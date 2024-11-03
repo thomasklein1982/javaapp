@@ -1,6 +1,6 @@
 <template>
   <div id="root">
-    <div id="editor" ref="editor"></div>
+    <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px'}"></div>
   </div>
   
 </template>
@@ -25,11 +25,17 @@ import { nextTick } from '@vue/runtime-core';
 export default {
   props: {
     language: String,
-    modelValue: String
+    modelValue: String,
+    settings: Object,
+    fontSize: {
+      type: Number,
+      default: 4
+    },
   },
   emits: ["update:modelValue","change"],
   computed: {
     languagePlugins(){
+      console.log("lang",this.language);
       if(this.language==="html"){
         return {
           language: html({autoCloseTags: true}).language,

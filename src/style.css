@@ -6,6 +6,10 @@ body,html{
   font-size: 20px;
 }
 
+body{
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
 *{
   overscroll-behavior: none;
 }
@@ -231,23 +235,23 @@ a{
   overflow: hidden;
 }
 
-.p-tabview.editor-tabs{
+.p-tabs.editor-tabs{
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.p-tabview.editor-tabs .p-tabview-panels{
+.p-tabs.editor-tabs .p-tabpanels{
   flex: 1;
   overflow: hidden;
   display: flex;
   padding: 0;
   flex-direction: column;
 }
-.p-tabview.editor-tabs .p-tabview-panel{
+.p-tabs.editor-tabs .p-tabpanel{
   flex: 1;
   display: flex;
-  overflow: hidden;
+  overflow: auto;
   flex-direction: column;
 }
 

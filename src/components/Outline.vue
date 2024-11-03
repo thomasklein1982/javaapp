@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import { SourceFile } from "../classes/SourceFile";
 import { UIClazz } from "../classes/UIClazz";
 import UmlClazz from "./UmlClazz.vue";
 
@@ -16,7 +17,7 @@ export default {
   },
   computed: {
     clazzes(){
-      return this.project.clazzes.filter(c=>!(c instanceof UIClazz));
+      return this.project.clazzes.filter(c=>!(c instanceof UIClazz || c instanceof SourceFile));
     }
   },
   data(){
