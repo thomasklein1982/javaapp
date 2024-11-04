@@ -17,7 +17,7 @@
     <DatabaseNameInput help="Der Name des neuen Attributs." v-model="dialogs.newAttribute.name" label="Name"/>
     <div class="field">
       <label for="datatype">Datentyp</label>
-      <Dropdown id="datatype" optionLabel="name" v-model="dialogs.newAttribute.type" :options="datatypes" />
+      <Select id="datatype" optionLabel="name" v-model="dialogs.newAttribute.type" :options="datatypes" />
       <div>{{ dialogs.newAttribute.type.comment }}</div>
     </div>
     <template #footer>
@@ -29,7 +29,7 @@
     <DatabaseNameInput help="Der Name des Attributs." v-model="dialogs.editAttribute.name" label="Name"/>
     <div class="field">
       <label for="datatype">Datentyp</label>
-      <Dropdown id="datatype" optionLabel="name" v-model="dialogs.editAttribute.type" :options="datatypes" />
+      <Select id="datatype" optionLabel="name" v-model="dialogs.editAttribute.type" :options="datatypes" />
       <div>{{ dialogs.editAttribute.type.comment }}</div>
     </div>
     <template #footer>

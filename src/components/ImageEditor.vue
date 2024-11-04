@@ -56,7 +56,7 @@
           <span style="background-color: #FFD54F"></span>
         </span>
         <span style="padding-left: 0.5rem; grid-column: 4; grid-row: 1/3;">
-          <Dropdown
+          <Select
             v-model="settings.unit"
             :options="['%','px']"
             @change="resetSize()"
@@ -67,7 +67,7 @@
         Breite &times; Höhe: {{ settingsWidthHeight.w }} &times; {{ settingsWidthHeight.h }}
       </p>
       <div>
-        <Dropdown
+        <Select
             v-model="settings.changePolicy"
             :options="['Anpassen','Nicht anpassen']"
         />
@@ -79,7 +79,7 @@
       <div>
         <h2>Bild-Art</h2>
         <p>Lege fest, ob das Bild als JPG oder als PNG gespeichert werden soll:</p>
-        <Dropdown v-model="settings.imageType" :options="['PNG','JPG']"/>
+        <Select v-model="settings.imageType" :options="['PNG','JPG']"/>
         <div v-if="settings.imageType==='JPG'">
           <p>Eine JPG-Datei ist kleiner als eine PNG-Datei. Sie kann aber keine Transparenz enthalten. Du kannst die Qualität des Bildes festlegen:</p>
           <Slider v-model="settings.imageQuality"/>

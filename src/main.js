@@ -6,9 +6,9 @@ import Aura from "@primevue/themes/aura";
 import  Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
 import InputText from "primevue/inputtext";
-import Dropdown from "primevue/dropdown";
+import Select from "primevue/select";
 import InputNumber from "primevue/inputnumber";
-import InputSwitch from "primevue/inputswitch";
+import ToggleSwitch from "primevue/toggleswitch";
 import * as Dialog  from "primevue/dialog";
 import Menubar from 'primevue/menubar';
 import Sidebar from 'primevue/sidebar';
@@ -25,12 +25,11 @@ import Slider from "primevue/slider";
 import Card from 'primevue/card';
 import SelectButton from 'primevue/selectbutton';
 import ToggleButton from 'primevue/togglebutton';
-import TabView from 'primevue/tabview';
-import TabPanel from 'primevue/tabpanel';
 import Message from "primevue/message";
 import Listbox from 'primevue/listbox';
 import TextArea from 'primevue/textarea';
 import Tooltip from 'primevue/tooltip';
+import IftaLabel from 'primevue/iftalabel';
 
 // import 'primevue/resources/themes/vela-orange/theme.css';
 // import 'primevue/resources/primevue.min.css';
@@ -134,17 +133,15 @@ app.component('Toast',Toast);
 app.component('Splitter',Splitter);
 app.component('SplitterPanel',SplitterPanel);
 app.component('Slider',Slider);
-app.component('InputSwitch',InputSwitch);
+app.component('ToggleSwitch',ToggleSwitch);
 app.component('Card',Card);
 app.component('SelectButton',SelectButton);
-app.component('Dropdown',Dropdown);
+app.component('Select',Select);
 app.component('ToggleButton',ToggleButton);
-app.component('TabPanel',TabPanel);
-app.component('TabView',TabView);
 app.component('Message',Message);
 app.component('Listbox',Listbox);
 app.component('TextArea',TextArea);
-
+app.component('IftaLabel',IftaLabel);
 
 
 window.app=app.mount('#app');

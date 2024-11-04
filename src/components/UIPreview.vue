@@ -12,7 +12,8 @@ import { UIClazz } from '../classes/UIClazz';
       selectedComponent: {
         type: Object,
         default: null
-      }
+      },
+      project: Object
     },
     watch: {
       selectedComponent(nv,ov){
@@ -66,7 +67,7 @@ import { UIClazz } from '../classes/UIClazz';
         doc.write(code);
         doc.close();
         this.frame=frame;
-        this.focus();
+        //this.focus();
       }
     }
   }

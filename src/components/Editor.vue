@@ -1,4 +1,4 @@
-<template>  
+<template>
   <div v-if="project" style="width: 100%;overflow: hidden" :style="{height: $root.printMode? '':'100%', display: 'flex', flexDirection: 'column'}">
     <PrintPreview
       :project="project"
@@ -58,6 +58,7 @@
       <DatabaseDialog v-if="project" :database="project.database" ref="dialogDatabase"/>
       <CSSDialog :project="project" ref="dialogCSS"/>
       <TerminalDialog :project="project" ref="dialogTerminal" @run="stopAndPlay"/>
+      <SourceFileSettingsDialog ref="dialogSourceFileSettings" :project="project"/>
       <TryItDialog ref="tryItDialog"/>
       <Splitter :gutter-size="splitterSize" ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
         <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">
@@ -86,13 +87,16 @@
                     ref="uiEditor"
                   >
                   </UIEditor>
-                  <CodeMirrorEditor
-                    :language="c.fileType"
-                    v-model="c.src"
-                    :settings="settings"
-                    :font-size="fontSize"
-                    v-else-if="isSourceFile(c)"
-                  />
+                  <div v-else-if="isSourceFile(c)" :style="{position: 'relative', flex: 1, display: 'flex', 'flex-direction': 'column'}">
+                    <CodeMirrorEditor
+                      :language="c.fileType"
+                      v-model="c.src"
+                      :settings="settings"
+                      :font-size="fontSize"
+                      @content-changed="updateUIPreview()"
+                    />
+                    <Button icon="pi pi-cog" @click="$refs.dialogSourceFileSettings.open(c)" style="position: absolute; right: 0.2rem; top: 0.2rem;"/>
+                  </div>
                   <CodeMirror
                     v-else-if="isJava(c)"
                     :clazz="c"
@@ -113,7 +117,6 @@
               </TabPanel>
             </TabPanels>
           </Tabs>
-          
         </SplitterPanel>
         <SplitterPanel v-show="!rightClosed" :size="100-sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">  
           <Splitter :gutter-size="splitterSize" layout="vertical" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
@@ -123,6 +126,7 @@
                 v-show="!running && (isCurrentClazzUIClazz ||isCurrentClazzHtml)" 
                 :ui-clazz="currentClazz"
                 :selected-component="selectedUIComponent"
+                :project="project"
               />
               <AppPreview v-show="running || isJava(currentClazz)" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
             </SplitterPanel>
@@ -207,6 +211,7 @@ import OpenProjectDialog from "./OpenProjectDialog.vue";
 import { SourceFile } from "../classes/SourceFile.js";
 import CodeMirrorEditor from "./CodeMirrorEditor.vue";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "primevue";
+import SourceFileSettingsDialog from "./SourceFileSettingsDialog.vue";
 
 export default {
   props: {
@@ -241,18 +246,8 @@ export default {
         console.log("update linter");
         ed.updateLinter();
       }
-      // if(this.$refs.uiEditor && nv<this.$refs.uiEditor.length){
-      //   let ed=this.$refs.uiEditor[nv];
-      //   console.log("update ui editor");
-      //   ed.deselectComponent(true);
-      // }
       this.selectedUIComponent=null;
     },
-    // sizeCode(nv,ov){
-    //   if(nv!==ov){
-    //     this.setSplitterSizes(nv);
-    //   }
-    // },
     current(nv,ov){
       if(nv!==null){
         let name=nv.name;
@@ -681,7 +676,8 @@ export default {
     TabList,
     TabPanels,
     TabPanel,
-    Tab
+    Tab,
+    SourceFileSettingsDialog
   }
 }
 </script>

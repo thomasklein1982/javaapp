@@ -29,10 +29,10 @@ export default {
     settings: Object,
     fontSize: {
       type: Number,
-      default: 4
+      default: 20
     },
   },
-  emits: ["update:modelValue","change"],
+  emits: ["update:modelValue","change","content-changed"],
   computed: {
     languagePlugins(){
       console.log("lang",this.language);
@@ -55,8 +55,8 @@ export default {
     };
   },
   mounted(){
-    let changed=true;
-    let timer;
+    let changed=false;
+    let timer=null;
     let editorTheme=new Compartment();
     let extensions=[
       basicSetup,
@@ -66,8 +66,16 @@ export default {
       indentUnit.of("  "),
       keymap.of([indentWithTab]),
       EditorView.updateListener.of((v) => {
+        if(timer!==null) clearTimeout(timer);
+        timer=setTimeout(()=>{
+          if(changed){
+            this.$emit('content-changed');
+          }
+          changed=false;
+        },2000);
+        if(!v.docChanged) return;
+        changed=true;
         this.$emit('update:modelValue', this.getCode());
-        //this.project.css=this.getCode();
       }),
     ];
     if(this.languagePlugins){

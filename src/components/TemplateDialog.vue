@@ -21,25 +21,25 @@
       </template>
       <template v-else-if="layouttype===1">
         Wie viele gleich breite Spalten sollen es sein?
-        <Dropdown v-model="equalColumnCount" :options="columnCounts"/>
+        <Select v-model="equalColumnCount" :options="columnCounts"/>
       </template>
       <template v-else-if="layouttype===2">
         <div>
           Wie viele Zeilen sollen es sein?
-          <Dropdown v-model="rowCount" :options="counts"/>
+          <Select v-model="rowCount" :options="counts"/>
         </div>
         <div>Wie viele Spalten sollen es sein?
-          <Dropdown v-model="columnCount" :options="counts"/>
+          <Select v-model="columnCount" :options="counts"/>
         </div>
         <divider></divider>
         <div v-if="columnCount>=1 || rowCount>=1">
           <div :style="{display: 'grid', 'grid-template': 'auto 1fr/auto 1fr', 'justify-items': 'stretch','align-items':'stretch'}">
             <div v-if="columnCount>=1" :style="{'grid-column': 2, 'grid-row': 1}">
-              <Dropdown v-model="columnWidths[i-1]" v-for="i in columnCount" :options="['1fr','auto']"></Dropdown>
+              <Select v-model="columnWidths[i-1]" v-for="i in columnCount" :options="['1fr','auto']"></Select>
             </div>
             <div v-if="rowCount>=1" style="width: 6rem" :style="{'grid-column': 1, 'grid-row': 2}">
               <div>
-                <Dropdown v-model="rowWidths[i-1]" v-for="i in rowCount" :options="['1fr','auto']"></Dropdown>
+                <Select v-model="rowWidths[i-1]" v-for="i in rowCount" :options="['1fr','auto']"></Select>
               </div>
             </div>
             <div :style=previewStyle>

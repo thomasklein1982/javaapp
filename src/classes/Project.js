@@ -110,9 +110,117 @@ export class Project{
     }
     return -1;
   }
-  // let code="\<script\>window.language='java';"+window.appJScode+" "+window.additionalJSCode;
-  //       code+='\n\</script\>\n\<script\>'+src+'\n\</script\>';
-  getFullAppCode(additionalCode, includeSave, dontCallMain, args){
+  
+  getUIPreviewCode(startPage){
+    let assetsCode="/****** ASSETS START ******/";
+    for(let i=0;i<this.assets.length;i++){
+      let a=this.assets[i];
+      assetsCode+="loadAsset('"+a.file.code+"','"+a.name+"');";
+    }
+    assetsCode+="\n/****** ASSETS END ******/"
+    let uiclazzesString=[];
+    let uiclazzes=this.getUIClazzes();
+    for(let i=0;i<uiclazzes.length;i++){
+      let c=uiclazzes[i];
+      if(c.name===startPage.name) continue;
+      uiclazzesString.push(c.name);
+    }
+    uiclazzesString.push(startPage.name);
+    uiclazzesString="["+uiclazzesString.join(",")+"]";
+
+    let js="";
+    for(let i=0;i<this.clazzes.length;i++){
+      let c=this.clazzes[i];
+      if(!(c instanceof UIClazz || c instanceof SourceFile)) continue;
+      js+=c.getJavaScriptCode();
+    }
+
+    let css=this.prepareCSS(this.css);
+
+    let code=`<!doctype html>
+<html>
+    <head>
+      <title>${this.name}</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
+      <link rel="manifest" href="./manifest.webmanifest">
+      <script>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('./sw.js').then((r)=>{
+            console.log("Service Worker Registrierung erfolgreich");
+          }, (e)=>{
+            console.log("Service Worker Registrierung nicht erfolgreich",e);
+          });
+        }
+        window.language="java";
+        window.appJSdebugMode=true;
+        window.$asyncInitFunctions=[];
+        ${window.appJScode}
+        $App.hideConsoleIfUIPresentAfterSetup=true;
+        ${window.additionalJSCode}
+        //${assetsCode}
+        ${js}
+        window.$exerciseChecker=async()=>{};
+        window.addEventListener('DOMContentLoaded',async function(){
+          await $App.setup();
+          await $createAllUIClazzes(${uiclazzesString});
+          
+        });
+        
+      </script>
+      <style>
+        .jimage{
+          justify-self: stretch;
+        }
+        #dialog-backdrop{
+          z-index: 1000;
+          position: fixed;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          background-color: rgba(0,0,0,0.5);
+          display: flex;
+          place-content: center;
+          align-items: center;
+        }
+        #dialog-frame{
+          background-color: white;
+          border-radius: 0.5rem;
+          max-width: 85%;
+          max-height: 85%;
+          box-shadow: 5px 5px 5px teal;
+          min-width: 40%;
+          padding: 1rem;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+        #dialog-content{
+          flex: 1;
+          overflow: auto;
+        }
+        #dialog-input{
+          width: 100%;
+          min-height: 2rem;
+        }
+        .dialog-footer{
+          margin-top: 0.2rem;
+          text-align: right;
+        }
+        .dialog-footer-button{
+          min-height: 2rem;
+        }
+        ${css}
+      </style>
+    </head>
+    <body>
+    </body>
+</html>`;
+    return code;
+  }
+
+  getFullAppCode(additionalCode, includeSave, dontCallMain, args, afterMainCallCode){
     if(!additionalCode) additionalCode="";
     this.date=new Date();
     let databaseCode="";
@@ -186,7 +294,7 @@ export class Project{
     }
     /* alle Funktionen aus window.$asyncInitFunctions werden aufgerufen:*/
     codeMainCall+="\nfor(let i=0;i<window.$asyncInitFunctions.length;i++){await window.$asyncInitFunctions[i]();}";
-    codeMainCall+="\nif("+mainObjectCode+"?.main){await "+mainObjectCode+".main("+JSON.stringify(args)+");}\n";
+    codeMainCall+="\nif("+mainObjectCode+"?.main){await "+mainObjectCode+".main("+JSON.stringify(args)+");"+(afterMainCallCode?afterMainCallCode:"")+"}\n";
     codeMainCall+="\nsetTimeout(async ()=>{await window.$exerciseChecker();},100);})();";
     let css=this.prepareCSS(this.css);
     codeMainCall="window.addEventListener('DOMContentLoaded',async function(){"+codeMainCall+"});";

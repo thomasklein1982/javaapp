@@ -15,7 +15,7 @@
     <div>
       Icon: 
       <template v-if="iconOptions.length>0">
-        <Dropdown :options="iconOptions" v-model="icon"/>
+        <Select :options="iconOptions" v-model="icon"/>
         <img style="float: right;" :src="iconData" width="100" height="100"/>
       </template>
       <template v-else>Du hast keine Bilder als Assets hochgeladen, die als Icon verwendet werden könnten.</template>

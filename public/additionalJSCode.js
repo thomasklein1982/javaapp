@@ -80,15 +80,47 @@ function additionalJSCode(){
   }
 
   async function $createAllUIClazzes(constructors){
+    console.log("create all ui clazzes",constructors);
+    if(window.uiClazzObjects) return;
     window.uiClazzObjects={};
     for(let i=0;i<constructors.length;i++){
       let c=constructors[i];
       await c.$createSelf();
       window.uiClazzObjects[c.name]=c;
-      // if(constructors.length>1){
-      //   c.$self.setVisible(false);
-      // }
     }
+  }
+
+  function $serveFile(name,content,fileType){
+    if(!window.$servedFiles) window.$servedFiles={};
+    let mimes={
+      png: "image/png",
+      jpg: "image/jpg",
+      jpeg: "image/jpg",
+      txt: "text/plain",
+      html: "text/html",
+      htm: "text/html",
+      js: "text/javascript",
+      json: "application/json",
+      mp3: "audio/mpeg",
+      mp4: "video/mp4",
+      otf: "font/otf",
+      pdf: "application/pdf",
+      svg: "image/svg+xml",
+      tif: "image/tiff",
+      tiff: "image/tiff",
+      ttf: "font/ttf",
+    };
+    let mime=mimes[fileType];
+    const blob = URL.createObjectURL(
+      new Blob([content], { type: mime })
+    );
+    if(window.$servedFiles[name]){
+      URL.revokeObjectURL(window.$servedFiles[name].url);
+    }
+    window.$servedFiles[name]={
+      url: blob,
+    }
+
   }
 
   function $new(constructor){

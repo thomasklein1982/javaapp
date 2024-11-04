@@ -3,13 +3,13 @@
     <p>JavaApp version {{ $root.version }} von Thomas Klein (<a href="https://mathe-info.com" target="_blank">mathe-info.com</a>)</p>
     <Button label="Neu starten" @click="restart()"/>
     <div style="padding: 0.2rem">
-      <InputSwitch id="optimizeCompiler" v-model="settings.optimizeCompiler"/><label for="optimizeCompiler">Compiler optimieren</label>
+      <ToggleSwitch id="optimizeCompiler" v-model="settings.optimizeCompiler"/><label for="optimizeCompiler">Compiler optimieren</label>
     </div>
     <div style="padding: 0.2rem">
-      <InputSwitch id="autoUpdateUI" v-model="settings.autoUpdateUI"/><label for="autoUpdateUI">UI-Komponenten automatisch aktualisieren</label>
+      <ToggleSwitch id="autoUpdateUI" v-model="settings.autoUpdateUI"/><label for="autoUpdateUI">UI-Komponenten automatisch aktualisieren</label>
     </div>
     <div style="padding: 0.2rem">
-      <InputSwitch id="showCaretPosition" v-model="settings.showCaretPosition"/><label for="showCaretPosition">Caret-Position anzeigen</label>
+      <ToggleSwitch id="showCaretPosition" v-model="settings.showCaretPosition"/><label for="showCaretPosition">Caret-Position anzeigen</label>
     </div>
     <div style="padding: 0.2rem" :style="{display: 'flex', 'justify-content': 'center', 'align-items':'center'}">
       <Button icon="pi pi-minus" @click="changeFontSize(-1)"/>

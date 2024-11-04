@@ -1,25 +1,12 @@
-import { nextTick } from "vue";
-import { concatArrays } from "../functions/helper";
-import { parseJava } from "../functions/parseJava";
-import { SuperInterfaces } from "../language/compile/SuperInterfaces";
-import { TypeParameters } from "../language/compile/TypeParameters";
-import { createAttribute } from "../language/helper/createAttribute";
+
 import { Java } from "../language/java";
-import {Attribute} from "./Attribute"
-import { Method } from "./Method";
-import { options } from "./Options";
-import { Scope } from "./Scope";
-import { Source } from "./Source";
-import { Type } from "./Type";
-import  * as autocomplete  from "@codemirror/autocomplete";
-import { createMethod } from "../language/helper/createMethod";
-import { parseComments } from "../functions/parseComments";
 import { htmlLanguage } from "@codemirror/lang-html";
 
 export class SourceFile{
   constructor(name,fileType,project){
     this.name=name;
     this.fileType=fileType;
+    this.useGlobalCSS=true;
     this.project=project;
     this.attributeErrors=null;
     this.errors=[];
@@ -34,6 +21,7 @@ export class SourceFile{
     o.src=this.src;
     o.isHidden=this.isHidden;
     o.fileType=this.fileType;
+    o.useGlobalCSS=this.useGlobalCSS;
     return o;
   }
 
@@ -47,6 +35,11 @@ export class SourceFile{
       this.src=obj.src;
     }else{
       this.src="";
+    }
+    if(obj.useGlobalCSS){
+      this.useGlobalCSS=obj.useGlobalCSS;
+    }else{
+      this.useGlobalCSS=true;
     }
     this.fileType=obj.fileType;
     this.isHidden=false;
@@ -76,11 +69,19 @@ export class SourceFile{
   }
   isUIClazz(){return false;}
   isNative(){return false;}
-  getUIPreviewCode(){
-    return this.src;
-  }
   getStringifiedSourceCode(){
     let src=this.src;
+    if(this.useGlobalCSS && this.project.css.trim().length>0){
+      let css=this.project.prepareCSS(this.project.css);
+      let pos=src.indexOf("<head");
+      if(pos>=0){
+        pos=src.indexOf(">",pos+1);
+        if(pos>=0){
+
+          src=src.substring(0,pos+1)+"\n<style>\n"+css+"\n</style>\n"+src.substring(pos+1);
+        }
+      }
+    }
     let tree=htmlLanguage.parser.parse(src);
     console.log(tree);
     let changes=[];
@@ -96,16 +97,18 @@ export class SourceFile{
           let sValue=src.substring(value.from,value.to);
           let tagname=attribute.parent.firstChild.nextSibling;
           let sTagname=src.substring(tagname.from,tagname.to);
-          if(sTagname==="a"){
-            let len=sValue.length;
-            if(sValue.substring(1,5)!=="http" && sValue.substring(len-6,len-1)===".html"){
-              let change={
-                from: value.from,
-                to: value.to,
-                ov: sValue,
-                nv: "javascript:$showPage("+JSON.stringify(sValue.substring(1,len-6))+")"
+          let len=sValue.length;
+          if(sValue.substring(1,5)!=="http"){
+            if(sTagname==="a"){
+              if(sValue.substring(len-6,len-1)===".html"){
+                let change={
+                  from: value.from,
+                  to: value.to,
+                  ov: sValue,
+                  nv: "javascript:$showPage("+JSON.stringify(sValue.substring(1,len-6))+")"
+                }
+                changes.push(change);
               }
-              changes.push(change);
             }
           }
         }
@@ -138,18 +141,51 @@ export class SourceFile{
           data: s
         });
       }
-    </script>`;
+      function $replaceObjectURLs(){
+        console.log("replace object urls");
+        let els=document.querySelectorAll("[href]");
+        for(let i=0;i<els.length;i++){
+          let e=els[i];
+          let href=e.getAttribute('href');
+          console.log("e",e,e.href,window.$servedFiles[e.href],e.getAttribute('href'));
+          let file=window.$servedFiles[href];
+          if(file){
+            e.href=file.url;
+          }
+        }
+      }
+      window.$servedFiles=(`;
     src=JSON.stringify(src);
+    src+="+JSON.stringify(window.$servedFiles)+\");console.log('served',window.$servedFiles);$replaceObjectURLs();</script>\";";
     src=src.replace(/</g,"\\x3C");
     return src;
   }
   getJavaScriptCode(){
+    if(this.fileType==="html"){
+      return this.getHtmlJavaScriptCode();
+    }else{
+      return this.getServeFileJavaScriptCode();
+    }
+  }
+  getUIPreviewCode(){
+    let code=this.project.getUIPreviewCode(this);
+    return code;
+  }
+  getServeFileJavaScriptCode(){
+    let code=`\n$serveFile(${JSON.stringify(this.name+"."+this.fileType)},${JSON.stringify(this.src)},${JSON.stringify(this.fileType)})\n`;
+    return code;
+  }
+
+  getHtmlJavaScriptCode(){
     let code="class "+this.name+" extends HtmlPage";
     code+="{";
     code+="\nstatic $self;\n";//=$new("+this.name+");";
     code+=`static async $createSelf(){
       ${this.name}.$self=$new(${this.name});
-      ${this.name}.$self.$el.srcdoc=${this.getStringifiedSourceCode()};
+      let code=${this.getStringifiedSourceCode()};
+      //code+="\\x3Cscript>window.$servedFiles=("+JSON.stringify(window.$servedFiles)+");$replaceObjectURLs();\\x3C/script>";
+      //code=code.replace(/</g,"\\x3C");
+      ${this.name}.$self.$el.srcdoc=code;
       let p=new Promise((fulfill,reject)=>{
         ${this.name}.$self.$el.onload=async (ev)=>{
           fulfill();
@@ -162,10 +198,6 @@ export class SourceFile{
     }`;
     code+="\nasync $constructor(){";
     code+="await super.$constructor();";
-    console.log(JSON.stringify(this.src));
-    // code+="\nconst blob = URL.createObjectURL(new Blob(["+JSON.stringify(this.src)+"], { type: 'text/html' }));";
-    // code+="\nthis.$el.src=blob;";
-    // code+="\nURL.revokeObjectURL(blob);";
     code+="\nreturn this;"
     code+="\n}";
 

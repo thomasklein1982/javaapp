@@ -43,12 +43,12 @@
       </tr>
       <tr v-if="component.inputType!==undefined">
         <td>Eingabetyp:</td>
-        <td><Dropdown @change="emitUpdate()" :options="['text','number']" v-model="component.inputType" style="width: 95%"/></td>
+        <td><Select @change="emitUpdate()" :options="['text','number']" v-model="component.inputType" style="width: 95%"/></td>
       </tr>
       <tr v-if="type && type.labels && type.labels.value!==undefined">
         <td>Wert:</td>
         <td v-if="component.valueType==='Boolean'">
-          <InputSwitch @change="emitUpdate()" v-model="component.value"/>
+          <ToggleSwitch @change="emitUpdate()" v-model="component.value"/>
         </td>
         <td v-else-if="component.valueType===undefined || component.valueType==='inline-text'">
           <InputText type="search" spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%"/>
@@ -67,12 +67,12 @@
       <template v-if="component.align!==undefined">
         <tr>
           <td>Ausrichtung:</td>
-          <td ><Dropdown style="width: 95%"  @change="emitUpdate()" v-model="component.align" :options="['center','top &uArr;', 'bottom &dArr;','left &lArr;','right &rArr;','left top &nwArr;', 'left bottom &swArr;', 'right top &neArr;', 'right bottom &seArr;']"/></td>
+          <td ><Select style="width: 95%"  @change="emitUpdate()" v-model="component.align" :options="['center','top &uArr;', 'bottom &dArr;','left &lArr;','right &rArr;','left top &nwArr;', 'left bottom &swArr;', 'right top &neArr;', 'right bottom &seArr;']"/></td>
         </tr>
       </template>
       <tr v-if="!component.controlComponent && !isUIClazz">
         <td>Unsichtbar:</td>
-        <td><InputSwitch @change="emitUpdate()" v-model="component.invisible"/></td>
+        <td><ToggleSwitch @change="emitUpdate()" v-model="component.invisible"/></td>
       </tr>
       <template v-if="component.maxX!==undefined">
         <tr>
@@ -112,23 +112,23 @@
       </template>
       <template v-if="component.sizePolicy!==undefined">
         <td>Anpassung:</td>
-        <td><Dropdown @change="emitUpdate()" :options="['fit','stretch']" v-model="component.sizePolicy" style="width: 95%"/></td>
+        <td><Select @change="emitUpdate()" :options="['fit','stretch']" v-model="component.sizePolicy" style="width: 95%"/></td>
       </template>
       <tr v-if="component.onAction!==undefined">
         <td>onAction auslösen?</td>
-        <td><InputSwitch v-model="component.onAction"/></td>
+        <td><ToggleSwitch v-model="component.onAction"/></td>
       </tr>
       <tr v-if="component.onMouseDown!==undefined">
         <td>onMouseDown auslösen?</td>
-        <td><InputSwitch v-model="component.onMouseDown"/></td>
+        <td><ToggleSwitch v-model="component.onMouseDown"/></td>
       </tr>
       <tr v-if="component.onMouseUp!==undefined">
         <td>onMouseUp auslösen?</td>
-        <td><InputSwitch v-model="component.onMouseUp"/></td>
+        <td><ToggleSwitch v-model="component.onMouseUp"/></td>
       </tr>
       <tr v-if="component.onMouseMove!==undefined">
         <td>onMouseMove auslösen?</td>
-        <td><InputSwitch v-model="component.onMouseMove"/></td>
+        <td><ToggleSwitch v-model="component.onMouseMove"/></td>
       </tr>
       <tr>
         <td>ActionCommand:</td>
@@ -142,7 +142,7 @@
       </template>
       <tr v-if="!component.disabled!==undefined">
         <td>Deaktiviert:</td>
-        <td><InputSwitch @change="emitUpdate()" v-model="component.disabled"/></td>
+        <td><ToggleSwitch @change="emitUpdate()" v-model="component.disabled"/></td>
       </tr>
       <template v-if="component.controlComponent">
         <tr v-for="(v,a) in component.controlComponent">
@@ -167,7 +167,7 @@
         </tr>
         <!-- <tr>
           <td>Absolute Position:</td>
-          <td><InputSwitch @change="emitUpdate()" v-model="component.forceAbsolute"/></td>
+          <td><ToggleSwitch @change="emitUpdate()" v-model="component.forceAbsolute"/></td>
         </tr> -->
         <template v-if="!isUIClazz">
           <tr>
