@@ -4508,6 +4508,27 @@ function additionalJSCode(){
   }
 
   class $Exercise{
+    static getHtmlPage(name){
+      let elements=document.querySelectorAll("iframe");
+      for(let i=0;i<elements.length;i++){
+        let e=elements[i];
+        if(e.id && e.id.endsWith(".html")){
+          return e;
+        }
+      }
+      return null;
+    }
+    static getHtmlPages(){
+      let elements=document.querySelectorAll("iframe");
+      let pages=[];
+      for(let i=0;i<elements.length;i++){
+        let e=elements[i];
+        if(e.id && e.id.endsWith(".html")){
+          pages.push(e);
+        }
+      }
+      return pages;
+    }
     static isComponentBeforeComponent(comp1,comp2){
       let node=comp1.$el.nextSibling;
       while(node){

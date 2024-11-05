@@ -195,9 +195,8 @@ export class SourceFile{
     code+="\nstatic $self;\n";//=$new("+this.name+");";
     code+=`static async $createSelf(){
       ${this.name}.$self=$new(${this.name});
+      ${this.name}.$self.$el.id="${this.name}.html";
       let code=${this.getStringifiedSourceCode()};
-      //code+="\\x3Cscript>window.$servedFiles=("+JSON.stringify(window.$servedFiles)+");$replaceObjectURLs();\\x3C/script>";
-      //code=code.replace(/</g,"\\x3C");
       ${this.name}.$self.$el.srcdoc=code;
       let p=new Promise((fulfill,reject)=>{
         ${this.name}.$self.$el.onload=async (ev)=>{
