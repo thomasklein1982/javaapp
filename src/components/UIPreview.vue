@@ -54,7 +54,7 @@ import { UIClazz } from '../classes/UIClazz';
         this.frame=null;
       },
       reload(){
-        if(!(this.uiClazz instanceof UIClazz || this.uiClazz.fileType==="html")) return;
+        if(!this.uiClazz || !(this.uiClazz instanceof UIClazz || this.uiClazz.fileType==="html")) return;
         let frame=document.createElement('iframe');
         frame.style="background-color: white; width: 100%; height: 100%;";
         if(this.$refs.wrapper.firstChild){

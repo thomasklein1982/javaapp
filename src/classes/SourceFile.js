@@ -89,7 +89,7 @@ export class SourceFile{
       let content;
       if(cursor.name==="AttributeName"){
         content=src.substring(cursor.from,cursor.to);
-        if(content==="href"){
+        if(content==="href" || content==="src"){
           let node=cursor.node;
           console.log(content,node.name);
           let attribute=node.parent;
@@ -151,6 +151,19 @@ export class SourceFile{
           let file=window.$servedFiles[href];
           if(file){
             e.href=file.url;
+          }
+        }
+        els=document.querySelectorAll("[src]");
+        for(let i=0;i<els.length;i++){
+          let e=els[i];
+          let src=e.getAttribute('src');
+          let file=window.$servedFiles[src];
+          console.log("src",e,src,file);
+          if(file){
+            const s = document.createElement('script');
+            s.src = file.url;
+            document.body.appendChild(s);
+            
           }
         }
       }
