@@ -190,6 +190,7 @@ window.appJScode=function(){
           }else if(data.type==="getScope"){
             console.log("get scope",this.$scope);
             let $scope=this.$scope.getData(JSON.parse(data.template));
+            console.log("getScope",data.template);
             window.parent.postMessage({type: "getScope", data: $scope});
           }
           if(this.paused){

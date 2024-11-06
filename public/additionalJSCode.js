@@ -4013,9 +4013,9 @@ function additionalJSCode(){
           let dimension=0;
           if(infos){
             let attr=infos.attributes[name];
-            if(attr){
-              type=attr.baseType;
-              dimension=attr.dimension;
+            if(attr && attr.type){
+              type=attr.type.baseType;
+              dimension=attr.type.dimension;
               d.v[name]=$getData(name,{dimension,type,value}, template[name]);
             }
           }else{
