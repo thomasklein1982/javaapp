@@ -133,9 +133,9 @@ export class SourceFile{
       parts.push(src.substring(last));
       src=parts.join("");
     }
+    src=`<script>window.onerror=function(error, source, line, col, event){$reportError({error,line,col, file: ${JSON.stringify(this.name)}})}; function $reportError(data){window.parent.postMessage({type: 'reportError', data })}</script>`+src;
     src+=`\n<script>
       function $showPage(s){
-        //TODO: nachricht an parentWindow: Seite wechseln!
         window.parent.postMessage({
           type: "showPage",
           data: s
@@ -185,7 +185,8 @@ export class SourceFile{
     return code;
   }
   getServeFileJavaScriptCode(){
-    let code=`\n$serveFile(${JSON.stringify(this.name+"."+this.fileType)},${JSON.stringify(this.src)},${JSON.stringify(this.fileType)})\n`;
+    let src=this.src;
+    let code=`\n$serveFile(${JSON.stringify(this.name+"."+this.fileType)},${JSON.stringify(src)},${JSON.stringify(this.fileType)})\n`;
     return code;
   }
 

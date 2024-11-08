@@ -28,6 +28,12 @@ function additionalJSCode(){
         let page=window.uiClazzObjects[pageName];
         if(!page) return;
         page.show();
+      }else if(message.type==="reportError"){
+        console.log("Fehler!",message.data);
+        if(window.parent){
+          window.parent.postMessage(message);
+        }
+        //alert("Fehler Datei "+message.data.file+" in Zeile "+message.data.line+": "+message.data.error);
       }
     }, true);
   }, false);
@@ -1932,6 +1938,7 @@ function additionalJSCode(){
   class HtmlPage{
     $constructor(){
       this.$el=document.createElement("iframe");
+      this.$el.$HtmlPage=this;
       $App.canvas.addElement(this.$el,50,50,100,100);
       this.$el.style="background-color: white; left: 0; top: 0; width: 100%; height: 100%; position: absolute;border: none;margin:0;padding:0;";
       $App.console.adaptSize();
@@ -1951,6 +1958,23 @@ function additionalJSCode(){
         }
       }
       
+    }
+    querySelectorAll(selector,filter){
+      //console.log("query s all")
+      let els=this.$el.contentWindow.document.querySelectorAll(selector);
+      let res=[];
+      for(let i=0;i<els.length;i++){
+        let e=els[i];
+        if(!filter || filter(e)){
+          res.push(e);
+        }
+      }
+      return res;
+    }
+    querySelector(selector,filter){
+      let els=this.querySelectorAll(selector,filter);
+      if(els.length>0) return els[0];
+      return null;
     }
     static querySelector(selector){
       try{
@@ -4512,8 +4536,8 @@ function additionalJSCode(){
       let elements=document.querySelectorAll("iframe");
       for(let i=0;i<elements.length;i++){
         let e=elements[i];
-        if(e.id && e.id.endsWith(".html")){
-          return e;
+        if(e.$HtmlPage){
+          return e.$HtmlPage;
         }
       }
       return null;
@@ -4523,11 +4547,16 @@ function additionalJSCode(){
       let pages=[];
       for(let i=0;i<elements.length;i++){
         let e=elements[i];
-        if(e.id && e.id.endsWith(".html")){
-          pages.push(e);
+        if(e.$HtmlPage){
+          pages.push(e.$HtmlPage);
         }
       }
       return pages;
+    }
+    static getSingleHtmlPage(){
+      let pages=$Exercise.getHtmlPages();
+      if(pages.length===1) return pages[0];
+      return null;
     }
     static isComponentBeforeComponent(comp1,comp2){
       let node=comp1.$el.nextSibling;

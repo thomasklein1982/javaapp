@@ -91,8 +91,10 @@
                     <CodeMirrorEditor
                       :language="c.fileType"
                       v-model="c.src"
+                      :name="c.name"
                       :settings="settings"
                       :font-size="fontSize"
+                      ref="sourceFileEditor"
                       @content-changed="updateUIPreview()"
                     />
                     <Button icon="pi pi-cog" @click="$refs.dialogSourceFileSettings.open(c)" style="position: absolute; right: 0.2rem; top: 0.2rem;"/>
@@ -243,6 +245,7 @@ export default {
     activeTab(nv,ov){
       if(this.$refs.editor && nv<this.$refs.editor.length){
         let ed=this.$refs.editor[nv];
+        if(!ed.updateLinter) return;
         console.log("update linter");
         ed.updateLinter();
       }
@@ -423,6 +426,17 @@ export default {
           }
         }
       },2000);
+    },
+    setSourceFileError(error){
+      let i=this.project.getClazzIndexByName(error.file);
+      if(i>=0){
+        for(let j=0;j<this.$refs.sourceFileEditor.length;j++){
+          let editor=this.$refs.sourceFileEditor[j];
+          if(editor.name===error.file){
+            editor.setRuntimeError(error);
+          }
+        }
+      }
     },
     setRuntimeError(error){
       let i=this.project.getClazzIndexByName(error.name);

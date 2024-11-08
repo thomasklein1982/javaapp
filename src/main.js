@@ -199,6 +199,9 @@ window.onmessage=function(message){
     app.showCheckExerciseButton();
   }else if(data.type==="give-exercise-data"){
     app.sendExerciseData();
+  }else if(data.type==="reportError"){
+    data=data.data;
+    app.$refs.editor.setSourceFileError(data);
   }
 }
 

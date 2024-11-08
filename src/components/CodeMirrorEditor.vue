@@ -1,6 +1,7 @@
 <template>
   <div id="root">
     <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px'}"></div>
+    <Message v-if="runtimeError" severity="error" @close="runtimeError=null">Z{{runtimeError.line}}: {{runtimeError.error}}</Message>
   </div>
   
 </template>
@@ -32,6 +33,10 @@ export default {
       type: Number,
       default: 20
     },
+    name: {
+      type: String,
+      default: null
+    }
   },
   emits: ["update:modelValue","change","content-changed"],
   computed: {
@@ -57,7 +62,9 @@ export default {
   },
   data(){
     return {
-      editor: null
+      editor: null,
+      errorID: 0,
+      runtimeError: null
     };
   },
   mounted(){
@@ -100,7 +107,12 @@ export default {
     this.editor.component=this;
   },
   methods: {
-    
+    setRuntimeError(error){
+      if(error){
+        this.errorID++;
+        this.runtimeError=error;
+      }
+    },
     getCode(){
       return this.editor.state.doc.toString();
     },
