@@ -1960,7 +1960,7 @@ function additionalJSCode(){
       
     }
     querySelectorAll(selector,filter){
-      //console.log("query s all")
+      console.log("query s all",this.$el.contentWindow)
       let els=this.$el.contentWindow.document.querySelectorAll(selector);
       let res=[];
       for(let i=0;i<els.length;i++){
@@ -4532,6 +4532,9 @@ function additionalJSCode(){
   }
 
   class $Exercise{
+    static doubleEquals(a,b){
+      return Math.abs(a-b)<0.0000001;
+    }
     static getHtmlPage(name){
       let elements=document.querySelectorAll("iframe");
       for(let i=0;i<elements.length;i++){
@@ -4545,8 +4548,10 @@ function additionalJSCode(){
     static getHtmlPages(){
       let elements=document.querySelectorAll("iframe");
       let pages=[];
+      console.log("get html pages", elements)
       for(let i=0;i<elements.length;i++){
         let e=elements[i];
+        console.log(e,e.$HtmlPage);
         if(e.$HtmlPage){
           pages.push(e.$HtmlPage);
         }
