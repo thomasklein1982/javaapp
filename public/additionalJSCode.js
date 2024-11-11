@@ -4833,7 +4833,7 @@ function additionalJSCode(){
       for(let i=0;i<elements.length;i++){
         let e=elements[i].component;
         if(!e) continue;
-        if(filter(e)){
+        if(!filter || filter(e)){
           return e;
         }
       }
@@ -4846,7 +4846,7 @@ function additionalJSCode(){
       for(let i=0;i<elements.length;i++){
         let e=elements[i].component;
         if(!e) continue;
-        if(filter(e)){
+        if(!filter || filter(e)){
           comps.push(e);
         }
       }

@@ -288,7 +288,7 @@ table{
   border-collapse: collapse;
 }
 
-.datatable tr td{
+.datatable>tr>td{
   border: 1pt solid black;
   text-align: center;
 }

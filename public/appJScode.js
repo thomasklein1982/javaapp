@@ -468,21 +468,18 @@ window.appJScode=function(){
         //   $App.alignSelf(c,a);
         // }
         if(a.h==="center"){
-          this.style.justifyItems="center";
-          this.style.textAlign="center";
+          this.style.justifyContent="safe center";
         }else if(a.h==="left"){
-          this.style.justifyItems="start";
-          this.style.textAlign="left";
+          this.style.justifyContent="safe left";
         }else{
-          this.style.justifyItems="end";
-          this.style.textAlign="right";
+          this.style.justifyContent="safe right";
         }
         if(a.v==="middle"){
-          this.style.alignItems="center";
+          this.style.alignContent="safe center";
         }else if(a.v==="top"){
-          this.style.alignItems="start";
+          this.style.alignContent="safe start";
         }else{
-          this.style.alignItems="end";
+          this.style.alignContent="safe end";
         }
       };
       el.updateAlignContent();
@@ -661,11 +658,11 @@ window.appJScode=function(){
         style=style.sheet;
         style.insertRule("*{overscroll-behavior: none;}",0);
         style.insertRule(".datatable{background-color: white; text-align: center; border-collapse: collapse}",0);
-        style.insertRule(".datatable td,th{border: 1pt solid black}",0);
-        style.insertRule(".datatable tr.selected{background-color: yellow}",0);
-        style.insertRule(".datatable tr:nth-child(even){background-color: lightgray}",0);
-        style.insertRule(".datatable.show-index td:nth-child(1),.datatable.show-index th:nth-child(1){display: table-cell}",0);
-        style.insertRule(".datatable td:nth-child(1),.datatable th:nth-child(1){display: none}",0);
+        style.insertRule(".datatable>tr>td,.datatable>tr>th{border: 1pt solid black}",0);
+        style.insertRule(".datatable>tr.selected{background-color: yellow}",0);
+        style.insertRule(".datatable>tr:nth-child(even){background-color: lightgray}",0);
+        style.insertRule(".datatable.show-index>tr>td:nth-child(1),.datatable.show-index>tr>th:nth-child(1){display: table-cell}",0);
+        style.insertRule(".datatable>tr>td:nth-child(1),.datatable>tr>th:nth-child(1){display: none}",0);
         style.insertRule("button:active{border-radius: 0;background-color:#e0e0e0}",0);
         style.insertRule("button{border-radius: 0;background-color:#d0d0d0}",0);
         style.insertRule("button:hover{border-radius: 0;background-color:#dadada}",0);
@@ -4530,10 +4527,20 @@ window.appJScode=function(){
         b.style.display="inline-grid";
         b.$standardPositionValue="relative";
         //$App.canvas.addElement(b,cx,cy,width,height);
+        // Object.defineProperty(b,'value', {
+        //   set: function(v){
+        //     this.appJSData.value=v;
+        //     this.innerHTML=v;
+        //     //this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height);
+        //   },
+        //   get: function(){
+        //     return this.appJSData.value;
+        //   }
+        // });
         Object.defineProperty(b,'value', {
           set: function(v){
             this.appJSData.value=v;
-            this.innerHTML=v;
+            this.innerHTML="<div>"+v+"</div>";
             //this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height);
           },
           get: function(){

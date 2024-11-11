@@ -4,6 +4,7 @@ import { createAttribute } from "../language/helper/createAttribute";
 import { createMethod } from "../language/helper/createMethod";
 import { Java } from "../language/java";
 import { Clazz } from "./Clazz";
+import { options } from "./Options";
 import { Scope } from "./Scope";
 import { Source } from "./Source";
 import { Type } from "./Type";
@@ -675,6 +676,9 @@ export class UIClazz extends Clazz{
           code=".setValue("+c.value+");";
         }else{
           code=".setValue("+JSON.stringify(c.value)+");";
+          if(options.exerciseMode){
+            code+=last+".$value="+JSON.stringify(c.value)+";";
+          }
         }
         newCode+="\n"+last+code;
       }

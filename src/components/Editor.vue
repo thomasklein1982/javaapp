@@ -450,8 +450,6 @@ export default {
         if(this.running){
           this.activeTab=i;
         }
-      }else{
-        
       }
     },
     getEditorByName(name){
