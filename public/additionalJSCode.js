@@ -4564,6 +4564,13 @@ function additionalJSCode(){
       return null;
     }
     static isComponentBeforeComponent(comp1,comp2){
+      let z1=comp1.$el.style.zIndex;
+      let z2=comp2.$el.style.zIndex;
+      z1*=1;
+      z2*=1;
+      console.log("z-index",z1,z2);
+      if(z1<z2) return true;
+      if(z1>z2) return false;
       let node=comp1.$el.nextSibling;
       while(node){
         if(node===comp2.$el){

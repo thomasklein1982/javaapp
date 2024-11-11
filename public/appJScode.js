@@ -4540,7 +4540,7 @@ window.appJScode=function(){
         Object.defineProperty(b,'value', {
           set: function(v){
             this.appJSData.value=v;
-            this.innerHTML="<div>"+v+"</div>";
+            this.innerHTML="<div style='width: 100%; height: 100%'>"+v+"</div>";
             //this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height);
           },
           get: function(){
