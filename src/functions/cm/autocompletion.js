@@ -167,6 +167,7 @@ export function createAutocompletion(){
       
     }
     if(annotation){
+      console.log("complete annot",annotation);
       return completeProperties(from,annotation.type,annotation.isStatic,annotation.topLevel, method, annotation.scope,clazz);
     }
     return null

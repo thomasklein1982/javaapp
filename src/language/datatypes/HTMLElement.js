@@ -42,4 +42,25 @@ export function defineHTMLElement(clazz){
     ],
     info: "Legt den Textinhalt des Elements fest."
   },clazz,false,false);
+
+  createMethod({
+    name: 'addEventListener',
+    args: [
+      {name: 'event', type: 'String', info: 'Art des Events, z. B. "click" oder "change".'},
+      {name: 'listener', default: '(ev)->{}', type: 'ActionListener'}
+    ],
+    info: "Fügt einen EventListener hinzu, der aufgerufen wird, wenn man mit der Komponente interagiert."
+  },clazz,false,false);
+
+  createMethod({
+    name: 'setValue',
+    args: [
+      {name: 'v', type: 'String'}
+    ]
+  },clazz,false,false);
+
+  createMethod({
+    name: 'getValue',
+    returnType: 'String'
+  },clazz,false,false);
 }

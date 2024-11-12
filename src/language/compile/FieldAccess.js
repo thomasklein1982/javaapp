@@ -2,6 +2,7 @@ import { Clazz } from "../../classes/Clazz";
 import { Error } from "../../classes/Error";
 import { Scope } from "../../classes/Scope";
 import { Source } from "../../classes/Source";
+import { SourceFile } from "../../classes/SourceFile";
 import { Type } from "../../classes/Type";
 import { CompileFunctions } from "../CompileFunctions";
 import { ArrayAccess } from "./ArrayAccess";
@@ -75,7 +76,7 @@ export function FieldAccess(node,source,scope){
   }else if(node.name==="Identifier" || node.name==="TypeName"){
     let ident=Identifier(node,source,scope);
     code+="$N("+ident.code+",'"+ident.name+"')";
-    if(ident.object instanceof Clazz){
+    if(ident.object instanceof Clazz|| ident.object instanceof SourceFile){
       owner={
         type: ident.object,
         static: true

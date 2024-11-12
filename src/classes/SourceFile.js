@@ -26,6 +26,13 @@ export class SourceFile{
     return o;
   }
 
+  getAttribute(name,staticAccess){
+    return {
+      error: "Die Klasse '"+this.name+"' hat kein "+(staticAccess? "statisches ":"")+"Attribut namens '"+name+"'.",
+      clazzHasAttribute: false
+    };
+  }
+
   restoreFromSaveObject(obj){
     if(obj.name){
       this.name=obj.name;
@@ -83,119 +90,6 @@ export class SourceFile{
         }
       }
     }
-    // htmlLanguage.parser.parse=function parse(input, fragments, ranges) {
-    //   let parse = this.startParse(input, fragments, ranges);
-    //   console.log("hijacked");
-    //   parse.startInner=function startInner() {
-    //     console.log("startInner");
-    //     let fragmentCursor = new FragmentCursor(this.fragments);
-    //     let overlay = null;
-    //     let covered = null;
-    //     let cursor = new TreeCursor(new TreeNode(this.baseTree, this.ranges[0].from, 0, null), IterMode.IncludeAnonymous | IterMode.IgnoreMounts);
-    //     scan: for (let nest, isCovered; ; ) {
-    //       let enter = true, range;
-    //       if (this.stoppedAt != null && cursor.from >= this.stoppedAt) {
-    //         enter = false;
-    //       } else if (fragmentCursor.hasNode(cursor)) {
-    //         if (overlay) {
-    //           let match = overlay.mounts.find((m) => m.frag.from <= cursor.from && m.frag.to >= cursor.to && m.mount.overlay);
-    //           if (match)
-    //             for (let r of match.mount.overlay) {
-    //               let from = r.from + match.pos, to = r.to + match.pos;
-    //               if (from >= cursor.from && to <= cursor.to && !overlay.ranges.some((r2) => r2.from < to && r2.to > from))
-    //                 overlay.ranges.push({ from, to });
-    //             }
-    //         }
-    //         enter = false;
-    //       } else if (covered && (isCovered = checkCover(covered.ranges, cursor.from, cursor.to))) {
-    //         enter = isCovered != 2;
-    //       } else if (!cursor.type.isAnonymous && (nest = this.nest(cursor, this.input)) && (cursor.from < cursor.to || !nest.overlay)) {
-    //         if (!cursor.tree)
-    //           materialize(cursor);
-    //         let oldMounts = fragmentCursor.findMounts(cursor.from, nest.parser);
-    //         if (typeof nest.overlay == "function") {
-    //           overlay = new ActiveOverlay(nest.parser, nest.overlay, oldMounts, this.inner.length, cursor.from, cursor.tree, overlay);
-    //         } else {
-    //           let ranges = punchRanges(this.ranges, nest.overlay || (cursor.from < cursor.to ? [new Range(cursor.from, cursor.to)] : []));
-    //           if (ranges.length)
-    //             checkRanges(ranges);
-    //           if (ranges.length || !nest.overlay)
-    //             this.inner.push(new InnerParse(nest.parser, ranges.length ? nest.parser.startParse(this.input, enterFragments(oldMounts, ranges), ranges) : nest.parser.startParse(""), nest.overlay ? nest.overlay.map((r) => new Range(r.from - cursor.from, r.to - cursor.from)) : null, cursor.tree, ranges.length ? ranges[0].from : cursor.from));
-    //           if (!nest.overlay)
-    //             enter = false;
-    //           else if (ranges.length)
-    //             covered = { ranges, depth: 0, prev: covered };
-    //         }
-    //       } else if (overlay && (range = overlay.predicate(cursor))) {
-    //         if (range === true)
-    //           range = new Range(cursor.from, cursor.to);
-    //         if (range.from < range.to) {
-    //           let last = overlay.ranges.length - 1;
-    //           if (last >= 0 && overlay.ranges[last].to == range.from)
-    //             overlay.ranges[last] = { from: overlay.ranges[last].from, to: range.to };
-    //           else
-    //             overlay.ranges.push(range);
-    //         }
-    //       }
-    //       if (enter && cursor.firstChild()) {
-    //         if (overlay)
-    //           overlay.depth++;
-    //         if (covered)
-    //           covered.depth++;
-    //       } else {
-    //         for (; ; ) {
-    //           if (cursor.nextSibling())
-    //             break;
-    //           if (!cursor.parent())
-    //             break scan;
-    //           if (overlay && !--overlay.depth) {
-    //             let ranges = punchRanges(this.ranges, overlay.ranges);
-    //             if (ranges.length) {
-    //               checkRanges(ranges);
-    //               this.inner.splice(overlay.index, 0, new InnerParse(overlay.parser, overlay.parser.startParse(this.input, enterFragments(overlay.mounts, ranges), ranges), overlay.ranges.map((r) => new Range(r.from - overlay.start, r.to - overlay.start)), overlay.target, ranges[0].from));
-    //             }
-    //             overlay = overlay.prev;
-    //           }
-    //           if (covered && !--covered.depth)
-    //             covered = covered.prev;
-    //         }
-    //       }
-    //     }
-    //   };
-    //   parse.advance=function advance() {
-    //     if (this.baseParse) {
-    //       let done2 = this.baseParse.advance();
-    //       if (!done2)
-    //         return null;
-    //       this.baseParse = null;
-    //       this.baseTree = done2;
-    //       console.log("start inner ",this.startInner.toString());
-    //       this.startInner();
-    //       if (this.stoppedAt != null)
-    //         for (let inner2 of this.inner)
-    //           inner2.parse.stopAt(this.stoppedAt);
-    //     }
-    //     if (this.innerDone == this.inner.length) {
-    //       let result = this.baseTree;
-    //       if (this.stoppedAt != null)
-    //         result = new Tree(result.type, result.children, result.positions, result.length, result.propValues.concat([[stoppedInner, this.stoppedAt]]));
-    //       return result;
-    //     }
-    //     let inner = this.inner[this.innerDone], done = inner.parse.advance();
-    //     if (done) {
-    //       this.innerDone++;
-    //       let props = Object.assign(/* @__PURE__ */ Object.create(null), inner.target.props);
-    //       props[NodeProp.mounted.id] = new MountedTree(done, inner.overlay, inner.parser);
-    //       inner.target.props = props;
-    //     }
-    //     return null;
-    //   }
-    //   for (; ; ) {
-    //     let done = parse.advance();
-    //     if (done)
-    //       return done;
-    //   }
-    // }
     let tree=htmlLanguage.parser.parse(src);
     console.log(tree);
     let changes=[];

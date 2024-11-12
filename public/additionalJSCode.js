@@ -2040,6 +2040,9 @@ function additionalJSCode(){
         this.$el.onclick = $handleOnAction;
       }
     }
+    addEventListener(type, listener){
+      this.$el.addEventListener(type,listener.actionPerformed,false);
+    }
     getChildElements(){
 
     }
