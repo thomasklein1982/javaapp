@@ -44,11 +44,17 @@ export function ArgumentList(node,source,scope,parameters,method,owner){
       throw source.createError("Unerwarteter Code",node);
     }
   }
-  if(paramNodes.length!==minCount && paramNodes.length<pcount){
-    if(minCount>=0){
-      throw source.createError("Es müssen "+minCount+" oder "+pcount+" Argumente sein.",node);
-    }else{
-      throw source.createError("Zu wenig Argumente! Es müssen "+pcount+" Argumente sein.",node);
+  if(method.allowedArgsCounts){
+    if(method.allowedArgsCounts.indexOf(paramNodes.length)<0){
+      throw source.createError("Mögliche Anzahl von Argumenten: "+method.allowedArgsCounts.join(", "),node);
+    }
+  }else{
+    if(paramNodes.length!==minCount && paramNodes.length<pcount){
+      if(minCount>=0){
+        throw source.createError("Es müssen "+minCount+" oder "+pcount+" Argumente sein.",node);
+      }else{
+        throw source.createError("Zu wenig Argumente! Es müssen "+pcount+" Argumente sein.",node);
+      }
     }
   }
   let replacementTypes={};

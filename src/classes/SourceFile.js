@@ -91,7 +91,6 @@ export class SourceFile{
       }
     }
     let tree=htmlLanguage.parser.parse(src);
-    console.log(tree);
     let changes=[];
     tree.cursor().iterate((cursor)=>{
       let content;
@@ -99,7 +98,6 @@ export class SourceFile{
         content=src.substring(cursor.from,cursor.to);
         if(content==="href" || content==="src"){
           let node=cursor.node;
-          console.log(content,node.name);
           let attribute=node.parent;
           let value=attribute.lastChild;
           let sValue=src.substring(value.from,value.to);
@@ -123,7 +121,6 @@ export class SourceFile{
       }
       return true;
     });
-    console.log(changes);
     if(changes.length>0){
       changes.sort((a,b)=>{
         return a.from-b.from;
@@ -143,6 +140,19 @@ export class SourceFile{
     }
     src=`<script>window.onerror=function(error, source, line, col, event){$reportError({error,line,col, file: ${JSON.stringify(this.name)}})}; function $reportError(data){window.parent.postMessage({type: 'reportError', data })}</script>`+src;
     src+=`\n<script>
+      function java(funcName){
+        let data={
+          methodName: funcName,
+          args: []
+        };
+        for(let i=1;i<arguments.length;i++){
+          data.args.push(arguments[i]);
+        }
+        window.parent.postMessage({
+          type: "callMethod",
+          data
+        });
+      }
       function $showPage(s){
         window.parent.postMessage({
           type: "showPage",

@@ -34,6 +34,13 @@ function additionalJSCode(){
           window.parent.postMessage(message);
         }
         //alert("Fehler Datei "+message.data.file+" in Zeile "+message.data.line+": "+message.data.error);
+      }else if(message.type==="callMethod"){
+        try{
+          $main[message.data.methodName].apply($main,message.data.args);
+        }catch(e){
+          
+        }
+        //alert("Fehler Datei "+message.data.file+" in Zeile "+message.data.line+": "+message.data.error);
       }
     }, true);
   }, false);
@@ -1975,6 +1982,9 @@ function additionalJSCode(){
       let els=this.querySelectorAll(selector,filter);
       if(els.length>0) return els[0];
       return null;
+    }
+    static javascript(functionName,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9){
+      this.$self.$el.contentWindow[functionName].call(this.$self.$el.contentWindow,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9);
     }
     static querySelector(selector){
       try{

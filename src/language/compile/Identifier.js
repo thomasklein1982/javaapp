@@ -81,7 +81,6 @@ export function Identifier(node,source,scope,infos){
         obj=scope.getTypeByName(name);
         if(obj){
           type=null;
-          console.log("identifier, add annot",obj);
           scope.addTypeAnnotation(node,new Type(obj,0),true);
         }else{
           throw source.createError("Der Bezeichner '"+name+"' ist undefiniert.",node);

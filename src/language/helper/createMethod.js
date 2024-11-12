@@ -17,6 +17,7 @@ export function createMethod(data,clazz,isStatic,isConstructor){
   }
   clazz.methods[name]=m;
   m.comment=data.info;
+  m.allowedArgsCounts=data.allowedArgsCounts;
   m.params=new ParameterList(m);
   let minCount=-1;
   if(data.args){

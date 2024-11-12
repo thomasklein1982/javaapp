@@ -34,6 +34,7 @@ export class Method{
     this.nodeOffset=0;
     this.hide=false;
     this.comment=comment;
+    this.allowedArgsCounts=null;
   }
   getFrom(){
     return this.node.from+this.nodeOffset;

@@ -742,6 +742,61 @@ function defineHtmlPage(Clazz,JPanel){
     returnType: {baseType: "HTMLElement", dimension: 1},
     info: "Liefert ein Array aller Kind-Elemente in dieser Html-Seite, die den CSS-Selektor erfüllen."
   },Clazz,true,false);
+  createMethod({
+    name: 'javascript',
+    allowedArgsCounts: [1,2,3,4,5,6],
+    args: [
+      {
+        name: "functionName", type: "String", info: "Name der JavaScript-Funktion"
+      },
+      {
+        name: "arg1", 
+        type: ["double","int","boolean","char","String","Object"], 
+        info: "1. Argument für die Funktion", optional: true
+      },
+      {
+        name: "arg2", 
+        type: ["double","int","boolean","char","String","Object"], 
+        info: "2. Argument für die Funktion", optional: true
+      },
+      {
+        name: "arg3", 
+        type: ["double","int","boolean","char","String","Object"], 
+        info: "3. Argument für die Funktion", optional: true
+      },
+      {
+        name: "arg4", 
+        type: ["double","int","boolean","char","String","Object"], 
+        info: "4. Argument für die Funktion", optional: true
+      },
+      {
+        name: "arg5", 
+        type: ["double","int","boolean","char","String","Object"], 
+        info: "5. Argument für die Funktion", optional: true
+      },
+      {
+        name: "arg6", 
+        type: ["double","int","boolean","char","String","Object"], 
+        info: "6. Argument für die Funktion", optional: true
+      },
+      {
+        name: "arg7", 
+        type: ["double","int","boolean","char","String","Object"], 
+        info: "7. Argument für die Funktion", optional: true
+      },
+      {
+        name: "arg8", 
+        type: ["double","int","boolean","char","String","Object"], 
+        info: "8. Argument für die Funktion", optional: true
+      },
+      {
+        name: "arg9", 
+        type: ["double","int","boolean","char","String","Object"], 
+        info: "9. Argument für die Funktion", optional: true
+      }
+    ],
+    info: "Ruft eine JavaScript-Funktion auf, die in der HTML-Seite definiert ist."
+  },Clazz,true,false);
 }
 
 function defineJPanel(Clazz,Java){
