@@ -42,6 +42,8 @@ import router from "./router";
 import { registerSW } from 'virtual:pwa-register'
 import { appjsdata } from './functions/snippets';
 import { definePreset } from '@primevue/themes';
+import { basicSetup, EditorView } from 'codemirror';
+import { html } from '@codemirror/lang-html';
 
 "use strict"
 

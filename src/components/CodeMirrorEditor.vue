@@ -44,8 +44,8 @@ export default {
       console.log("lang",this.language);
       if(this.language==="html"){
         return {
-          language: html({autoCloseTags: true}).language,
-          completionSource: htmlCompletionSource
+          language: html(),//{autoCloseTags: true}),//.language,
+          completionSource: null//htmlCompletionSource
         };
       }else if(this.language==="css"){
         return {
