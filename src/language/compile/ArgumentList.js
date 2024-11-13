@@ -44,7 +44,7 @@ export function ArgumentList(node,source,scope,parameters,method,owner){
       throw source.createError("Unerwarteter Code",node);
     }
   }
-  if(method.allowedArgsCounts){
+  if(method && method.allowedArgsCounts){
     if(method.allowedArgsCounts.indexOf(paramNodes.length)<0){
       throw source.createError("Mögliche Anzahl von Argumenten: "+method.allowedArgsCounts.join(", "),node);
     }
