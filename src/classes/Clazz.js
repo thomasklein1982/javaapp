@@ -406,7 +406,7 @@ export class Clazz{
         }
       }
     }
-    if(!m){
+    if(!m || !(m instanceof Method)){
       return {
         error: "Die Klasse '"+this.name+"' hat keine "+(staticAccess? "statische ":"")+"Methode namens '"+name+"'."
       };

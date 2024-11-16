@@ -100,6 +100,9 @@ export function MethodInvocation(node,source,scope){
   
   if(node.name!=="ArgumentList"){
   }
+  if(!method || !method.isBuiltIn){
+    console.log("no builtin");
+  }
   let updateLocalVariablesAfter=!method.isBuiltIn();
   al=ArgumentList(node,source,scope,method.getRealParameterList(owner.typeArguments),method,owner);
   if(al.updateLocalVariablesAfter){
