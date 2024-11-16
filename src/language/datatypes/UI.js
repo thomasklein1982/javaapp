@@ -795,6 +795,7 @@ function defineHtmlPage(Clazz,JPanel){
         info: "9. Argument für die Funktion", optional: true
       }
     ],
+    returnType: "JSON",
     info: "Ruft eine JavaScript-Funktion auf, die in der HTML-Seite definiert ist."
   },Clazz,true,false);
 }

@@ -20,7 +20,7 @@ function additionalJSCode(){
     document.body.addEventListener("pointerleave",(ev)=>{
       window.mousePressed=ev.buttons>0;
     },false);
-    window.addEventListener("message", (ev)=>{
+    window.addEventListener("message", async (ev)=>{
       let message=ev.data;
       if(message.type==="showPage"){
         console.log("show Page",message.data);
@@ -36,7 +36,9 @@ function additionalJSCode(){
         //alert("Fehler Datei "+message.data.file+" in Zeile "+message.data.line+": "+message.data.error);
       }else if(message.type==="callMethod"){
         try{
-          $main[message.data.methodName].apply($main,message.data.args);
+          let res=await $main[message.data.methodName].apply($main,message.data.args);
+          console.log("result of callMethod",res,ev);
+          ev.currentTarget[0].$fullfillPromise(res);
         }catch(e){
           
         }
@@ -1323,6 +1325,7 @@ function additionalJSCode(){
       this.$triggerOnMouseMove=false;
       this.standardCSSClasses="__jcomponent";
       this.actionListeners=[];
+
     }
     addEventListener(type, listener){
       this.$el.addEventListener(type,listener.actionPerformed,false);
@@ -1983,8 +1986,8 @@ function additionalJSCode(){
       if(els.length>0) return els[0];
       return null;
     }
-    static javascript(functionName,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9){
-      this.$self.$el.contentWindow[functionName].call(this.$self.$el.contentWindow,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9);
+    static async javascript(functionName,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9){
+      return await this.$self.$el.contentWindow[functionName].call(this.$self.$el.contentWindow,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9);
     }
     static querySelector(selector){
       try{
@@ -2031,6 +2034,7 @@ function additionalJSCode(){
       this.$el.component=this;
       this.$el.onclick = $handleOnAction;
       this.setCSSClass("");
+      this.setAlignContent("center");
     }
   }
 
@@ -2447,6 +2451,7 @@ function additionalJSCode(){
       super.$constructor(x,y,width,height);
       this.standardCSSClasses+=" __jtextarea";
       this.$el=ui.textarea(placeholder,x,y,width,height);
+      this.setAlignContent("top");
       this.$el.spellcheck=false;
       this.$el.component=this;
       this.$el.onchange = $handleOnAction;
@@ -4200,7 +4205,7 @@ function additionalJSCode(){
   };
   $jstoInt=function(obj){
     if(typeof obj==="number"){
-      return Math.floor(this.json);
+      return Math.floor(obj);
     }else{
       return 0;
     }

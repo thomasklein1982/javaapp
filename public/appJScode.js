@@ -471,15 +471,19 @@ window.appJScode=function(){
           this.style.justifyContent="safe center";
         }else if(a.h==="left"){
           this.style.justifyContent="safe left";
-        }else{
+        }else if(a.h==="right"){
           this.style.justifyContent="safe right";
+        }else{
+          this.style.justifyContent=null;
         }
         if(a.v==="middle"){
           this.style.alignContent="safe center";
         }else if(a.v==="top"){
           this.style.alignContent="safe start";
-        }else{
+        }else if(a.v==="bottom"){
           this.style.alignContent="safe end";
+        }else{
+          this.style.alignContent=null;
         }
       };
       el.updateAlignContent();
@@ -1129,19 +1133,23 @@ window.appJScode=function(){
           ha="left";
         }else if(align.indexOf("right")>=0){
           ha="right";
-        }else{
+        }else if(align.indexOf("center")>=0){
           ha="center";
+        }else{
+          ha=null;
         }
         if(align.indexOf("bottom")>=0){
           va="bottom";
         }else if(align.indexOf("top")>=0){
           va="top";
-        }else{
+        }else if(align.indexOf("center")>=0 || align.indexOf("middle")>=0){
           va="middle";
+        }else{
+          ha=null;
         }
       }else{
-        ha="center";
-        va="middle";
+        ha=null;
+        va=null;
       }
       return {
         h: ha, v: va

@@ -3,7 +3,6 @@ import { concatArrays } from "../functions/helper";
 import { parseJava } from "../functions/parseJava";
 import { SuperInterfaces } from "../language/compile/SuperInterfaces";
 import { TypeParameters } from "../language/compile/TypeParameters";
-import { createAttribute } from "../language/helper/createAttribute";
 import { Java } from "../language/java";
 import {Attribute} from "./Attribute"
 import { Method } from "./Method";

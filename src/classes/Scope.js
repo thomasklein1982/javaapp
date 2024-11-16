@@ -28,7 +28,6 @@ export class Scope{
       }
       if(compileOptions.optimizeCompiler===true){
         this.optimizeCompiler=true;
-        console.log("optimize compiler in scope");
       }
     }
     

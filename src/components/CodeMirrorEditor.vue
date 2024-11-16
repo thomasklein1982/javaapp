@@ -1,7 +1,7 @@
 <template>
   <div id="root">
     <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px'}"></div>
-    <Message v-if="runtimeError" severity="error" @close="runtimeError=null">Z{{runtimeError.line}}: {{runtimeError.error}}</Message>
+    <Message v-if="runtimeError" closable severity="error" @close="runtimeError=null">Z{{runtimeError.line}}: {{runtimeError.error}}</Message>
   </div>
   
 </template>
@@ -108,9 +108,11 @@ export default {
   },
   methods: {
     setRuntimeError(error){
+      this.errorID++;
       if(error){
-        this.errorID++;
         this.runtimeError=error;
+      }else{
+        this.runtimeError=null;
       }
     },
     getCode(){

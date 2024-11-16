@@ -1,4 +1,5 @@
 
+import { createAttribute } from "../language/helper/createAttribute";
 import { Java } from "../language/java";
 import { htmlLanguage } from "@codemirror/lang-html";
 //import {Tree, MountedTree, InnerParse, TreeNode, checkRanges, Range, materialize, enterFragments} from "@lezer/common";
@@ -10,6 +11,7 @@ export class SourceFile{
     this.useGlobalCSS=true;
     this.project=project;
     this.attributeErrors=null;
+    this.attributes={};
     this.errors=[];
     this.isHidden=false;
     this.superClazz=Java.clazzes.HtmlPage;
@@ -27,10 +29,38 @@ export class SourceFile{
   }
 
   getAttribute(name,staticAccess){
-    return {
-      error: "Die Klasse '"+this.name+"' hat kein "+(staticAccess? "statisches ":"")+"Attribut namens '"+name+"'.",
-      clazzHasAttribute: false
-    };
+    
+    let a=this.attributes[name];
+    if(!a && this.superClazz){
+      a=this.superClazz.getAttribute(name,staticAccess);
+      if(a && a.error){
+        a=null;
+      }
+    }
+    if(!a){
+      return {
+        error: "Die Klasse '"+this.name+"' hat kein "+(staticAccess? "statisches ":"")+"Attribut namens '"+name+"'."
+      };
+    }
+    if(staticAccess){
+      if(a.isStatic && a.isStatic() || a.static){
+        return a;
+      }else{
+        return {
+          error: "Das Attribut '"+name+"' ist nicht statisch.",
+          clazzHasAttribute: true
+        };
+      }
+    }else{
+      if(a.isStatic && a.isStatic() || a.static){
+        return {
+          error: "Das Attribut '"+name+"' ist statisch. Verwende '"+this.name+"."+name+"' um darauf zuzugreifen.",
+          clazzHasAttribute: true
+        };
+      }else{
+        return a;
+      }
+    }
   }
 
   restoreFromSaveObject(obj){
@@ -79,6 +109,7 @@ export class SourceFile{
   isNative(){return false;}
   getStringifiedSourceCode(){
     let src=this.src;
+    this.attributes={};
     if(this.useGlobalCSS && this.project.css.trim().length>0){
       let css=this.project.prepareCSS(this.project.css);
       let pos=src.indexOf("<head");
@@ -95,7 +126,7 @@ export class SourceFile{
     tree.cursor().iterate((cursor)=>{
       let content;
       if(cursor.name==="AttributeName"){
-        content=src.substring(cursor.from,cursor.to);
+        content=src.substring(cursor.from,cursor.to).toLowerCase();
         if(content==="href" || content==="src"){
           let node=cursor.node;
           let attribute=node.parent;
@@ -117,6 +148,15 @@ export class SourceFile{
               }
             }
           }
+        }else if(content==="id"){
+          let node=cursor.node;
+          let attribute=node.parent;
+          let value=attribute.lastChild;
+          let id=src.substring(value.from+1,value.to-1);
+          this.attributes[id]=createAttribute({
+            name: id,
+            type: "HTMLElement"
+          },this,true,"public");
         }
       }
       return true;
@@ -138,20 +178,39 @@ export class SourceFile{
       parts.push(src.substring(last));
       src=parts.join("");
     }
+    let mainClazz=this.project.getMainClazz();
+    let javaAPI="";
+    if(mainClazz){
+      for(let mn in mainClazz.methods){
+        javaAPI+=mn+": async function(){return await $java('"+mn+"',arguments)},"
+      }
+    }
+    
     src=`<script>window.onerror=function(error, source, line, col, event){$reportError({error,line,col, file: ${JSON.stringify(this.name)}})}; function $reportError(data){window.parent.postMessage({type: 'reportError', data })}</script>`+src;
     src+=`\n<script>
-      function java(funcName){
+      $main={
+        ${javaAPI}
+      };
+      async function $java(funcName, arguments){
         let data={
           methodName: funcName,
           args: []
         };
-        for(let i=1;i<arguments.length;i++){
+        for(let i=0;i<arguments.length;i++){
           data.args.push(arguments[i]);
         }
-        window.parent.postMessage({
-          type: "callMethod",
-          data
+        let p=new Promise((ful,rej)=>{
+          window.$fullfillPromise=function(res){
+            console.log("fulfill",res);
+            ful(res);
+          }
+          window.parent.postMessage({
+            type: "callMethod",
+            data
+          });
         });
+        let q=await p;
+        return q;
       }
       function $showPage(s){
         window.parent.postMessage({
@@ -212,6 +271,12 @@ export class SourceFile{
     let code="class "+this.name+" extends HtmlPage";
     code+="{";
     code+="\nstatic $self;\n";//=$new("+this.name+");";
+    let attributesCode="";
+    // for(let i in this.attributes){
+    //   let a=this.attributes[i];
+    //   attributesCode+="\n"+a.getDeclarationJavaScriptCode()+";";
+    // }
+    // code+=attributesCode;
     code+=`static async $createSelf(){
       ${this.name}.$self=$new(${this.name});
       ${this.name}.$self.$el.id="${this.name}.html";
