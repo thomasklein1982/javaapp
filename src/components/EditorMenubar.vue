@@ -11,6 +11,19 @@
         <span style="position: relative; white-space: nowrap;"><img alt="logo" src="/icon-white-transparent.png" style="height: 2rem" ><span style="font-size: 60%; color: red; writing-mode: vertical-lr;">Hard!</span></span>
       </template>
     </template>
+    <template #item="{ item, props, hasSubmenu, root }">
+      <a class="flex items-center" v-bind="props.action">
+        <div style="width: 100%; height: 100%" @click.stop="" v-if="item.file">
+          <input :disabled="item.file===currentClazz" type="checkbox" @click.stop="" v-model="item.file.isEditorShown"/>
+          <span class="p-menubar-item-label">{{ item.label }}</span>
+        </div>
+        <template v-else>
+          <span :class="item.icon+' p-menubar-item-icon'"/>
+          <span class="p-menubar-item-label">{{ item.label }}</span>
+          <i v-if="hasSubmenu" :class="['pi pi-angle-down ml-auto', { 'pi-angle-down': root, 'pi-angle-right': !root }]"></i>
+        </template>
+      </a>
+    </template>
     <template #end>
       <template v-if="currentClazz && !currentClazz.isUIClazz()">
         <badge style="margin-right: 0.5rem" v-if="caretPosition>=0">Pos: {{ caretPosition }}</badge>
@@ -23,12 +36,18 @@
 </template>
 
 <script>
+import { Checkbox } from 'primevue';
+
 export default {
+  components: {
+    Checkbox
+  },
   props: {
     rightClosed: Boolean,
     difficulty: Number,
     allowTrash: Boolean,
     currentClazz: Object,
+    project: Object,
     caretPosition: {
       type: Number,
       default: -1
@@ -202,6 +221,10 @@ export default {
           ]
         },
         {
+          label: "Workspace",
+          items: []
+        },
+        {
           label: "Extras",
           items: [
           {
@@ -235,6 +258,17 @@ export default {
           ]
         }
       ];
+      if(this.project){
+        let workspace=items[items.length-2];
+        for(let i=0;i<this.project.clazzes.length;i++){
+          let c=this.project.clazzes[i];
+          workspace.items.push({
+            label: c.name,
+            file: c,
+            
+          });
+        }
+      }
       if(this.$root.tryItMode){
         items[0].label="TryIt: "+this.$root.tryItName;
         items[0].items[0]={

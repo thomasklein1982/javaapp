@@ -4663,6 +4663,7 @@ function additionalJSCode(){
         blocker.style.right=0;
         blocker.style.bottom=0;
         blocker.style.zIndex=20000;
+        blocker.innerHTML='<span class="animation-pulse" style="color: white">Wird überprüft</span>'
         $Exercise.blocker=blocker;
         document.body.appendChild(blocker);
       }else{
@@ -4696,6 +4697,7 @@ function additionalJSCode(){
     }
     static async checkTestCases(initData,testcases,applyTestFunc){
       let resArray=[];
+      $Exercise.setUIBlocked(true);
       for(let i=0;i<testcases.length;i++){
         let tc=testcases[i];
         let count=1;
@@ -4725,13 +4727,13 @@ function additionalJSCode(){
             res=e;
           }
           $Exercise.clearConsole();
-          $Exercise.setUIBlocked(false);
           if(res!==true){
             break;
           }
         }
         resArray.push(res);
       }
+      $Exercise.setUIBlocked(false);
       $Exercise.sendFeedback(resArray);
       //$Exercise.sendCompleted(max,infos);
     }

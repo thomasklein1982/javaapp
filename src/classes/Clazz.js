@@ -22,6 +22,7 @@ export class Clazz{
     this.cannotBeInstantiated=false;
     this.isAbstract=false;
     this.isHidden=false;
+    this.isEditorShown=true;
     this.isInterface=isInterface===true;
     this.wrappedPrimitiveType=null;
     this.comment="";

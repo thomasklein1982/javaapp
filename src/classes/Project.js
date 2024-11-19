@@ -333,6 +333,25 @@ export class Project{
         .jimage{
           justify-self: stretch;
         }
+        .animation-pulse{
+          animation: pulse 1s infinite; 
+        }
+        @keyframes pulse {
+          0% {
+              transform: scale(0.8);
+              box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+          }
+
+          70% {
+              transform: scale(1);
+              box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+          }
+
+          100% {
+              transform: scale(0.8);
+              box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+          }
+        }
         #dialog-backdrop{
           z-index: 1000;
           position: fixed;

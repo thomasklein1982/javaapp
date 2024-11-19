@@ -7,6 +7,7 @@
     <template v-if="!$root.printMode">
       <EditorMenubar
         :right-closed="rightClosed"
+        :project="project"
         :difficulty="difficulty"
         :allow-trash="activeTab>0"
         :current-clazz="currentClazz"
@@ -64,7 +65,7 @@
         <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">
           <Tabs v-model:value="activeTab" :scrollable="true" class="editor-tabs" >
             <TabList>
-              <Tab v-for="(c,i) in project.clazzes" :value="i">
+              <Tab v-for="(c,i) in project.clazzes" :value="i" v-show="c.isEditorShown || i===activeTab">
                 <span v-if="c.isInterface" class="pi pi-info-circle" style="font-size: small; margin-right: 0.2rem"/><span v-if="c.isHidden">(</span>{{i!==activeTab && c?.name?.length>20? c?.name?.substring(0,17)+"...":c?.name}}{{ c.fileType!==undefined? "."+c.fileType:"" }} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span><span v-if="c.isHidden">)</span>
               </Tab>
               <Tab :value="project.clazzes.length">
@@ -276,7 +277,9 @@ export default {
       if(this.project.clazzes.length===0 || this.activeTab>=this.project.clazzes.length){
         return null;
       }
-      return this.project.clazzes[this.activeTab];
+      let c=this.project.clazzes[this.activeTab];
+      c.isEditorShown=true;
+      return c;
     },
     isCurrentClazzUIClazz(){
       nextTick(()=>{

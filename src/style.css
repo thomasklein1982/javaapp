@@ -125,6 +125,10 @@ body{
   }
 }
 
+ul.p-menubar-submenu{
+  z-index: 2;
+}
+
 .documentation-menu .p-menuitem-content{
   padding-left: 0.5rem;
 }
