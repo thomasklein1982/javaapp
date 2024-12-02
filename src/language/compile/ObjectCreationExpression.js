@@ -55,6 +55,7 @@ export function ObjectCreationExpression(node,source,scope,infos){
   let clazz,typename;
   let runtimeTypeArguments={$hideFromConsole: true};
   let useTypeArguments=false;
+  let typeArguments;
   if(node.name==="TypeName"){
     typename=TypeName(node,source,scope);
     clazz=typename.type.baseType;
@@ -66,7 +67,7 @@ export function ObjectCreationExpression(node,source,scope,infos){
     typename=GenericType(node,source,scope);
     clazz=typename.type.baseType;
     let typeParameters=clazz.typeParameters;
-    let typeArguments=typename.type.typeArguments;//die typen, die hier angegeben sind
+    typeArguments=typename.type.typeArguments;//die typen, die hier angegeben sind
     if(!typeParameters){
       throw source.createError("Die Klasse '"+clazz.name+"' deklariert keine generischen Typen. Entferne die spitzen Klammern <>.",node);
     }
@@ -115,7 +116,8 @@ export function ObjectCreationExpression(node,source,scope,infos){
     clazz: clazz,
     static: false,
   }
-  let al=ArgumentList(node,source,scope,clazz.getConstructorParameters(),null,owner);
+  let al=ArgumentList(node,source,scope,clazz.getConstructorRealParameters(typeArguments),null,owner);
+  //al=ArgumentList(node,source,scope,method.getRealParameterList(owner.typeArguments),method,owner);
   if(clazz.name==="JImage"){
     code="new "+typename.code;
     code="await $App.asyncFunctionCall("+code+"(),'$constructor',["+al.code.substring(1,al.code.length-1)+"])";

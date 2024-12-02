@@ -110,14 +110,18 @@ export function createAutocompletion(){
       for(let i=0;i<clazzes.length;i++){
         let c=clazzes[i];
         let params=c.getConstructorParameters();
+        let typeParametersString="";
+        if(c.hasTypeParameters && c.hasTypeParameters()){
+          typeParametersString="<>";
+        }
         if(params) params=params.parameters;
-        options.push(autocomplete.snippetCompletion(c.name+createParamsString(params,true),{
-          label: c.name+"(...)",
+        options.push(autocomplete.snippetCompletion(c.name+typeParametersString+createParamsString(params,true),{
+          label: c.name+typeParametersString+"(...)",
           type: "function",
           info: c.comment
         }));
-        options.push(autocomplete.snippetCompletion(c.name+"[]",{
-          label: c.name+"[]",
+        options.push(autocomplete.snippetCompletion(c.name+typeParametersString+"[]",{
+          label: c.name+typeParametersString+"[]",
           type: "function",
           info: c.comment
         }));
@@ -125,10 +129,14 @@ export function createAutocompletion(){
       for(let name in Java.clazzes){
         let c=Java.clazzes[name];
         if(c.cannotBeInstantiated || c.name==="null") continue;
+        let typeParametersString="";
+        if(c.hasTypeParameters && c.hasTypeParameters()){
+          typeParametersString="<>";
+        }
         let params=c.getConstructorParameters();
         if(params) params=params.parameters;
-        options.push(autocomplete.snippetCompletion(name+createParamsString(params,true),{
-          label: name+"(...)",
+        options.push(autocomplete.snippetCompletion(name+typeParametersString+createParamsString(params,true),{
+          label: name+typeParametersString+"(...)",
           type: "function",
           info: c.comment
         }));
@@ -276,8 +284,12 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
       for(let name in Java.clazzes){
         //if(name==="nullType") continue;
         let c=Java.clazzes[name];
+        let typeParametersString="";
+        if(c.hasTypeParameters && c.hasTypeParameters()){
+          typeParametersString="<>";
+        }
         options.push({
-          label: name,
+          label: name+typeParametersString,
           type: "class",
           info: c.comment
         });
@@ -285,9 +297,13 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
       let clazzes=app.$refs.editor.project.clazzes;
       for(let i=0;i<clazzes.length;i++){
         let c=clazzes[i];
+        let typeParametersString="";
+        if(c.hasTypeParameters && c.hasTypeParameters()){
+          typeParametersString="<>";
+        }
         //if(c.isUIClazz()) continue;
         options.push({
-          label: c.name,
+          label: c.name+typeParametersString,
           type: "class",
           info: c.comment
         });

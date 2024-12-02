@@ -221,6 +221,10 @@ export class Clazz{
     return null;
   }
 
+  hasTypeParameters(){
+    return this.typeParameters!==null;
+  }
+
   getMethodByPosition(pos, to){
     for(let i in this.methods){
       let m=this.methods[i];
@@ -869,10 +873,10 @@ export class Clazz{
     let c=this.getConstructor();
     return c? c.params: null;
   }
-  getConstructorRealParameters(){
+  getConstructorRealParameters(typeArguments){
     let c=this.getConstructor();
     if(!c) return null;
-    return c.getRealParameterList();
+    return c.getRealParameterList(typeArguments);
   }
 
   /**

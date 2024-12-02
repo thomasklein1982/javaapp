@@ -147,6 +147,20 @@ export class SourceFile{
                 }
                 changes.push(change);
               }
+            }else if(sTagname==="img"){
+              let assetName=sValue.substring(1,sValue.length-1);
+              let asset=this.project.getAssetByName(assetName);
+              if(asset){
+                //referencedAssets[assetName]=asset;
+                //t+="var(--"+assetName+")";
+                let change={
+                  from: value.from,
+                  to: value.to,
+                  ov: sValue,
+                  nv: asset.file.code
+                };
+                changes.push(change);
+              }
             }
           }
         }else if(content==="id"){
@@ -231,6 +245,7 @@ export class SourceFile{
             e.href=file.url;
           }
         }
+        if(!window.$servedFiles) return;
         els=document.querySelectorAll("[src]");
         for(let i=0;i<els.length;i++){
           let e=els[i];

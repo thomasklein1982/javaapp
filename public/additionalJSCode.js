@@ -23,7 +23,6 @@ function additionalJSCode(){
     window.addEventListener("message", async (ev)=>{
       let message=ev.data;
       if(message.type==="showPage"){
-        console.log("show Page",message.data);
         let pageName=message.data;
         let page=window.uiClazzObjects[pageName];
         if(!page) return;
@@ -37,7 +36,6 @@ function additionalJSCode(){
       }else if(message.type==="callMethod"){
         try{
           let res=await $main[message.data.methodName].apply($main,message.data.args);
-          console.log("result of callMethod",res,ev);
           ev.currentTarget[0].$fullfillPromise(res);
         }catch(e){
           
@@ -95,7 +93,6 @@ function additionalJSCode(){
   }
 
   async function $createAllUIClazzes(constructors){
-    console.log("create all ui clazzes",constructors);
     if(window.uiClazzObjects) return;
     window.uiClazzObjects={};
     for(let i=0;i<constructors.length;i++){
@@ -370,7 +367,6 @@ function additionalJSCode(){
   function $castObject(object,destTypeName,destDimension){
     if(object===null) return object;
     let m="Objekt kann nicht gecastet werden";
-    //console.log("caste",object,"nach",destTypeName,destDimension,$clazzRuntimeInfos);
     if(destDimension>0){
       let dim=[];
       let v=object;
@@ -513,7 +509,6 @@ function additionalJSCode(){
 
   function $getFileContentAsString(obj){
     let data=obj.data;
-    console.log(data);
     data=data.split(",");
     data=data[data.length-1];
     data=window.atob(data);
@@ -537,7 +532,6 @@ function additionalJSCode(){
 
   function $downloadFile(obj){
     let data=obj.data;
-    console.log("download",obj);
     if(obj instanceof $File && !obj.contentIsDataURL){
       data=window.atob(data);
     }
@@ -762,7 +756,6 @@ function additionalJSCode(){
       }else{
         let pos=s[i].indexOf(")");
         let assetName=s[i].substring(0,pos);
-        console.log(assetName);
         t+=before+$getAssetObjectURL(assetName)+after;
         t+=s[i].substring(pos+1);
       }
@@ -1970,7 +1963,6 @@ function additionalJSCode(){
       
     }
     querySelectorAll(selector,filter){
-      console.log("query s all",this.$el.contentWindow)
       let els=this.$el.contentWindow.document.querySelectorAll(selector);
       let res=[];
       for(let i=0;i<els.length;i++){
@@ -2242,9 +2234,7 @@ function additionalJSCode(){
       let ry=this.$el.canvas.getRawY(y);
       rx+=br.left;
       ry+=br.top;
-      console.log(rx,ry);
       let els=document.elementsFromPoint(rx,ry);
-      console.log(els);
       for(let i=0;i<els.length;i++){
         let e=els[i];
         if(e===this.$el || e===this.$el.canvas.el) return null;
@@ -4012,8 +4002,9 @@ function additionalJSCode(){
     }
   }
 
-  function $getData(vname,v,template){
+  function $getData(vname,v,template,typeVariables){
     let dim=[];
+    if(!typeVariables) typeVariables={};
     if(v.dimension>0){
       if(v.value){
         dim.push(v.value.length);
@@ -4021,18 +4012,31 @@ function additionalJSCode(){
         dim.push(0);
       }
     }
+    if(v.value?.$typeArguments){
+      for(let a in v.value.$typeArguments){
+        if(a.startsWith("$")) continue;
+        typeVariables[a]=v.value.$typeArguments[a].name;
+      }
+    }
+    let type=v.type;
+    for(let a in typeVariables){
+      if(type===a){
+        type=typeVariables[a];
+        break;
+      }
+    }
     let d={
       n: vname,
-      t: v.type,
+      t: type,
       d: dim
     };
     let isPrimitive=true;
-    if(v.type){
-      isPrimitive=v.type.charAt(0);
+    if(type){
+      isPrimitive=type.charAt(0);
       isPrimitive=isPrimitive===isPrimitive.toLowerCase();
     }
-    let c=v.type;
-    if(v.value===null||v.value===undefined || v.dimension===0 && (v.type==="String" || isPrimitive)){
+    let c=type;
+    if(v.value===null||v.value===undefined || v.dimension===0 && (type==="String" || isPrimitive)){
       d.v=v.value;
     }else if(template){
       if(v.dimension>0){
@@ -4042,7 +4046,7 @@ function additionalJSCode(){
           //name, dimension, type, value
           let value=v.value[i];
           let name="["+i+"]";
-          d.v[i]=$getData(name,{dimension:v.dimension-1,type: v.type,value}, name);
+          d.v[i]=$getData(name,{dimension:v.dimension-1,type,value}, name, typeVariables);
         }
       }else{
         d.v={};
@@ -4058,7 +4062,7 @@ function additionalJSCode(){
             if(attr && attr.type){
               type=attr.type.baseType;
               dimension=attr.type.dimension;
-              d.v[name]=$getData(name,{dimension,type,value}, template[name]);
+              d.v[name]=$getData(name,{dimension,type,value}, template[name], typeVariables);
             }
           }else{
           }
@@ -4280,14 +4284,20 @@ function additionalJSCode(){
     getData(template){
       let local={};
       if(template.local){
+        let typeVariables;
+        if(this.thisObject && this.thisObject.$typeArguments){
+          typeVariables={};
+          for(let a in this.thisObject.$typeArguments){
+            if(a.startsWith("$")) continue;
+            typeVariables[a]=this.thisObject.$typeArguments[a].name;
+          }
+        }
         for(let i=this.stack.length-1;i>=0;i--){
           let layer=this.stack[i];
           for(let a in layer){
             if(a in local) continue;
-            let v=layer[a];
-            
-            let d=$getData(a,v,template.local[a]);
-            //console.log("getData",a,v,d);
+            let v=layer[a];   
+            let d=$getData(a,v,template.local[a],typeVariables);
             local[a]=d;
           }
         }
@@ -4566,10 +4576,8 @@ function additionalJSCode(){
     static getHtmlPages(){
       let elements=document.querySelectorAll("iframe");
       let pages=[];
-      console.log("get html pages", elements)
       for(let i=0;i<elements.length;i++){
         let e=elements[i];
-        console.log(e,e.$HtmlPage);
         if(e.$HtmlPage){
           pages.push(e.$HtmlPage);
         }
@@ -4586,7 +4594,6 @@ function additionalJSCode(){
       let z2=comp2.$el.style.zIndex;
       z1*=1;
       z2*=1;
-      console.log("z-index",z1,z2);
       if(z1<z2) return true;
       if(z1>z2) return false;
       let node=comp1.$el.nextSibling;
@@ -4622,7 +4629,6 @@ function additionalJSCode(){
         let r2=e2.getBoundingClientRect();
         
         if(r1.bottom>r2.top+1){ 
-          console.log("top bottom",r1,r2)
           return false;
 
         }
@@ -4635,7 +4641,6 @@ function additionalJSCode(){
     static compareStyles(el1,el2,keysArray){
       let cs1=$Exercise.getComputedStyle(el1);
       let cs2=$Exercise.getComputedStyle(el2);
-      console.log(cs1,cs2);
       let res=[];
       let ok=true;
       for(let i=0;i<keysArray.length;i++){
@@ -4800,7 +4805,6 @@ function additionalJSCode(){
           for(let i=0;i<paramsSoll.length;i++){
             let pSoll=paramsSoll[i];
             let pIst=paramsIst[i];
-            console.log("params",pSoll,pIst);
             if(pSoll.name!==pIst.name){
               errors.push("Der Parameter '"+pIst.name+"' der Methode '"+a+"' soll '"+pSoll.name+"' heißen.");
             }

@@ -69,6 +69,7 @@ export class Method{
         }
       }
     }
+    if(!typeArguments) return this.type;
     for(let i=0;i<typeArguments.length;i++){
       let a=typeArguments[i];
       if(a.param.name===this.type.baseType.name){
