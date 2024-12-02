@@ -270,8 +270,24 @@ function additionalJSCode(){
   $createArrayValues=function(type,dim){
     if(dim.length===1){
       var array=[];
+      let initialValue;
+      if(type.substring){
+        if(type.charAt(0)===type.charAt(0).toUpperCase()){
+          initialValue=null;
+        }else if(type==="boolean"){
+          initialValue=false;
+        }else{
+          initialValue=0;
+        }
+      }else{
+        if("initialValue" in type){
+          initialValue=type.initialValue;
+        }else{
+          initialValue=null;
+        }
+      }
       for(var i=0;i<dim[0];i++){
-        array.push(type.initialValue!==undefined? type.initialValue:null);
+        array.push(initialValue);
       }
       return array;
     }else{
@@ -4051,12 +4067,20 @@ function additionalJSCode(){
       }else{
         d.v={};
         let infos=$clazzRuntimeInfos[d.t];
+        console.log("infos",infos,v,type);
+        if(type==="ArrayList"){
+          console.log("ArrayList",v)
+          d.t+="<"+v.value.$elementType.name+">";
+          d.v["array"]=$getData("array",{dimension: 1,type: v.value.$elementType.name,value: v.value.elements}, template["array"], typeVariables);
+          
+        }
         for(let name in v.value){
           if(name.startsWith("$")) continue;
           //name, dimension, type, value
           let value=v.value[name];
           let type=null;
           let dimension=0;
+          
           if(infos){
             let attr=infos.attributes[name];
             if(attr && attr.type){
@@ -4064,7 +4088,9 @@ function additionalJSCode(){
               dimension=attr.type.dimension;
               d.v[name]=$getData(name,{dimension,type,value}, template[name], typeVariables);
             }
+            
           }else{
+            
           }
           
         }

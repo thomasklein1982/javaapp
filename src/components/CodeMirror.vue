@@ -276,7 +276,7 @@ export default {
       }else{
         let line=this.getLineByNumber(nv.line);
         try{
-          this.setSelection(line.from,line.to+1);
+          this.setSelection(line.from,line.to);
         }catch(e){
           this.setSelection(line.from,line.to);
         }
