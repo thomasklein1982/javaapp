@@ -16,8 +16,26 @@ export class Type{
     this.dimension=dimension;
     
   }
+  replaceTypeParameters(typeArguments){
+    console.log("replace type parameters",typeArguments,this);
+    if(!typeArguments) return;
+    if(!this.baseType) return;
+    
+  }
   toString(){
     let t=this.baseType? this.baseType.name:"Unbekannter Datentyp";
+    // if(this.typeArguments){
+    //   for(let i=0;i<typeArguments.length;i++){
+    //     let a=typeArguments[i];
+    //     if(a.param.name===this.type.baseType.name){
+    //       let t=new Type(a.baseType,this.type.dimension);
+    //       console.log(a.baseType);
+    //       t.typeArguments=a.typeArguments;
+    //       t.replaceTypeParameters(a.typeArguments);
+    //       return t;
+    //     }
+    //   } 
+    // }
     let d=this.dimension;
     while(d>0){
       t+="[]";

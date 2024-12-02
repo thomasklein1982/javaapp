@@ -73,7 +73,11 @@ export class Method{
     for(let i=0;i<typeArguments.length;i++){
       let a=typeArguments[i];
       if(a.param.name===this.type.baseType.name){
-        return new Type(a.baseType,this.type.dimension);
+        let t=new Type(a.baseType,this.type.dimension);
+        console.log(a.baseType);
+        t.typeArguments=a.typeArguments;
+        t.replaceTypeParameters(a.typeArguments);
+        return t;
       }
     } 
   }

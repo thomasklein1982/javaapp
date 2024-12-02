@@ -136,7 +136,7 @@ export class Parameter{
         for (let i = 0; i < typeArguments.length; i++) {
           let a = typeArguments[i];
           if(a.param.name===this.type.baseType.name){
-            p.type=new Type(a,this.type.dimension);
+            p.type=new Type(a.baseType,this.type.dimension);
             return p;
           }
         }
