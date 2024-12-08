@@ -203,7 +203,7 @@ export class Clazz{
       code+="\nasync main(){"+onStartPrecode+"\n}";
     }
     if(!hasConstructor){
-      code+="\nasync $constructor(typeArguments){\nthis.$typeArguments=typeArguments;\n"+attributesCode+"\nreturn this;}";
+      code+="\nasync $constructor(typeArguments){\nlet $scope=new $Scope(this);\nthis.$typeArguments=typeArguments;\n"+attributesCode+"\nreturn this;}";
     }
     code+="\n$getType(infos){\nif(infos.isGeneric){\nreturn this.$typeArguments[infos.name];}\nif(!infos){infos={name: 'Object',initialValue: null};}\nreturn infos;}";
     code+="\n}";

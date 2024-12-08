@@ -50,6 +50,7 @@
     },
     computed: {
       allComponents(){
+        return this.componentList;
         let components=[];
         components=components.concat(this.componentList);
         let project=this.clazz.project;

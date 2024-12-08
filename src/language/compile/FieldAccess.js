@@ -23,7 +23,7 @@ export function FieldAccess(node,source,scope){
   node=node.firstChild;
   let code="";
   let owner;
-  let staticContext=scope.method.isStatic();
+  let staticContext=scope.method? scope.method.isStatic():false;
   //TODO: Verallgemeinern der owner-Suche
   if(node.name==="FieldAccess" || node.name==="ScopedTypeName"){
     let fa=FieldAccess(node,source,scope);

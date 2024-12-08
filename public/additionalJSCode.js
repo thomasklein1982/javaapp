@@ -2204,20 +2204,14 @@ function additionalJSCode(){
       let y = ev.offsetY;
       let el=ev.srcElement;
       if(el.isCanvas) el=el.parentElement;
-      if(el && el!==$App.canvas.el && el!==this.$el){
-        x-=$App.canvas.container.getBoundingClientRect().left;
-      }
-      while(el && el!==$App.canvas.el && el!==this.$el){
-        let br=el.getBoundingClientRect();
-        x+=br.left;
-        y+=br.top;
-        el=el.parentElement;
-        if(el.isCanvas) el=el.parentElement;
-      }
+      let brCanvas=this.$el.getBoundingClientRect();
+      let brTarget=el.getBoundingClientRect();
+      x+=brTarget.left-brCanvas.left;
+      y+=brTarget.top-brCanvas.top;
       x=canvas.getCanvasX(x);
       y=canvas.getCanvasY(y);
       this.mouse.x=x;
-      this.mouse.y=y;
+      this.mouse.y=y; 
     }
     setSizePolicy(policy){
       this.$el.setSizePolicy(policy);

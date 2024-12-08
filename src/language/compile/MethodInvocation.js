@@ -32,7 +32,8 @@ export function MethodInvocation(node,source,scope){
     let code=Identifier(node,source,scope);
     return code;
   }
-  let staticContext=scope.method.isStatic();
+  //TODO: Das ist nicht korrekt fuer statische attribute
+  let staticContext=scope.method? scope.method.isStatic():false;
   if(node.name==="this"){
     if(staticContext){
       throw source.createError("Das Schlüsselwort 'this' existiert nicht in statischen Methoden.",node);

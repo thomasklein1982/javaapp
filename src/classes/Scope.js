@@ -190,7 +190,10 @@ export class Scope{
    * @returns 
    */
   getAttribute(name,isStatic,clazz){
-    if(!clazz && !this.method) return null;
+    if(!clazz) clazz=this.getClazz();
+    if(!clazz && !this.method) return {
+      error: "Keine Klasse vorhanden"
+    };
     let c=clazz? clazz : this.method.clazz;
     if(c.name==="null"){
       return {

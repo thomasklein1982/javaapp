@@ -77,8 +77,12 @@ export function Block(node,source,scope){
   }
   //let line=source.state.doc.lineAt(blockNode.to).number;
   if(!scope.optimizeCompiler){
-    let line=source.getLineNumber(blockNode.to-1);
-    code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",$scope);";
+    try{
+      let line=source.getLineNumber(blockNode.to-1);
+      code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.getClazz().name)+",$scope);";
+    }catch(e){
+
+    }
   }
   scope.popLayer();
   code+="\n$scope.popLayer();"

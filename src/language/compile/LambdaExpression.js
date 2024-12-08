@@ -1,3 +1,4 @@
+import { Scope } from "../../classes/Scope";
 import { CompileFunctions } from "../CompileFunctions";
 
 export function LambdaExpression(node,source,scope,infos){
@@ -39,6 +40,9 @@ export function LambdaExpression(node,source,scope,infos){
   let block=CompileFunctions.get(node,source);
   scope.pushMethod(method);
   block=block(node,source,scope);
+  if(block instanceof Scope){
+    return block;
+  }
   scope.popLayer();
   scope.popMethod();
   if(block.errors.length>0){

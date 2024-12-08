@@ -68,9 +68,9 @@ export function Identifier(node,source,scope,infos){
       type=obj.type;
       scope.addTypeAnnotation(node,type,false);
     }else{
-      if(!scope.method){
-        throw source.createError("Es tut mir leid, ich kann diese Variable nicht außerhalb einer Methode verwenden.",node);
-      }
+      // if(!scope.method){
+      //   throw source.createError("Es tut mir leid, ich kann diese Variable nicht außerhalb einer Methode verwenden.",node);
+      // }
       let staticContext=scope.method && scope.method.isStatic()||false;
       obj=scope.getAttribute(name,staticContext);
       if(obj && obj.error){
