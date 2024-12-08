@@ -188,9 +188,9 @@ function additionalJSCode(){
 
   async function $handleEvent(eventname,ev,argsFunc){
     let comp=this.component;
-    if(comp.actionListeners && comp.actionListeners.length>0){
-      for(let i=0;i<comp.actionListeners.length;i++){
-        let al=comp.actionListeners[i];
+    if(comp.$actionListeners && comp.$actionListeners.length>0){
+      for(let i=0;i<comp.$actionListeners.length;i++){
+        let al=comp.$actionListeners[i];
         let event=$new(ActionEvent,comp,0,comp.actionCommand,Date.now());
         al.actionPerformed(event);
         //source,id,command,when
@@ -1326,14 +1326,13 @@ function additionalJSCode(){
       this.height=height;
       this.$el=null;
       this.actionCommand="";
-      this.actionObject=null;
       this.$eventListeners={};
       this.$triggerOnAction=false;
       this.$triggerOnMouseDown=false;
       this.$triggerOnMouseUp=false;
       this.$triggerOnMouseMove=false;
-      this.standardCSSClasses="__jcomponent";
-      this.actionListeners=[];
+      this.$standardCSSClasses="__jcomponent";
+      this.$actionListeners=[];
 
     }
     addEventListener(type, listener){
@@ -1394,12 +1393,6 @@ function additionalJSCode(){
       }else{
         return this.$el.textContent;
       }
-    }
-    setActionObject(object){
-      this.actionObject=object;
-    }
-    getActionObject(){
-      return this.actionObject;
     }
     collides(comp){
       
@@ -1493,7 +1486,7 @@ function additionalJSCode(){
       this.$el.style=css;
     }
     setCSSClass(className){
-      this.$el.className=this.standardCSSClasses+" "+className;
+      this.$el.className=this.$standardCSSClasses+" "+className;
     }
     getCSSClass(){
       return this.$el.className;
@@ -1549,17 +1542,17 @@ function additionalJSCode(){
       }
     }
     addActionListener(al){
-      this.actionListeners.push(al);
+      this.$actionListeners.push(al);
     }
     removeActionListener(al){
-      let index=this.actionListeners.indexOf(al);
+      let index=this.$actionListeners.indexOf(al);
       if(index<0) return;
-      this.actionListeners.splice(index,1);
+      this.$actionListeners.splice(index,1);
     }
     getActionListeners(){
-      let a=$createArray("ActionListener",this.actionListeners.length,[]);
-      for(let i=0;i<this.actionListeners.length;i++){
-        a[i]=this.actionListeners[i];
+      let a=$createArray("ActionListener",this.$actionListeners.length,[]);
+      for(let i=0;i<this.$actionListeners.length;i++){
+        a[i]=this.$actionListeners[i];
       }
       return a;
     }
@@ -1624,7 +1617,7 @@ function additionalJSCode(){
   class JButton extends JComponent{
     $constructor(label,x,y,width,height){
       super.$constructor(x,y,width,height);
-      this.standardCSSClasses+=" __jbutton";
+      this.$standardCSSClasses+=" __jbutton";
       if(!label) label="";
       this.$el=ui.button(label,x,y,width,height);
       this.$el.component=this;
@@ -1637,7 +1630,7 @@ function additionalJSCode(){
   class JImage extends JComponent{
     async $constructor(url,x,y,width,height){
       super.$constructor(x,y,width,height);
-      this.standardCSSClasses+=" __jimage";
+      this.$standardCSSClasses+=" __jimage";
       let asset=$App.assets[url];
       this.$img=null;
       if(asset){
@@ -1756,7 +1749,7 @@ function additionalJSCode(){
   class JPanel extends JComponent{
     $constructor(template,x,y,width,height){
       super.$constructor(x,y,width,height);
-      this.standardCSSClasses+=" __jpanel";
+      this.$standardCSSClasses+=" __jpanel";
       this.template=template;
       this.$el=ui.panel(template,x,y,width,height);
       this.$el.component=this;
@@ -1908,7 +1901,7 @@ function additionalJSCode(){
   class JFrame extends JPanel{
     $constructor(template){
       super.$constructor(template);
-      this.standardCSSClasses+=" __jframe";
+      this.$standardCSSClasses+=" __jframe";
       this.$el.style="left: 0; right: 0; top: 0; bottom: 0; position: absolute;background-color: white";
       $App.canvas.addElement(this.$el,50,50,100,100);
       $App.console.adaptSize();
@@ -2036,7 +2029,7 @@ function additionalJSCode(){
   class JLabel extends JComponent{
     $constructor(text,x,y,width,height){
       super.$constructor(x,y,width,height);
-      this.standardCSSClasses+=" __jlabel";
+      this.$standardCSSClasses+=" __jlabel";
       this.$el=ui.label(text,x,y,width,height);
       this.setValue(text);
       this.$el.component=this;
@@ -2142,8 +2135,8 @@ function additionalJSCode(){
   class Canvas extends JPanel{
     $constructor(minX,maxX,minY,maxY,x,y,width,height){
       super.$constructor(x,y,width,height);
-      //this.standardCSSClasses="_java-app-canvas __jcomponent";
-      this.standardCSSClasses+=" __canvas";
+      //this.$standardCSSClasses="_java-app-canvas __jcomponent";
+      this.$standardCSSClasses+=" __canvas";
       if(this.$el && this.$el.parentNode) this.$el.parentNode.removeChild(this.$el);
       this.$el=ui.canvas(maxX-minX,maxY-minY,x,y,width,height);
       this.$el.style.touchAction="none";
@@ -2371,7 +2364,7 @@ function additionalJSCode(){
   class JComboBox extends JComponent{
     $constructor(options,x,y,width,height){
       super.$constructor(x,y,width,height);
-      this.standardCSSClasses+=" __jcombobox";
+      this.$standardCSSClasses+=" __jcombobox";
       if(!options){
         options=[];
       }
@@ -2407,7 +2400,7 @@ function additionalJSCode(){
   class JCheckBox extends JComponent{
     $constructor(label,x,y,width,height){
       super.$constructor(x,y,width,height);
-      this.standardCSSClasses+=" __jcheckbox";
+      this.$standardCSSClasses+=" __jcheckbox";
       this.$el=ui.input("checkbox",label,x,y,width,height);
       this.$el.component=this;
       this.$el.onchange = $handleOnAction;
@@ -2418,7 +2411,7 @@ function additionalJSCode(){
   class JTextComponent extends JComponent{
     $constructor(x,y,width,height){
       super.$constructor(x,y,width,height);
-      this.standardCSSClasses+=" __jtextcomponent";
+      this.$standardCSSClasses+=" __jtextcomponent";
     }
     getSelectionStart(){
       return this.$el.selectionStart;
@@ -2443,7 +2436,7 @@ function additionalJSCode(){
       if(!type) type="text";
       if(!placeholder) placeholder="";
       super.$constructor(x,y,width,height);
-      this.standardCSSClasses+=" __jtextfield";
+      this.$standardCSSClasses+=" __jtextfield";
       this.$el=ui.input(type,placeholder,x,y,width,height);
       this.$el.spellcheck=false;
       this.$el.component=this;
@@ -2455,7 +2448,7 @@ function additionalJSCode(){
   class JTextArea extends JTextComponent{
     $constructor(placeholder,x,y,width,height){
       super.$constructor(x,y,width,height);
-      this.standardCSSClasses+=" __jtextarea";
+      this.$standardCSSClasses+=" __jtextarea";
       this.$el=ui.textarea(placeholder,x,y,width,height);
       this.setAlignContent("top");
       this.$el.spellcheck=false;
@@ -2471,7 +2464,7 @@ function additionalJSCode(){
   class DataTable extends JComponent{
     $constructor(x,y,width,height){
       super.$constructor(x,y,width,height);
-      this.standardCSSClasses+=" __datatable";
+      this.$standardCSSClasses+=" __datatable";
       this.$el=ui.datatable(null,x,y,width,height);
       this.$el.component=this;
       this.setCSSClass("");
@@ -3177,7 +3170,7 @@ function additionalJSCode(){
         initialCapacity=10;
       }
       this.capacity=initialCapacity;
-      this.elements=[];
+      this.elements=$createArrayValues(this.$elementType,1);//new Array(initialCapacity);
       this.$size=0;
     }
     $isIndexOutOfBounds(index){
@@ -3346,18 +3339,18 @@ function additionalJSCode(){
       this.initialDelay=delay;
       this.delay=delay;
       this.repeats=true;
-      this.actionListeners=[actionListener];
+      this.$actionListeners=[actionListener];
       this.actionCommand=null;
       this.$timer_id=null;
       this.$running=false;
     }
     addActionListener(al){
-      this.actionListeners.push(al);
+      this.$actionListeners.push(al);
     }
     removeActionListener(al){
-      let index=this.actionListeners.indexOf(al);
+      let index=this.$actionListeners.indexOf(al);
       if(index<0) return;
-      this.actionListeners.splice(index,1);
+      this.$actionListeners.splice(index,1);
     }
     setActionCommand(command){
       this.actionCommand=command;
@@ -3383,8 +3376,8 @@ function additionalJSCode(){
       this.$running=true;
       let handler=()=>{
         if($App.debug.paused) return;
-        for(let i=0;i<this.actionListeners.length;i++){
-          let al=this.actionListeners[i];
+        for(let i=0;i<this.$actionListeners.length;i++){
+          let al=this.$actionListeners[i];
           let ev=$new(ActionEvent,this,0,this.actionCommand,Date.now());
           al.actionPerformed(ev);
         };
@@ -4018,9 +4011,8 @@ function additionalJSCode(){
     }
   }
 
-  function $getData(vname,v,template,typeVariables){
+  function $getData(vname,v,template){
     let dim=[];
-    if(!typeVariables) typeVariables={};
     if(v.dimension>0){
       if(v.value){
         dim.push(v.value.length);
@@ -4028,32 +4020,35 @@ function additionalJSCode(){
         dim.push(0);
       }
     }
-    if(v.value?.$typeArguments){
-      for(let a in v.value.$typeArguments){
-        if(a.startsWith("$")) continue;
-        typeVariables[a]=v.value.$typeArguments[a].name;
+    let type=v.type;
+    let isPrimitive=true;
+    if(!type){
+      type=v.value.constructor.name;
+      if(type==="Number"){
+        type="double";
+      }else if(type==="Boolean"){
+        type="boolean";
       }
     }
-    let type=v.type;
-    for(let a in typeVariables){
-      if(type===a){
-        type=typeVariables[a];
-        break;
-      }
+    if(type){
+      isPrimitive=type.charAt(0);
+      isPrimitive=isPrimitive===isPrimitive.toLowerCase();
+    }
+    if(!isPrimitive &&  v.value && v.value.constructor){
+      type=v.value.constructor.name
     }
     let d={
       n: vname,
       t: type,
       d: dim
     };
-    let isPrimitive=true;
-    if(type){
-      isPrimitive=type.charAt(0);
-      isPrimitive=isPrimitive===isPrimitive.toLowerCase();
-    }
-    let c=type;
+    
     if(v.value===null||v.value===undefined || v.dimension===0 && (type==="String" || isPrimitive)){
       d.v=v.value;
+      // if(typeof d.v==="string"){
+      //   d.v="\""+d.v+"\"";
+      //   console.log("string");
+      // }
     }else if(template){
       if(v.dimension>0){
         d.v=[];
@@ -4062,35 +4057,35 @@ function additionalJSCode(){
           //name, dimension, type, value
           let value=v.value[i];
           let name="["+i+"]";
-          d.v[i]=$getData(name,{dimension:v.dimension-1,type,value}, name, typeVariables);
+          d.v[i]=$getData(name,{dimension:v.dimension-1,type,value}, name);
         }
       }else{
         d.v={};
         let infos=$clazzRuntimeInfos[d.t];
-        console.log("infos",infos,v,type);
-        if(type==="ArrayList"){
-          console.log("ArrayList",v)
-          d.t+="<"+v.value.$elementType.name+">";
-          d.v["array"]=$getData("array",{dimension: 1,type: v.value.$elementType.name,value: v.value.elements}, template["array"], typeVariables);
+        // if(type==="ArrayList"){
+        //   console.log("ArrayList",v)
+        //   d.t+="<"+v.value.$elementType.name+">";
+        //   d.v["array"]=$getData("array",{dimension: 1,type: v.value.$elementType.name,value: v.value.elements}, template["array"]);
           
-        }
+        // }
         for(let name in v.value){
           if(name.startsWith("$")) continue;
           //name, dimension, type, value
           let value=v.value[name];
           let type=null;
           let dimension=0;
-          
+          console.log(name,value);
           if(infos){
             let attr=infos.attributes[name];
             if(attr && attr.type){
               type=attr.type.baseType;
               dimension=attr.type.dimension;
-              d.v[name]=$getData(name,{dimension,type,value}, template[name], typeVariables);
+              d.v[name]=$getData(name,{dimension,type,value}, template[name]);
             }
             
           }else{
-            
+            dimension=Array.isArray(value)? 1:0;
+            d.v[name]=$getData(name,{dimension,type,value}, template[name]);
           }
           
         }

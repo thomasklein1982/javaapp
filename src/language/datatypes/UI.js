@@ -357,20 +357,6 @@ function defineJComponent(Clazz,Java){
     info: "Legt den ActionCommand-String der Komponente fest."
   },Clazz,false,false,Java);
   createMethod({
-    name: 'getActionObject',
-    args: [
-    ],
-    info: "Liefert das ActionObject der Komponente zurück.",
-    returnType: 'Object'
-  },Clazz,false,false,Java);
-  createMethod({
-    name: 'setActionObject',
-    args: [
-      {name: 'actionObject', type: 'Object', info: 'Das neue ActionObject der Komponente.'}
-    ],
-    info: "Legt das ActionObject der Komponente fest."
-  },Clazz,false,false,Java);
-  createMethod({
     name: 'setCSS',
     args: [
       {name: 'cssRules', type: 'String'}

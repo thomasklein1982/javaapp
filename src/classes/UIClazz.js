@@ -594,7 +594,7 @@ export class UIClazz extends Clazz{
         newCode+=args.join(",");
         newCode+=additionalEnd+");";
       }
-      newCode+="\n"+last+".uiClazz=this;";
+      newCode+="\n"+last+".$uiClazz=this;";
       newCode+="\ncontainer"+containerIndex+".add("+last+",$insertPosition);";
       newCode+="\n$insertPosition++;";
       if(c.name){
