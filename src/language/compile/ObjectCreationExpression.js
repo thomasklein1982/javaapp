@@ -115,6 +115,7 @@ export function ObjectCreationExpression(node,source,scope,infos){
   let owner={
     clazz: clazz,
     static: false,
+    typeArguments
   }
   let al=ArgumentList(node,source,scope,clazz.getConstructorRealParameters(typeArguments),null,owner);
   //al=ArgumentList(node,source,scope,method.getRealParameterList(owner.typeArguments),method,owner);
