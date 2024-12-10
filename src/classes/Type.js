@@ -140,10 +140,10 @@ export class Type{
   applyAutoboxing(value){
     if(this.dimension!==value.type.dimension) return false;
     if(this.baseType instanceof PrimitiveType && this.baseType.wrapperClass && value.type.baseType.isSubtypeOf(this.baseType.wrapperClass)){ //&& value.type.baseType.name===this.baseType.wrapperClass.name){
-      value.code="("+value.code+".value)";
+      value.code="("+value.code+"?.value)";
       value.type=new Type(this.baseType,0);//.baseType=this.baseType;
     }else if(value.type.baseType instanceof PrimitiveType && value.type.baseType.wrapperClass && value.type.baseType.wrapperClass.isSubtypeOf(this.baseType)){
-      value.code="("+value.type.baseType.wrapperClass.getJsName()+".valueOf("+value.code+"))";
+      value.code="("+value.type.baseType.wrapperClass.getJsName()+"?.valueOf("+value.code+"))";
       value.type=new Type(value.type.baseType.wrapperClass,0);
     }
     // this.baseType.name===value.type.baseType.wrapperClass.name

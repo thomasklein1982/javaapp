@@ -30,6 +30,9 @@ import { defineGamepad } from "./datatypes/Gamepad.js";
 import { defineReflectionAPI } from "./datatypes/reflection.js";
 import { defineVoice } from "./datatypes/Voice.js";
 import { defineThread } from "./datatypes/Thread.js";
+import { defineQueue } from "./datatypes/Queue.js";
+import { defineStack } from "./datatypes/Stack.js";
+import { defineHashMap } from "./datatypes/HashMap.js";
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
 let boolean=new PrimitiveType("boolean",null,false,"Ein 'boolean' (dt: 'Wahrheitswert') kann nur true oder false sein.",true);
@@ -108,6 +111,9 @@ let InputStream=new Clazz("InputStream");
 InputStream.cannotBeInstantiated=true;
 
 let ArrayList=new Clazz("ArrayList");
+let Queue=new Clazz("Queue");
+let Stack=new Clazz("Stack");
+let HashMap=new Clazz("HashMap");
 let HTMLElement=new Clazz("HTMLElement");
 
 let Sound=new Clazz("Sound");
@@ -130,7 +136,7 @@ let Voice=new Clazz("Voice");
 let Thread=new Clazz("Thread");
 
 let datatypes={
-  ActionEvent,ActionListener,ArrayList,Boolean,Canvas,Char,Class,Comparable,Console,DataTable,Database,Double,Exception,Field,File,Gamepad,HTMLElement,HtmlPage,InputStream,Integer,JButton,JCheckBox,JComboBox,JComponent,JFrame,JImage,JLabel,JPanel,JSON,JTextArea,JTextComponent,JTextField,JavaApp,Matcher,Math,Matrix,Method,Object,Path,Pattern,PrintStream,Random,Record,Session,Sound,Storage,String,System,Thread,Time,Timer,UIClass,Vector,Voice,boolean,char,double,int,nullType
+  ActionEvent,ActionListener,ArrayList,Boolean,Canvas,Char,Class,Comparable,Console,DataTable,Database,Double,Exception,Field,File,Gamepad,HashMap,HTMLElement,HtmlPage,InputStream,Integer,JButton,JCheckBox,JComboBox,JComponent,JFrame,JImage,JLabel,JPanel,JSON,JTextArea,JTextComponent,JTextField,JavaApp,Matcher,Math,Matrix,Method,Object,Path,Pattern,PrintStream,Queue,Random,Record,Session,Sound,Stack,Storage,String,System,Thread,Time,Timer,UIClass,Vector,Voice,boolean,char,double,int,nullType
 };
 
 //sortieren der Datentypen:
@@ -142,7 +148,7 @@ let datatypes={
 // console.log(array.toString());
 
 let clazzes={
-  nullType,Object, String, Math, Gamepad, Time, Console, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, HtmlPage, Sound, Exception, Integer, Double, Char, Boolean, JFrame, JavaApp, InputStream, Comparable, ActionEvent, Timer, JSON, Random, UIClass, Class, Field, Method, Voice, Thread
+  nullType,Object, String, Math, Gamepad, Time, Console, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Record, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, HtmlPage, Sound, Exception, Integer, Double, Char, Boolean, JFrame, JavaApp, InputStream, Comparable, ActionEvent, Timer, JSON, Random, UIClass, Class, Field, Method, Voice, Thread, Queue, Stack, HashMap
 }
 
 let interfaces={
@@ -192,6 +198,9 @@ defineFile(File);
 defineMatrix(Matrix);
 defineVector(Vector);
 defineArrayList(ArrayList);
+defineQueue(Queue);
+defineStack(Stack);
+defineHashMap(HashMap);
 defineHTMLElement(HTMLElement);
 defineSound(Sound,Java);
 defineTimer(Timer);

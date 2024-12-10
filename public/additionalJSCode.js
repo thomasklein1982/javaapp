@@ -3352,6 +3352,110 @@ function additionalJSCode(){
     }
   }
 
+  class Queue{
+    $constructor(){
+      this.start=null;
+      this.end=null;
+    }
+    isEmpty(){
+      return this.start===null;
+    }
+    add(w){
+      let n={
+        v: w,
+        n: null
+      }
+      if(this.end===null){
+        this.start=n;
+      }else{
+        this.end.n=n;
+      }
+      this.end=n;
+    }
+    remove(){
+      if(this.start==null) return null;
+      let s=this.start;
+      this.start=this.start.n;
+      if(this.end===s){
+        this.end=this.start;
+      }
+      return s.v;
+    }
+    peek(){
+      if(this.start===null) return null;
+      return this.start.v;
+    }
+  }
+
+  class Stack{
+    $constructor(){
+      this.start=null;
+    }
+    isEmpty(){
+      return this.start===null;
+    }
+    push(w){
+      let n={
+        v: w,
+        n: this.start
+      }
+      this.start=n;
+    }
+    pop(){
+      if(this.start==null) return null;
+      let s=this.start;
+      this.start=this.start.n;
+      return s.v;
+    }
+    top(){
+      if(this.start===null) return null;
+      return this.start.v;
+    }
+  }
+
+  class HashMap{
+    $constructor(){
+      this.data={};
+      this.$count=0;
+    }
+    put(k,v){
+      if(!(k in this.data)) this.$count++;
+      this.data[k]=v;
+    }
+    get(k){
+      if(!(k in this.data)) return null;
+      return this.data[k];
+    }
+    remove(k){
+      if(!(k in this.data)) return;
+      this.$count--;
+      delete this.data[k];
+    }
+    containsKey(k){
+      return (k in this.data);
+    }
+    isEmpty(){
+      return this.$count===0;
+    }
+    size(){
+      return this.$count;
+    }
+    keys(){
+      let k=[];
+      for(let a in this.data){
+        k.push(a);
+      }
+      return k;
+    }
+    values(){
+      let k=[];
+      for(let a in this.data){
+        k.push(this.data[a]);
+      }
+      return k;
+    }
+  }
+
   class ActionEvent{
     $constructor(source,id,command,when){
       this.source=source;
