@@ -151,7 +151,7 @@ export class Parameter{
     p.name=newName;
     p.optional=this.optional;
     p.default=this.default;
-    p.type=this.type;
+    p.type=new Type(this.type.baseType,this.type.dimension);
     p.info=this.info;
     if(p.type.baseType.isGeneric){
       if(typeArguments && typeArguments.length===1){

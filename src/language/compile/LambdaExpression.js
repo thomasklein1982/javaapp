@@ -2,10 +2,19 @@ import { Scope } from "../../classes/Scope";
 import { CompileFunctions } from "../CompileFunctions";
 
 export function LambdaExpression(node,source,scope,infos){
-  if(!infos || !infos.parameter || !infos.parameter.type || !infos.owner){
+  if(!infos){
     throw source.createError("Unvorhergesehener Lamdba-Ausdruck.\nWahrscheinlich verursacht durch einen anderen Fehler.",node);
   }
-  let inter=infos.parameter.type;
+  let inter,typeArguments;
+  if(infos.parameter && infos.parameter.type && infos.owner){
+    inter=infos.parameter.type;
+    typeArguments=infos.owner.typeArguments;
+  }else if(infos.assignTarget){
+    inter=infos.assignTarget.type;
+    typeArguments=inter.typeArguments;
+  }else{
+    throw source.createError("An dieser Stelle kann kein Lamda-Ausdruck übergeben werden.",node);
+  }
   if(inter.dimension>0 || !inter.baseType.isInterface){
     throw source.createError("An dieser Stelle kann kein Lamda-Ausdruck übergeben werden.",node);
   }
@@ -25,7 +34,7 @@ export function LambdaExpression(node,source,scope,infos){
   
   let plist;
   try{
-    plist=method.getRenamedParameterList(infos.owner.typeArguments,params.params);
+    plist=method.getRenamedParameterList(typeArguments,params.params);
   }catch(e){
     throw source.createError(e,node);
   }

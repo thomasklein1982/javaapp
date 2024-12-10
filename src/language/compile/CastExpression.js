@@ -18,10 +18,18 @@ export function CastExpression(node,source,scope){
     
   }
   let value=func(node,source,scope);
-  if(value.type.baseType.name===Java.clazzes.Object.name && value.type.dimension===0){
+  let baseType=value.type.baseType;
+  if(baseType.isGeneric){
+    baseType=Java.datatypes.Object;
+  }
+  let type={
+    baseType,
+    dimension: value.type.dimension
+  }
+  if(baseType.name===Java.clazzes.Object.name && value.type.dimension===0){
     /**wenn der Wert ein Object ist, muss geschaut werden, ob es ein */
   }
-  if(!destType.isSubtypeOf(value.type)){
+  if(!destType.isSubtypeOf(type)){
     throw source.createError("Ein Wert des Typs '"+value.type.toString()+"' kann nicht zu '"+destType.toString()+"' gecastet werden.",node);
   }
   let code;

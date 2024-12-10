@@ -115,6 +115,6 @@ export function defineArrayList(clazz){
   createMethod({
     name: "sort",
     info: "",
-    args: [{name: "comparator", default: "(a,b)->{}", type: "Comparable"}],
+    args: [{name: "comparator", default: "(a,b)->{}", type: "Comparator"}],
   },clazz,false,false);
 }

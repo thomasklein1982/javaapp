@@ -1075,6 +1075,10 @@ function additionalJSCode(){
     static valueOf(v){
       return new Integer(v);
     }
+    compareTo(a){
+      if(!a) throw $new(Exception,"compareTo darf nicht auf null angewendet werden");
+      return this.value-a.value;
+    }
   }
 
   class Double{
@@ -3342,7 +3346,7 @@ function additionalJSCode(){
       for(let i=0;i<n;i++){
         for(let j=0;j<n-i-1;j++){
           let c=this.get(j);
-          if(await comparator.compareTo(c,this.get(j+1))>0){
+          if(await comparator.compare(c,this.get(j+1))>0){
             this.set(j,this.get(j+1));
             this.set(j+1,c);
           }

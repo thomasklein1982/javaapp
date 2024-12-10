@@ -24,6 +24,14 @@ export function defineInteger(Clazz,Java){
     ],
     returnType: "Integer"
   },Clazz,true,false,Java);
+  createMethod({
+    name: 'compareTo',
+    args: [
+      {name: 'a', type: 'Integer'}
+    ],
+    returnType: "int"
+  },Clazz,false,false,Java);
+  
 }
 
 export function defineBoolean(Clazz,Java){
@@ -58,6 +66,13 @@ export function defineDouble(Clazz,Java){
     ],
     returnType: "Double"
   },Clazz,true,false,Java);
+  createMethod({
+    name: 'compareTo',
+    args: [
+      {name: 'a', type: 'Double'}
+    ],
+    returnType: "int"
+  },Clazz,false,false,Java);
 }
 
 export function defineChar(Clazz,Java){
@@ -75,4 +90,11 @@ export function defineChar(Clazz,Java){
     ],
     returnType: "Char"
   },Clazz,true,false,Java);
+  createMethod({
+    name: 'compareTo',
+    args: [
+      {name: 'a', type: 'Char'}
+    ],
+    returnType: "int"
+  },Clazz,false,false,Java);
 }
