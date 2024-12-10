@@ -776,6 +776,25 @@ function additionalJSCode(){
         t+=s[i].substring(pos+1);
       }
     }
+    let pos=code.indexOf("<img");
+    while(pos>=0){
+      let pos2=code.indexOf(">",pos);
+      if(pos2>=0){
+        let part=code.substring(pos+4,pos2).trim();
+        let res=/src\s*=\s*["']([^ '"]*)/.exec(part);
+        if(res && res[1]){
+          let assetName=res[1].trim();
+          let asset=$getAssetObjectURL(assetName);
+          if(asset!==assetName){
+            let rep=before+asset+after;
+            pos=code.indexOf(res[1],pos);
+            t=t.substring(0,pos)+rep+t.substring(pos+res[1].length);
+            console.log(t);
+          }
+        }
+      }
+      pos=code.indexOf("<img",pos+1);
+    }
     return t;
   }
 
@@ -1333,6 +1352,7 @@ function additionalJSCode(){
       this.$triggerOnMouseMove=false;
       this.$standardCSSClasses="__jcomponent";
       this.$actionListeners=[];
+      this.setDirection(0);
 
     }
     addEventListener(type, listener){
@@ -1365,12 +1385,13 @@ function additionalJSCode(){
       try{
         let es=this.$el.querySelectorAll(selector);
         if(!es) return null;
+        let comps=[];
         for(let i=0;i<es.length;i++){
           let e=es[i];
           if(!e.component) e.component=$new(HTMLElement,e)
-          es[i]=e.component;
+          comps.push(e.component);
         }
-        return $createArray("HTMLElement",1,es);
+        return $createArray("HTMLElement",1,comps);
       }catch(e){
         throw $new(Exception,"Fehlerhafter Selektor\n"+e);
       }
@@ -1395,11 +1416,22 @@ function additionalJSCode(){
       }
     }
     collides(comp){
-      
       let r1=this.$el.getBoundingClientRect();
       let r2=comp.$el.getBoundingClientRect();
       if(r1.width===0 || r2.width===0 || r1.height===0|| r2.height===0) return false;
       return !(r1.left+r1.width<r2.left || r2.left+r2.width<r1.left || r1.top+r1.height<r2.top || r2.top+r2.height<r1.top);
+    }
+    checkCollision(array){
+      if(!array) return null;
+      let r1=this.$el.getBoundingClientRect();
+      if(r1.width===0 || r1.height===0) return false;
+      for(let i=0;i<array.length;i++){
+        let e=array[i];
+        let r2=e.$el.getBoundingClientRect();
+        if(r2.width===0 || r2.height===0) continue;
+        if(!(r1.left+r1.width<r2.left || r2.left+r2.width<r1.left || r1.top+r1.height<r2.top || r2.top+r2.height<r1.top)) return e;
+      }
+      return null;
     }
     show(){
       this.setVisible(true);
@@ -1427,6 +1459,20 @@ function additionalJSCode(){
     }
     getValue(){
       return this.$el.value+"";
+    }
+    setDirection(dir){
+      this.direction={
+        angle: dir,
+        dx: Math.cos(dir*Math.PI/180),
+        dy: Math.sin(dir*Math.PI/180),
+      };
+    }
+    setRotation(angle){
+      this.$el.style.transform="rotate("+dir+"deg)";
+    }
+    move(d){
+      this.changeX(d*this.direction.dx);
+      this.changeY(d*this.direction.dy);
     }
     setX(v){
       this.x=v;
@@ -3512,7 +3558,7 @@ function additionalJSCode(){
       handler.actionPerformed(eventData);
     }
     getDirection(){
-      return this.dpad.getDirection();
+      return this.dpad.getAngle();
     }
     isUpPressed(){
       return this.dpad.isPressed("n");
@@ -3616,6 +3662,31 @@ function additionalJSCode(){
     isPressed(dir){
       if(!this.buttons[dir]) return false;
       return this.buttons[dir].isPressed;
+    }
+    getAngle(){
+      let n=this.buttons.n.isPressed;
+      let s=this.buttons.s.isPressed;
+      let e=this.buttons.e.isPressed;
+      let w=this.buttons.w.isPressed;
+      if(n && s){
+        n=false;
+        s=false;
+      }
+      if(w && e){
+        w=false;
+        e=false;
+      }
+      if(n && w) return 135;
+      if(n && e) return 45;
+      
+      if(s && w) return 225;
+      if(s && e) return 315;
+      if(n) return 90;
+      if(s) return 270;
+      if(w) return 180;
+      if(e) return 0;
+      return -1;
+
     }
     getDirection(){
       let dir="";
@@ -4068,7 +4139,6 @@ function additionalJSCode(){
           let value=v.value[name];
           let type=null;
           let dimension=0;
-          console.log(name,value);
           if(infos){
             let attr=infos.attributes[name];
             if(attr && attr.type){

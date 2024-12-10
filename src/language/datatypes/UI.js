@@ -150,6 +150,13 @@ function defineJComponent(Clazz,Java){
     returnType: 'boolean'
   },Clazz,false,false);
   createMethod({
+    name: 'checkCollision',
+    args: [
+      {name: 'array', type: {baseType: 'JComponent', dimension: 1}}
+    ],
+    returnType: 'JComponent'
+  },Clazz,false,false);
+  createMethod({
     name: 'getScrollPosition',
     args: [],
     returnType: 'int'
@@ -228,6 +235,18 @@ function defineJComponent(Clazz,Java){
       {name: 'dh', type: 'double'}
     ]
   },Clazz,false,false);
+  createMethod({
+    name: 'setDirection',
+    args: [
+      {name: 'angle', type: 'double'}
+    ]
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'move',
+    args: [
+      {name: 'distance', type: 'double'}
+    ]
+  },Clazz,false,false,Java);
   createMethod({
     name: 'setX',
     args: [

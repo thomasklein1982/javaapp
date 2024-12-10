@@ -83,6 +83,14 @@ export class Project{
         t+=s[i].substring(pos+1);
       }
     }
+    let pos=code.indexOf("<img");
+    while(pos>=0){
+      let pos2=code.indexOf(">",pos);
+      let part=code.substring(pos+4,pos2).trim();
+      let res=/src\s*=\s*["']([^ ]*)/.exec(part);
+      console.log("assets",res);
+
+    }
     // let prefix=":root{";
     // for(var a in referencedAssets){
     //   let asset=referencedAssets[a];
