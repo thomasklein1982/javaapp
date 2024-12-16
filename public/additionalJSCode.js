@@ -3359,7 +3359,6 @@ function additionalJSCode(){
       f=f.replace(/\$scope\.(?:push|pop)Layer\(\);/g,"");
       f=f.replace(/\$App.debug.line\(\d+,"[^"]+",\$scope\);/g,"");
       comparator=$Exercise.convertAsyncArrowFunction(f);
-      console.log(comparator.toString())
       // let n=this.size();
       // for(let i=0;i<n;i++){
       //   for(let j=0;j<n-i-1;j++){
