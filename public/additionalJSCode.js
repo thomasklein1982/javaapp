@@ -3207,6 +3207,18 @@ function additionalJSCode(){
     }
   }
 
+  class Arrays{
+    static asList(array){
+
+    }
+    static sort(array, from, to){
+
+    }
+    static binarySearch(){
+      
+    }
+  }
+
   class ArrayList{
     $constructor(typeArguments,initialCapacity){
       this.$elementType=typeArguments["T"];
@@ -3342,17 +3354,23 @@ function additionalJSCode(){
       return changed;
     }
     async sort(comparator){
-      let n=this.size();
-      for(let i=0;i<n;i++){
-        for(let j=0;j<n-i-1;j++){
-          let c=this.get(j);
-          if(await comparator.compare(c,this.get(j+1))>0){
-            this.set(j,this.get(j+1));
-            this.set(j+1,c);
-          }
-        }
-      }
-      //await this.elements.sort((a,b)=>{return await comparator.compareTo(a,b););
+      comparator=comparator.compare;
+      let f=comparator.toString();
+      f=f.replace(/\$scope\.(?:push|pop)Layer\(\);/g,"");
+      f=f.replace(/\$App.debug.line\(\d+,"[^"]+",\$scope\);/g,"");
+      comparator=$Exercise.convertAsyncArrowFunction(f);
+      console.log(comparator.toString())
+      // let n=this.size();
+      // for(let i=0;i<n;i++){
+      //   for(let j=0;j<n-i-1;j++){
+      //     let c=this.get(j);
+      //     if(await comparator.compare(c,this.get(j+1))>0){
+      //       this.set(j,this.get(j+1));
+      //       this.set(j+1,c);
+      //     }
+      //   }
+      // }
+      this.elements.sort((a,b)=>comparator(a,b));
     }
   }
 
@@ -4753,6 +4771,57 @@ function additionalJSCode(){
   }
 
   class $Exercise{
+    static convertAsyncArrowFunction(arrowFunc){
+      let arrow;
+      if(arrowFunc.substring){
+        arrow=arrowFunc;
+      }else{
+        arrow=arrowFunc.toString();
+      }
+      if(!arrow.startsWith("async ")) return arrowFunc;
+      arrow=arrow.substring(6);
+      let pos=arrow.indexOf("{");
+    
+      let func=arrow.substring(pos).replace(/await /g," ");
+      let params=arrow.substring(0,pos-1).trim();
+      params=params.replace(/[^a-zA-Z0-9_$,]/g,"").trim().split(",");
+      let f;
+      if(params.length===0){
+        f=Function(func);
+      }else if (params.length===1){
+        f=Function(params[0],func);
+      }else if(params.length===2){
+        f=Function(params[0],params[1],func);
+      }else if(params.length===3){
+        f=Function(params[0],params[1],params[2],func);
+      }else if(params.length===4){
+        f=Function(params[0],params[1],params[2],params[3],func);
+      }else if(params.length===5){
+        f=Function(params[0],params[1],params[2],params[3],params[4],func);
+      }
+      return f;
+    }
+    static mergeSort(array,comp,helpArray,from,toExclusive){
+      if(!helpArray){
+        helpArray=new Array(array.length);
+        from1=0;
+        toExclusive=array.length;
+      }
+      if(from>=toExclusive){
+        return;
+      }
+      let middle=Math.floor((from+toExclusive)/2);
+      this.mergeSort(array,comp,helpArray,from,middle);
+      this.mergeSort(array,comp,helpArray,middle,toExclusive);
+      this.merge()
+    }
+    static merge(array,comp,helpArray,from,from1,toExclusive){
+      let i1=from;
+      let i2=from1;
+      for(let i=from;i<toExclusive;i++){
+        //if(comp(i1,i2))
+      }
+    }
     static doubleEquals(a,b){
       return Math.abs(a-b)<0.0000001;
     }
