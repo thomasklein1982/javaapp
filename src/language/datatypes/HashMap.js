@@ -57,12 +57,12 @@ export function defineHashMap(clazz){
     name: "keys",
     info: "",
     args: [],
-    returnType: {baseType: typeK, dimension: 1}
+    returnType: {baseType: K, dimension: 1}
   },clazz,false,false);
   createMethod({
     name: "values",
     info: "",
     args: [],
-    returnType: {baseType: typeT, dimension: 1}
+    returnType: {baseType: T, dimension: 1}
   },clazz,false,false);
 }
