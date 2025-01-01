@@ -17,7 +17,7 @@ v.speak("Hallo Welt");</code></pre>`;
       {name: 'lang', type: 'String', info: 'Sprache, z. B. "de" oder "en".'}, 
     ],
     info: "Legt die Sprache der Stimme fest."
-  },Clazz,true,false);
+  },Clazz,false,false);
   createMethod({
     name: 'setPitch',
     args: [

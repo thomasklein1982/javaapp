@@ -567,12 +567,13 @@ export class UIClazz extends Clazz{
         }
       }else{
         let additionalEnd="";
-        if(c.type==="JImage"){
-          newCode+="await $App.asyncFunctionCall(new "+c.type+"(),'$constructor',[";
-          additionalEnd="]";
-        }else{
-          newCode+="$new("+c.type+",";
-        }
+        newCode+="$new("+c.type+",";
+        // if(c.type==="JImages"){
+        //   newCode+="await $App.asyncFunctionCall(new "+c.type+"(),'$constructor',[";
+        //   additionalEnd="]";
+        // }else{
+        //   newCode+="$new("+c.type+",";
+        // }
         let clazz=UIClazz.UIClazzes[c.type];
         let args=[];
         for(let j=0;j<clazz.params.length;j++){

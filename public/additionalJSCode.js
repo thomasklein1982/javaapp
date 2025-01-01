@@ -1694,6 +1694,18 @@ function additionalJSCode(){
         }
       }
       this.$el=ui.image(this.url,x,y,width,height);
+      this.$imageData=null;
+      this.$el.component=this;
+      this.$el.onclick = $handleOnAction;
+      this.dimension={
+        width: "100%",
+        height: "100%",
+        translate: {
+          x: "0%",
+          y: "0%"
+        }
+      }
+      this.setCSSClass("");
       if(!this.$img){
         this.$img=new Image();
         let p=new Promise((resolve,reject)=>{
@@ -1713,18 +1725,7 @@ function additionalJSCode(){
         this.$img.src=this.url;
         await p;
       }
-      this.$imageData=null;
-      this.$el.component=this;
-      this.$el.onclick = $handleOnAction;
-      this.dimension={
-        width: "100%",
-        height: "100%",
-        translate: {
-          x: "0%",
-          y: "0%"
-        }
-      }
-      this.setCSSClass("");
+      
       return this;
     }
     getPixelWidth(){
