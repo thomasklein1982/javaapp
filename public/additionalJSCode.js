@@ -2517,6 +2517,9 @@ function additionalJSCode(){
     setArray(array){
       this.$el.array=array;
     }
+    getArray(){
+      return this.$el.array;
+    }
     getSelectedIndex(){
       return this.$el.selectedIndex;
     }
@@ -2811,6 +2814,89 @@ function additionalJSCode(){
     }
   }
 
+  class $IndexedDB{
+
+    constructor(indexedDB){
+      this.indexedDB=indexedDB;
+    }
+    static async create(name,version){
+      let req = indexedDB.open(name,version);
+      req.onupgradeneeded=(ev)=>{
+        let db=ev.target.result;
+        db.createObjectStore("data");
+      };
+      let db=null;
+      let p=new Promise((resolve,reject)=>{
+        req.onsuccess=(ev)=>{
+          resolve(req.result);
+        };
+        req.onerror=(ev)=>{
+          reject();
+        }
+      });
+      db=await p;
+      
+      let idb=new $IndexedDB(db);
+      
+      return idb;
+    }
+    setItem(key, value){
+      let t=this.indexedDB.transaction("data","readwrite");
+      let os=t.objectStore("data");
+      os.put(value,key);
+    }
+    async getAllKeys(){
+      let t=this.indexedDB.transaction("data","readonly");
+      let os=t.objectStore("data");
+      let req=os.getAllKeys();
+      let p=new Promise((resolve,reject)=>{
+        req.onsuccess=(ev)=>{
+          resolve(ev.target.result);
+        };
+        req.onerror=(ev)=>{
+          resolve(null);
+        }
+      });
+      let d=await p;
+      return d;
+    }
+    async getAllItems(){
+      let keys=await this.getAllKeys();
+      let t=this.indexedDB.transaction("data","readonly");
+      let os=t.objectStore("data");
+      let req=os.getAll();
+      let p=new Promise((resolve,reject)=>{
+        req.onsuccess=(ev)=>{
+          resolve(ev.target.result);
+        };
+        req.onerror=(ev)=>{
+          resolve(null);
+        }
+      });
+      let d=await p;
+      let obj={};
+      for(let i=0;i<keys.length;i++){
+        obj[keys[i]]=d[i];
+      }
+      return obj;
+    }
+    async getItem(key){
+      let t=this.indexedDB.transaction("data","readonly");
+      let os=t.objectStore("data");
+      let req=os.get(key);
+      let p=new Promise((resolve,reject)=>{
+        req.onsuccess=(ev)=>{
+          resolve(ev.target.result);
+        };
+        req.onerror=(ev)=>{
+          resolve(null);
+        }
+      });
+      let d=await p;
+      return d;
+    }
+  }
+
   class Database{
     $constructor(name){
       
@@ -2821,19 +2907,67 @@ function additionalJSCode(){
       if(name){
         db.$db=new alasql.Database(name);
         db.$indexedDB=await $IndexedDB.create(name,1);
+        //await db.load();
       }else{
         db.$db=alasql;
       }
       return db;
     }
-    saveTable(table){
-      this.$indexedDB.setItem("Hallo","Test");
+    saveTable(tablename,table){
+      this.$indexedDB.setItem(tablename,{cols: table.columns, data: table.data});
     }
     save(){
-
+      if(!this.$indexedDB) return;
+      let tables=this.$db.tables;
+      for(let a in tables){
+        this.saveTable(a,tables[a]);
+      }
     }
-    load(){
-
+    getDatatypeString(col){
+      let t=col.dbtypeid;
+      let add=[];
+      if(col.dbsize!==undefined){
+        add.push(col.dbsize);
+      }
+      if(col.dbprecision!==undefined){
+        add.push(col.dbprecision);
+      }
+      if(add.length>0){
+        t+="("+add.join(",")+")";
+      }
+      if(col.notnull){
+        t+=" NOT NULL";
+      }
+      return t;
+    }
+    async load(){
+      if(!this.$indexedDB) return;
+      let tables=await this.$indexedDB.getAllItems();
+      //let tables=this.$db.tables;
+      for(let a in tables){
+        let tab=tables[a];
+        //if(tables[a].length<=0 || a.endsWith("-$cols$")) continue;
+        console.log(a,tab);
+        let t=this.$db.tables[a];
+        if(t){
+          this.$db.exec("drop table "+a);
+        }
+        let cols=[];
+        for(let i=0;i<tab.cols.length;i++){
+          let c=tab.cols[i];
+          cols.push(c.columnid+" "+this.getDatatypeString(c));
+        }
+        console.log(cols);
+        this.$db.exec("create table "+a+" ("+cols.join(",")+")");
+        t=this.$db.tables[a];
+        // let cols=[];
+        // for(let c in tables[a][0]){
+        //   cols.push(c);
+        // }
+        //t.columns=tables[a].cols;
+        t.data=tables[a].data;
+        console.log(t);
+      }
     }
     tableCount(){
       let tables=this.$db.tables;
@@ -2922,9 +3056,9 @@ function additionalJSCode(){
         let prep;
         prep=this.prepareStatement(sqlSource);
         var r=this.$db.exec(prep.toString());
-        if(this.$indexedDB){
-          this.$indexedDB.reflectSQL(prep);
-        }
+        // if(this.$indexedDB){
+        //   this.$indexedDB.reflectSQL(prep);
+        // }
         return r;
       }catch(e){
         console.log(e.message);

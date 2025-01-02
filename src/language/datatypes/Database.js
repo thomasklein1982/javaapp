@@ -66,5 +66,14 @@ function defineDatabase(Clazz,Java){
       {name: "array2", type: {baseType: "Record", dimension: 1}, info: "Das zweite Array, das verglichen werden soll."}
     ],
   },Clazz,false,false,Java);
+  createMethod({
+    name: "save",
+    info: "Speichert die Datenbank im Speicher des Browsers (in der IndexedDB).",
+  },Clazz,false,false,Java);
+  createMethod({
+    name: "load",
+    info: "Lädt die Datenbank aus dem Speicher des Browsers (aus der IndexedDB).",
+  },Clazz,false,false,Java);
+  
 }
 
