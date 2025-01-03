@@ -76,7 +76,9 @@ export default {
       console.log(editor);
       let cm=editor.$refs.editor[index];
       if(!cm) return;
-      cm.setSelection(this.clazz.node.from,this.clazz.node.to);
+      if(this.clazz.node){
+        cm.setSelection(this.clazz.node.from,this.clazz.node.to);
+      }
       nextTick(()=>{
           cm.focus()
         }

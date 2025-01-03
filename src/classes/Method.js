@@ -74,7 +74,6 @@ export class Method{
       let a=typeArguments[i];
       if(a.param.name===this.type.baseType.name){
         let t=new Type(a.baseType,this.type.dimension);
-        console.log(a.baseType);
         t.typeArguments=a.typeArguments;
         t.replaceTypeParameters(a.typeArguments);
         return t;
@@ -394,7 +393,12 @@ export class Method{
       }
     }else{
       if(!node || node.name!=="Block" && node.name!=="ConstructorBody"){
-        errors.push(source.createError("'{' erwartet.",node));
+        console.log("abstract?",this.clazz,node);
+        if(this.clazz.isAbstract && node.name===";"){
+          this.bodyNode=null;
+        }else{
+          errors.push(source.createError("'{' erwartet.",node));
+        }
       }else{
         this.bodyNode=node;
       }

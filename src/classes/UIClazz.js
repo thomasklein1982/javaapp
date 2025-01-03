@@ -638,7 +638,6 @@ export class UIClazz extends Clazz{
         if(align!=="center"){
           align=align.substring(0,align.length-1).trim();
         }
-        console.log(align,c.align);
         let code=".setAlignContent('"+align+"');";
         newCode+="\n"+last+code;
       }

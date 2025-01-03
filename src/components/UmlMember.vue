@@ -1,6 +1,6 @@
 <template>
   <div class="umlmember" @click="click()">
-    <span class="umlmember-modifiers"><span v-if="member.modifiers.visibility==='private'">&minus;</span><span v-else>+</span><sup class="static" v-if="member.isStatic()">S</sup></span>&nbsp;<span class="umlmember-signature">{{member.getSignatureString()}}</span>
+    <span class="umlmember-modifiers"><span v-html="visibility"></span><sup class="static" v-if="member.isStatic()">S</sup></span><span class="umlmember-signature">{{member.getSignatureString()}}</span>
   </div>
 </template>
 
@@ -9,6 +9,14 @@ import { nextTick } from '@vue/runtime-core';
 export default {
   props: {
     member: Object
+  },
+  computed: {
+    visibility(){
+      let v=this.member.modifiers.visibility;
+      if(v==="private") return "&minus;";
+      if(v==="protected") return "#";
+      return "+";
+    }
   },
   methods: {
     click(){
@@ -51,7 +59,8 @@ export default {
 }
 .umlmember-modifiers{
   display: inline-block;
-  width: 1rem;
+  width: 1em;
+  text-align: center;
 }
 .static{
   font-size: small;

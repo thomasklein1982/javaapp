@@ -14,7 +14,7 @@ export class Modifiers{
     node=node.firstChild;
     this.visibility=null;
     while(node){
-      if(node.name==="public"||node.name==="private"){
+      if(node.name==="public"||node.name==="private"||node.name==="protected"){
         if(this.visibility){
           errors.push(source.createError("Die Sichtbarkeit wurde bereits auf '"+this.visibility+"' festgelegt.",node));
         }else{

@@ -4,26 +4,25 @@ import { createMethod } from "../helper/createMethod";
 import { Java } from "../java";
 
 export function defineDatabaseClazzes(Java){
-  defineRecord(Java.datatypes.Record,Java);
   defineDatabase(Java.datatypes.Database,Java);
 }
 
-function defineRecord(Clazz){
-  //Clazz.superClazz=Java.clazzes.JSON;
-  createConstructor ({
-    args: [
-      {type: 'String', name: 'label'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
-    ],
-  },Clazz);
-  createMethod({
-    name: "get",
-    info: "Liefert einen bestimmten Wert des Datensatzes zurück.",
-    returnType: 'String',
-    args: [
-      {name: "attribute", type: "String", info: "Der Name des abgefragten Attributs."}
-    ],
-  },Clazz,false,false);
-}
+// function defineRecord(Clazz){
+//   //Clazz.superClazz=Java.clazzes.JSON;
+//   createConstructor ({
+//     args: [
+//       {type: 'String', name: 'label'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
+//     ],
+//   },Clazz);
+//   createMethod({
+//     name: "get",
+//     info: "Liefert einen bestimmten Wert des Datensatzes zurück.",
+//     returnType: 'String',
+//     args: [
+//       {name: "attribute", type: "String", info: "Der Name des abgefragten Attributs."}
+//     ],
+//   },Clazz,false,false);
+// }
 
 function defineDatabase(Clazz,Java){
   createConstructor ({
@@ -36,7 +35,7 @@ function defineDatabase(Clazz,Java){
     name: "sql",
     info: "Wendet einen SQL-Befehl auf die Datenbank an und liefert eine Ergebnis-Relation zurück.",
     returnType: {
-      baseType: 'Record',
+      baseType: 'JSON',
       dimension: 1
     },
     args: [
@@ -53,8 +52,8 @@ function defineDatabase(Clazz,Java){
     info: "Prüft, ob die Ergebnisse zweier Abfragen identisch sind. Dabei kommt es auf die Reihenfolge der Datensätze an.",
     returnType: 'boolean',
     args: [
-      {name: "array1", type: {baseType: "Record", dimension: 1}, info: "Das erste Array, das verglichen werden soll."},
-      {name: "array2", type: {baseType: "Record", dimension: 1}, info: "Das zweite Array, das verglichen werden soll."}
+      {name: "array1", type: {baseType: "JSON", dimension: 1}, info: "Das erste Array, das verglichen werden soll."},
+      {name: "array2", type: {baseType: "JSON", dimension: 1}, info: "Das zweite Array, das verglichen werden soll."}
     ],
   },Clazz,false,false,Java);
   createMethod({
@@ -62,8 +61,8 @@ function defineDatabase(Clazz,Java){
     info: "Prüft, ob die Ergebnisse zweier Abfragen identisch sind. Dabei kommt es nicht auf die Reihenfolge der Datensätze an.",
     returnType: 'boolean',
     args: [
-      {name: "array1", type: {baseType: "Record", dimension: 1}, info: "Das erste Array, das verglichen werden soll."},
-      {name: "array2", type: {baseType: "Record", dimension: 1}, info: "Das zweite Array, das verglichen werden soll."}
+      {name: "array1", type: {baseType: "JSON", dimension: 1}, info: "Das erste Array, das verglichen werden soll."},
+      {name: "array2", type: {baseType: "JSON", dimension: 1}, info: "Das zweite Array, das verglichen werden soll."}
     ],
   },Clazz,false,false,Java);
   createMethod({
@@ -73,7 +72,19 @@ function defineDatabase(Clazz,Java){
   createMethod({
     name: "load",
     info: "Lädt die Datenbank aus dem Speicher des Browsers (aus der IndexedDB).",
+    returnType: "boolean"
   },Clazz,false,false,Java);
-  
+  createMethod({
+    name: "getVersion",
+    info: "Liefert die Versionsnummer der Datenbank zurück.",
+    returnType: "int"
+  },Clazz,false,false);
+  createMethod({
+    name: "setVersion",
+    info: "Legt die Versionsnummer der Datenbank fest.",
+    args: [
+      {name: "version", type: "int"}
+    ]
+  },Clazz,false,false);
 }
 

@@ -17,7 +17,6 @@ export class Type{
     
   }
   replaceTypeParameters(typeArguments){
-    console.log("replace type parameters",typeArguments,this);
     if(!typeArguments) return;
     if(!this.baseType) return;
     

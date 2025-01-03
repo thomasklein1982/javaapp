@@ -593,6 +593,14 @@ export class Clazz{
   }
 
   compileLastChecks(){
+    if(this.superClazz && !this.isAbstract && this.superClazz.isAbstract){
+      for(let m in this.superClazz.methods){
+        if(this.superClazz.methods[m].bodyNode!==null) continue;
+        if(!this.methods[m]){
+          this.errors.push(this.source.createError("Diese Klasse muss eine Methode "+m+" implementieren, da sie von der abstrakten Klasse "+this.superClazz.name+" erbt.",this.node));
+        }
+      }
+    }
     if(this.implementedInterfaces){
       for(let i=0;i<this.implementedInterfaces.length;i++){
         let inter=this.implementedInterfaces[i];
@@ -622,6 +630,7 @@ export class Clazz{
   
   compileDeclaration(){
     var errors=[];
+    this.isAbstract=false;
     this.errors=errors;
     this.superClazz=null;
     this.superClazzNode=null;
@@ -650,6 +659,9 @@ export class Clazz{
       }
       node=node.firstChild;
       while(node.nextSibling && node.name!=="Definition"){
+        if(node.name==="Modifiers"){
+          this.isAbstract=this.source.getText(node).indexOf("abstract")>=0;
+        }
         node=node.nextSibling;
       }
       this.name=this.source.getText(node);

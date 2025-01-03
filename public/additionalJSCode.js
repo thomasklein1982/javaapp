@@ -2840,6 +2840,34 @@ function additionalJSCode(){
       
       return idb;
     }
+    async deleteDatabase(){
+      let p=new Promise((resolve,reject)=>{
+        let req=this.indexedDB.deleteDatabase();
+        req.onsuccess=(ev)=>{
+          resolve(true);
+        };
+        req.onerror=(ev)=>{
+          resolve(false);
+        }
+      });
+      let q=await p;
+      return q;
+    }
+    async clear(){
+      let t=this.indexedDB.transaction("data","readwrite");
+      let os=t.objectStore("data");
+      let req=os.clear();
+      let p=new Promise((resolve,reject)=>{
+        req.onsuccess=(ev)=>{
+          resolve(true);
+        };
+        req.onerror=(ev)=>{
+          resolve(false);
+        }
+      });
+      let d=await p;
+      return d;
+    }
     setItem(key, value){
       let t=this.indexedDB.transaction("data","readwrite");
       let os=t.objectStore("data");
@@ -2862,6 +2890,7 @@ function additionalJSCode(){
     }
     async getAllItems(){
       let keys=await this.getAllKeys();
+      if(!keys || keys.length===0) return null;
       let t=this.indexedDB.transaction("data","readonly");
       let os=t.objectStore("data");
       let req=os.getAll();
@@ -2874,6 +2903,7 @@ function additionalJSCode(){
         }
       });
       let d=await p;
+      if(!d) return null;
       let obj={};
       for(let i=0;i<keys.length;i++){
         obj[keys[i]]=d[i];
@@ -2911,13 +2941,21 @@ function additionalJSCode(){
       }else{
         db.$db=alasql;
       }
+      db.version=1;
       return db;
+    }
+    setVersion(v){
+      this.version=v;
+    }
+    getVersion(){
+      return this.version;
     }
     saveTable(tablename,table){
       this.$indexedDB.setItem(tablename,{cols: table.columns, data: table.data});
     }
     save(){
       if(!this.$indexedDB) return;
+      this.$indexedDB.setItem("$version$",this.version);
       let tables=this.$db.tables;
       for(let a in tables){
         this.saveTable(a,tables[a]);
@@ -2941,13 +2979,18 @@ function additionalJSCode(){
       return t;
     }
     async load(){
-      if(!this.$indexedDB) return;
+      if(!this.$indexedDB) return false;
       let tables=await this.$indexedDB.getAllItems();
+      console.log("load",tables);
+      if(!tables) return false;
       //let tables=this.$db.tables;
       for(let a in tables){
+        if(a==="$version$"){
+          this.version=tables[a]*1;
+          continue;
+        }
         let tab=tables[a];
         //if(tables[a].length<=0 || a.endsWith("-$cols$")) continue;
-        console.log(a,tab);
         let t=this.$db.tables[a];
         if(t){
           this.$db.exec("drop table "+a);
@@ -2957,17 +3000,11 @@ function additionalJSCode(){
           let c=tab.cols[i];
           cols.push(c.columnid+" "+this.getDatatypeString(c));
         }
-        console.log(cols);
         this.$db.exec("create table "+a+" ("+cols.join(",")+")");
         t=this.$db.tables[a];
-        // let cols=[];
-        // for(let c in tables[a][0]){
-        //   cols.push(c);
-        // }
-        //t.columns=tables[a].cols;
         t.data=tables[a].data;
-        console.log(t);
       }
+      return true;
     }
     tableCount(){
       let tables=this.$db.tables;
@@ -3071,11 +3108,11 @@ function additionalJSCode(){
         var records=[];
         if(result){
           for(var i=0;i<result.length;i++){
-            var r=$new(Record,result[i]);
+            var r=result[i];
             records.push(r);
           }
         }
-        var a=$createArray("Record",records.length,records);
+        var a=$createArray("JSON",records.length,records);
         return a;
       }catch(e){
         return null;
@@ -3106,10 +3143,10 @@ function additionalJSCode(){
       var r2=array2[0];
       var attributes=[];
       var sortFunc=(r,s)=>{
-        for(var attr in r1.$data){
-          if(r.$data[attr]<s.$data[attr]){
+        for(var attr in r1){
+          if(r[attr]<s[attr]){
             return -1;
-          }else if(r.$data[attr]>s.$data[attr]){
+          }else if(r[attr]>s[attr]){
             return 1;
           }
         }
@@ -3141,33 +3178,24 @@ function additionalJSCode(){
       for(var i=0;i<n1;i++){
         var r1=array1[i];
         var s1=0;
-        for(var a in r1.$data){
+        for(var a in r1){
           s1++;
         }
         var s2=0;
-        for(var a in r2.$data){
+        for(var a in r2){
           s2++;
         }
         if(s1!==s2) return false;
         var r2=array2[i];
-        for(var a in r1.$data){
-          if(a in r2.$data){
-            if(r1.$data[a]!==r2.$data[a]) return false;
+        for(var a in r1){
+          if(a in r2){
+            if(r1[a]!==r2[a]) return false;
           }else{
             return false;
           }
         }
       }
       return true;
-    }
-  }
-
-  class Record{
-    $constructor($data){
-      this.$data=$data;
-    }
-    get(attribute){
-      return this.$data[attribute.toLowerCase()];
     }
   }
 

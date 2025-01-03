@@ -107,6 +107,9 @@ export function ObjectCreationExpression(node,source,scope,infos){
   if(clazz instanceof PrimitiveType){
     throw source.createError("Zu dem primitiven Datentyp '"+clazz.name+"' kann kein Objekt erzeugt werden.",node);
   }
+  if(clazz.isAbstract){
+    throw source.createError("Zu der abstrakten Klasse '"+clazz.name+"' kann kein Objekt erzeugt werden.",node);
+  }
   if(!node.nextSibling){
     throw source.createError("'(' erwartet.", node)
   }
