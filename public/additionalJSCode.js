@@ -1032,10 +1032,10 @@ function additionalJSCode(){
     }
   }
 
-  function onGamepadUp(){
+  function onGamepadUp(button){
     if(window.$uiPreviewMode===true) return;
     if($main && $main.onGamepadUp){
-      $main.onGamepadUp();
+      $main.onGamepadUp(button);
     }
   }
 
@@ -3778,6 +3778,28 @@ function additionalJSCode(){
         this.dpad.keyUp(k);
       };
       window.addEventListener("keyup",this.keyupListener);
+      let keys=["left","right","up","down","A","B","X","Y"];
+      if(!$main) return;
+      if($main.onGamepadDown){
+        for(let i=0;i<keys.length;i++){
+          let k=keys[i];
+          this.setEventListener(k,"press",{
+            actionPerformed(ev){
+              window.onGamepadDown(k);
+            }
+          });
+        }
+      }
+      if($main.onGamepadUp){
+        for(let i=0;i<keys.length;i++){
+          let k=keys[i];
+          this.setEventListener(k,"release",{
+            actionPerformed(ev){
+              window.onGamepadUp(k);
+            }
+          });
+        }
+      }
     }
     setKey(button,key){
       if(key.toLowerCase){
