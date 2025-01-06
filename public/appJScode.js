@@ -10,9 +10,9 @@ window.appJScode=function(){
     }
   }
 
-  window.AudioContext = window.AudioContext || window.webkitAudioContext;
-  window.AudioContext = window.AudioContext || window.webkitAudioContext;
-  audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+  // window.AudioContext = window.AudioContext || window.webkitAudioContext;
+  // window.AudioContext = window.AudioContext || window.webkitAudioContext;
+  // audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 
     window.onmessage=function(message){
       if(message && message.data && message.data.type==="update-shared-variables"){
@@ -87,6 +87,31 @@ window.appJScode=function(){
           });
           let q=await p;
           return q;
+        }
+      },
+      gameloop: {
+        FPS: 60,
+        currentFrame: 0,
+        startTime: Date.now(),
+        MAX_FRAMES: 1000000,
+        handler: async function(){
+          let dt=Date.now()-this.startTime;
+          let k=Math.round(dt*this.FPS/1000);
+          if(k>this.currentFrame){
+            this.currentFrame=k;
+            if(window.onNextFrame && !$App.debug.paused){
+              try{
+                await window.onNextFrame();
+              }catch(e){
+                $App.handleException(e);
+              }
+            }
+            if(this.currentFrame>this.MAX_FRAMES){
+              this.currentFrame=0;
+              this.startTime=Date.now();
+            }
+          }
+          
         }
       },
       debug: {
@@ -747,14 +772,8 @@ window.appJScode=function(){
         }
         this.onResize();
         this.animationFrame=async ()=>{
+          await $App.gameloop.handler();
           //this.gamepad.updatePhysicalGamepad();
-          if(window.onNextFrame && !$App.debug.paused){
-            try{
-              await window.onNextFrame();
-            }catch(e){
-              $App.handleException(e);
-            }
-          }
           requestAnimationFrame(this.animationFrame);
         }
         if(window.$onAfterSetup){
