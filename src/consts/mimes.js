@@ -1,0 +1,18 @@
+export const mimes={
+  png: "image/png",
+  jpg: "image/jpg",
+  jpeg: "image/jpg",
+  txt: "text/plain",
+  html: "text/html",
+  htm: "text/html",
+  js: "text/javascript",
+  json: "application/json",
+  mp3: "audio/mpeg",
+  mp4: "video/mp4",
+  otf: "font/otf",
+  pdf: "application/pdf",
+  svg: "image/svg+xml",
+  tif: "image/tiff",
+  tiff: "image/tiff",
+  ttf: "font/ttf",
+};

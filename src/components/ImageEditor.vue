@@ -188,7 +188,7 @@ export default{
         lock: true,
         unit: "%",
         imageType: null,
-        imageQuality: 100,
+        imageQuality: 90,
         changePolicy: "Anpassen",
         changePolicySettings: {
           left: 0,

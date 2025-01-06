@@ -133,6 +133,14 @@ export function defineMath(MathClazz,Java){
     args: [],
   },MathClazz,true,false,Java);
   createMethod({
+    name: "randomInt",
+    info: "NUR IN JAVA-APP\nLiefert eine ganze Zufallszahl zwischen min und max.",
+    args: [{name: "min", type: "int"}, {name: "max", type: "int"}],
+    returnType: 'int',
+    jsName: "$randomInt",
+    isExtraFunction: true
+  },MathClazz,true,false,Java);
+  createMethod({
     name: "exp",
     info: "Liefert e hoch x.",
     returnType: 'double',

@@ -4,6 +4,10 @@
       ref="newAssetDialog"
       @confirm="addAsset"
     />
+    <ImportAssetDialog 
+      ref="importAssetDialog"
+      @confirm="addAsset"
+    />
     <EditAssetDialog 
       ref="editAssetDialog"
       @confirm="updateAsset"
@@ -22,7 +26,8 @@
     </template>
     
     <template #footer>
-      <Button @click="$refs.newAssetDialog.setVisible(true)" icon="pi pi-plus" label="Asset hochladen"/>
+      <Button @click="$refs.importAssetDialog.setVisible(true)" icon="pi pi-plus" label="Importieren"/>
+      <Button @click="$refs.newAssetDialog.setVisible(true)" icon="pi pi-plus" label="Hochladen"/>
     </template>
   </Dialog>
 </template>
@@ -32,7 +37,7 @@
   import Paginator from "primevue/paginator";
   import Asset from './Asset.vue';
   import EditAssetDialog from './EditAssetDialog.vue';
-  import InlineMessage from 'primevue/inlinemessage';
+  import ImportAssetDialog from './ImportAssetDialog.vue';
 
   export default{
     props: {
@@ -117,7 +122,7 @@
       Paginator,
       Asset,
       EditAssetDialog,
-      InlineMessage
+      ImportAssetDialog
     }
   }
   </script>

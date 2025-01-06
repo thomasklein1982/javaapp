@@ -60,6 +60,9 @@ function additionalJSCode(){
 
   }
 
+  function $randomInt(obj, min, max){
+    return $Exercise.random(min,max);
+  }
 
   function $changePreviewSelection(previewID){
     console.log(previewID);
