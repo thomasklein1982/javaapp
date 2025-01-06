@@ -150,12 +150,20 @@ function defineJComponent(Clazz,Java){
     returnType: 'boolean'
   },Clazz,false,false);
   createMethod({
-    name: 'checkCollision',
+    name: 'collidesWithAny',
     args: [
-      {name: 'array', type: {baseType: 'JComponent', dimension: 1}}
+      {name: 'cssSelector', type: 'String'}
     ],
-    returnType: 'JComponent'
+    returnType: 'boolean',
+    info: 'Checkt, ob diese Komponente mit irgendeiner Komponente kollidiert, auf die der Selektor zutrifft.'
   },Clazz,false,false);
+  // createMethod({
+  //   name: 'checkCollision',
+  //   args: [
+  //     {name: 'array', type: {baseType: 'JComponent', dimension: 1}}
+  //   ],
+  //   returnType: 'JComponent'
+  // },Clazz,false,false);
   createMethod({
     name: 'getScrollPosition',
     args: [],
@@ -236,9 +244,27 @@ function defineJComponent(Clazz,Java){
     ]
   },Clazz,false,false);
   createMethod({
+    name: 'setRotation',
+    args: [
+      {name: 'angle', type: 'double'}
+    ]
+  },Clazz,false,false,Java);
+  createMethod({
     name: 'setDirection',
     args: [
       {name: 'angle', type: 'double'}
+    ]
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getDirection',
+    args: [
+    ],
+    returnType: "double"
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'setDirectionTowardsComponent',
+    args: [
+      {name: 'comp', type: 'JComponent'}
     ]
   },Clazz,false,false,Java);
   createMethod({

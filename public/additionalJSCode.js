@@ -1425,13 +1425,18 @@ function additionalJSCode(){
       if(r1.width===0 || r2.width===0 || r1.height===0|| r2.height===0) return false;
       return !(r1.left+r1.width<r2.left || r2.left+r2.width<r1.left || r1.top+r1.height<r2.top || r2.top+r2.height<r1.top);
     }
+    collidesWithAny(cssSelector){
+
+      return this.checkCollision(this.getPanel().querySelectorAll(cssSelector));
+    }
     checkCollision(array){
       if(!array) return null;
       let r1=this.$el.getBoundingClientRect();
       if(r1.width===0 || r1.height===0) return false;
       for(let i=0;i<array.length;i++){
         let e=array[i];
-        let r2=e.$el.getBoundingClientRect();
+        let e1=e.$el? e.$el:e;
+        let r2=e1.getBoundingClientRect();
         if(r2.width===0 || r2.height===0) continue;
         if(!(r1.left+r1.width<r2.left || r2.left+r2.width<r1.left || r1.top+r1.height<r2.top || r2.top+r2.height<r1.top)) return e;
       }
@@ -1471,8 +1476,17 @@ function additionalJSCode(){
         dy: Math.sin(dir*Math.PI/180),
       };
     }
+    getDirection(){
+      return this.direction? this.direction.angle:0;
+    }
+    setDirectionTowardsComponent(comp){
+      let x=comp.x-this.x;
+      let y=comp.y-this.y;
+      let a=180/Math.PI*Math.atan2(y,x);
+      this.setDirection(a);
+    }
     setRotation(angle){
-      this.$el.style.transform="rotate("+dir+"deg)";
+      this.$el.style.transform="rotate("+(-angle)+"deg)";
     }
     move(d){
       this.changeX(d*this.direction.dx);
@@ -4140,9 +4154,9 @@ function additionalJSCode(){
     }
     updateHover(){
       if(this.isPressed){
-        this.ui.style.opacity=1;
+        this.ui.style.opacity=0.8;
       }else{
-        this.ui.style.opacity=0.5;
+        this.ui.style.opacity=0.4;
       }
     }
     setColor(background,foreground){
@@ -4267,9 +4281,9 @@ function additionalJSCode(){
       }
       if(this.hidden) return;
       if(this.isPressed){
-        this.ui.style.opacity=1;
+        this.ui.style.opacity=0.8;
       }else{
-        this.ui.style.opacity=0.5;
+        this.ui.style.opacity=0.4;
       }
     }
 

@@ -75,7 +75,7 @@
           {type: "JComboBox", value: "Ja", options: '["Ja","Nein","Vielleicht"]',valueType: "text", onAction: false, actionCommand: "", disabled: false}, 
           {type: "DataTable"},
           {type: "JImage", value: "https://thomaskl.uber.space/Webapps/Assets/graphics/overworld/house-front.png", valueType: "inline-text", onAction: false, actionCommand: "", imageZoom: 1, imageTranslationX: "0%", imageTranslationY: "0%"}, 
-          {type: "Canvas", components: [], minX: 0, maxX: 100, minY: 0, maxY: 100, onAction: false, actionCommand: "", onMouseUp: false, onMouseDown: false, onMouseMove: false, sizePolicy: "fit"}, 
+          {type: "Canvas", components: [], minX: 0, maxX: 10, minY: 0, maxY: 10, onAction: false, actionCommand: "", onMouseUp: false, onMouseDown: false, onMouseMove: false, sizePolicy: "fit"}, 
           {type: "HTMLElement", tag: "div", attributes: "", value: "", valueType: "html", components: [], onAction: false, actionCommand: "", hideContent: true},
           {type: "For", controlComponent: {max: 10}}, 
         ],
@@ -122,10 +122,10 @@
         if(copy.controlComponent){
           copy.components=[];
         }else{
-          copy.x=50;
-          copy.y=50;
-          copy.width=100;
-          copy.height=100;
+          copy.x=5;
+          copy.y=5;
+          copy.width=1;
+          copy.height=1;
           copy.cssClass=copy.type.toLowerCase();
           copy.cssCode="";
           copy.invisible=false;

@@ -10,7 +10,7 @@
           <div class="component jlabel">{{component.value}}</div>
         </template>
         <template v-if="type==='JTextField'">
-          <input type="text" size="1" class="component jtextfield" :value="isEditable? component.value:'JTextField'" :placeholder="component.placeholder"/>
+          <input style="min-width:0" type="text" size="1" class="component jtextfield" :value="isEditable? component.value:'JTextField'" :placeholder="component.placeholder"/>
         </template>
         <template v-if="type==='JImage'">
           <div class="jimage"><span class="pi pi-image"/> {{ isEditable? imageName:'JImage' }}</div>

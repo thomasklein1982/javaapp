@@ -215,6 +215,9 @@ import TemplateDialog from './TemplateDialog.vue';
     },
     computed: {
       type(){
+        if(this.component.type==="JImage"){
+          console.log("image");
+        }
         return UIClazz.UIClazzes[this.component.type];
       },
       isUIClazz(){

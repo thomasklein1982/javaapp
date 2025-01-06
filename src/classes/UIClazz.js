@@ -91,10 +91,10 @@ export class UIClazz extends Clazz{
     this.cssClass="";
     this.template="1";
     this.forceAbsolute=false;
-    this.x=50;
-    this.y=50;
-    this.width=100;
-    this.height=100;
+    this.x=5;
+    this.y=5;
+    this.width=1;
+    this.height=1;
     this.cssCode="";
     this.superClazz=Java.clazzes.UIClass;
     this.attributes={};
