@@ -33,6 +33,45 @@ import { options } from "../classes/Options";
 
 import {hoverTooltip} from "@codemirror/view"
 
+const addMethodMark = StateEffect.define({
+  map: ({from, to}, change) => ({from: change.mapPos(from), to: change.mapPos(to)})
+})
+
+const addMethodMarkEnd = StateEffect.define({
+  map: ({from, to}, change) => ({from: change.mapPos(from), to: change.mapPos(to)})
+})
+
+const clearMethodMarks = StateEffect.define({
+  map: ({from, to}, change) => ({from: change.mapPos(from), to: change.mapPos(to)})
+})
+
+const methodMarkField = StateField.define({
+  create() {
+    return Decoration.none
+  },
+  update(underlines, tr) {
+    underlines = underlines.map(tr.changes)
+    for (let e of tr.effects){ 
+      if (e.is(addMethodMark)) {
+        underlines = underlines.update({
+          add: [methodMark.range(e.value.from, e.value.to)]
+        })
+      }else if(e.is(clearMethodMarks)){
+        underlines=Decoration.none;
+      }else if(e.is(addMethodMarkEnd)){
+        underlines = underlines.update({
+          add: [methodMarkEnd.range(e.value.from, e.value.to)]
+        })
+      }
+    }
+    return underlines
+  },
+  provide: f => EditorView.decorations.from(f)
+})
+
+const methodMark = Decoration.line({class: "cm-method-mark"})
+const methodMarkEnd = Decoration.line({class: "cm-method-mark-end"})
+
   export const wordHover = hoverTooltip((view, pos, side) => {
     console.log(view);
     let clazz=app.$refs.editor.currentClazz;
@@ -367,6 +406,7 @@ export default {
           languageConf.of(language),
           autocompletion({override: [createAutocompletion()]}),
           keymap.of([indentWithTab]),
+          methodMarkField,
           EditorView.updateListener.of((v) => {
             this.$emit("caretupdate",v.state.selection.main.head);
             if(!v.docChanged) return;
@@ -504,10 +544,11 @@ export default {
         }
       }
       var src=state.doc.toString();
-      if(methodInformation){
+      if(methodInformation ){
         let t1=new Date();
         await this.clazz.recompileMethod(methodInformation,src,state.tree,this.settings.optimizeCompiler);
         let t2=new Date();
+        this.updateMethodMarks();
         //console.log("recompiled method '"+methodInformation.method.name+"' in "+(t2-t1)+"ms ("+this.clazz.name+")");
       }else{
         //console.log("recompile whole clazz",this.clazz);
@@ -515,6 +556,7 @@ export default {
         this.project.compile(false,this.settings.optimizeCompiler).then(()=>{
           this.focus();
           this.triggerRecompilation=true;
+          this.updateMethodMarks();
         });
         // }else{
         //   let t1=new Date();
@@ -527,6 +569,7 @@ export default {
         // }
         
       }
+      
       //this.updateErrors(viewUpdate.view);
     },
     emptyTransaction(){
@@ -545,6 +588,25 @@ export default {
       this.editor.dispatch({
         changes: {from: 0, to: old.length, insert: code}
       });
+      setTimeout(()=>{
+        this.updateMethodMarks();
+      },1000);
+    },
+    updateMethodMarks(){
+      let effects = [clearMethodMarks.of()];
+      let doc=this.editor.viewState.state.doc;
+      let line,node,m;
+      for(let mn in this.clazz.methods){
+        m=this.clazz.methods[mn];
+        if(!m.bodyNode) continue;
+        node=m.node;
+        line=doc.lineAt(node.from);
+        effects.push(addMethodMark.of({from: line.from, to: line.from}));
+        node=m.bodyNode.lastChild;
+        line=doc.lineAt(node.from);
+        effects.push(addMethodMarkEnd.of({from: line.from, to: line.from}));
+      }
+      this.editor.dispatch({effects})
     },
     getCode(){
       return this.editor.state.doc.toString();
@@ -744,5 +806,10 @@ export default {
   #errors{
     font-family: monospace;
   }
-  
+  .cm-method-mark{
+    border-top: 1pt solid orange;
+  }
+  .cm-method-mark-end{
+    border-bottom: 1pt solid orange;
+  }
 </style>

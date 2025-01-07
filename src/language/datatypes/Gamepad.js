@@ -39,7 +39,13 @@ gp.setEventListener( "A", "press", ( ev ) -> {
     name: 'getDirection',
     args: [
     ],
-    returnType: "String"
+    returnType: "double"
+  },Clazz,false,false);
+  createMethod({
+    name: 'isAnyDirectionPressed',
+    args: [
+    ],
+    returnType: "boolean"
   },Clazz,false,false);
   createMethod({
     name: 'isUpPressed',

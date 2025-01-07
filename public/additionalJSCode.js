@@ -511,7 +511,8 @@ function additionalJSCode(){
   }
 
   async function $asyncFunctionCallVariableObject(object,objectWithMethod,methodname,argumentsArray){
-    return await objectWithMethod[methodname].apply(object,argumentsArray);
+    let w=await objectWithMethod[methodname].apply(object,argumentsArray);
+    return w;
   };
 
   class $File{
@@ -1359,6 +1360,11 @@ function additionalJSCode(){
       this.$triggerOnMouseMove=false;
       this.$standardCSSClasses="__jcomponent";
       this.$actionListeners=[];
+      this.transform={
+        rotation: 0,
+        flippedH: false,
+        flippedV: false
+      }
       this.setDirection(0);
 
     }
@@ -1489,7 +1495,22 @@ function additionalJSCode(){
       this.setDirection(a);
     }
     setRotation(angle){
+      this.transform.rotation=angle;
       this.$el.style.transform="rotate("+(-angle)+"deg)";
+    }
+    updateTransform(){
+      let parts=[];
+      let angle=this.transform.rotation;
+      if(this.transform.flippedH){
+        parts.push("scaleX(-1)");
+      }
+      if(this.transform.flippedV){
+        parts.push("scaleY(-1)");
+      }
+      if(angle!==0){
+        parts.push("rotate("+(-angle)+"deg)");
+      }
+      this.$el.style.transform=parts.join(" ");
     }
     move(d){
       this.changeX(d*this.direction.dx);
@@ -1744,6 +1765,14 @@ function additionalJSCode(){
       }
       
       return this;
+    }
+    setFlippedH(flip){
+      this.transform.flippedH=flip;
+      this.updateTransform();
+    }
+    setFlippedV(flip){
+      this.transform.flippedV=flip;
+      this.updateTransform();
     }
     getPixelWidth(){
       return this.$img.naturalWidth;
@@ -3886,6 +3915,9 @@ function additionalJSCode(){
     }
     getDirection(){
       return this.dpad.getAngle();
+    }
+    isAnyDirectionPressed(){
+      return this.getDirection()>=0;
     }
     isUpPressed(){
       return this.dpad.isPressed("n");

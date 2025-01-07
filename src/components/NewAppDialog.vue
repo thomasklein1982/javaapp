@@ -60,6 +60,99 @@ export default {
             }
           ]
         },
+        {
+          name: "Game mit Gamepad und Canvas",
+          description: "Grundgerüst für eine Spiel, das mit einem Gamepad gesteuert werden kann.",
+          code: [
+            `Gamepad gp = new Gamepad( );
+
+void main( ) {
+  
+}
+
+void onGamepadDown( String button ) {
+  if ( button == "left" ) {
+    UI.mermaid.setFlippedH( false );
+  }
+  if ( button == "right" ) {
+    UI.mermaid.setFlippedH( true );
+  }
+}
+
+void onNextFrame( ) {
+  if ( gp.isAnyDirectionPressed( ) ) {
+    UI.mermaid.setDirection( gp.getDirection( ) );
+    UI.mermaid.move( 0.05 );
+  }
+}`,
+            {
+              type: "UI",
+              code: `{
+                "name":"UI",
+                "components": [
+                  {
+                    "type": "Canvas",
+                    "components": [
+                      {
+                        "type": "JImage",
+                        "value": "https://thomaskl.uber.space/Webapps/Assets/graphics/overworld/water-1.png",
+                        "valueType": "inline-text",
+                        "onAction": false,
+                        "actionCommand": "",
+                        "imageZoom": 1,
+                        "imageTranslationX": "0%",
+                        "imageTranslationY": "0%",
+                        "x": 5,
+                        "y": 5,
+                        "width": "10",
+                        "height": "10",
+                        "cssClass": "jimage",
+                        "cssCode": "",
+                        "invisible": false
+                      },
+                      {
+                        "type": "JImage",
+                        "value": "https://thomaskl.uber.space/Webapps/Assets/graphics/monster/merfolk_water.png",
+                        "valueType": "inline-text",
+                        "onAction": false,
+                        "actionCommand": "",
+                        "imageZoom": 1,
+                        "imageTranslationX": "0%",
+                        "imageTranslationY": "0%",
+                        "x": 5,
+                        "y": 5,
+                        "width": 1,
+                        "height": 1,
+                        "cssClass": "jimage",
+                        "cssCode": "",
+                        "invisible": false,
+                        "name": "mermaid"
+                      }
+                    ],
+                    "minX": 0,
+                    "maxX": 10,
+                    "minY": 0,
+                    "maxY": 10,
+                    "onAction": false,
+                    "actionCommand": "",
+                    "onMouseUp": false,
+                    "onMouseDown": false,
+                    "onMouseMove": false,
+                    "sizePolicy": "fit",
+                    "hideContent": false,
+                    "x": 5,
+                    "y": 5,
+                    "width": 1,
+                    "height": 1,
+                    "cssClass": "canvas",
+                    "cssCode": "",
+                    "invisible": false
+                  }
+                ]
+              }`
+            }
+          ]
+        },
         // {
         //   name: "Spiel mit Gamepad-Steuerung",
         //   description: "Eine App, die bereits den nötigen Code enthält, um ein Spiel mit Gamepad-Steuerung zu programmieren.",

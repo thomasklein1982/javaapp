@@ -531,6 +531,20 @@ function defineJImage(Clazz,Java){
     returnType: "int",
     info: 'Liefert die Höhe des Bildes in Pixeln zurück.'
   },Clazz,false,false,Java);
+  createMethod({
+    name: 'setFlippedH',
+    args: [
+      {name: "flip", default: "true", type: "boolean"}
+    ],
+    info: 'Legt fest, ob das Bild horizontal gespiegelt werden soll.'
+  },Clazz,false,false);
+  createMethod({
+    name: 'setFlippedV',
+    args: [
+      {name: "flip", default: "true", type: "boolean"}
+    ],
+    info: 'Legt fest, ob das Bild vertikal gespiegelt werden soll.'
+  },Clazz,false,false);
 }
 
 function defineJLabel(Clazz,Java){
