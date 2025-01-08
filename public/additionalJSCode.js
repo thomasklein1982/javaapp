@@ -1522,6 +1522,10 @@ function additionalJSCode(){
       this.changeX(d*this.direction.dx);
       this.changeY(d*this.direction.dy);
     }
+    moveTo(comp){
+      this.setX(comp.getX());
+      this.setY(comp.getY());
+    }
     setX(v){
       this.x=v;
       this.$el.cx=v;
@@ -1776,7 +1780,7 @@ function additionalJSCode(){
       this.transform.flippedH=true;
       this.updateTransform();
     }
-    flipBack(){
+    unflip(){
       this.transform.flippedH=false;
       this.updateTransform();
     }

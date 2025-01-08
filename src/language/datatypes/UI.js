@@ -263,7 +263,7 @@ function defineJComponent(Clazz,Java){
     returnType: "double"
   },Clazz,false,false,Java);
   createMethod({
-    name: 'setDirectionTowardsComponent',
+    name: 'setDirectionTowards',
     args: [
       {name: 'comp', type: 'JComponent'}
     ]
@@ -272,6 +272,12 @@ function defineJComponent(Clazz,Java){
     name: 'move',
     args: [
       {name: 'distance', type: 'double'}
+    ]
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'moveTo',
+    args: [
+      {name: 'comp', type: 'JComponent'}
     ]
   },Clazz,false,false,Java);
   createMethod({
@@ -557,7 +563,7 @@ function defineJImage(Clazz,Java){
     info: 'Spiegelt das Bild horizontal.\nWurde das Bild bereits gespiegelt, dann passiert nichts.'
   },Clazz,false,false);
   createMethod({
-    name: 'flipBack',
+    name: 'unflip',
     args: [
     ],
     info: 'Macht die Spiegelung rückgängig.\nWurde das Bild nicht gespiegelt, dann passiert nichts.'

@@ -72,7 +72,7 @@ void main( ) {
 
 void onGamepadDown( String button ) {
   if ( button == "left" ) {
-    UI.player.flipBack( );
+    UI.player.unflip( );
   }
   if ( button == "right" ) {
     UI.player.flip( );
