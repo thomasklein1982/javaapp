@@ -72,17 +72,17 @@ void main( ) {
 
 void onGamepadDown( String button ) {
   if ( button == "left" ) {
-    UI.mermaid.setFlippedH( false );
+    UI.player.flipBack( );
   }
   if ( button == "right" ) {
-    UI.mermaid.setFlippedH( true );
+    UI.player.flip( );
   }
 }
 
 void onNextFrame( ) {
   if ( gp.isAnyDirectionPressed( ) ) {
-    UI.mermaid.setDirection( gp.getDirection( ) );
-    UI.mermaid.move( 0.05 );
+    UI.player.setDirection( gp.getDirection( ) );
+    UI.player.move( 0.05 );
   }
 }`,
             {
@@ -126,7 +126,7 @@ void onNextFrame( ) {
                         "cssClass": "jimage",
                         "cssCode": "",
                         "invisible": false,
-                        "name": "mermaid"
+                        "name": "player"
                       }
                     ],
                     "minX": 0,

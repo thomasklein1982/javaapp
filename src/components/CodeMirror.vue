@@ -33,44 +33,44 @@ import { options } from "../classes/Options";
 
 import {hoverTooltip} from "@codemirror/view"
 
-const addMethodMark = StateEffect.define({
-  map: ({from, to}, change) => ({from: change.mapPos(from), to: change.mapPos(to)})
-})
+// const addMethodMark = StateEffect.define({
+//   map: ({from, to}, change) => ({from: change.mapPos(from), to: change.mapPos(to)})
+// })
 
-const addMethodMarkEnd = StateEffect.define({
-  map: ({from, to}, change) => ({from: change.mapPos(from), to: change.mapPos(to)})
-})
+// const addMethodMarkEnd = StateEffect.define({
+//   map: ({from, to}, change) => ({from: change.mapPos(from), to: change.mapPos(to)})
+// })
 
-const clearMethodMarks = StateEffect.define({
-  map: ({from, to}, change) => ({from: change.mapPos(from), to: change.mapPos(to)})
-})
+// const clearMethodMarks = StateEffect.define({
+//   map: ({from, to}, change) => ({from: change.mapPos(from), to: change.mapPos(to)})
+// })
 
-const methodMarkField = StateField.define({
-  create() {
-    return Decoration.none
-  },
-  update(underlines, tr) {
-    underlines = underlines.map(tr.changes)
-    for (let e of tr.effects){ 
-      if (e.is(addMethodMark)) {
-        underlines = underlines.update({
-          add: [methodMark.range(e.value.from, e.value.to)]
-        })
-      }else if(e.is(clearMethodMarks)){
-        underlines=Decoration.none;
-      }else if(e.is(addMethodMarkEnd)){
-        underlines = underlines.update({
-          add: [methodMarkEnd.range(e.value.from, e.value.to)]
-        })
-      }
-    }
-    return underlines
-  },
-  provide: f => EditorView.decorations.from(f)
-})
+// const methodMarkField = StateField.define({
+//   create() {
+//     return Decoration.none
+//   },
+//   update(underlines, tr) {
+//     underlines = underlines.map(tr.changes)
+//     for (let e of tr.effects){ 
+//       if (e.is(addMethodMark)) {
+//         underlines = underlines.update({
+//           add: [methodMark.range(e.value.from, e.value.to)]
+//         })
+//       }else if(e.is(clearMethodMarks)){
+//         underlines=Decoration.none;
+//       }else if(e.is(addMethodMarkEnd)){
+//         underlines = underlines.update({
+//           add: [methodMarkEnd.range(e.value.from, e.value.to)]
+//         })
+//       }
+//     }
+//     return underlines
+//   },
+//   provide: f => EditorView.decorations.from(f)
+// })
 
-const methodMark = Decoration.line({class: "cm-method-mark"})
-const methodMarkEnd = Decoration.line({class: "cm-method-mark-end"})
+// const methodMark = Decoration.line({class: "cm-method-mark"})
+// const methodMarkEnd = Decoration.line({class: "cm-method-mark-end"})
 
   export const wordHover = hoverTooltip((view, pos, side) => {
     console.log(view);
@@ -406,7 +406,7 @@ export default {
           languageConf.of(language),
           autocompletion({override: [createAutocompletion()]}),
           keymap.of([indentWithTab]),
-          methodMarkField,
+          //methodMarkField,
           EditorView.updateListener.of((v) => {
             this.$emit("caretupdate",v.state.selection.main.head);
             if(!v.docChanged) return;
@@ -593,20 +593,20 @@ export default {
       },1000);
     },
     updateMethodMarks(){
-      let effects = [clearMethodMarks.of()];
-      let doc=this.editor.viewState.state.doc;
-      let line,node,m;
-      for(let mn in this.clazz.methods){
-        m=this.clazz.methods[mn];
-        if(!m.bodyNode) continue;
-        node=m.node;
-        line=doc.lineAt(node.from);
-        effects.push(addMethodMark.of({from: line.from, to: line.from}));
-        node=m.bodyNode.lastChild;
-        line=doc.lineAt(node.from);
-        effects.push(addMethodMarkEnd.of({from: line.from, to: line.from}));
-      }
-      this.editor.dispatch({effects})
+      // let effects = [clearMethodMarks.of()];
+      // let doc=this.editor.viewState.state.doc;
+      // let line,node,m;
+      // for(let mn in this.clazz.methods){
+      //   m=this.clazz.methods[mn];
+      //   if(!m.bodyNode) continue;
+      //   node=m.node;
+      //   line=doc.lineAt(node.from);
+      //   effects.push(addMethodMark.of({from: line.from, to: line.from}));
+      //   node=m.bodyNode.lastChild;
+      //   line=doc.lineAt(node.from);
+      //   effects.push(addMethodMarkEnd.of({from: line.from, to: line.from}));
+      // }
+      // this.editor.dispatch({effects})
     },
     getCode(){
       return this.editor.state.doc.toString();
@@ -808,8 +808,11 @@ export default {
   }
   .cm-method-mark{
     border-top: 1pt solid orange;
+    box-shadow: 0px -3px 3px 1px rgba(255,165,0,0.2);
   }
   .cm-method-mark-end{
     border-bottom: 1pt solid orange;
+    box-shadow: 0px 3px 3px 1px rgba(255,165,0,0.2);
+    
   }
 </style>

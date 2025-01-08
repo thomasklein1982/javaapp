@@ -1,22 +1,19 @@
 export async function urlToDataURL(url){
-  const image = new Image();
-  image.crossOrigin='anonymous';
+  
+  let data=await fetch(url);
+  if(!data) return null;
+  const blob = await data.blob();
+  var reader  = new FileReader();
   let p=new Promise((resolve,reject)=>{
-    image.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.height = image.naturalHeight;
-      canvas.width = image.naturalWidth;
-      ctx.drawImage(image, 0, 0);
-      try{
-        const dataUrl = canvas.toDataURL();
-        resolve(dataUrl);
-      }catch(e){
-        resolve(null);
-      }
-    }
+    reader.onload=(ev)=>{
+      let b64 = ev.target.result; // your gif in base64 here
+      resolve(b64);
+    };
+    reader.onerror=(ev)=>{
+      return null;
+    };
+    reader.readAsDataURL(blob);
   });
-  image.src = url;
-  let q = await p;
-  return q;
+  return await p;
+
 }

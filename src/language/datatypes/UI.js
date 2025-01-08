@@ -19,6 +19,7 @@ export function defineUIClazzes(Java){
   defineJFrame(Java.datatypes.JFrame,Java);
   defineUIClass(Java.datatypes.UIClass,Java.datatypes.JPanel,Java.datatypes.JComponent);
   defineHtmlPage(Java.datatypes.HtmlPage);
+  defineCircle(Java.datatypes.Circle, Java);
 }
 
 function defineJComponent(Clazz,Java){
@@ -274,6 +275,14 @@ function defineJComponent(Clazz,Java){
     ]
   },Clazz,false,false,Java);
   createMethod({
+    name: 'getDistance',
+    args: [
+      {name: 'comp', type: 'JComponent'}
+    ],
+    returnType: "double",
+    info: "Liefert die Entfernung zur angegebenen Komponente zurück."
+  },Clazz,false,false,Java);
+  createMethod({
     name: 'setX',
     args: [
       {name: 'v', type: 'double'}
@@ -470,6 +479,16 @@ function defineJButton(Clazz,Java){
   
 }
 
+function defineCircle(Clazz,Java){
+  createConstructor ({
+    args: [
+      {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'r'}
+    ]
+  },Clazz,Java);
+  Clazz.superClazz=Java.datatypes.JComponent;
+  
+}
+
 function defineJImage(Clazz,Java){
   createConstructor ({
     args: [
@@ -532,19 +551,31 @@ function defineJImage(Clazz,Java){
     info: 'Liefert die Höhe des Bildes in Pixeln zurück.'
   },Clazz,false,false,Java);
   createMethod({
-    name: 'setFlippedH',
+    name: 'flip',
     args: [
-      {name: "flip", default: "true", type: "boolean"}
     ],
-    info: 'Legt fest, ob das Bild horizontal gespiegelt werden soll.'
+    info: 'Spiegelt das Bild horizontal.\nWurde das Bild bereits gespiegelt, dann passiert nichts.'
   },Clazz,false,false);
   createMethod({
-    name: 'setFlippedV',
+    name: 'flipBack',
     args: [
-      {name: "flip", default: "true", type: "boolean"}
     ],
-    info: 'Legt fest, ob das Bild vertikal gespiegelt werden soll.'
+    info: 'Macht die Spiegelung rückgängig.\nWurde das Bild nicht gespiegelt, dann passiert nichts.'
   },Clazz,false,false);
+  createMethod({
+    name: 'isFlipped',
+    args: [
+    ],
+    info: 'Gibt zurück, ob das Bild gespiegelt ist oder nicht.',
+    returnType: "boolean"
+  },Clazz,false,false);
+  // createMethod({
+  //   name: 'setFlippedV',
+  //   args: [
+  //     {name: "flip", default: "true", type: "boolean"}
+  //   ],
+  //   info: 'Legt fest, ob das Bild vertikal gespiegelt werden soll.'
+  // },Clazz,false,false);
 }
 
 function defineJLabel(Clazz,Java){
@@ -1071,17 +1102,23 @@ function defineCanvas(Clazz,Java){
     args: [{name: 'farbe', type: 'String'}],
     info: 'Legt die Farbe für die nachfolgenden Zeichnungen fest.'
   },Clazz,false,false,Java);
+  // createMethod({
+  //   name: 'getMouseX',
+  //   args: [],
+  //   info: 'Liefert die aktuelle x-Koordinate der Maus innerhalb dieses Canvas.',
+  //   returnType: 'double'
+  // },Clazz,false,false,Java);
+  // createMethod({
+  //   name: 'getMouseY',
+  //   args: [],
+  //   info: 'Liefert die aktuelle y-Koordinate der Maus innerhalb dieses Canvas.',
+  //   returnType: 'double'
+  // },Clazz,false,false,Java);
   createMethod({
-    name: 'getMouseX',
+    name: 'getMouse',
     args: [],
-    info: 'Liefert die aktuelle x-Koordinate der Maus innerhalb dieses Canvas.',
-    returnType: 'double'
-  },Clazz,false,false,Java);
-  createMethod({
-    name: 'getMouseY',
-    args: [],
-    info: 'Liefert die aktuelle y-Koordinate der Maus innerhalb dieses Canvas.',
-    returnType: 'double'
+    info: 'Liefert eine Kreis-Komponente zurück, die sich an der aktuellen Maus-Position befindet.',
+    returnType: 'Circle'
   },Clazz,false,false,Java);
   createMethod({
     name: 'isMouseOver',

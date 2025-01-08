@@ -338,6 +338,9 @@ export class Project{
         ${codeMainCall}
       </script>
       <style>
+        .__canvas{
+          container-type: size;
+        }
         .jimage{
           justify-self: stretch;
         }

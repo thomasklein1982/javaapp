@@ -1,6 +1,7 @@
 export const mimes={
   png: "image/png",
   jpg: "image/jpg",
+  gif: "image/gif",
   jpeg: "image/jpg",
   txt: "text/plain",
   html: "text/html",

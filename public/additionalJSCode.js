@@ -110,6 +110,7 @@ function additionalJSCode(){
     let mimes={
       png: "image/png",
       jpg: "image/jpg",
+      gif: "image/gif",
       jpeg: "image/jpg",
       txt: "text/plain",
       html: "text/html",
@@ -1377,6 +1378,11 @@ function additionalJSCode(){
     getMouseY(){
       return 0;
     }
+    getDistance(comp){
+      let dx=comp.getX()-this.getX();
+      let dy=comp.getY()-this.getY();
+      return Math.sqrt(dx*dx+dy*dy);
+    }
     getPixelWidth(){
       return this.$el.clientWidth;
     }
@@ -1496,19 +1502,19 @@ function additionalJSCode(){
     }
     setRotation(angle){
       this.transform.rotation=angle;
-      this.$el.style.transform="rotate("+(-angle)+"deg)";
+      this.updateTransform();
     }
     updateTransform(){
       let parts=[];
       let angle=this.transform.rotation;
+      if(angle!==0){
+        parts.push("rotate("+(-angle)+"deg)");
+      }
       if(this.transform.flippedH){
         parts.push("scaleX(-1)");
       }
       if(this.transform.flippedV){
         parts.push("scaleY(-1)");
-      }
-      if(angle!==0){
-        parts.push("rotate("+(-angle)+"deg)");
       }
       this.$el.style.transform=parts.join(" ");
     }
@@ -1766,9 +1772,16 @@ function additionalJSCode(){
       
       return this;
     }
-    setFlippedH(flip){
-      this.transform.flippedH=flip;
+    flip(){
+      this.transform.flippedH=true;
       this.updateTransform();
+    }
+    flipBack(){
+      this.transform.flippedH=false;
+      this.updateTransform();
+    }
+    isFlipped(){
+      return this.transform.flippedH;
     }
     setFlippedV(flip){
       this.transform.flippedV=flip;
@@ -2229,6 +2242,24 @@ function additionalJSCode(){
     }
   }
 
+  class Circle extends JComponent{
+    x;
+    y;
+    r;
+    $constructor(x,y,r){
+      super.$constructor(x,y,r,r);
+      this.$el=ui.label("",x,y,r,r);
+      this.$standardCSSClasses+=" __circle";
+      this.x=x;
+      this.y=y;
+      this.r=r;
+      this.$el.style.borderRadius="100%";
+      this.$el.style.backgroundColor="gray";
+      this.setWidth(r);
+      this.setHeight(r);
+    }
+  }
+
   class Canvas extends JPanel{
     $constructor(minX,maxX,minY,maxY,x,y,width,height){
       super.$constructor(x,y,width,height);
@@ -2244,11 +2275,14 @@ function additionalJSCode(){
       this.$triggerOnMouseMove=true;
       this.$triggerOnMouseDown=true;
       this.$triggerOnMouseUp=true;
+      let comp=$new(Circle,0,0,0.01);
       this.mouse={
         x: -1,
         y: -1,
-        over: false
+        over: false,
+        comp
       };
+      this.add(this.mouse.comp,0);
       //this.$el.onpointermove=$handleOnPointerMove;
       this.setTriggerOnMouseDown(true);
       this.setTriggerOnMouseUp(true);
@@ -2308,7 +2342,9 @@ function additionalJSCode(){
       x=canvas.getCanvasX(x);
       y=canvas.getCanvasY(y);
       this.mouse.x=x;
-      this.mouse.y=y; 
+      this.mouse.y=y;
+      this.mouse.comp.setX(x);
+      this.mouse.comp.setY(y);
     }
     setSizePolicy(policy){
       this.$el.setSizePolicy(policy);
@@ -2321,6 +2357,9 @@ function additionalJSCode(){
     }
     isMousePressed(){
       return window.mousePressed;
+    }
+    getMouse(){
+      return this.mouse.comp;
     }
     getMouseX(){
       return this.mouse.x;
@@ -3959,10 +3998,10 @@ function additionalJSCode(){
       this.gamepad=gamepad;
       this.buttons={
         center: null,
-        s: null,
-        n: null,
-        w: null,
-        e: null,
+        s: "n",
+        n: "s",
+        w: "e",
+        e: "w",
         ne: null,
         nw: null,
         se: null,
@@ -3970,7 +4009,7 @@ function additionalJSCode(){
       };
       
       for(let a in this.buttons){
-        this.buttons[a]=new DPadButton(this,a);
+        this.buttons[a]=new DPadButton(this,a,this.buttons[a]);
       }
       for(let a in this.buttons){
         if(a.length===2){
@@ -4206,10 +4245,11 @@ function additionalJSCode(){
   }
 
   class DPadButton{
-    constructor(dpad,dir){
+    constructor(dpad,dir,oppositeDir){
       this.key=null;
       this.dpad=dpad;
       this.dir=dir;
+      this.oppositeDir=oppositeDir;
       this.diagonal=false;
       this.mainNeighbors=null;
       this.hidden=false;

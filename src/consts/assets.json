@@ -436,5 +436,57 @@
       "graphics/overworld/wooden-door.png",
       "graphics/overworld/wooden-table-round.png"
     ]
+  },
+  "underwater": {
+    "title": "Unter Wasser",
+    "assets": [
+      "graphics/underwater/fish.gif",
+      "graphics/underwater/fish-1.png",
+      "graphics/underwater/fish-2.png",
+      "graphics/underwater/fish-3.png",
+      "graphics/underwater/fish-4.png",
+      "graphics/underwater/fish-5.png",
+      "graphics/underwater/fish-6.png",
+      "graphics/underwater/fish-7.png",
+      "graphics/underwater/fish-big.gif",
+      "graphics/underwater/fish-dart.gif",
+      "graphics/underwater/player-fast.gif",
+      "graphics/underwater/player-hurt.gif",
+      "graphics/underwater/player-idle.gif",
+      "graphics/underwater/player-rush.gif",
+      "graphics/underwater/player-swimming.gif",
+      "graphics/underwater/underwater.png"
+    ]
+  },
+  "goodies": {
+    "title": "Goodies",
+    "assets": [
+      "graphics/goodies/apple.png",
+      "graphics/goodies/bananas.png",
+      "graphics/goodies/battery.png",
+      "graphics/goodies/bubble.png",
+      "graphics/goodies/bubble-exclamation.png",
+      "graphics/goodies/bubble-question.png",
+      "graphics/goodies/bubble-smile.png",
+      "graphics/goodies/cherrys.png",
+      "graphics/goodies/coin.gif",
+      "graphics/goodies/heart.png",
+      "graphics/goodies/heart-2.png",
+      "graphics/goodies/medkit.png",
+      "graphics/goodies/star.png",
+      "graphics/goodies/strawberry.png",
+      "graphics/goodies/chest.png",
+      "graphics/goodies/potion.png"
+    ]
+  },
+  "effects": {
+    "title": "Effekte",
+    "assets": [
+      "graphics/effects/bubbles.gif",
+      "graphics/effects/explosion.gif",
+      "graphics/effects/explosion-big.gif",
+      "graphics/effects/explosion-small.gif",
+      "graphics/effects/poff.gif"
+    ]
   }
 }
