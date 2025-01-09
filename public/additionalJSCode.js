@@ -1318,6 +1318,10 @@ function additionalJSCode(){
     static console(){
       return $App.console;
     }
+    static setFPS(fps){
+      if(fps<=0) return;
+      $App.gameloop.FPS=fps;
+    }
     static isMousePressed(){
       return window.mousePressed;
     }

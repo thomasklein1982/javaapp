@@ -64,5 +64,9 @@ export function defineSystem(clazz){
     args: [{name: 'text', type: 'String', info: 'Der Text, der angezeigt werden soll.'}, {name: 'position', type: 'String', info: 'Eine Angabe aus bis zu 2 Woertern, die bestimmen, wo der Text erscheinen soll. Moegliche Woerter: <code>"left"</code>, <code>"center"</code>, <code>"right"</code> und <code>"top"</code>, <code>"middle"</code>, <code>"bottom"</code>.'}, {name: 'duration', type: 'int', info: 'Optional: Die Dauer der Anzeige in Millisekunden.', optional: true}]
   },clazz,true,false);
 
-  
+  createMethod({
+    name: "setFPS",
+    args: [{name: "fps", type: "int"}],
+    info: "Legt fest, wie oft pro Sekunde die Methode onNextFrame aufgerufen werden soll.\nBeachte: Die echte Framerate hängt vom Gerät ab."
+  },clazz,true,false); 
 }
