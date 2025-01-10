@@ -364,7 +364,7 @@ export class UIClazz extends Clazz{
     code+="\nthis.componentArrays={};";
     code+="\n"+this.componentCode;
     code+="\nfor(let i in this.componentArrays){";
-    code+="\nthis[i]=$createArray('JComponent',1,this.componentArrays[i]);";
+    code+=`\n${this.name}[i]=$createArray('JComponent',1,this.componentArrays[i]);`;
     code+="\n}";
     if(callInit){
       code+="\nawait this.init();";

@@ -12,7 +12,9 @@
   <h2>Der normale Modus</h2>
   <p>Ziel dieses Modus ist, einige Ecken und Kanten von Java abzuschleifen, die für Anfänger*innen schwierig und unnötig kompliziert sind:
     <ul>
-      <li>Automatisches Umwandeln primitiver Datentypen und Strings: Jeder primitive Datentyp wird implizit in einen String umgewandelt und anders herum. Es ist also z.B. möglich <code class="line">String s=2;</code> zu schreiben und <code>s</code> erhält dann den Wert <code>"2"</code>. Anders herum gilt das auch, d.h., anstelle von <code class="line">int a = Integer.parseInt("20");</code> kann man <code class="line">int a = "20";</code> schreiben. Bei Problemen wird eine Exception geworfen.</li>
+      <li>Automatisches Parsen von Strings: Jeder String wird implizit in einen int oder einen double umgewandelt, ohne dass Integer.parseInt oder Double.parseDouble notwendig sind.
+        <p>Es ist also z.B. möglich <code class="line">int a="2";</code> zu schreiben und <code>a</code> erhält dann den Wert <code>2</code>. Bei Problemen wird eine Exception geworfen.
+        </p></li>
       <li>Strings sind vergleichbar: Strings können mit <code>==</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>&lt;</code> und <code>&gt;</code> verglichen werden. Es ist kein <code>compareTo</code> erforderlich.</li>
       <li><code>String.charAt</code> liefert einen <code>String</code> zurück: Normalerweise würde ein <code>char</code> zurückgegeben.</li>
       <li>Automatisches Erweitern der Hauptklasse: Die Hauptklasse (die Klasse mit der statischen <code>main</code>-Methode) erbt automatisch von der Klasse <code>JavaApp</code>. Dadurch wird der Lebenszyklus von JavaApp aktiviert.</li>
@@ -24,64 +26,55 @@
       <li>Klassendeklaration wird optional: Die Hauptklasse benötigt keine Klassendeklaration mehr. Man kann direkt Attribute und Methoden deklarieren. Bei allen weiteren Klasse wird die Klassendeklaration weiterhin benötigt.</li>
       <li><code>main</code>-Methode wird optional: Es wird keine <code>main</code>-Methode mehr benötigt. Wenn es keine gibt, wird automatisch die erste Klasse zur Hauptklasse.</li>
       <li>Schlüsselwort <code>void</code> wird optional: Bei Methoden ohne Rückgabe kann auf das Schlüsselwort <code>void</code> verzichtet werden.</li>
-      <li>Automatisches Instanziieren von UI-Klassen: Von jeder UI-Klasse wird in der Hauptklasse automatisch eine Instanz erzeugt, die unter dem Namen der Klasse verwendbar ist.</li>
     </ul>
   </p>
   <h2>Vergleich der 3 Modi</h2>
   <p>Der folgende Code zeigt drei Mal dasselbe Programm: Es wird eine UI mit einem Textfeld, einem Button und einem Label erzeugt. Klickt man auf den Button, so wird das Doppelte der eingegebenen Zahl in dem Label angezeigt:
     <h3>Im harten Modus</h3>
 <pre class="code">
-  class Verdoppeln{
-    static JButton button;
-    static JTextField eingabe;
-    static JLabel ausgabe;
+JButton button;
+JTextField eingabe;
+JLabel ausgabe;
 
-    public static void main( String[] args ){
-      //ui erzeugen:
-      JFrame frame = new JFrame("1");
-      eingabe = new JTextField();
-      frame.add(eingabe);
-      button = new JButton("Verdoppeln");
-      frame.add(button);
-      ausgabe = new JLabel("");
-      frame.add(ausgabe);
-      
-      //ActionListener:
-      button.addActionListener((ev)->{
-        int z = Integer.parseInt( eingabe.getValue() );
-        ausgabe.setValue( z * 2 );
-      });
-    }
-  }
+main( ){
+  //ui erzeugen:
+  JFrame frame = new JFrame("1");
+  eingabe = new JTextField();
+  frame.add(eingabe);
+  button = new JButton("Verdoppeln");
+  frame.add(button);
+  ausgabe = new JLabel("");
+  frame.add(ausgabe);
+  
+  //ActionListener:
+  button.addActionListener((ev)->{
+    int z = Integer.parseInt( eingabe.getValue() );
+    ausgabe.setValue( z * 2 );
+  });
+}
 </pre>
     <h3>Im normalen Modus</h3>
 
 <pre class="code">
-  class Verdoppeln{
-    JButton button;
-    JTextField eingabe;
-    JLabel ausgabe;
+JButton button;
+JTextField eingabe;
+JLabel ausgabe;
 
-    void onStart(){
-      //ui erzeugen:
-      JFrame frame = new JFrame("1");
-      eingabe = new JTextField();
-      frame.add(eingabe);
-      button = new JButton("Verdoppeln");
-      frame.add(button);
-      ausgabe = new JLabel("");
-      frame.add(ausgabe);
-    }
+void main( ){
+  //ui erzeugen:
+  JFrame frame = new JFrame("1");
+  eingabe = new JTextField();
+  frame.add(eingabe);
+  button = new JButton("Verdoppeln");
+  frame.add(button);
+  ausgabe = new JLabel("");
+  frame.add(ausgabe);
+}
 
-    void onAction(JComponent trigger){
-      int z = eingabe.getValue();
-      ausgabe.setValue( z * 2 );
-    }
-
-    public static void main( String[] args ){
-      new Verdoppeln();
-    }
-  }
+void onAction(JComponent trigger){
+  int z = eingabe.getValue();
+  ausgabe.setValue( z * 2 );
+}
 </pre>
 
 <h3>Im einfachen Modus</h3>
@@ -91,7 +84,7 @@ JButton button;
 JTextField eingabe;
 JLabel ausgabe;
 
-onStart(){
+main(){
   //ui erzeugen:
   JFrame frame = new JFrame("1");
   eingabe = new JTextField();

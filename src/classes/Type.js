@@ -175,13 +175,14 @@ export class Type{
         value.code="("+value.code+"+''==='true')";
       }
       return true;
-    }else if(this.isString()&&options.autocast){
-      if(value.type.baseType!==Java.datatypes.nullType){
-        value.code="$s("+value.code+")";
-      }
-      value.type=this;
-      return true;
     }
+    // else if(this.isString()&&options.autocast){
+    //   if(value.type.baseType!==Java.datatypes.nullType){
+    //     value.code="$s("+value.code+")";
+    //   }
+    //   value.type=this;
+    //   return true;
+    // }
     return false;
   }
   isNumericOrString(){

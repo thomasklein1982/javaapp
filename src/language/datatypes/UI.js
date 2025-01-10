@@ -112,6 +112,25 @@ function defineJComponent(Clazz,Java){
     info: "Liefert das erste Kind-Element in dieser Komponente, das den CSS-Selektor erfüllt."
   },Clazz,false,false);
   createMethod({
+    name: 'flip',
+    args: [
+    ],
+    info: 'Spiegelt die Komponente horizontal.\nWurde sie bereits gespiegelt, dann passiert nichts.'
+  },Clazz,false,false);
+  createMethod({
+    name: 'unflip',
+    args: [
+    ],
+    info: 'Macht die Spiegelung rückgängig.\nWurde die Komponente gar nicht gespiegelt, dann passiert nichts.'
+  },Clazz,false,false);
+  createMethod({
+    name: 'isFlipped',
+    args: [
+    ],
+    info: 'Gibt zurück, ob die Komponente gespiegelt ist oder nicht.',
+    returnType: "boolean"
+  },Clazz,false,false);
+  createMethod({
     name: 'querySelectorAll',
     args: [
       {
@@ -144,19 +163,19 @@ function defineJComponent(Clazz,Java){
     info: "Entfernt die CSS-Klasse von der Komponente."
   },Clazz,false,false);
   createMethod({
-    name: 'collides',
+    name: 'isCollidingWith',
     args: [
       {name: 'comp', type: 'JComponent'}
     ],
     returnType: 'boolean'
   },Clazz,false,false);
   createMethod({
-    name: 'collidesWithAny',
+    name: 'isCollidingWithAny',
     args: [
-      {name: 'cssSelector', type: 'String'}
+      {name: 'compArray', type: {baseType: 'JComponent', dimension: 1}}
     ],
     returnType: 'boolean',
-    info: 'Checkt, ob diese Komponente mit irgendeiner Komponente kollidiert, auf die der Selektor zutrifft.'
+    info: 'Checkt, ob diese Komponente mit mindestens einer der Komponenten in dem Array kollidiert.'
   },Clazz,false,false);
   // createMethod({
   //   name: 'checkCollision',
@@ -556,25 +575,7 @@ function defineJImage(Clazz,Java){
     returnType: "int",
     info: 'Liefert die Höhe des Bildes in Pixeln zurück.'
   },Clazz,false,false,Java);
-  createMethod({
-    name: 'flip',
-    args: [
-    ],
-    info: 'Spiegelt das Bild horizontal.\nWurde das Bild bereits gespiegelt, dann passiert nichts.'
-  },Clazz,false,false);
-  createMethod({
-    name: 'unflip',
-    args: [
-    ],
-    info: 'Macht die Spiegelung rückgängig.\nWurde das Bild nicht gespiegelt, dann passiert nichts.'
-  },Clazz,false,false);
-  createMethod({
-    name: 'isFlipped',
-    args: [
-    ],
-    info: 'Gibt zurück, ob das Bild gespiegelt ist oder nicht.',
-    returnType: "boolean"
-  },Clazz,false,false);
+  
   // createMethod({
   //   name: 'setFlippedV',
   //   args: [

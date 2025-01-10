@@ -70,7 +70,7 @@ void main( ) {
   
 }
 
-void onGamepadDown( String button ) {
+void onGamepad( String button ) {
   if ( button == "left" ) {
     UI.player.unflip( );
   }

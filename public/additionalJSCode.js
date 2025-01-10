@@ -1032,15 +1032,15 @@ function additionalJSCode(){
   
   function onGamepadDown(button){
     if(window.$uiPreviewMode===true) return;
-    if($main && $main.onGamepadDown){
-      $main.onGamepadDown(button);
+    if($main && $main.onGamepad){
+      $main.onGamepad(button);
     }
   }
 
   function onGamepadUp(button){
     if(window.$uiPreviewMode===true) return;
-    if($main && $main.onGamepadUp){
-      $main.onGamepadUp(button);
+    if($main && $main.onGamepadRelease){
+      $main.onGamepadRelease(button);
     }
   }
 
@@ -1373,6 +1373,17 @@ function additionalJSCode(){
       this.setDirection(0);
 
     }
+    flip(){
+      this.transform.flippedH=true;
+      this.updateTransform();
+    }
+    unflip(){
+      this.transform.flippedH=false;
+      this.updateTransform();
+    }
+    isFlipped(){
+      return this.transform.flippedH;
+    }
     addEventListener(type, listener){
       this.$el.addEventListener(type,listener.actionPerformed,false);
     }
@@ -1438,17 +1449,13 @@ function additionalJSCode(){
         return this.$el.textContent;
       }
     }
-    collides(comp){
+    isCollidingWith(comp){
       let r1=this.$el.getBoundingClientRect();
       let r2=comp.$el.getBoundingClientRect();
       if(r1.width===0 || r2.width===0 || r1.height===0|| r2.height===0) return false;
       return !(r1.left+r1.width<r2.left || r2.left+r2.width<r1.left || r1.top+r1.height<r2.top || r2.top+r2.height<r1.top);
     }
-    collidesWithAny(cssSelector){
-
-      return this.checkCollision(this.getPanel().querySelectorAll(cssSelector));
-    }
-    checkCollision(array){
+    isCollidingWithAny(array){
       if(!array) return null;
       let r1=this.$el.getBoundingClientRect();
       if(r1.width===0 || r1.height===0) return false;
@@ -1498,7 +1505,7 @@ function additionalJSCode(){
     getDirection(){
       return this.direction? this.direction.angle:0;
     }
-    setDirectionTowardsComponent(comp){
+    setDirectionTowards(comp){
       let x=comp.x-this.x;
       let y=comp.y-this.y;
       let a=180/Math.PI*Math.atan2(y,x);
@@ -1779,17 +1786,6 @@ function additionalJSCode(){
       }
       
       return this;
-    }
-    flip(){
-      this.transform.flippedH=true;
-      this.updateTransform();
-    }
-    unflip(){
-      this.transform.flippedH=false;
-      this.updateTransform();
-    }
-    isFlipped(){
-      return this.transform.flippedH;
     }
     setFlippedV(flip){
       this.transform.flippedV=flip;
@@ -3873,7 +3869,7 @@ function additionalJSCode(){
       window.addEventListener("keyup",this.keyupListener);
       let keys=["left","right","up","down","A","B","X","Y"];
       if(!$main) return;
-      if($main.onGamepadDown){
+      if($main.onGamepad){
         for(let i=0;i<keys.length;i++){
           let k=keys[i];
           this.setEventListener(k,"press",{
@@ -3883,7 +3879,7 @@ function additionalJSCode(){
           });
         }
       }
-      if($main.onGamepadUp){
+      if($main.onGamepadRelease){
         for(let i=0;i<keys.length;i++){
           let k=keys[i];
           this.setEventListener(k,"release",{
