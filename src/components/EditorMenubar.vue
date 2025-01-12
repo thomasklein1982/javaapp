@@ -249,6 +249,13 @@ export default {
               }
             },
             {
+              label: 'Log',
+              icon: 'pi pi-align-left',
+              command: (ev)=>{
+                this.$emit("logging");
+              }
+            },
+            {
               label: 'Einstellungen',
               icon: 'pi pi-cog',
               command: (ev)=>{

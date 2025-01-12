@@ -358,7 +358,7 @@ export default {
     let timer;
     this.size=this.clazz.src.length;
     const lint = linter((view) => {
-      //console.log("linter start");
+      this.$root.log("linter start errors: "+ this.clazz.errors.length);
       let errors=[];
       for(let i=0;i<this.clazz.errors.length;i++){
         let e=this.clazz.errors[i];
@@ -531,6 +531,7 @@ export default {
       }
     },
     async update(viewUpdate, methodInformation){
+      app.log("update: " + methodInformation?.method.name);
       if(!this.triggerRecompilation){
         this.triggerRecompilation=true;
         return;

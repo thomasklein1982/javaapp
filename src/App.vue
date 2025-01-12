@@ -14,6 +14,7 @@
       ref="editor"
       @help="$refs.dialogHelp.setVisible(true)"
       @open-project-dialog="openProjectDialog"
+      :logged-data="loggedData"
     />
     <DocumentationDialog
       ref="dialogHelp"
@@ -38,6 +39,7 @@ import OpenProjectDialog from "./components/OpenProjectDialog.vue";
 import {version} from "../package.json";
 import { CompileFunctions } from "./language/CompileFunctions";
 import { Java } from "./language/java";
+import { getTimestamp } from "./functions/getTimestamp";
 
 export default{
   data(){
@@ -51,7 +53,8 @@ export default{
       tryItMode: location.hash.indexOf("tryit")>=0,
       tryItName: null,
       exerciseMode: options.exerciseMode,
-      exerciseCheckerCode: ""
+      exerciseCheckerCode: "",
+      loggedData: []
     };
   },
   mounted(){
@@ -82,6 +85,12 @@ export default{
     },1000);
   },
   methods: {
+    log(data){
+      this.loggedData.splice(0,0,{
+        time: getTimestamp(new Date()),
+        data: data
+      });
+    },
     sendExerciseData(){
       if(this.exerciseMode && window.parent){
         let project=this.getProject().toJSON();

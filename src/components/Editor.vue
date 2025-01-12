@@ -38,6 +38,7 @@
         @play-window="playInNewWindow(false)"
         @play-dev="playInNewWindow(true)"
         @terminal="$refs.dialogTerminal.setVisible(true)"
+        @logging="$refs.dialogLogging.setVisible(true)"
         @tryit="$refs.tryItDialog.setVisible(true)"
       />
       <LinksDialog
@@ -54,6 +55,7 @@
         @changefontsize="changeFontSize"
         :settings="settings"
       />
+      <LoggingDialog ref="dialogLogging" :data="loggedData"/>
       <NewAppDialog @newapp="createNewApp" ref="dialogNewApp"/>
       <AssetsDialog :project="project" ref="dialogAssets" @open-image-editor="asset=>$refs.imageEditor.open(asset)"/>
       <DatabaseDialog v-if="project" :database="project.database" ref="dialogDatabase"/>
@@ -215,12 +217,14 @@ import { SourceFile } from "../classes/SourceFile.js";
 import CodeMirrorEditor from "./CodeMirrorEditor.vue";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "primevue";
 import SourceFileSettingsDialog from "./SourceFileSettingsDialog.vue";
+import LoggingDialog from "./LoggingDialog.vue";
 
 export default {
   props: {
     current: Object,
     paused: Boolean,
-    difficulty: Number
+    difficulty: Number,
+    loggedData: Object
   },
   data(){
     return {
@@ -692,7 +696,8 @@ export default {
     TabPanels,
     TabPanel,
     Tab,
-    SourceFileSettingsDialog
+    SourceFileSettingsDialog,
+    LoggingDialog
   }
 }
 </script>
