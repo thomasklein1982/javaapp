@@ -362,6 +362,7 @@ export default {
     },
     compileProject(){
       this.project.compile().then(()=>{
+        this.$root.log("editor.compileProject");
         this.currentEditor?.updateLinter();
       });
     },

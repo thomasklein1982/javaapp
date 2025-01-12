@@ -13,6 +13,7 @@ import { Type } from "./Type";
 import  * as autocomplete  from "@codemirror/autocomplete";
 import { createMethod } from "../language/helper/createMethod";
 import { parseComments } from "../functions/parseComments";
+import { appjsdata } from "../functions/snippets";
 
 export class Clazz{
   constructor(name,project,isInterface){
@@ -590,6 +591,7 @@ export class Clazz{
     this.compileDeclarations(fromSource);
     this.compileMethods(optimizeCompiler);
     this.compileLastChecks();
+    app.log("clazz "+this.name+" compiled: error-count="+this.errors.length);
   }
 
   compileLastChecks(){

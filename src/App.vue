@@ -54,7 +54,8 @@ export default{
       tryItName: null,
       exerciseMode: options.exerciseMode,
       exerciseCheckerCode: "",
-      loggedData: []
+      loggedData: [],
+      loggingEnabled: true
     };
   },
   mounted(){
@@ -85,11 +86,19 @@ export default{
     },1000);
   },
   methods: {
-    log(data){
+    log(data,force){
+      if(!force && !this.loggingEnabled) return;
       this.loggedData.splice(0,0,{
         time: getTimestamp(new Date()),
         data: data
       });
+    },
+    clearLog(){
+      this.loggedData=[];
+    },
+    setLoggingEnabled(s){
+      this.$root.log("logging enabled="+s,true);
+      this.loggingEnabled=s;
     },
     sendExerciseData(){
       if(this.exerciseMode && window.parent){
@@ -152,6 +161,9 @@ export default{
       console.log("open project",project);
       this.$refs.editor.openProject(project);
       this.showScreen("editor");
+      setTimeout(()=>{
+        this.setLoggingEnabled(false);
+      },1000);
     },
     importProject: function(project){
       this.$refs.editor.importToProject(project);

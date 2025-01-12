@@ -531,6 +531,7 @@ export class Project{
   }
   /**Kompiliert das gesamte Projekt */
   async compile(fromSource,optimizeCompiler){
+    app.log("compile project, fromSource="+fromSource+" clazzes="+this.clazzes.length);
     this.includeAlaSQL=false;
     /**
      * 1. Alle Klassendeklarationen parsen
@@ -571,6 +572,7 @@ export class Project{
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
       c.compileMethods(optimizeCompiler);
+      app.log("project.compile: clazz "+c.name+" compiled: error-count="+c.errors.length);
     }
 
     let end=Date.now();

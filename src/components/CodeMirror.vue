@@ -269,6 +269,8 @@ const javaWithoutClazz=new LanguageSupport(javaLanguage.configure({top: "ClassCo
 
 const additionalCompletions=[];
 
+let lint;
+
 export default {
   props: {
     clazz: Object,
@@ -357,8 +359,8 @@ export default {
     let changed=true;
     let timer;
     this.size=this.clazz.src.length;
-    const lint = linter((view) => {
-      this.$root.log("linter start errors: "+ this.clazz.errors.length);
+    lint = linter((view) => {
+      this.$root.log("linter start errors: "+ JSON.stringify(this.clazz.errors));
       let errors=[];
       for(let i=0;i<this.clazz.errors.length;i++){
         let e=this.clazz.errors[i];
@@ -525,10 +527,16 @@ export default {
       this.editor.requestMeasure();
     },
     updateLinter(){
-      let lintPlugin=this.editor.plugins[14];
-      if(lintPlugin && lintPlugin.value && lintPlugin.value.run){
-        lintPlugin.value.run()
+      this.$root.log("CodeMirror.updateLinter");
+      let lintPlugin=this.editor.plugin(lint[1]);
+      if(lintPlugin){
+        this.$root.log("lintPlugin found");
+        lintPlugin.set=true;
+        lintPlugin.force();
       }
+      // if(lintPlugin && lintPlugin.value && lintPlugin.value.run){
+      //   lintPlugin.value.run()
+      // }
     },
     async update(viewUpdate, methodInformation){
       app.log("update: " + methodInformation?.method.name);
@@ -583,6 +591,7 @@ export default {
     //   this.emptyTransaction();
     // },
     setCode(code){
+      this.$root.log("set Code for editor "+this.clazz.name);
       this.triggerRecompilation=false;
       this.size=code.length;
       var old=this.editor.state.doc.toString();
