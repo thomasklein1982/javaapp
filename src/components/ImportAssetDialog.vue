@@ -1,7 +1,7 @@
 <template>
   <Dialog ref="dialog" header="Asset importieren" v-model:visible="show" :modal="true" maximizable>
     <div>
-      <Tabs v-model:value="selectedTab">
+      <Tabs scrollable v-model:value="selectedTab">
         <TabList>
           <Tab :value="i" v-for="(c,i) in categories">
             {{c.title}}

@@ -167,6 +167,22 @@
   "creatures": {
     "title": "Kreaturen",
     "assets": [
+      "graphics/creatures/angel.svg",
+      "graphics/creatures/archer.svg",
+      "graphics/creatures/centaur.svg",
+      "graphics/creatures/centaur2.svg",
+      "graphics/creatures/dragon.svg",
+      "graphics/creatures/dwarfWarrior.svg",
+      "graphics/creatures/elvenArcher.svg",
+      "graphics/creatures/faun.svg",
+      "graphics/creatures/knight.svg",
+      "graphics/creatures/orc.svg",
+      "graphics/creatures/princess.svg",
+      "graphics/creatures/stone-giant.svg",
+      "graphics/creatures/troubadour.svg",
+      "graphics/creatures/viking.svg",
+      "graphics/creatures/witch.svg",
+      "graphics/creatures/wizard.svg",
       "graphics/monster/angel.png",
       "graphics/monster/anubis_guard.png",
       "graphics/monster/big_kobold_new.png",
@@ -506,6 +522,19 @@
       "graphics/goodies/potion.png"
     ]
   },
+  "people": {
+    "title": "Personen",
+    "assets": [
+      "graphics/people/blue-eyes.png",
+      "graphics/people/boy.png",
+      "graphics/people/child.png",
+      "graphics/people/goblin-boy.png",
+      "graphics/people/hero.png",
+      "graphics/people/man.png",
+      "graphics/people/man2.png",
+      "graphics/people/woman.png"
+    ]
+  },
   "effects": {
     "title": "Effekte",
     "assets": [
@@ -517,7 +546,7 @@
     ]
   },
   "space": {
-    "title": "Weltraum",
+    "title": "Sci-Fi",
     "assets": [
       "graphics/space/Asteroid.png",
       "graphics/space/Back.png",
@@ -541,7 +570,10 @@
       "graphics/space/ship0.png",
       "graphics/space/Ship1.png",
       "graphics/space/Ship2.png",
-      "graphics/space/ship3.png"
+      "graphics/space/ship3.png",
+      "graphics/space/robot.svg",
+      "graphics/space/spaceArmor.svg",
+      "graphics/space/spaceArmorDark.svg"
     ]
   },
   "city": {
