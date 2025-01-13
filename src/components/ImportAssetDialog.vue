@@ -11,15 +11,15 @@
           <TabPanel :value="i" v-for="(c,i) in categories">
             <div style="float: right; position: sticky; top: 0.5rem;">
               <div style="display: grid; place-content: end; margin-bottom: 1rem;"><div style="width: 3cm"><Slider v-model="previewSize"/></div></div>
-              <div :style="{'width': ((previewSize+50)*0.03)+'cm', 'height': ((previewSize+50)*0.03)+'cm'}" style="background-color: #222; border: 1pt solid orange;">
+              <div :style="{'width': ((previewSize+50)*0.04)+'cm', 'height': ((previewSize+50)*0.04)+'cm'}" style="background-color: white; border: 1pt solid orange;">
                 <img v-if="asset" style="width: 100%; height: 100%; object-fit: contain" :src="fullAssetUrl">
                 <div v-else style="width: 100%; height: 100%; text-align: center; place-content: center; display: grid;">
                   Kein Asset ausgewählt
                 </div>
               </div>
             </div>
-            <div v-for="(p,j) in c.assets" :style="{'width': ((thumbSize+50)*0.01)+'cm', 'height': ((thumbSize+50)*0.01)+'cm'}" style="display:inline-block">
-              <img style="width: 100%; height: 100%; object-fit: contain" @click="asset=p" :src="'https://thomaskl.uber.space/Webapps/Assets/'+p">
+            <div v-for="(p,j) in c.assets" :style="{'width': ((thumbSize+50)*0.02)+'cm', 'height': ((thumbSize+50)*0.02)+'cm'}" style="display:inline-block">
+              <img :title="p" style="width: 100%; height: 100%; object-fit: contain" @click="asset=p" :src="'https://thomaskl.uber.space/Webapps/Assets/'+p">
             </div>
           </TabPanel>
         </TabPanels>
