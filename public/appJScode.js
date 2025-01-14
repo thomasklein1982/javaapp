@@ -1367,7 +1367,7 @@ window.appJScode=function(){
           $App.console.setVisible(false);
         }
         if(index!==undefined){
-          this.container.insertBefore(el,this.container.children[index]);
+          this.container.insertBefore(el,this.container.children[index+1]);
         }else{
           this.container.appendChild(el);
         }
