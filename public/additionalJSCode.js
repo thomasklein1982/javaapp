@@ -1537,6 +1537,10 @@ function additionalJSCode(){
       this.setX(comp.getX());
       this.setY(comp.getY());
     }
+    setPosition(x,y){
+      this.setX(x);
+      this.setY(y);
+    }
     setX(v){
       this.x=v;
       this.$el.cx=v;

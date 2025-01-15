@@ -156,6 +156,13 @@ function defineJComponent(Clazz,Java){
     info: "Fügt der Komponente die CSS-Klasse hinzu."
   },Clazz,false,false);
   createMethod({
+    name: 'setPosition',
+    args: [
+      {name: 'x', type: 'double'}, {name: 'y', type: 'double'}
+    ],
+    info: "Legt die Position der Komponente in einem Canvas fest."
+  },Clazz,false,false);
+  createMethod({
     name: 'removeCSSClass',
     args: [
       {name: 'className', type: 'String'}
