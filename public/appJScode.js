@@ -10,9 +10,8 @@ window.appJScode=function(){
     }
   }
 
-  // window.AudioContext = window.AudioContext || window.webkitAudioContext;
-  // window.AudioContext = window.AudioContext || window.webkitAudioContext;
-  // audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+  window.AudioContext = window.AudioContext || window.webkitAudioContext;
+  audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 
     window.onmessage=function(message){
       if(message && message.data && message.data.type==="update-shared-variables"){
@@ -40,6 +39,7 @@ window.appJScode=function(){
   
     window.$App={
       version: 41,
+      enableOnNextFrame: false,
       language: window.language? window.language:'js',
       setupData: null,
       lazyLoading: false,
@@ -99,7 +99,7 @@ window.appJScode=function(){
           let k=Math.round(dt*this.FPS/1000);
           if(k>this.currentFrame){
             this.currentFrame=k;
-            if(window.onNextFrame && !$App.debug.paused){
+            if(window.onNextFrame && !$App.debug.paused && $App.enableOnNextFrame){
               try{
                 await window.onNextFrame();
               }catch(e){
