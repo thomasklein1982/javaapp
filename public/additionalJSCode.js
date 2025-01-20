@@ -1496,10 +1496,11 @@ function additionalJSCode(){
       return this.$el.value+"";
     }
     setDirection(dir){
+      if(dir>0) dir%=360;
       this.direction={
         angle: dir,
-        dx: Math.cos(dir*Math.PI/180),
-        dy: Math.sin(dir*Math.PI/180),
+        dx: dir<0? 0: Math.cos(dir*Math.PI/180),
+        dy: dir<0? 0: Math.sin(dir*Math.PI/180),
       };
     }
     getDirection(){
