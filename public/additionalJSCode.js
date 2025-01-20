@@ -4186,7 +4186,6 @@ function additionalJSCode(){
         this.isPressed=ev.buttons>0;
         this.updateHover();
         if(this.isPressed && !wasPressed){
-          System.out.println("enter");
           this.gamepad.onButtonEvent(this.name,"press",ev);
         }
       });
@@ -4197,7 +4196,6 @@ function additionalJSCode(){
         this.isPressed=ev.buttons>0;
         this.updateHover();
         if(this.isPressed){
-          System.out.println("down");
           this.gamepad.onButtonEvent(this.name,"press",ev);
         }
       });
