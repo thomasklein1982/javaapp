@@ -28,6 +28,11 @@ t.start();
     info: "Erzeugt einen neuen Timer."
   },clazz);
   createMethod({
+    name: "setDelay",
+    args: [{name: "delay", type: "int"}],
+    info: "Legt die Anzahl der Millisekunden, bis der Timer abläuft, fest."
+  },clazz,false,false);
+  createMethod({
     name: "setActionCommand",
     args: [{name: "cmd", type: "String"}],
     info: "Legt das ActionCommand des Timers fest."

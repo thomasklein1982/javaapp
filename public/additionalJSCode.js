@@ -3785,6 +3785,13 @@ function additionalJSCode(){
     isRepeats(){
       return this.repeats;
     }
+    setDelay(delay){
+      this.delay=delay;
+      this.restart(this.delay);
+    }
+    getDelay(){
+      return this.delay;
+    }
     isRunning(){
       return this.$running;
     }
@@ -3792,7 +3799,7 @@ function additionalJSCode(){
       if(this.$running) return;
       this.restart();
     }
-    restart(){
+    restart(delay){
       if(this.$running) this.stop();
       this.$running=true;
       let handler=()=>{
@@ -3803,7 +3810,7 @@ function additionalJSCode(){
           al.actionPerformed(ev);
         };
       };
-      this.$timer_id=setTimeout(()=>{
+      let timeoutHandler=()=>{
         if(this.repeats){
           this.$timer_id=setInterval(()=>{
             if(!this.repeats){
@@ -3813,7 +3820,8 @@ function additionalJSCode(){
           },this.delay);
         }
         handler();
-      },this.initialDelay);
+      };
+      this.$timer_id=setTimeout(timeoutHandler,delay!==undefined? delay:this.initialDelay);
     }
     stop(){
       clearTimeout(this.$timer_id);
@@ -3830,6 +3838,7 @@ function additionalJSCode(){
       this.width="100%";
       this.buttonSize=1;
       this.dpad=new DPad(this);
+      this.$timeouts={};
       this.buttons={
         B: new GamepadButton(this,"B","B","yellow","black"),
         A: new GamepadButton(this,"A","A","red","black"),
@@ -3956,8 +3965,14 @@ function additionalJSCode(){
     onButtonEvent(button,event,eventData){
       event=event.toLowerCase();
       button=button.toLowerCase();
-      let handler=this.buttonHandlers[button+":"+event];
+      let key=button+":"+event;
+      if(this.$timeouts[key]) return;
+      let handler=this.buttonHandlers[key];
       if(!handler) return;
+      this.$timeouts[key]=true;
+      setTimeout(()=>{
+        delete this.$timeouts[key];
+      },10);
       handler.actionPerformed(eventData);
     }
     getDirection(){
@@ -4171,6 +4186,7 @@ function additionalJSCode(){
         this.isPressed=ev.buttons>0;
         this.updateHover();
         if(this.isPressed && !wasPressed){
+          System.out.println("enter");
           this.gamepad.onButtonEvent(this.name,"press",ev);
         }
       });
@@ -4181,6 +4197,7 @@ function additionalJSCode(){
         this.isPressed=ev.buttons>0;
         this.updateHover();
         if(this.isPressed){
+          System.out.println("down");
           this.gamepad.onButtonEvent(this.name,"press",ev);
         }
       });
