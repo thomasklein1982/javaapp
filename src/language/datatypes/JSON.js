@@ -19,6 +19,15 @@ export function defineJSON(Clazz,Java){
     jsName: "$jsstringify"
   },Clazz,true,false);
   createMethod({
+    name: 'putData',
+    isExtraFunction: true,
+    args: [
+      {name: 'target', type: 'Object'}
+    ],
+    returnType: null,
+    jsName: "$jsputData"
+  },Clazz,false,false);
+  createMethod({
     name: 'parse',
     isExtraFunction: true,
     args: [

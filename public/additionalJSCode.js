@@ -4679,6 +4679,42 @@ function additionalJSCode(){
     return json;
   }
 
+  $jsputData=function(json,target){
+    if(!target || !target.constructor) return;
+    let infos=$clazzRuntimeInfos[target.constructor.name];
+    if(!infos) return;
+    jsonFields={};
+    for(a in json){
+      jsonFields[a.toLowerCase()]=a;
+    }
+    for(a in infos.attributes){
+      let aLow=a.toLowerCase();
+      if(!(aLow in jsonFields)) continue;
+      let v=json[jsonFields[aLow]];
+      
+      let attr=infos.attributes[a];
+      if(attr.static) continue;
+
+      if(v===null){
+        target[a]=null;
+        continue;
+      }
+      
+      let m=target[a];
+      if(attr.type.dimension>0){
+        target[a]=$createArray(attr.type.baseType,attr.type.dimension,v);
+        continue;
+      }
+      console.log(attr);
+      let c=attr.type.baseType.charAt(0);
+      if(attr.type.baseType==="String" || c.toLowerCase()===c){
+        target[a]=v;
+      }else{
+        target[a]=null;
+      }
+    }
+    return a;
+  };
   $jsstringify=async function(json,obj){
     if(obj===null || obj===undefined) return null;
     let jo=await $jstoJSON(obj);
