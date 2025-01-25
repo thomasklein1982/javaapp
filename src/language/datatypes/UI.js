@@ -163,6 +163,14 @@ function defineJComponent(Clazz,Java){
     info: "Legt die Position der Komponente in einem Canvas fest."
   },Clazz,false,false);
   createMethod({
+    name: 'isAtPosition',
+    args: [
+      {name: 'x', type: 'double'}, {name: 'y', type: 'double'}
+    ],
+    info: "Prüft, ob sich die Komponente an den Koordinaten (x|y) befindet.",
+    returnType: "boolean"
+  },Clazz,false,false);
+  createMethod({
     name: 'removeCSSClass',
     args: [
       {name: 'className', type: 'String'}
@@ -907,7 +915,8 @@ function defineJPanel(Clazz,Java){
   createMethod({
     name: 'add',
     args: [
-      {name: 'component', type: 'JComponent', info: 'Die Komponente, die hinzugefügt werden soll.'}
+      {name: 'component', type: 'JComponent', info: 'Die Komponente, die hinzugefügt werden soll.'},
+      {name: 'index', type: 'int', info: 'Index, an dem eingefügt wird', optional: true}
     ],
     info: 'Fügt dem Panel eine (weitere) Komponente hinzu.'
   },Clazz,false,false,Java);

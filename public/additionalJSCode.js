@@ -1542,6 +1542,11 @@ function additionalJSCode(){
       this.setX(x);
       this.setY(y);
     }
+    isAtPosition(x,y){
+      let dx=this.getX()-x;
+      let dy=this.getY()-y;
+      return dx*dx+dy*dy<0.000001;
+    }
     setX(v){
       this.x=v;
       this.$el.cx=v;
