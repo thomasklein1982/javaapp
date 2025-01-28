@@ -5389,7 +5389,7 @@ App.console=console;
 
   function $getFromArray(array,index){
     if(!array){
-      throw $new(Exception,"Das Array muss zunächst initalisiert werden.");
+      throw $new(Exception,"NullPointerException: Kann nicht aus dem Array laden, weil es null ist.");
     }
     if(array.$type){
       return $arrayGet(array,index);
@@ -5400,7 +5400,7 @@ App.console=console;
 
   function $setInArray(array,index,value,assignOp){
     if(!array){
-      throw $new(Exception,"Das Array muss zunächst initalisiert werden.");
+      throw $new(Exception,"NullPointerException: In dem Array kann nichts gespeichert werden, weil es null ist.");
     }
     if(assignOp==="+="){
       value=$getFromArray(array,index)+value;

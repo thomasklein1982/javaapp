@@ -738,6 +738,11 @@ function defineDataTable(Clazz,Java){
     ]
   },Clazz,false,false,Java);
   createMethod({
+    name: 'getArray',
+    args: [],
+    returnType: {baseType: 'JSON', dimension: 1},
+  },Clazz,false,false,Java);
+  createMethod({
     name: 'getSelectedIndex',
     args: [
     ],

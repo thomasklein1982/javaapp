@@ -4443,6 +4443,7 @@ window.appJScode=function(){
         Object.defineProperty(b, 'array', {
           set: function(array) {
             this.value=-1;
+            this._array=array;
             // if(array instanceof $App.Array){
             //   array=array.values;
             // } 
@@ -4505,7 +4506,7 @@ window.appJScode=function(){
             }
           },
           get: function(){
-            return this._options;
+            return this._array;
           }
         });
         b.selectedIndex=-1;

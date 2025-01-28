@@ -86,5 +86,23 @@ function defineDatabase(Clazz,Java){
       {name: "version", type: "int"}
     ]
   },Clazz,false,false);
+  createMethod({
+    name: "exportTableDataAsCSVString",
+    info: "Exportiert die Tabelle als CSV-String (comma separated values).",
+    args: [
+      {name: "tablename", type: "String"},
+      {name: "separator", type: "String", optional:true}
+    ],
+    returnType: "String"
+  },Clazz,false,false,Java);
+  createMethod({
+    name: "importTableDataFromCSVString",
+    info: "Importiert die Daten einer Tabelle im CSV-Format.",
+    args: [
+      {name: "tablename", type: "String"},
+      {name: "s", type: "String"},
+      {name: "separator", type: "String", optional: true}
+    ]
+  },Clazz,false,false);
 }
 

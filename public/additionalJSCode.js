@@ -344,7 +344,7 @@ function additionalJSCode(){
 
   function $getFromArray(array,index){
     if(!array){
-      throw $new(Exception,"Das Array muss zunächst initalisiert werden.");
+      throw $new(Exception,"NullPointerException: Kann nicht aus dem Array laden, weil es null ist.");
     }
     if(array.$type){
       return $arrayGet(array,index);
@@ -355,7 +355,7 @@ function additionalJSCode(){
 
   function $setInArray(array,index,value,assignOp){
     if(!array){
-      throw $new(Exception,"Das Array muss zunächst initalisiert werden.");
+      throw $new(Exception,"NullPointerException: In dem Array kann nichts gespeichert werden, weil es null ist.");
     }
     if(assignOp==="+="){
       value=$getFromArray(array,index)+value;
@@ -2611,6 +2611,7 @@ function additionalJSCode(){
       this.$standardCSSClasses+=" __datatable";
       this.$el=ui.datatable(null,x,y,width,height);
       this.$el.component=this;
+      this.$el.onclick = $handleOnAction;
       this.setCSSClass("");
     }
     setArray(array){
@@ -3060,6 +3061,57 @@ function additionalJSCode(){
         this.saveTable(a,tables[a]);
       }
     }
+    exportTableDataAsCSVString(tablename,separator){
+      let table=this.$db.tables[tablename.toLowerCase()];
+      if(!table) return null;
+      if(!separator){
+        separator=";";
+      }
+      let r=this.sql("select * from "+tablename);
+      
+      let cols=[];
+      for(let i=0;i<table.columns.length;i++){
+        cols.push(table.columns[i].columnid);
+      }
+      let text=cols.join(separator);
+      for(let i=0;i<r.length;i++){
+        let data=[];
+        let row=r[i];
+        for(let i=0;i<table.columns.length;i++){
+          let c=table.columns[i].columnid;
+          data.push(row[c]);
+        }
+        text+="\n"+data.join(";");
+      }
+      return text;
+    }
+    importTableDataFromCSVString(tablename,s,separator){
+      let table=this.$db.tables[tablename.toLowerCase()];
+      if(!table) return false;
+      if(!separator){
+        separator=";";
+      }
+      let rows=s.split("\n");
+      let cmd="";
+      let stringTypes=["VARCHAR","STRING","CHAR"];
+      for(let i=1;i<rows.length;i++){
+        let row=rows[i];
+        let data=row.split(separator);
+        let values=[];
+        for(let j=0;j<table.columns.length;j++){
+          let col=table.columns[j];
+          let val=data[j];
+          if(stringTypes.indexOf(col.dbtypeid.toUpperCase())>=0){
+            val=JSON.stringify(val);
+          }
+          values.push(val);
+        }
+        values=values.join(",");
+        cmd+="insert into "+tablename+" values ("+values+");\n";
+      }
+      this.sql(cmd);
+      return true;
+    }
     getDatatypeString(col){
       let t=col.dbtypeid;
       let add=[];
@@ -3077,9 +3129,7 @@ function additionalJSCode(){
       }
       return t;
     }
-    async load(){
-      if(!this.$indexedDB) return false;
-      let tables=await this.$indexedDB.getAllItems();
+    loadFromObject(tables){
       console.log("load",tables);
       if(!tables) return false;
       //let tables=this.$db.tables;
@@ -3104,6 +3154,11 @@ function additionalJSCode(){
         t.data=tables[a].data;
       }
       return true;
+    }
+    async load(){
+      if(!this.$indexedDB) return false;
+      let tables=await this.$indexedDB.getAllItems();
+      return this.loadFromObject(tables);
     }
     tableCount(){
       let tables=this.$db.tables;
