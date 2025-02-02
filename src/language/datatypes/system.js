@@ -68,5 +68,11 @@ export function defineSystem(clazz){
     name: "setFPS",
     args: [{name: "fps", type: "int"}],
     info: "Legt fest, wie oft pro Sekunde die Methode onNextFrame aufgerufen werden soll.\nBeachte: Die echte Framerate hängt vom Gerät ab."
-  },clazz,true,false); 
+  },clazz,true,false);
+  
+  createMethod({
+    name: "setNextFrameListener",
+    args: [{name: "listener", default: "()->{}", type: "Runnable"}],
+    info: "Legt fest, was passieren soll, wenn das nächste Frame gezeichnet wird."
+  },clazz,true,false);
 }

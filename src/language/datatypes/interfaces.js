@@ -8,6 +8,14 @@ export function defineInterfaces(){
   defineActionListener(Java.interfaces.ActionListener);
   defineComparable(Java.interfaces.Comparable);
   defineComparator(Java.interfaces.Comparator);
+  defineRunnable(Java.interfaces.Runnable);
+}
+
+function defineRunnable(clazz){
+  createMethod({
+    name: "run",
+    args: [],
+  },clazz,false,false);
 }
 
 function defineActionListener(clazz){

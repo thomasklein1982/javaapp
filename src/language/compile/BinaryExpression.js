@@ -58,8 +58,8 @@ function resolveTermOperations(term,operations,source){
           right.type=new Type(Java.datatypes.int,0);
         }
         if(left.type.isNumeric() && right.type.isNumeric()){
-          if(op==="/" && left.type===Java.datatypes.int && right.type===Java.datatypes.int){
-            code="Math.floor("+left.code+op+right.code+")";
+          if(op==="/" && left.type.isInt() && right.type.isInt()){
+            code="$i("+left.code+op+right.code+")";
             type=left.type;
           }else{
             code=left.code+op+right.code;

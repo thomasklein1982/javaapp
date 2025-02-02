@@ -349,8 +349,8 @@ function defineJComponent(Clazz,Java){
   createMethod({
     name: 'setBounds',
     args: [
-      {name: 'x', type: 'double'},
-      {name: 'y', type: 'double'},
+      {name: 'left', type: 'double'},
+      {name: 'bottom', type: 'double'},
       {name: 'width', type: 'double'},
       {name: 'height', type: 'double'}
     ]
@@ -653,7 +653,7 @@ function defineJTextField(Clazz,Java){
 function defineJTextArea(Clazz, Java){
   createConstructor ({
     args: [
-      {type: 'String', name: 'placeholder'}
+      {type: 'String', name: 'placeholder', optional: true}
     ]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JTextComponent;
@@ -740,7 +740,7 @@ function defineDataTable(Clazz,Java){
   createMethod({
     name: 'getArray',
     args: [],
-    returnType: {baseType: 'JSON', dimension: 1},
+    returnType: {baseType: 'Object', dimension: 1},
   },Clazz,false,false,Java);
   createMethod({
     name: 'getSelectedIndex',

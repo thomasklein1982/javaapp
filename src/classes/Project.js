@@ -338,14 +338,69 @@ export class Project{
         ${codeMainCall}
       </script>
       <style>
-        .__canvas{
-          container-type: size;
-        }
-        .jimage{
-          justify-self: stretch;
-        }
-        .animation-pulse{
-          animation: pulse 1s infinite; 
+        @layer{
+          .__canvas{
+            container-type: size;
+          }
+          .__jimage{
+            justify-self: stretch;
+          }
+          .__jframe{
+            background-color: white;
+          }
+          *{overscroll-behavior: none;}
+          .__datatable_inner{background-color: white; text-align: center; border-collapse: collapse}
+          .__datatable_inner>tr>td,.__datatable_inner>tr>th{border: 1pt solid black}
+          .__datatable_inner>tr:nth-child(even){background-color: lightgray}
+          .__datatable_inner>tr.selected{background-color: yellow}
+          .__datatable_inner.show-index>tr>td:nth-child(1),.__datatable_inner.show-index>tr>th:nth-child(1){display: table-cell}
+          .__datatable_inner>tr>td:nth-child(1),.__datatable_inner>tr>th:nth-child(1){display: none}
+          .__jbutton:active{border-radius: 0;background-color:#e0e0e0}
+          .__jbutton{border-radius: 0;background-color:#d0d0d0}
+          .__jbutton:enabled:hover{border-radius: 0;background-color:#dadada}
+          html{font-family: sans-serif;width:100%;height:100%;}
+          .animation-pulse{
+            animation: pulse 1s infinite; 
+          }
+          #dialog-backdrop{
+            z-index: 1000;
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            place-content: center;
+            align-items: center;
+          }
+          #dialog-frame{
+            background-color: white;
+            border-radius: 0.5rem;
+            max-width: 85%;
+            max-height: 85%;
+            box-shadow: 5px 5px 5px teal;
+            min-width: 40%;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+          }
+          #dialog-content{
+            flex: 1;
+            overflow: auto;
+          }
+          #dialog-input{
+            width: 100%;
+            min-height: 2rem;
+          }
+          .dialog-footer{
+            margin-top: 0.2rem;
+            text-align: right;
+          }
+          .dialog-footer-button{
+            min-height: 2rem;
+          }
         }
         @keyframes pulse {
           0% {
@@ -363,45 +418,7 @@ export class Project{
               box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
           }
         }
-        #dialog-backdrop{
-          z-index: 1000;
-          position: fixed;
-          left: 0;
-          right: 0;
-          top: 0;
-          bottom: 0;
-          background-color: rgba(0,0,0,0.5);
-          display: flex;
-          place-content: center;
-          align-items: center;
-        }
-        #dialog-frame{
-          background-color: white;
-          border-radius: 0.5rem;
-          max-width: 85%;
-          max-height: 85%;
-          box-shadow: 5px 5px 5px teal;
-          min-width: 40%;
-          padding: 1rem;
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
-        }
-        #dialog-content{
-          flex: 1;
-          overflow: auto;
-        }
-        #dialog-input{
-          width: 100%;
-          min-height: 2rem;
-        }
-        .dialog-footer{
-          margin-top: 0.2rem;
-          text-align: right;
-        }
-        .dialog-footer-button{
-          min-height: 2rem;
-        }
+        
         ${css}
       </style>
     </head>

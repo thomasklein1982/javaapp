@@ -94,16 +94,25 @@ window.appJScode=function(){
         currentFrame: 0,
         startTime: Date.now(),
         MAX_FRAMES: 1000000,
+        customHandler: null,
         handler: async function(){
           let dt=Date.now()-this.startTime;
           let k=Math.round(dt*this.FPS/1000);
           if(k>this.currentFrame){
             this.currentFrame=k;
-            if(window.onNextFrame && !$App.debug.paused && $App.enableOnNextFrame){
-              try{
-                await window.onNextFrame();
-              }catch(e){
-                $App.handleException(e);
+            if((window.onNextFrame||this.customHandler) && !$App.debug.paused && $App.enableOnNextFrame){
+              if(this.customHandler){
+                try{
+                  await this.customHandler.run();
+                }catch(e){
+                  $App.handleException(e);
+                }
+              }else{
+                try{
+                  await window.onNextFrame();
+                }catch(e){
+                  $App.handleException(e);
+                }
               }
             }
             if(this.currentFrame>this.MAX_FRAMES){
@@ -685,17 +694,7 @@ window.appJScode=function(){
         var style=document.createElement("style");
         document.head.appendChild(style);
         style=style.sheet;
-        style.insertRule("*{overscroll-behavior: none;}",0);
-        style.insertRule(".datatable{background-color: white; text-align: center; border-collapse: collapse}",0);
-        style.insertRule(".datatable>tr>td,.datatable>tr>th{border: 1pt solid black}",0);
-        style.insertRule(".datatable>tr.selected{background-color: yellow}",0);
-        style.insertRule(".datatable>tr:nth-child(even){background-color: lightgray}",0);
-        style.insertRule(".datatable.show-index>tr>td:nth-child(1),.datatable.show-index>tr>th:nth-child(1){display: table-cell}",0);
-        style.insertRule(".datatable>tr>td:nth-child(1),.datatable>tr>th:nth-child(1){display: none}",0);
-        style.insertRule("button:active{border-radius: 0;background-color:#e0e0e0}",0);
-        style.insertRule("button{border-radius: 0;background-color:#d0d0d0}",0);
-        style.insertRule("button:hover{border-radius: 0;background-color:#dadada}",0);
-        style.insertRule("html{font-family: sans-serif;width:100%;height:100%;}",0);
+        
         $App.headLoaded=true;
       }
       if(!dontStart && document.body){
@@ -4423,14 +4422,14 @@ window.appJScode=function(){
         b.style.overflow="hidden";
         wrapper.style.maxHeight="100%";
         b.table=document.createElement("table");
-        b.table.className="datatable";
+        b.table.className="__datatable_inner";
         b.table.style.minWidth="100%";
         b.table.style.minHeight="100%";
         b._showIndex=false;
         Object.defineProperty(b, 'showIndex', {
           set: function(v){
             this._showIndex=v;
-            this.table.className=v? "datatable datatable-show-index": "datatable";
+            this.table.className=v? "__datatable_inner show-index": "__datatable_inner";
           },
           get: function(){
             return this._showIndex;

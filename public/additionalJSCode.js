@@ -1322,6 +1322,9 @@ function additionalJSCode(){
       if(fps<=0) return;
       $App.gameloop.FPS=fps;
     }
+    static setNextFrameListener(listener){
+      $App.gameloop.customHandler=listener;
+    }
     static isMousePressed(){
       return window.mousePressed;
     }
@@ -1568,8 +1571,8 @@ function additionalJSCode(){
       return this.$el.cy;
     }
     setBounds(x,y,width,height){
-      this.setX(x);
-      this.setY(y);
+      this.setX(x+width/2);
+      this.setY(y+width/2);
       this.setWidth(width);
       this.setHeight(height);
     }
@@ -2026,7 +2029,7 @@ function additionalJSCode(){
     $constructor(template){
       super.$constructor(template);
       this.$standardCSSClasses+=" __jframe";
-      this.$el.style="left: 0; right: 0; top: 0; bottom: 0; position: absolute;background-color: white";
+      this.$el.style="left: 0; right: 0; top: 0; bottom: 0; position: absolute;";
       $App.canvas.addElement(this.$el,50,50,100,100);
       $App.console.adaptSize();
       this.setCSSClass("");

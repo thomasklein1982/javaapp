@@ -62,8 +62,44 @@ export default {
         },
         {
           name: "Game mit Gamepad und Canvas",
+          modes: ["Easy","Normal"],
           description: "Grundgerüst für eine Spiel, das mit einem Gamepad gesteuert werden kann.",
-          code: [
+          code: options.isHardMode()? [
+            `Gamepad gp = new Gamepad( );
+JImage player;
+Canvas world;
+
+void main( ) {
+  JFrame f = new JFrame( "1" );
+  world = new Canvas( 0, 10, 0, 10 );
+  JImage background = new JImage( "https://thomaskl.uber.space/Webapps/Assets/graphics/overworld/water-1.png" );
+  background.setBounds(0, 0, 10, 10);
+  world.add( background );
+  player = new JImage( "https://thomaskl.uber.space/Webapps/Assets/graphics/monster/merfolk_water.png" );
+  world.add( player );
+  player.setPosition( 5, 5 );
+  player.setWidth( 1 );
+  player.setHeight( 1 );
+  f.add(world);
+
+  gp.setEventListener( "left", "press", (ev)->{
+    player.unflip( );
+  } );
+  gp.setEventListener( "right", "press", (ev)->{
+    player.flip( );
+  });
+  System.setNextFrameListener( ()->{ 
+    gameloop( ); 
+  } );
+}
+
+void gameloop( ) {
+  if ( gp.isAnyDirectionPressed( ) ) {
+    player.setDirection( gp.getDirection( ) );
+    player.move( 0.05 );
+  }
+}`
+          ]:[
             `Gamepad gp = new Gamepad( );
 
 void main( ) {
@@ -210,13 +246,13 @@ void onNextFrame( ) {
       if(options.voidOptional){
         code[0]=code[0].replace(/void /g,"");
       }
-      code[0]=js_beautify(code[0],{
-        "indent_size": 2,
-        "max_preserve_newlines": 2,
-        "indent_empty_lines": true,
-        "space_in_paren": true,
-        "space_in_empty_paren": true
-      });
+      // code[0]=js_beautify(code[0],{
+      //   "indent_size": 2,
+      //   "max_preserve_newlines": 2,
+      //   "indent_empty_lines": true,
+      //   "space_in_paren": true,
+      //   "space_in_empty_paren": true
+      // });
       
       this.$emit("newapp",name,code);
       this.setVisible(false);
