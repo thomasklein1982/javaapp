@@ -3863,6 +3863,7 @@ function additionalJSCode(){
     }
     setDelay(delay){
       this.delay=delay;
+      if(!this.isRunning()) return;
       this.restart(this.delay);
     }
     getDelay(){
