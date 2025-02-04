@@ -2047,7 +2047,6 @@ function additionalJSCode(){
       
       if(v){
         let el=this.$self.$el;
-        //entferne die UI-Klasse und füge sie als oberstes Kind wieder ein, sodass sie sichtbar ist
         let parent=el.parentNode;
         for(let i=0;i<parent.children.length;i++){
           let c=parent.children[i];
@@ -2067,7 +2066,16 @@ function additionalJSCode(){
       this.setVisible(false);
     }
     static isVisible(){
-      return this.$self.isVisible();
+      let el=this.$self.$el;
+      let parent=el.parentNode;
+      let maxZIndex=parent.children[parent.children.length-1];
+      for(let i=0;i<parent.children.length-1;i++){
+        let c=parent.children[i];
+        if(c.style.zIndex*1>maxZIndex.style.zIndex*1){
+          maxZIndex=c;
+        }
+      }
+      return (maxZIndex===el);
     }
     static getChildCount(){
       return this.$self.getChildCount();
