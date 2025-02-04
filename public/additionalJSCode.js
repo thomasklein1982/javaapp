@@ -1590,7 +1590,10 @@ function additionalJSCode(){
     getHeight(){
       return this.$el.height;
     }
-    
+    setSize(w,h){
+      this.setWidth(w);
+      this.setHeight(h);
+    }
     changeWidth(dw){
       this.setWidth(this.getWidth()+dw);
     }
@@ -2579,7 +2582,7 @@ function additionalJSCode(){
   }
 
   class JTextField extends JTextComponent{
-    $constructor(type,placeholder,x,y,width,height){
+    $constructor(placeholder,type,x,y,width,height){
       if(!type) type="text";
       if(!placeholder) placeholder="";
       super.$constructor(x,y,width,height);
@@ -2590,6 +2593,7 @@ function additionalJSCode(){
       this.$el.onchange = $handleOnAction;
       this.setCSSClass("");
     }
+
   }
 
   class JTextArea extends JTextComponent{

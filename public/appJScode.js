@@ -4375,7 +4375,6 @@ window.appJScode=function(){
         }else if(type==="number"){
           var b=$App.createElement("input");
           b.type=type;
-          b.step=0.00000000000000000001;
         }else{
           var b=$App.createElement("input");
           b.type=type;

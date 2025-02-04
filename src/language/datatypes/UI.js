@@ -347,6 +347,12 @@ function defineJComponent(Clazz,Java){
     ]
   },Clazz,false,false,Java);
   createMethod({
+    name: 'setSize',
+    args: [
+      {name: 'width', type: 'double'}, {name: 'height', type: 'double'}
+    ]
+  },Clazz,false,false,Java);
+  createMethod({
     name: 'setBounds',
     args: [
       {name: 'left', type: 'double'},
@@ -644,8 +650,9 @@ function defineJTextComponent(Clazz, Java){
 function defineJTextField(Clazz,Java){
   createConstructor ({
     args: [
-      {type: 'String', name: 'type', optional: true}, {type: 'String', name: 'placeholder'}
-    ]
+      {type: 'String', name: 'placeholder', optional: true}, {type: 'String', name: 'type'}, 
+    ],
+    allowedArgsCounts: [0,1,2]
   },Clazz,Java);
   Clazz.superClazz=Java.datatypes.JTextComponent;
 }

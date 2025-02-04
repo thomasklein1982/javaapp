@@ -95,7 +95,7 @@ export function defineString(StringClazz,Java){
     isExtraFunction: true,
     args: [{name: "string2",type: "String"}],
     info: "Findet heraus, ob die beiden Strings gleich sind, wobei Groß-/Kleinschreibung keine Rolle spielt.",
-    jsName: "$StringEquals",
+    jsName: "$StringEqualsIgnoreCase",
     returnType: 'boolean'
   },StringClazz,false,false,Java);
   createMethod({

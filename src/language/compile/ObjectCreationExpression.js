@@ -120,7 +120,7 @@ export function ObjectCreationExpression(node,source,scope,infos){
     static: false,
     typeArguments
   }
-  let al=ArgumentList(node,source,scope,clazz.getConstructorRealParameters(typeArguments),null,owner);
+  let al=ArgumentList(node,source,scope,clazz.getConstructorRealParameters(typeArguments),clazz.getConstructor(),owner);
   //al=ArgumentList(node,source,scope,method.getRealParameterList(owner.typeArguments),method,owner);
   if(clazz.name==="JImage"){
     code="new "+typename.code;
