@@ -21,7 +21,7 @@ export class UIClazz extends Clazz{
       }
     },
     JTextField: {
-      params: ["inputType","placeholder","x","y","width","height"],
+      params: ["placeholder","inputType","x","y","width","height"],
       labels: {
         value: "Der eingegebene Wert des Textfelds."
       }
