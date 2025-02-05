@@ -36,6 +36,7 @@ export class Database{
     this.tables=[];
     this.separator=";";
     this.changed=false;
+    this.sqlInitCode="";
   }
 
   static getTypeByName(type){
@@ -92,6 +93,7 @@ export class Database{
     this.tables=[];
     this.separator=";";
     this.changed=true;
+    this.sqlInitCode="";
   }
   createInMemory(commandsOnly){
     if(!commandsOnly){
@@ -102,6 +104,7 @@ export class Database{
       var t=this.tables[i];
       s=s.concat(t.createInMemory(commandsOnly));
     }
+    this.query(this.sqlInitCode);
     this.changed=false;
     return s;
   }

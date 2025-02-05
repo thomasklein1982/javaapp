@@ -7,14 +7,20 @@
     <Splitter :style="{flex: 1}" style="overflow: hidden;width: 100%;height: 100%;">
       <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
         <div style="overflow:auto;" :style="{flex: 1}">
-          <DatabaseRelation 
-            :key="i" 
-            v-for="(r,i) in relations"
-            :relation="r"
-            @trash="database.tables.splice(i,1)"
-          />
+          <template v-if="mode=='ui'">
+            <DatabaseRelation 
+              :key="i" 
+              v-for="(r,i) in relations"
+              :relation="r"
+              @trash="database.tables.splice(i,1)"
+            />
+          </template>
+          <template v-else>
+            <CodeMirrorEditor language="sql" v-model="database.sqlInitCode"/>
+          </template>
         </div>
         <div style="text-align: right">
+          <Button @click="mode=mode==='ui'? 'code':'ui'" icon="pi pi-arrow-right-arrow-left"/>
           <Button @click="$refs.dialogNewRelation.setVisible(true)" icon="pi pi-plus" label="Neue Relation"/>
         </div>
       </SplitterPanel>
@@ -47,7 +53,9 @@
             </div>
           </div>
         </div>
-        <Textarea spellcheck="false" :rows="6" v-model="sqlcommand" autoresize/>
+        <div style="height: 20ex">
+          <CodeMirrorEditor style="height: 100%" language="sql" v-model="sqlcommand"/>
+        </div>   
         <div style="text-align: right">
           <Button @click="recreateDatabase()" icon="pi pi-refresh"/> <Button @click="executeSQL()" icon="pi pi-play" label="SQL-Befehl ausführen"/>
         </div>
@@ -62,6 +70,7 @@
   import DatabaseRelation from "./DatabaseRelation.vue";
   import Textarea from 'primevue/textarea';
   import DatabaseNewRelationDialog from "./DatabaseNewRelationDialog.vue";
+  import CodeMirrorEditor from "./CodeMirrorEditor.vue";
   
   
   export default {
@@ -72,6 +81,7 @@
       return {
         show: false,
         sqlcommand: "",
+        mode: "ui",
         sqlExecution: {
           command: null,
           result: null,
@@ -103,6 +113,7 @@
         this.database.addTable(name);
       },
       recreateDatabase(){
+        this.sqlExecution.error=false;
         try{
           this.database.createInMemory();
           return true;
@@ -136,7 +147,8 @@
     components: {
       DatabaseRelation,
       Textarea,
-      DatabaseNewRelationDialog
+      DatabaseNewRelationDialog,
+      CodeMirrorEditor
     }
   }
   </script>

@@ -677,6 +677,7 @@ export class Project{
     return {
       clazzes: t,
       database: db,
+      databaseInitCode: this.database.sqlInitCode,
       css: this.css,
       assets: !excludeAssets? JSON.parse(JSON.stringify(this.assets)): this.assets.length>0,
       name: this.name,
@@ -696,6 +697,10 @@ export class Project{
   fromJSON(o){
     if(o.database){
       this.database.fromCSVString(o.database);
+    }
+    if(o.databaseInitCode){
+      this.database.sqlInitCode=o.databaseInitCode;
+      if(!this.database.sqlInitCode) this.database.sqlInitCode="";
     }
     if(o.css){
       this.css=o.css;

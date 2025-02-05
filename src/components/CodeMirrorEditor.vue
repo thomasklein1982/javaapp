@@ -11,6 +11,7 @@ import { EditorView, basicSetup } from "codemirror";
 import { css, cssCompletionSource } from "@codemirror/lang-css";
 import {html,htmlCompletionSource} from "@codemirror/lang-html";
 import { javascript,javascriptLanguage } from "@codemirror/lang-javascript";
+import { sql } from "@codemirror/lang-sql";
 import { lintGutter, linter, openLintPanel, closeLintPanel } from "@codemirror/lint";
 import {keymap} from "@codemirror/view";
 import {indentWithTab,redo,undo} from "@codemirror/commands";
@@ -55,6 +56,12 @@ export default {
       }else if(this.language==="javascript"||this.language==="js"){
         return {
           language: javascript(),
+          completionSource: null
+        }
+      }else if(this.language==="sql"){
+        console.log("sql",sql)
+        return {
+          language: sql(),
           completionSource: null
         }
       }
