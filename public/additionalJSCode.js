@@ -1513,6 +1513,7 @@ function additionalJSCode(){
       let x=comp.x-this.x;
       let y=comp.y-this.y;
       let a=180/Math.PI*Math.atan2(y,x);
+      if(a<0) a+=360;
       this.setDirection(a);
     }
     setRotation(angle){
