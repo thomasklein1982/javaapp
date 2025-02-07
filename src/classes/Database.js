@@ -121,7 +121,7 @@ export class Database{
      */
     for(let i=0;i<ast.statements.length;i++){
       let s=ast.statements[i];
-      if(!s.columns || !s.from || s.from.length===0) continue;
+      if(!s || !s.columns || !s.from || s.from.length===0) continue;
       let tables={};
       for(let j=0;j<s.from.length;j++){
         let t=s.from[j];
@@ -172,6 +172,7 @@ export class Database{
     return ast.toString();
   }
   query(sqlSource){
+    if(!sqlSource) return null;
     try{
       let prep;
       if(sqlSource.trim().toLowerCase().startsWith("insert")){

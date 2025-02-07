@@ -3208,7 +3208,7 @@ function additionalJSCode(){
         if(!(s instanceof alasqlX.Select)){
           continue;
         }
-        if(!s.columns || !s.from || s.from.length===0) continue;
+        if(!s || !s.columns || !s.from || s.from.length===0) continue;
         let tables={};
         for(let j=0;j<s.from.length;j++){
           let t=s.from[j];
