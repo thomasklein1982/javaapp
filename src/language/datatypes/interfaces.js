@@ -9,6 +9,7 @@ export function defineInterfaces(){
   defineComparable(Java.interfaces.Comparable);
   defineComparator(Java.interfaces.Comparator);
   defineRunnable(Java.interfaces.Runnable);
+  defineRealFunction(Java.interfaces.RealFunction);
 }
 
 function defineRunnable(clazz){
@@ -49,10 +50,31 @@ function defineComparator(clazz){
     args: [{name: "a",type: typeT}, {name: "b",type: typeT}],
     returnType: "int"
   },clazz,false,false);
-  // let c=new Clazz("T");
-  // c.isGeneric=true;
-  // m.typeParameters=[c];
-  // m.params.parameters[0].type.baseType=c;
-  // m.params.parameters[1].type.baseType=c;
 }
 
+function defineRealFunction(clazz){
+  let m=createMethod({
+    name: "apply",
+    args: [{name: "x",type: "double"}],
+    returnType: "double"
+  },clazz,false,false);
+}
+
+// function defineFunction(clazz){
+//   let T=new Clazz("T");
+//   T.cannotBeInstantiated=true;
+//   T.isGeneric=true;
+//   T.genericIndex=0;
+//   let R=new Clazz("R");
+//   R.cannotBeInstantiated=true;
+//   R.isGeneric=true;
+//   R.genericIndex=1;
+//   clazz.typeParameters=[T,R];
+//   let typeT=new Type(T,0);
+//   let typeR=new Type(R,0);
+//   let m=createMethod({
+//     name: "apply",
+//     args: [{name: "x",type: typeT}],
+//     returnType: typeR
+//   },clazz,false,false);
+// }

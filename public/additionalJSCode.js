@@ -1140,11 +1140,13 @@ function additionalJSCode(){
 
   class PrintStream{
     $constructor(){}
-    println(text){
+    async println(text){
       console.println(text);
+      await $Exercise.sleep(1);
     }
-    print(text){
+    async print(text){
       console.print(text);
+      await $Exercise.sleep(1);
     }
   }
 
@@ -2701,7 +2703,7 @@ function additionalJSCode(){
       }
       let row=this.rows[r-1];
       for(let i=0;i<this.colCount;i++){
-        row[i]=values.get(i);
+        row[i]=values[i];
       }
     }
     getColumn(c){
@@ -2722,7 +2724,7 @@ function additionalJSCode(){
         throw $new(Exception,"Die neue Spalte muss genau "+this.rowCount+" Einträge haben. Sie hat aber "+values.length+".");
       }
       for(let i=0;i<this.rowCount;i++){
-        this.rows[i][c-1]=values.get(i);
+        this.rows[i][c-1]=values[i];
       }
     }
     multiply(m){
@@ -2858,6 +2860,58 @@ function additionalJSCode(){
       }
       return this.components[pos-1];
     }
+    setFromVector(vector){
+      if(vector.getSize()!==this.size){
+        throw $new(Exception,"Die beiden Vektoren haben unterschiedliche Länge.");
+      }
+      for(let i=0;i<this.size;i++){
+        this.components[i]=vector.components[i];
+      }
+    }
+    getMaxComponent(){
+      let max=-1;
+      let pos=-1;
+      for(let i=0;i<this.size;i++){
+        let c=this.components[i];
+        if(pos<0 || c>max){
+          pos=i;
+          max=c;
+        }
+      }
+      return pos;
+    }
+    getMinComponent(){
+      let min=-1;
+      let pos=-1;
+      for(let i=0;i<this.size;i++){
+        let c=this.components[i];
+        if(pos<0 || c<min){
+          pos=i;
+          max=c;
+        }
+      }
+      return pos;
+    }
+    getMax(){
+      let m=this.components[0];
+      for(let i=1;i<this.size;i++){
+        let c=this.components[i];
+        if(c>m){
+          m=c;
+        }
+      }
+      return m;
+    }
+    getMin(){
+      let m=this.components[0];
+      for(let i=1;i<this.size;i++){
+        let c=this.components[i];
+        if(c<m){
+          m=c;
+        }
+      }
+      return m;
+    }
     getAsArray(){
       let array=$createArray("double",[this.size]);
       for(let i=0;i<this.size;i++){
@@ -2884,32 +2938,69 @@ function additionalJSCode(){
       t+="]";
       return t;
     }
-    scale(s){
-      let res=$new(Vector,this.size);
-      for(let i=0;i<this.size;i++){
-        res.components[i]=this.components[i]*s;
+    mul(v){
+      if(v.getSize()!==this.size){
+        throw $new(Exception,"Die beiden Vektoren haben unterschiedliche Länge.");
       }
-      return res;
+      //let res=$new(Vector,this.size);
+      for(let i=0;i<this.size;i++){
+        this.components[i]*=v.components[i];
+      }
+      return this;
+    }
+    applyMatrix(m){
+      if(m.colCount!==this.size || m.rowCount!==this.size){
+        throw $new(Exception,"Nur quadratische Matrizen können auf diesen Vektor angewendet werden.");
+      }
+      for(let i=0;i<m.rowCount;i++){
+        let e=0;
+        let row=m.rows[i];
+        for(let k=0;k<m.colCount;k++){
+          e+=row[k]*this.components[k];
+        }
+        this.components[i]=e;
+      }
+      return this;
+    }
+    scalarProduct(v){
+      if(v.getSize()!==this.size){
+        throw $new(Exception,"Die beiden Vektoren haben unterschiedliche Länge.");
+      }
+      let s=0;
+      for(let i=0;i<this.size;i++){
+        s+=this.components[i]*v.components[i];
+      }
+      return s;
+    }
+    scale(s){
+      for(let i=0;i<this.size;i++){
+        this.components[i]*=s;
+      }
+      return this;
+    }
+    async applyFunction(func){
+      for(let i=0;i<this.size;i++){
+        this.components[i]=await func.apply(this.components[i]);
+      }
+      return this;
     }
     add(v){
       if(v.size!==this.size){
         throw $new(Exception,"Der Vektor hat "+v.size+" Zeilen, er muss aber "+this.size+" Zeilen haben.");
       }
-      let res=$new(Vector,this.size);
       for(let i=0;i<this.size;i++){
-        res.components[i]=this.components[i]+v.components[i];
+        this.components[i]+=v.components[i];
       }
-      return res;
+      return this;
     }
     sub(v){
       if(v.size!==this.size){
         throw $new(Exception,"Der Vektor hat "+v.size+" Zeilen, er muss aber "+this.size+" Zeilen haben.");
       }
-      let res=$new(Vector,this.size);
       for(let i=0;i<this.size;i++){
-        res.components[i]=this.components[i]-v.components[i];
+        this.components[i]-=v.components[i];
       }
-      return res;
+      return this;
     }
     lengthSquared(){
       let s=0;
@@ -2921,7 +3012,7 @@ function additionalJSCode(){
     length(){
       return Math.sqrt(this.lengthSquared());
     }
-    getCopy(){
+    copy(){
       let v=$new(Vector,this.size);
       for(let i=0;i<this.size;i++){
         v.components[i]=this.components[i];
@@ -4577,6 +4668,7 @@ function additionalJSCode(){
   }
 
   function $getData(vname,v,template){
+    
     let dim=[];
     if(v.dimension>0){
       if(v.value){
@@ -4585,10 +4677,13 @@ function additionalJSCode(){
         dim.push(0);
       }
     }
+
     let type=v.type;
     let isPrimitive=true;
+    let constructorName=null;
+    if(v && v.value && v.value.constructor) constructorName=v.value.constructor.name;
     if(!type){
-      type=v.value.constructor.name;
+      type=constructorName;
       if(type==="Number"){
         type="double";
       }else if(type==="Boolean"){
@@ -4601,6 +4696,9 @@ function additionalJSCode(){
     }
     if(!isPrimitive &&  v.value && v.value.constructor){
       type=v.value.constructor.name
+    }
+    if(vname==="components" && template){
+      console.log("components 2",vname,v,type);
     }
     let d={
       n: vname,
@@ -4618,11 +4716,13 @@ function additionalJSCode(){
       if(v.dimension>0){
         d.v=[];
         let length=v.value.length;
+        let elType=type==="Array"? null: type;
         for(let i=0;i<length;i++){
           //name, dimension, type, value
           let value=v.value[i];
           let name="["+i+"]";
-          d.v[i]=$getData(name,{dimension:v.dimension-1,type,value}, name);
+
+          d.v[i]=$getData(name,{dimension:v.dimension-1,elType,value}, name);
         }
       }else{
         d.v={};

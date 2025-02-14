@@ -705,7 +705,7 @@ window.appJScode=function(){
           }
         });
         this.body.element=document.body;
-        this.body.element.style="padding: 0; margin: 0; width: 100%; height: 100%; overflow: hidden; user-select: none; -webkit-user-select: none";
+        this.body.element.style="padding: 0; margin: 0; width: 100%; height: 100%; overflow: hidden;";
         this.body.element.parentElement.style=this.body.element.style;
         
         var root=document.createElement("div");
@@ -721,7 +721,7 @@ window.appJScode=function(){
         let left=document.createElement("div");
         left.style="position: absolute; width: 30%; height: 100%; left: 0; top: 0; display: none; z-index: 100;";
         let right=document.createElement("div");
-        right.style="position: absolute; width: 100%; height: 100%; right: 0; top: 0; display: grid; box-sizing: border-box; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; padding: 1rem";
+        right.style="position: absolute; width: 100%; height: 100%; right: 0; top: 0; display: grid; box-sizing: border-box; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; padding: 1rem; user-select: none; -webkit-user-select: none";
         right.$canvas=this.canvas;
         this.body.right=right;
         root.appendChild(left);
@@ -2579,7 +2579,7 @@ window.appJScode=function(){
         if(!this.readInput) return;
         this.readInput.focus();
       };
-      this.element.style="font-family: monospace; font-size: 1rem; overscroll-behavior: none; width: 100%; height: 100%; background-color: #222222; color: white";
+      this.element.style="font-family: monospace; font-size: 1rem; overscroll-behavior: none; width: 100%; height: 100%; background-color: #222222; color: white;";
       this.element.className="console";
       this.items={};
       this.localItems={};

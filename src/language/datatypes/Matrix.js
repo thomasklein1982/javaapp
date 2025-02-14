@@ -1,3 +1,5 @@
+import { Clazz } from "../../classes/Clazz";
+import { Type } from "../../classes/Type";
 import { createMethod } from "../helper/createMethod";
 import { Java } from "../java";
 
@@ -116,7 +118,7 @@ export function defineMatrix(clazz){
       {name: "s", type: "double", info: "Der Faktor, mit dem die Matrix skaliert wird."}
     ],
     returnType: "Matrix",
-    info: "Mutipliziert alle Einträge dieser Matrix mit s."
+    info: "Multipliziert alle Einträge dieser Matrix mit s."
   },clazz,false,false);
   createMethod({
     name: "lengthSquared",
@@ -178,6 +180,13 @@ export function defineVector(clazz){
     info: "Legt die Einträge des Vektors fest."
   },clazz,false,false);
   createMethod({
+    name: "setFromVector",
+    args: [{
+      name: "v", type: "Vector", info: "Ein Vector, dessen Werte übernommen werden sollen."
+    }],
+    info: "Legt die Einträge des Vektors fest."
+  },clazz,false,false);
+  createMethod({
     name: "add",
     args: [
       {name: "v", type: "Vector", info: "Der Vektor, der addiert wird. Muss dieselbe Dimension wie dieser Vektor haben."}
@@ -223,7 +232,75 @@ export function defineVector(clazz){
     info: "Mutipliziert alle Einträge dieses Vektors mit s."
   },clazz,false,false);
   createMethod({
-    name: "getCopy",
+    name: "mul",
+    args: [
+      {name: "v", type: "Vector", info: "Ein Vektor, dessen Komponenten mit den Komponenten dieses Vektors multipliziert werden."}
+    ],
+    returnType: "Vector",
+    info: "Bildet das komponentenweise Produkt der beiden Vektoren."
+  },clazz,false,false);
+  createMethod({
+    name: "scalarProduct",
+    args: [
+      {name: "v", type: "Vector", info: "Der Vektor, mit dem das Skalarpdodukt gebildet wird."}
+    ],
+    returnType: "double",
+    info: "Berechnet das Skalarprodukt der beiden Vektoren."
+  },clazz,false,false);
+  createMethod({
+    name: "getMaxComponent",
+    args: [],
+    returnType: "int",
+    info: "Gibt die Position des größten Eintrags des Vektors zurück."
+  },clazz,false,false);
+  createMethod({
+    name: "getMinComponent",
+    args: [],
+    returnType: "int",
+    info: "Gibt die Position des kleinsten Eintrags des Vektors zurück."
+  },clazz,false,false);
+  createMethod({
+    name: "getMax",
+    args: [],
+    returnType: "double",
+    info: "Gibt den größten Eintrag des Vektors zurück."
+  },clazz,false,false);
+  createMethod({
+    name: "getMin",
+    args: [],
+    returnType: "double",
+    info: "Gibt den kleinsten Eintrags des Vektors zurück."
+  },clazz,false,false);
+  // let T=new Clazz("T");
+  // T.cannotBeInstantiated=true;
+  // T.isGeneric=true;
+  // T.genericIndex=0;
+  // let R=new Clazz("R");
+  // R.cannotBeInstantiated=true;
+  // R.isGeneric=true;
+  // R.genericIndex=1;
+  // clazz.typeParameters=[T,R];
+  // let typeT=new Type(T,0);
+  // let typeR=new Type(R,0);
+  
+  createMethod({
+    name: "applyFunction",
+    args: [
+      {name: "func", default: "(x)->{ return 0; }", type: "RealFunction"}
+    ],
+    returnType: "Vector",
+    info: "Wendet die Funktion auf jeden Eintrag des Vektors an und gibt das Ergebnis zurück."
+  },clazz,false,false);
+  createMethod({
+    name: "applyMatrix",
+    args: [
+      {name: "m", type: "Matrix"}
+    ],
+    returnType: "Vector",
+    info: "Wendet die Matrix auf den Vektor an und gibt den veränderten Vektor zurück."
+  },clazz,false,false);
+  createMethod({
+    name: "copy",
     args: [
     ],
     returnType: "Vector",
