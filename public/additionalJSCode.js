@@ -3283,6 +3283,8 @@ function additionalJSCode(){
       return true;
     }
     prepareStatement(sqlSource){
+      return sqlSource;
+      //dieses Vorgehen ist zu riskant. Problem: Doppelte Spalten kollabieren zu einer, müssen also manuell umbenannt werden. Beim Programmieren sollte das aber ein untergeordnetes Problem sein.
       /**muss kopiert werden in additionalJScode! */
       let ast=alasql.parse(sqlSource);
       /**untersucht die statements darauf, ob mehr als eine Tabelle abgefragt wird

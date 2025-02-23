@@ -109,6 +109,7 @@ export class Database{
     return s;
   }
   prepareStatement(sqlSource){
+    return sqlSource;
     /**muss kopiert werden in additionalJScode! */
     let ast=alasql.parse(sqlSource);
     /**untersucht die statements darauf, ob mehr als eine Tabelle abgefragt wird
