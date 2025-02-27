@@ -43,6 +43,14 @@ function defineDatabase(Clazz,Java){
     ],
   },Clazz,false,false,Java);
   createMethod({
+    name: "sqlError",
+    info: "Wendet einen SQL-Befehl auf die Datenbank an.\nWenn ein Fehler auftritt wird die Fehlermeldung zurückgegeben, ansonsten wird null zurückgegeben.",
+    returnType: "String",
+    args: [
+      {name: "sqlcommand", type: "String", info: "Der SQL-Befehl."}
+    ],
+  },Clazz,false,false,Java);
+  createMethod({
     name: "isEmpty",
     info: "Prüft, ob die Datenbank Tabellen enthält.",
     returnType: 'boolean',
