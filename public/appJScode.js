@@ -95,7 +95,16 @@ window.appJScode=function(){
         startTime: Date.now(),
         MAX_FRAMES: 1000000,
         customHandler: null,
+        updatePhysicalGamepads: function(){
+          let gps=navigator.getGamepads();
+          for(let i=0;i<gps.length;i++){
+            let g=gps[i];
+            if(!g) continue;
+            console.log(g);
+          }
+        },
         handler: async function(){
+          this.updatePhysicalGamepads();
           let dt=Date.now()-this.startTime;
           let k=Math.round(dt*this.FPS/1000);
           if(k>this.currentFrame){
@@ -915,13 +924,7 @@ window.appJScode=function(){
       }
     };
     
-    window.addEventListener("gamepadconnected", function(e) {
-      
-    });
     
-    window.addEventListener("gamepaddisconnected", function(e) {
-      
-    });
     
     $App.addMouseStateHandler=function(e){
       e.onmousedown=function(ev){

@@ -4000,9 +4000,51 @@ function additionalJSCode(){
       this.$running=false;
     }
   }
+  $App.$gamepads=[];
+
+  $App.getGamepadByIndex=function(index){
+    for(let i=0;i<$App.$gamepads.length;i++){
+      let g=$App.$gamepads[i];
+      if(!g.physicalGamepad) continue;
+      if(g.physicalGamepad.index===index){
+        return g;
+      }
+    }
+    return null;
+  };
+  $App.getGamepadWithoutPhysicalGamepad=function(index){
+    for(let i=0;i<$App.$gamepads.length;i++){
+      let g=$App.$gamepads[i];
+      if(!g.physicalGamepad) return g;
+    }
+    return null;
+  };
+
+  window.addEventListener("gamepadconnected", function(e) {
+    let gp=$App.getGamepadByIndex(e.gamepad.index);
+    if(gp){
+      gp.setPhysicalGamepad(e.gamepad);
+      console.log("gamepad connect again?",e.gamepad.index);
+      return;
+    }
+    gp=$App.getGamepadWithoutPhysicalGamepad();
+    if(!gp) return;
+    let gps=this.navigator.getGamepads();
+    
+    gp.setPhysicalGamepad(gps[e.gamepad.index]);
+    console.log("gamepad connect",e.gamepad.index);
+  });
+  
+  window.addEventListener("gamepaddisconnected", function(e) {
+    let gp=$App.getGamepadByIndex(e.gamepad.index);
+    if(!gp) return;
+    gp.setPhysicalGamepad(null);
+    console.log("gamepad disconnect",e.gamepad.index);
+  });
 
   class Gamepad{
     $constructor(){
+      $App.$gamepads.push(this);
       this.rootElement=document.body;
       this.buttonHandlers={};
       this.padding="0.5cm";
@@ -4010,6 +4052,11 @@ function additionalJSCode(){
       this.buttonSize=1;
       this.dpad=new DPad(this);
       this.$timeouts={};
+      this.settingsButton=document.createElement("div");
+      this.settingsButton.className="gamepad-button-settings";
+      this.settingsButton.style="cursor: pointer; position: absolute; font-size: 8pt; border-radius: 100%; background-color: gray";
+      this.settingsButton.innerHTML="&#9881;";
+      this.rootElement.appendChild(this.settingsButton);
       this.buttons={
         B: new GamepadButton(this,"B","B","yellow","black"),
         A: new GamepadButton(this,"A","A","red","black"),
@@ -4073,6 +4120,22 @@ function additionalJSCode(){
           });
         }
       }
+      this.setPhysicalGamepad(null);
+    }
+    setPhysicalGamepad(gamepad){
+      if(this.physicalGamepad){
+        this.physicalGamepad.gamepad=null;
+      }
+      if(!gamepad) this.physicalGamepad=null;
+      else{
+        this.physicalGamepad=gamepad;
+        gamepad.gamepad=this;
+      }
+      if(this.physicalGamepad){
+        this.settingsButton.style.display="";
+      }else{
+        this.settingsButton.style.display="none";
+      }
     }
     setKey(button,key){
       if(key.toLowerCase){
@@ -4115,6 +4178,8 @@ function additionalJSCode(){
       this.buttons.A.setBounds(x+" + "+this.width+" - "+this.padding,y+" + "+this.padding,this.buttonSize,-1,1);
       this.buttons.Y.setBounds(x+" + "+this.width+" - "+this.padding,y+" + "+this.padding,this.buttonSize,-3.4,1);
       this.buttons.X.setBounds(x+" + "+this.width+" - "+this.padding,y+" + "+this.padding,this.buttonSize,-2.2,2);
+      this.settingsButton.style.left="calc( "+x+" + "+this.width+" / 2 "+")";
+      this.settingsButton.style.bottom="calc( "+y+" + "+this.padding+" )";
     }
     setWidth(w){
       this.width=w;
@@ -4165,6 +4230,12 @@ function additionalJSCode(){
       return this.dpad.isPressed("w");
     }
     isAPressed(){
+      // if(this.physicalGamepadIndex>=0){
+      //   let g=navigator.getGamepads()[this.physicalGamepadIndex];
+      //   if(g.buttons[0].pressed){
+      //     return true;
+      //   }
+      // }
       return this.buttons.A.isPressed;
     }
     isBPressed(){
