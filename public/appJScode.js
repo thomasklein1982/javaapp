@@ -97,10 +97,14 @@ window.appJScode=function(){
         customHandler: null,
         updatePhysicalGamepads: function(){
           let gps=navigator.getGamepads();
+          let index=0;
           for(let i=0;i<gps.length;i++){
             let g=gps[i];
             if(!g) continue;
-            console.log(g);
+            let vg=$App.$gamepads[index];
+            index++;
+            if(!vg) return;
+            vg.updatePhysicalGamepad(g);
           }
         },
         handler: async function(){

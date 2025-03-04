@@ -402,6 +402,28 @@ export class Project{
           .dialog-footer-button{
             min-height: 2rem;
           }
+          .gamepad-button-settings{
+            opacity: 0.5;
+            background-color: gray;
+            font-size: 8pt; 
+            border-radius: 100%;
+            cursor: pointer;
+          }
+          .java-app-unselectable {
+            -webkit-user-select: none;
+            user-select: none;
+          }
+          .java-app-gamepad-settings-dialog{
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 101;
+            background-color: #121212;
+            color: white;
+            overflow: auto;
+          }
         }
         @keyframes pulse {
           0% {
