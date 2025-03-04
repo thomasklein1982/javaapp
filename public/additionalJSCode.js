@@ -4042,6 +4042,8 @@ function additionalJSCode(){
     isWaitingFor: null,
     pressKeyDialog: null,
     mapping: [],
+    axisLR: null,
+    axisUD: null,
     buttonIndices: null,
     gamepad: null,
     create(gamepad){
@@ -4056,7 +4058,13 @@ function additionalJSCode(){
         this.ui.removeChild(this.pressKeyDialog);
         this.isWaitingFor=null;
       };
+      let bRemove=document.createElement("button");
+      bRemove.textContent="Belegung entfernen";
+      bRemove.onclick=()=>{
+        this.capturePress(-1);
+      };
       this.pressKeyDialog.appendChild(b);
+      this.pressKeyDialog.appendChild(bRemove);
       this.ui=document.createElement("div");
       let cap=document.createElement("h2");
       cap.textContent="Gamepad-Einstellungen";
@@ -4064,19 +4072,51 @@ function additionalJSCode(){
       this.id=document.createElement("div");
       this.ui.appendChild(this.id);
       
-      let table=document.createElement("table");
+      div=document.createElement("div");
+      cap=document.createElement("h3");
+      cap.textContent="Analog-Stick";
+      this.ui.appendChild(cap);
+      cap=document.createElement("span");
+      cap.textContent="Horizontal:";
+      this.axisLR=document.createElement("select");
+      div.appendChild(cap);
+      div.appendChild(this.axisLR);
+      this.ui.appendChild(div);
+
+      div=document.createElement("div");
+      cap=document.createElement("span");
+      cap.textContent="Vertikal:";
+      this.axisUD=document.createElement("select");
+      div.appendChild(cap);
+      div.appendChild(this.axisUD);
+      this.ui.appendChild(div);
+
+      this.axisLR.onchange=(ev)=>{
+        this.mapping.leftRight=this.axisLR.selectedIndex;
+      };
+
+      this.axisUD.onchange=(ev)=>{
+        this.mapping.upDown=this.axisUD.selectedIndex;
+      };
+
+      cap=document.createElement("h3");
+      cap.textContent="Tastenbelegung";
+      this.ui.appendChild(cap);
+      let table=document.createElement("div");
+      table.className="java-app-gamepad-settings-dialog-table";
       this.ui.appendChild(table);
       this.buttonIndices={};
-      for(let a in gamepad.buttons){
-        let b=gamepad.buttons[a];
-        let row=document.createElement("tr");
+      let buttons=["Left", "Right", "Up", "Down","A","B","X","Y"]
+      for(let i=0;i<buttons.length;i++){
+        let b=buttons[i];
+        let row=document.createElement("div");
         table.appendChild(row);
-        let l=document.createElement("td");
-        l.textContent="Button "+b.name;
+        let l=document.createElement("span");
+        l.textContent=b;
         row.appendChild(l);
-        let td2=document.createElement("td");
-        td2.textContent=gamepad.getMappingIndex(b.name);
-        this.buttonIndices[b.name]=td2;
+        let td2=document.createElement("span");
+        td2.textContent=gamepad.getMappingIndex(b);
+        this.buttonIndices[b]=td2;
         row.appendChild(td2);
         row.onclick=()=>{
           this.ui.appendChild(this.pressKeyDialog);
@@ -4089,6 +4129,7 @@ function additionalJSCode(){
       this.ui.className="java-app-gamepad-settings-dialog";
 
       div=document.createElement("div");
+      div.style="margin-top: 0.5rem";
       this.ui.appendChild(div);
       let bSave=document.createElement("button");
       bSave.textContent="Speichern";
@@ -4103,16 +4144,16 @@ function additionalJSCode(){
       bSave.onclick=()=>{
         document.body.removeChild(this.ui);
         this.isWaitingFor=null;
-        this.gamepad.mapping.action=JSON.parse(JSON.stringify(this.mapping));
+        this.gamepad.mapping=JSON.parse(JSON.stringify(this.mapping));
         if(!this.allMappings) this.allMappings={};
         this.allMappings[this.gamepad.physicalGamepad.id]=JSON.parse(JSON.stringify(this.mapping));
         System.storage.saveObject(this.STORAGE,this.allMappings);
       };
     },
     capturePress(buttonNr){
-      let oldIndex=this.mapping.indexOf(this.isWaitingFor.button.name);
-      if(oldIndex>=0) delete this.mapping[oldIndex];
-      this.mapping[buttonNr]=this.isWaitingFor.button.name;
+      let oldIndex=this.mapping.action.indexOf(this.isWaitingFor.button);
+      if(oldIndex>=0) delete this.mapping.action[oldIndex];
+      this.mapping.action[buttonNr]=this.isWaitingFor.button;
       this.ui.removeChild(this.pressKeyDialog);
       this.isWaitingFor=null;
       this.updateUI();
@@ -4120,12 +4161,27 @@ function additionalJSCode(){
     updateUI(){
       for(let a in this.buttonIndices){
         let td=this.buttonIndices[a];
-        td.textContent=this.mapping.indexOf(a);
+        td.textContent=this.mapping.action.indexOf(a);
       }
+      let axes=this.gamepad.physicalGamepad.axes;
+      while(this.axisLR.firstChild) this.axisLR.removeChild(this.axisLR.firstChild);
+      while(this.axisUD.firstChild) this.axisUD.removeChild(this.axisUD.firstChild);
+      for(let i=0;i<axes.length;i++){
+        let o=document.createElement("option");
+        o.textContent=i;
+        o.value=i;
+        this.axisLR.appendChild(o);
+        o=document.createElement("option");
+        o.textContent=i;
+        o.value=i;
+        this.axisUD.appendChild(o);
+      }
+      this.axisLR.selectedIndex=this.mapping.leftRight;
+      this.axisUD.selectedIndex=this.mapping.upDown;
     },
     initUI(){
       this.id.textContent=this.gamepad.physicalGamepad.id;
-      this.mapping=JSON.parse(JSON.stringify(this.gamepad.mapping.action));
+      this.mapping=JSON.parse(JSON.stringify(this.gamepad.mapping));
       for(let a in this.buttonIndices){
         let td=this.buttonIndices[a];
         td.textContent=this.gamepad.getMappingIndex(a);
@@ -4161,8 +4217,8 @@ function additionalJSCode(){
               let gp=$App.$gamepads[i];
               if(gp.physicalGamepad){
                 let map=$App.gamepadSettingsDialog.allMappings[gp.physicalGamepad.id];
-                if(map){
-                  gp.mapping.action=JSON.parse(JSON.stringify(map));
+                if(map && map.action){
+                  gp.mapping=JSON.parse(JSON.stringify(map));
                 }
               }
             }
@@ -4173,7 +4229,8 @@ function additionalJSCode(){
       this.rootElement=document.body;
       this.mapping={
         action: ["A","B","X","Y"],
-        dir: ["left","right","up","down"]
+        upDown: 1,
+        leftRight: 0
       };
       this.physicalGamepadState=[];
       this.buttonHandlers={};
@@ -4265,37 +4322,18 @@ function additionalJSCode(){
     }
     updatePhysicalGamepad(gamepad){
       this.setPhysicalGamepad(gamepad);
-      for(let i=0;i<gamepad.buttons.length;i++){
-        let m=this.mapping.action[i];
-        //physical and virtual buttons:
-        let pb=gamepad.buttons[i];
-        if(!this.physicalGamepadState[i] && pb.pressed){
-          $App.$onGamepadButtonPress(this,i);
-        }
-        let vb=this.buttons[m];
-        if(pb.pressed){
-          console.log(gamepad.index,m,i,this.mapping.action);
-          if(vb){
-            vb.setPressed(true);
-          }
-        }else{
-          if(this.physicalGamepadState[i] && vb){
-            vb.setPressed(false);
-          }
-        }
-        this.physicalGamepadState[i]=pb.pressed;
-      }
+
       /*
       g.axes: Array mit double:
       oben/unten: 1: -1/1
       links/rechts: 0: -1/1
       */
 
-      if(gamepad.axes[0]<-0.9){
+      if(gamepad.axes[this.mapping.leftRight]<-0.4){
         this.dpad.buttons.w.setPressed(true);
         this.dpad.buttons.e.setPressed(false);
         this.physicalGamepadState.lr=-1;
-      }else if(gamepad.axes[0]>0.9){
+      }else if(gamepad.axes[this.mapping.leftRight]>0.4){
         this.dpad.buttons.w.setPressed(false);
         this.dpad.buttons.e.setPressed(true);
         this.physicalGamepadState.lr=1;
@@ -4306,11 +4344,11 @@ function additionalJSCode(){
           this.physicalGamepadState.lr=0;
         }
       }
-      if(gamepad.axes[1]<-0.9){
+      if(gamepad.axes[this.mapping.upDown]<-0.4){
         this.dpad.buttons.n.setPressed(true);
         this.dpad.buttons.s.setPressed(false);
         this.physicalGamepadState.ud=-1;
-      }else if(gamepad.axes[1]>0.9){
+      }else if(gamepad.axes[this.mapping.upDown]>0.4){
         this.dpad.buttons.n.setPressed(false);
         this.dpad.buttons.s.setPressed(true);
         this.physicalGamepadState.ud=1;
@@ -4321,6 +4359,34 @@ function additionalJSCode(){
           this.physicalGamepadState.ud=0;
         }
       }
+
+      let left=0,right=0,up=0,down=0;
+      for(let i=0;i<gamepad.buttons.length;i++){
+        let m=this.mapping.action[i];
+        //physical and virtual buttons:
+        let pb=gamepad.buttons[i];
+        if(!this.physicalGamepadState[i] && pb.pressed){
+          $App.$onGamepadButtonPress(this,i);
+        }
+        let vb;
+        if(m==="Left") vb=this.dpad.buttons.w;
+        else if(m==="Right") vb=this.dpad.buttons.e;
+        else if(m==="Up") vb=this.dpad.buttons.n;
+        else if(m==="Down") vb=this.dpad.buttons.s;
+        else vb=this.buttons[m];
+        if(pb.pressed){
+          if(vb){
+            vb.setPressed(true);
+          }
+        }else{
+          if(this.physicalGamepadState[i] && vb){
+            vb.setPressed(false);
+          }
+        }
+        this.physicalGamepadState[i]=pb.pressed;
+      }
+
+      
     }
     setPhysicalGamepad(gamepad){
       if(this.physicalGamepad===gamepad) return;
@@ -4332,8 +4398,8 @@ function additionalJSCode(){
       }
       if($App.gamepadSettingsDialog.allMappings){
         let map=$App.gamepadSettingsDialog.allMappings[gamepad.id];
-        if(map){
-          this.mapping.action=JSON.parse(JSON.stringify(map));
+        if(map && map.action){
+          this.mapping=JSON.parse(JSON.stringify(map));
         }
       }
     }

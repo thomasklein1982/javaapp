@@ -420,9 +420,63 @@ export class Project{
             right: 0;
             bottom: 0;
             z-index: 101;
-            background-color: #121212;
+            background-color: #222;
             color: white;
             overflow: auto;
+            padding: 0.5rem;
+          }
+          .java-app-gamepad-settings-dialog-table{
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            width: fit-content;
+            text-align: center;
+            gap: 0.5rem;
+          }
+          .java-app-gamepad-settings-dialog-table>div>span{
+            padding: 0.5rem;
+          }
+          .java-app-gamepad-settings-dialog-table>div{
+            border: 1pt solid white;
+          }
+          .java-app-gamepad-settings-dialog-table>div:nth-child(1){
+            grid-row: 2;
+            grid-column: 1;
+          }
+          .java-app-gamepad-settings-dialog-table>div:nth-child(2){
+            grid-row: 2;
+            grid-column: 3;
+          }
+          .java-app-gamepad-settings-dialog-table>div:nth-child(3){
+            grid-row: 1;
+            grid-column: 2;
+          }
+          .java-app-gamepad-settings-dialog-table>div:nth-child(4){
+            grid-row: 3;
+            grid-column: 2;
+          }
+          .java-app-gamepad-settings-dialog-table>div:nth-child(5){
+            grid-row: 6;
+            grid-column: 3;
+            background: red;
+            color: black;
+          }
+          .java-app-gamepad-settings-dialog-table>div:nth-child(6){
+            grid-row: 7;
+            grid-column: 2;
+            background: yellow;
+            color: black;
+          }
+          .java-app-gamepad-settings-dialog-table>div:nth-child(7){
+            grid-row: 5;
+            grid-column: 2;
+            background: blue;
+            color: white;
+          }
+          .java-app-gamepad-settings-dialog-table>div:nth-child(8){
+            grid-row: 6;
+            grid-column: 1;
+            background: green;
+            color: white;
           }
         }
         @keyframes pulse {
