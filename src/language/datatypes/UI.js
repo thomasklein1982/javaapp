@@ -400,13 +400,7 @@ function defineJComponent(Clazz,Java){
     ]
   },Clazz,false,false,Java);
   createMethod({
-    name: 'setAlign',
-    args: [
-      {name: 'align', type: 'String'}
-    ]
-  },Clazz,false,false,Java);
-  createMethod({
-    name: 'setAlignContent',
+    name: 'setAlignment',
     args: [
       {name: 'align', type: 'String'}
     ]
@@ -728,6 +722,18 @@ function defineJCheckBox(Clazz,Java){
       {type: 'String', name: 'label'}
     ]
   },Clazz,Java);
+  createMethod({
+    name: 'isChecked',
+    args: [
+    ],
+    returnType: "boolean"
+  }, Clazz, false,false);
+  createMethod({
+    name: 'setChecked',
+    args: [
+      {name: "c", default: "true", type: "boolean"}
+    ]
+  }, Clazz, false,false);
   Clazz.superClazz=Java.datatypes.JComponent;
   
 }

@@ -638,7 +638,7 @@ export class UIClazz extends Clazz{
         if(align!=="center"){
           align=align.substring(0,align.length-1).trim();
         }
-        let code=".setAlignContent('"+align+"');";
+        let code=".setAlignment('"+align+"');";
         newCode+="\n"+last+code;
       }
       if(c.attributes!==undefined){
@@ -673,7 +673,11 @@ export class UIClazz extends Clazz{
       if(c.value!==null && c.value!==undefined){
         let code;
         if(c.valueType==="Boolean"){
-          code=".setValue("+c.value+");";
+          if(c.type==="JCheckBox"){
+            code=".setChecked("+c.value+");";
+          }else{
+            code=".setValue("+c.value+");";
+          }
         }else{
           code=".setValue("+JSON.stringify(c.value)+");";
           if(options.exerciseMode){

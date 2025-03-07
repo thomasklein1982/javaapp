@@ -816,7 +816,9 @@ function additionalJSCode(){
     $App.customDialog.frame.style.transition="";
     $App.customDialog.frame.style.opacity=0;
     $App.customDialog.frame.style.transition="opacity 0.5s";
-    setTimeout(()=>{$App.customDialog.frame.style.opacity=1},10);
+    setTimeout(()=>{
+      $App.customDialog.frame.style.opacity=1;
+    },10);
   }
 
   App.alert=async function(message){
@@ -1353,15 +1355,11 @@ function additionalJSCode(){
   });
 
   class JComponent{
-    $constructor(x,y,width,height){
-      if(x===undefined) x=50;
-      if(y===undefined) y=50;
-      if(width===undefined) width=100;
-      if(height===undefined) height=100;
-      this.x=x;
-      this.y=y;
-      this.width=width;
-      this.height=height;
+    $constructor(){
+      this.x=0;
+      this.y=0;
+      this.width=1;
+      this.height=1;
       this.$el=null;
       this.actionCommand="";
       this.$eventListeners={};
@@ -1376,6 +1374,7 @@ function additionalJSCode(){
         flippedH: false,
         flippedV: false
       }
+      this.sizeChanged=true;
       this.setDirection(0);
 
     }
@@ -1481,11 +1480,15 @@ function additionalJSCode(){
       this.setVisible(false);
     }
     setVisible(v){
-      this.visible=v;
-      this.$el.visible=v;
+      if(!v){
+        this.$lastDisplayValue=this.$el.style.display;
+        this.$el.style.display="none";
+      }else{
+        this.$el.style.display=this.$lastDisplayValue;
+      }
     }
     isVisible(){
-      return this.$el.visible;
+      return this.$el.style.display!=="none";
     }
     setEnabled(v){
       this.$el.disabled=!v;
@@ -1499,7 +1502,7 @@ function additionalJSCode(){
       this.$el.value=v;
     }
     getValue(){
-      return this.$el.value+"";
+      return this.value+"";
     }
     setDirection(dir){
       if(dir>0) dir%=360;
@@ -1535,6 +1538,13 @@ function additionalJSCode(){
       if(this.transform.flippedV){
         parts.push("scaleY(-1)");
       }
+      if(this.parent instanceof Canvas){
+        if(this.parent.pixelWidth>0 && this.sizeChanged){
+          this.parent.applyDimensions(this.$el,this.width,this.height);
+          this.sizeChanged=false;
+        }
+        parts.push(this.parent.getTranslation(this.x,this.y,this.width,this.height));
+      }
       this.$el.style.transform=parts.join(" ");
     }
     move(d){
@@ -1557,9 +1567,10 @@ function additionalJSCode(){
     setX(v){
       this.x=v;
       this.$el.cx=v;
+      this.updateTransform();
     }
     getX(){
-      return this.$el.cx;
+      return this.x;
     }
     changeX(dx){
       this.setX(this.getX()+dx);
@@ -1570,9 +1581,10 @@ function additionalJSCode(){
     setY(v){
       this.y=v;
       this.$el.cy=v;
+      this.updateTransform();
     }
     getY(){
-      return this.$el.cy;
+      return this.y;
     }
     setBounds(x,y,width,height){
       this.setX(x+width/2);
@@ -1581,13 +1593,16 @@ function additionalJSCode(){
       this.setHeight(height);
     }
     setWidth(v){
+      if(v!==this.width) this.sizeChanged=true;
       this.width=v;
       this.$el.width=v;
+      this.updateTransform();
     }
     getWidth(){
       return this.$el.width;
     }
     setHeight(v){
+      if(v!==this.height) this.sizeChanged=true;
       this.height=v;
       this.$el.height=v;
     }
@@ -1632,11 +1647,27 @@ function additionalJSCode(){
     hasCSSClass(className){
       return this.$el.classList.contains(className);
     }
-    setAlign(a){
-      this.$el.align=a;
-    }
-    setAlignContent(a){
-      this.$el.alignContent=a;
+    setAlignment(v){
+      if(!v) v="";
+      v=v.trim().toLowerCase();
+      let parts=v.split(" ");
+      if(parts.indexOf("left")>=0){
+        this.$el.style.justifySelf="safe start";
+        //this.$el.style.textAlign="left";
+      }else if(parts.indexOf("right")>=0){
+        this.$el.style.justifySelf="safe end";
+        //this.$el.style.textAlign="right";
+      }else{
+        this.$el.style.justifySelf="safe center";
+        //this.$el.style.textAlign="center";
+      }
+      if(parts.indexOf("top")>=0){
+        this.$el.style.alignSelf="safe start";
+      }else if(parts.indexOf("bottom")>=0){
+        this.$el.style.alignSelf="safe end";
+      }else{
+        this.$el.style.alignSelf="safe center";
+      }
     }
     getPanel(){
       let p=this.$el.parentNode;
@@ -1714,51 +1745,29 @@ function additionalJSCode(){
     }
   }
 
-  
-
-  
-
-  class UIControlStatement{
-    $constructor(type){
-      this.type=type;
-      this.$el=document.createElement("span");
-      this.$el.style.display="none";
-      this.$el.component=this;
-      this.$el.appJSData={};
-      this.attachedComponents=[];
-    }
-    prepareForUpdate(){
-      this.removeAll();
-      window.$insertPosition=$getIndexOfComponentInParent(this.$el)+1;
-    }
-    attachComponent(c){
-      this.attachedComponents.push(c);
-    }
-    removeAll(){
-      for(var i=0;i<this.attachedComponents.length;i++){
-        var parent=this.attachedComponents[i].$el.parentNode;
-        parent.removeChild(this.attachedComponents[i].$el);
-      }
-      this.attachedComponents=[];
-    }
-  }
 
   class JButton extends JComponent{
-    $constructor(label,x,y,width,height){
-      super.$constructor(x,y,width,height);
+    $constructor(label){
+      super.$constructor();
       this.$standardCSSClasses+=" __jbutton";
       if(!label) label="";
-      this.$el=ui.button(label,x,y,width,height);
+      this.$el=document.createElement("button");
       this.$el.component=this;
       this.$triggerOnAction=true;
       this.$el.onclick = $handleOnAction;
       this.setCSSClass("");
+      this.setValue(label)
+    }
+    setValue(text){
+      this.value=text;
+      let v=$handleAssetsInString(text);
+      this.$el.innerHTML=v;
     }
   }
 
   class JImage extends JComponent{
-    async $constructor(url,x,y,width,height){
-      super.$constructor(x,y,width,height);
+    async $constructor(url){
+      super.$constructor();
       this.$standardCSSClasses+=" __jimage";
       let asset=$App.assets[url];
       this.$img=null;
@@ -1772,7 +1781,9 @@ function additionalJSCode(){
           this.url=url;
         }
       }
-      this.$el=ui.image(this.url,x,y,width,height);
+      this.$el=document.createElement("div");
+      this.$el.style.backgroundSize="100% 100%";
+      this.$el.style.backgroundRepeat="no-repeat";
       this.$imageData=null;
       this.$el.component=this;
       this.$el.onclick = $handleOnAction;
@@ -1804,8 +1815,22 @@ function additionalJSCode(){
         this.$img.src=this.url;
         await p;
       }
-      
+      this.setValue(this.url);
       return this;
+    }
+    setValue(v){
+      this.value=v;
+      let asset=$App.assets[v];
+      let url;
+      if(asset){
+        url=asset.url;
+        if(!url.startsWith("data:")){
+          url=(new URL(asset.url,document.baseURI)).href;
+        }
+      }else{
+        url=v;
+      }
+      this.$el.style.backgroundImage="url("+url+")";
     }
     setFlippedV(flip){
       this.transform.flippedV=flip;
@@ -1881,25 +1906,73 @@ function additionalJSCode(){
   }
 
   class JPanel extends JComponent{
-    $constructor(template,x,y,width,height){
-      super.$constructor(x,y,width,height);
+    $constructor(template){
+      super.$constructor();
       this.$standardCSSClasses+=" __jpanel";
       this.template=template;
-      this.$el=ui.panel(template,x,y,width,height);
+      this.$el=document.createElement("div");//ui.panel(template,x,y,width,height);
       this.$el.component=this;
       this.$el.onclick = $handleOnAction;
       this.lastRowAndColumnCount=null;
       this.setCSSClass("");
+      this.setLayout(template);
     }
-    setLayout(layout){
-      this.$el.setTemplate(layout);
+    setLayout(template){
+      if(!template){
+        this.$el.style.overflow="auto";
+        this.$el.style.display="";
+        return;
+      }
+      this.$el.style.display="grid";
+      this.$el.style.overflow="";
+      let teile=template.split("/");
+      for(let i=0;i<teile.length;i++){
+        var t=teile[i].trim();
+        if(/^\d+$/.test(t)){
+          teile[i]="repeat("+t+",minmax(0,1fr))";
+        }
+      }
+      if(teile.length===2){
+        this.$el.style.gridTemplateRows=teile[0];
+        this.$el.style.gridTemplateColumns=teile[1];
+      }else{
+        this.$el.style.gridTemplateColumns=teile[0];
+      }
+      this.$el.style.gridAutoRows="minmax(0,1fr)";
+      this.$el.style.display="grid"; 
+      this.$el.style.alignItems="stretch";
+      this.$el.style.justifyItems="stretch";
+      this.$el.style.gridColumnGap=0;
+      this.$el.style.gridRowGap=0;
+      this.$el.style.columnGap=0;
+      this.$el.style.rowGap=0;
+      this.$el.style.overflow="auto";
     }
-    add(comp,index){
-      this.$el.add(comp.$el,index);
+    async add(comp,index){
+      let el;
+      if(comp instanceof Canvas){
+        el=comp.wrapper;
+        setTimeout(()=>{
+          comp.resize(comp.wrapper.clientWidth,comp.wrapper.clientHeight);
+        },10);
+      }else{
+        el=comp.$el;
+      }
+      if(index>=0 && index<this.$el.childNodes.length){
+        this.$el.insertBefore(el,this.$el.childNodes[index]);
+      }else{
+        this.$el.appendChild(el);
+      }
     }
     remove(comp){
+      let el;
+      if(comp instanceof Canvas){
+        el=comp.wrapper;
+      }else{
+        el=comp.$el;
+      }
       try{
-        this.$el.removeChild(comp.$el);
+        this.$el.removeChild(el);
       }catch(e){
         return false;
       }
@@ -1917,7 +1990,7 @@ function additionalJSCode(){
       let n=this.$el.children.length;
       for(let i=0;i<n;i++){
         let c=this.$el.children[i];
-        if(c.component && !(c.component instanceof UIControlStatement)){
+        if(c.component){
           count++;
         }
       }
@@ -1928,7 +2001,7 @@ function additionalJSCode(){
       let n=this.$el.children.length;
       for(let i=0;i<n;i++){
         let c=this.$el.children[i];
-        if(c.component && !(c.component instanceof UIControlStatement)){
+        if(c.component){
           realIndex++;
         }
         if(realIndex===index){
@@ -1964,9 +2037,6 @@ function additionalJSCode(){
         let c=this.getChild(i);
         if(c===child){
           return index;
-        }
-        if(!(c instanceof UIControlStatement)){
-          index++;
         }
       }
       return -1;
@@ -2036,8 +2106,12 @@ function additionalJSCode(){
     $constructor(template){
       super.$constructor(template);
       this.$standardCSSClasses+=" __jframe";
-      this.$el.style="left: 0; right: 0; top: 0; bottom: 0; position: absolute;";
-      $App.canvas.addElement(this.$el,50,50,100,100);
+      this.$el.style.position="absolute";
+      this.$el.style.left="0";
+      this.$el.style.right="0";
+      this.$el.style.top="0";
+      this.$el.style.bottom="0";
+      $App.ui.appendChild(this.$el);
       $App.console.adaptSize();
       this.setCSSClass("");
     }
@@ -2093,7 +2167,7 @@ function additionalJSCode(){
     $constructor(){
       this.$el=document.createElement("iframe");
       this.$el.$HtmlPage=this;
-      $App.canvas.addElement(this.$el,50,50,100,100);
+      $App.ui.appendChild();
       this.$el.style="background-color: white; left: 0; top: 0; width: 100%; height: 100%; position: absolute;border: none;margin:0;padding:0;";
       $App.console.adaptSize();
     }
@@ -2169,15 +2243,19 @@ function additionalJSCode(){
   }
 
   class JLabel extends JComponent{
-    $constructor(text,x,y,width,height){
-      super.$constructor(x,y,width,height);
+    $constructor(text){
+      super.$constructor();
       this.$standardCSSClasses+=" __jlabel";
-      this.$el=ui.label(text,x,y,width,height);
+      this.$el=document.createElement("span");
       this.setValue(text);
       this.$el.component=this;
       this.$el.onclick = $handleOnAction;
       this.setCSSClass("");
-      this.setAlignContent("center");
+      this.setAlignment("center");
+    }
+    setValue(text){
+      let v=$handleAssetsInString(text);
+      this.$el.innerHTML=v;
     }
   }
 
@@ -2205,12 +2283,19 @@ function additionalJSCode(){
     }
     
     add(comp,index){
+      let el;
+      if(comp instanceof Canvas){
+        el=comp.wrapper;
+      }else{
+        el=comp.$el;
+      }
       if(index===undefined){
-        this.$el.appendChild(comp.$el);
+        this.$el.appendChild(el);
       }else{
         let ref=this.$el.children[index];
-        this.$el.insertBefore(comp.$el,ref);
+        this.$el.insertBefore(el,ref);
       }
+      comp.parent=this;
     }
     setInnerHTML(html){
       this.$el.innerHTML=html;
@@ -2279,8 +2364,8 @@ function additionalJSCode(){
     y;
     r;
     $constructor(x,y,r){
-      super.$constructor(x,y,r,r);
-      this.$el=ui.label("",x,y,r,r);
+      super.$constructor();
+      this.$el=document.createElement("div");
       this.$standardCSSClasses+=" __circle";
       this.x=x;
       this.y=y;
@@ -2293,67 +2378,190 @@ function additionalJSCode(){
   }
 
   class Canvas extends JPanel{
-    $constructor(minX,maxX,minY,maxY,x,y,width,height){
-      super.$constructor(x,y,width,height);
+    $constructor(minX,maxX,minY,maxY){
+      super.$constructor();
       //this.$standardCSSClasses="_java-app-canvas __jcomponent";
       this.$standardCSSClasses+=" __canvas";
-      if(this.$el && this.$el.parentNode) this.$el.parentNode.removeChild(this.$el);
-      this.$el=ui.canvas(maxX-minX,maxY-minY,x,y,width,height);
-      this.$el.style.touchAction="none";
+      //if(this.$el && this.$el.parentNode) this.$el.parentNode.removeChild(this.$el);
+      let wrapper=document.createElement("div");
+      this.wrapper=wrapper;
+      wrapper.className="__canvas-wrapper";
+      wrapper.style.touchAction="none";
+      // let canvas=document.createElement("canvas");
+      // this.canvas=canvas;
+      // wrapper.appendChild(this.canvas);
+      this.container=document.createElement("div");
+      wrapper.appendChild(this.container);
+      this.$el=this.container;
+      //this.$el=ui.canvas(maxX-minX,maxY-minY,x,y,width,height);
       this.$el.component=this;
+      this.pixelWidth=-1;
+      this.pixelHeight=-1;
+      this.axes={
+        x: {
+          min: minX, max: maxX
+        },
+        y: {
+          min: minY, max: maxY
+        }
+      };
+      this.lenX=this.axes.x.max-this.axes.x.min;
+      this.lenY=this.axes.y.max-this.axes.y.min;
+      this.fit={
+        left: 0,
+        bottom: 0,
+        width: 0,
+        height: 0,
+        sx: 1,
+        sy: 1
+      };
+
+      wrapper.resize=(ev)=>{
+        this.resize(wrapper.clientWidth,wrapper.clientHeight);
+
+      }
+      $App.resizeObserver.observe(wrapper);
+
+
       this.setCSSClass("");
-      this.setOrigin(-minX,-minY);
+      //this.setOrigin(-minX,-minY);
       this.$el.onclick = $handleOnAction;
       this.$triggerOnMouseMove=true;
       this.$triggerOnMouseDown=true;
       this.$triggerOnMouseUp=true;
-      let comp=$new(Circle,0,0,0.01);
-      this.mouse={
-        x: -1,
-        y: -1,
-        over: false,
-        comp
-      };
-      this.add(this.mouse.comp,0);
-      //this.$el.onpointermove=$handleOnPointerMove;
-      this.setTriggerOnMouseDown(true);
-      this.setTriggerOnMouseUp(true);
-      this.$el.addEventListener("pointerenter",(ev)=>{
-        try{
-          ev.target.releasePointerCapture(ev.pointerId);
-        }catch(e){}
-        this.mouse.over=true;
-        window.mousePressed=ev.buttons>0;
-        this.$updateMousePosition(ev);
-      },false);
-      this.$el.addEventListener("pointerdown",(ev)=>{
-        try{
-          ev.target.releasePointerCapture(ev.pointerId);
-        }catch(e){}
-        this.mouse.over=true;
-        window.mousePressed=true;
-        this.$updateMousePosition(ev);
-      },false);
-      this.$el.addEventListener("pointermove",(ev)=>{
-        try{
-          ev.target.releasePointerCapture(ev.pointerId);
-        }catch(e){}
-        this.mouse.over=true;
-        window.mousePressed=ev.buttons>0;
-        this.$updateMousePosition(ev);
-      },false);
-      this.$el.addEventListener("pointerup",(ev)=>{
-        this.mouse.over=true;
-        window.mousePressed=false;
-        this.$updateMousePosition(ev);
-      },false);
-      this.$el.addEventListener("pointerleave",(ev)=>{
-        try{
-          ev.target.releasePointerCapture(ev.pointerId);
-        }catch(e){}
-        this.mouse.over=false;
-        this.$updateMousePosition(ev);
-      },false);
+      // let comp=$new(Circle,0,0,0.01);
+      // this.mouse={
+      //   x: -1,
+      //   y: -1,
+      //   over: false,
+      //   comp
+      // };
+      // // this.add(this.mouse.comp,0);
+      // //this.$el.onpointermove=$handleOnPointerMove;
+      // this.setTriggerOnMouseDown(true);
+      // this.setTriggerOnMouseUp(true);
+      // this.$el.addEventListener("pointerenter",(ev)=>{
+      //   try{
+      //     ev.target.releasePointerCapture(ev.pointerId);
+      //   }catch(e){}
+      //   this.mouse.over=true;
+      //   window.mousePressed=ev.buttons>0;
+      //   this.$updateMousePosition(ev);
+      // },false);
+      // this.$el.addEventListener("pointerdown",(ev)=>{
+      //   try{
+      //     ev.target.releasePointerCapture(ev.pointerId);
+      //   }catch(e){}
+      //   this.mouse.over=true;
+      //   window.mousePressed=true;
+      //   this.$updateMousePosition(ev);
+      // },false);
+      // this.$el.addEventListener("pointermove",(ev)=>{
+      //   try{
+      //     ev.target.releasePointerCapture(ev.pointerId);
+      //   }catch(e){}
+      //   this.mouse.over=true;
+      //   window.mousePressed=ev.buttons>0;
+      //   this.$updateMousePosition(ev);
+      // },false);
+      // this.$el.addEventListener("pointerup",(ev)=>{
+      //   this.mouse.over=true;
+      //   window.mousePressed=false;
+      //   this.$updateMousePosition(ev);
+      // },false);
+      // this.$el.addEventListener("pointerleave",(ev)=>{
+      //   try{
+      //     ev.target.releasePointerCapture(ev.pointerId);
+      //   }catch(e){}
+      //   this.mouse.over=false;
+      //   this.$updateMousePosition(ev);
+      // },false);
+    }
+    resize(w,h){
+      if(w===undefined){
+        w=this.pixelWidth;
+        h=this.pixelHeight;
+      }
+      console.log("resize",w,h);
+      this.pixelWidth=w;
+      this.pixelHeight=h;
+      let dpr=window.devicePixelRatio||1;
+      if(this.sizePolicy==="stretch"){
+        this.fit.left=0;
+        this.fit.bottom=0;
+        this.fit.width=w;
+        this.fit.height=h;
+        this.fit.sx=w/this.lenX;
+        this.fit.sy=h/this.lenY;
+      }else{
+        if(w*this.lenY>=h*this.lenX){
+          let s=h/this.lenY;
+          let realW=this.lenX*s;
+          this.fit.left=(w-realW)/2;
+          this.fit.width=realW;
+          this.fit.height=h;
+          this.fit.sy=s;
+          this.fit.sx=s;
+        }else{
+          let s=w/this.lenX;
+          let realH=this.lenY*s;
+          this.fit.bottom=(h-realH)/2;
+          this.fit.height=realH;
+          this.fit.width=w;
+          this.fit.sy=s;
+          this.fit.sx=s;
+        }
+      }
+      
+      this.container.style.left=this.fit.left+"px";
+      this.container.style.bottom=this.fit.bottom+"px";
+      this.container.style.width=this.fit.width+"px";
+      this.container.style.height=this.fit.height+"px";
+
+      for(let i=0;i<this.container.childNodes.length;i++){
+        let c=this.container.childNodes[i];
+        c.component?.updateTransform();
+      }
+    }
+    applyDimensions(el,w,h){
+      let rw=w*this.fit.sx;
+      let rh=h*this.fit.sy;
+      el.style.width=rw+"px";
+      el.style.height=rh+"px";
+    }
+    getTranslation(x,y,w,h){
+      let rx=(x-this.axes.x.min-w/2)*this.fit.sx;
+      let ry=-(y-this.axes.y.min-h/2)*this.fit.sy;
+      return "translate("+rx+"px,"+ry+"px)";
+    }
+    add(comp,index){
+      let el;
+      if(comp instanceof Canvas){
+        el=comp.wrapper;
+      }else{
+        el=comp.$el;
+      }
+      if(index>=0 && index<this.container.childNodes.length){
+        this.container.insertBefore(el,this.container.childNodes[index]);
+      }else{
+        this.container.appendChild(el);
+      }
+      comp.parent=this;
+    }
+    remove(comp){
+      try{
+        this.container.removeChild(comp.$el);
+      }catch(e){
+        return false;
+      }
+      return true;
+    }
+    removeAll(){
+      if(this.container.replaceChildren){
+        this.container.replaceChildren();
+      }else{
+        this.container.innerHTML="";
+      }
     }
     setAxisX(min,max){
       this.$el.canvas.setAxisX(min,max);
@@ -2379,10 +2587,11 @@ function additionalJSCode(){
       this.mouse.comp.setY(y);
     }
     setSizePolicy(policy){
-      this.$el.setSizePolicy(policy);
+      this.sizePolicy=policy;
+      this.resize();
     }
     getSizePolicy(){
-      return this.$el.getSizePolicy();
+      return this.sizePolicy;
     }
     isMouseOver(){
       return this.mouse.over;
@@ -2414,9 +2623,6 @@ function additionalJSCode(){
         }
       }
       return null;
-    }
-    add(comp, index){
-      this.$el.canvas.add(comp.$el, index);
     }
     save(){
       this.$el.canvas.save();
@@ -2524,16 +2730,17 @@ function additionalJSCode(){
   }
 
   class JComboBox extends JComponent{
-    $constructor(options,x,y,width,height){
-      super.$constructor(x,y,width,height);
+    $constructor(options){
+      super.$constructor();
       this.$standardCSSClasses+=" __jcombobox";
       if(!options){
         options=[];
       }
-      this.$el=ui.select(options,x,y,width,height);
+      this.$el=document.createElement("select");
       this.$el.component=this;
       this.$el.onchange = $handleOnAction;
       this.setCSSClass("");
+      this.setOptions(options);
     }
     getSelectedIndex(){
       return this.$el.selectedIndex;
@@ -2541,8 +2748,25 @@ function additionalJSCode(){
     setSelectedIndex(index){
       this.$el.selectedIndex=index;
     }
+    setValue(text){
+      for(let i=0;i<this.$el.childNodes.length;i++){
+        let o=this.$el.childNodes[i];
+        if(o.innerHTML===text){
+          this.$el.selectedIndex=i;
+          return;
+        }
+      }
+    }
+    getValue(){
+      if(!this.$el.firstChild) return null;
+      return this.$el.childNodes[this.$el.selectedIndex]?.innerHTML+"";
+    }
     setOptions(options){
-      this.$el.options=options;
+      this.removeAllItems();
+      if(!options) return;
+      for(let i=0;i<options.length;i++){
+        this.addItem(options[i]);
+      }
     }
     addItem(item){
       let o=document.createElement("option");
@@ -2560,19 +2784,44 @@ function additionalJSCode(){
   }
 
   class JCheckBox extends JComponent{
-    $constructor(label,x,y,width,height){
-      super.$constructor(x,y,width,height);
+    $constructor(label){
+      super.$constructor();
       this.$standardCSSClasses+=" __jcheckbox";
-      this.$el=ui.input("checkbox",label,x,y,width,height);
+      this.$el=document.createElement("div");
+      let cb=document.createElement("input");
+      cb.type="checkbox";
+      var id=Math.floor(Math.random()*100000000);
+      cb.id="checkbox-"+id;
+      this.$el.style="display: inline-flex; text-align: center;align-items: center;justify-content: center;";
+      this.$el.appendChild(cb);
+      this.box=cb;
+      let lab=document.createElement("label");
+      lab.htmlFor=cb.id;
+      this.label=lab;
+      this.$el.appendChild(lab);
       this.$el.component=this;
       this.$el.onchange = $handleOnAction;
       this.setCSSClass("");
+      this.setValue(label);
+    }
+    isChecked(){
+      return this.box.checked;
+    }
+    setChecked(v){
+      this.box.checked=v;
+    }
+    setValue(v){
+      this.value=v;
+      this.label.innerHTML=v;
+    }
+    getValue(){
+      return this.value;
     }
   }
 
   class JTextComponent extends JComponent{
-    $constructor(x,y,width,height){
-      super.$constructor(x,y,width,height);
+    $constructor(){
+      super.$constructor();
       this.$standardCSSClasses+=" __jtextcomponent";
     }
     getSelectionStart(){
@@ -2591,30 +2840,40 @@ function additionalJSCode(){
     getPlaceholder(){
       return this.$el.placeholder;
     }
+    setValue(v){
+      this.$el.value=v;
+    }
+
+    getValue(){
+      return this.$el.value;
+    }
   }
 
   class JTextField extends JTextComponent{
-    $constructor(placeholder,type,x,y,width,height){
+    $constructor(placeholder,type){
       if(!type) type="text";
       if(!placeholder) placeholder="";
-      super.$constructor(x,y,width,height);
+      super.$constructor();
       this.$standardCSSClasses+=" __jtextfield";
-      this.$el=ui.input(type,placeholder,x,y,width,height);
-      this.$el.spellcheck=false;
+      this.$el=document.createElement("input");
+      this.$el.type=type;
+      this.$el.placeholder=placeholder;
+      this.$el.spellCheck=false;
       this.$el.component=this;
       this.$el.onchange = $handleOnAction;
       this.setCSSClass("");
+      this.setAlignment("left");
     }
-
   }
 
   class JTextArea extends JTextComponent{
-    $constructor(placeholder,x,y,width,height){
-      super.$constructor(x,y,width,height);
+    $constructor(placeholder){
+      super.$constructor();
       this.$standardCSSClasses+=" __jtextarea";
-      this.$el=ui.textarea(placeholder,x,y,width,height);
-      this.setAlignContent("top");
-      this.$el.spellcheck=false;
+      this.$el=document.createElement("textarea");//ui.textarea(placeholder,x,y,width,height);
+      this.$el.placeholder=placeholder;
+      this.setAlignment("top");
+      this.$el.spellCheck=false;
       this.$el.component=this;
       this.$el.onchange = $handleOnAction;
       this.setCSSClass("");
@@ -2625,22 +2884,123 @@ function additionalJSCode(){
   }
 
   class DataTable extends JComponent{
-    $constructor(x,y,width,height){
-      super.$constructor(x,y,width,height);
+    $constructor(){
+      super.$constructor();
       this.$standardCSSClasses+=" __datatable";
-      this.$el=ui.datatable(null,x,y,width,height);
+      let b=document.createElement("div");
+      let wrapper=document.createElement("div");
+      wrapper.style.overflow="auto";
+      wrapper.style.maxWidth="100%";
+      b.style.overflow="hidden";
+      wrapper.style.maxHeight="100%";
+      this.table=document.createElement("table");
+      this.table.className="__datatable_inner";
+      this.table.style.minWidth="100%";
+      this.table.style.minHeight="100%";
+      b._showIndex=false;
+        // Object.defineProperty(b, 'showIndex', {
+        //   set: function(v){
+        //     this._showIndex=v;
+        //     this.table.className=v? "__datatable_inner show-index": "__datatable_inner";
+        //   },
+        //   get: function(){
+        //     return this._showIndex;
+        //   }
+        // });
+      wrapper.appendChild(this.table);
+      b.appendChild(wrapper);
+      this.array=null;
+      this.rows=[];
+      this.$el=b;
       this.$el.component=this;
       this.$el.onclick = $handleOnAction;
       this.setCSSClass("");
+      this.value=-1;
     }
     setArray(array){
-      this.$el.array=array;
+      this.value=-1;
+      this.array=array;
+      // if(array instanceof $App.Array){
+      //   array=array.values;
+      // } 
+      while(this.table.firstChild){
+        this.table.removeChild(this.table.firstChild);
+      }
+      this.rows=[];
+      if(!array || array.length===0 || array[0]===null || array[0]===undefined) return;
+      let stripQuotationMarks=true;
+      let captions=document.createElement("tr");
+      let th=document.createElement("th");
+      th.textContent="INDEX";
+      captions.appendChild(th);
+      this.table.appendChild(captions);
+      for(let i=0;i<array.length;i++){
+        let obj=array[i];
+        if(obj===null || obj===undefined){
+          break;
+        }
+        if("$data" in obj){
+          obj=obj.$data;
+        }
+        let tr=document.createElement("tr");
+        this.rows.push(tr);
+        tr.index=i;
+        tr.onclick=()=>{
+          if(this.value===tr.index){
+            this.setSelectedIndex(-1);
+          }else{
+            this.setSelectedIndex(tr.index);
+          }
+        };
+        let td=document.createElement("td");
+        td.textContent=i;
+        tr.appendChild(td);
+        for(let a in obj){
+          let attr=obj[a];
+          if(!a || typeof attr==="function" || a.startsWith("$")){
+            continue;
+          }
+          if(i===0){
+            let captionTD=document.createElement("th");
+            if(stripQuotationMarks && a.charAt(0)==="'" && a.charAt(a.length-1)==="'"){
+              a=a.substring(1,a.length-1);
+            }
+            captionTD.innerHTML=(a+"").toUpperCase();
+            captions.appendChild(captionTD);
+          }
+          td=document.createElement("td");
+          td.innerHTML=attr+"";
+          tr.appendChild(td);
+        }
+        this.table.appendChild(tr);
+      }
     }
     getArray(){
-      return this.$el.array;
+      return this.array;
+    }
+    getValue(){
+      return this.value+"";
+    }
+    setValue(v){
+      this.setSelectedIndex(v*1);
+    }
+    setSelectedIndex(index){
+      if(this.value>=0){
+        var tr=this.rows[this.value];
+        if(tr){
+         tr.classList.remove("selected");
+        }
+      }
+      this.value=index;
+      if(index>=0){
+        var tr=this.rows[this.value];
+        if(tr){
+         tr.classList.add("selected");
+        }
+      }
     }
     getSelectedIndex(){
-      return this.$el.selectedIndex;
+      return this.value;
     }
   }
 

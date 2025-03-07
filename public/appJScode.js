@@ -373,8 +373,7 @@ window.appJScode=function(){
       },
       executedOnStart: false,
       animationFrame: null,
-      canvas: null,
-      world: null,
+      ui: null,
       showConsoleOnStart: true,
       hideConsoleIfUIPresentAfterSetup: false
     };
@@ -442,278 +441,14 @@ window.appJScode=function(){
       });
     }
     
-    $App.shareVariables=function(){
-      if(!this.$sharedVariables){
-        this.$sharedVariables={};
-      }
-      for(var i=0;i<arguments.length;i++){
-        this.$sharedVariables[arguments[i]]=null;
-      }
-    }
-
-    $App.alignSelf=function(el,align){
-      if(!el || !el.style) return;
-      if(align.h==="center"){
-        el.style.marginLeft="auto";
-        el.style.marginRight="auto";
-      }else if(align.h==="left"){
-        el.style.marginRight="auto";
-        el.style.marginLeft="";
-      }else{
-        el.style.marginLeft="auto";
-        el.style.marginRight="";
-      }
-      if(align.v==="middle"){
-        el.style.marginTop="auto";
-        el.style.marginBottom="auto";
-      }else if(align.v==="top"){
-        el.style.marginBottom="auto";
-        el.style.marginTop="";
-      }else{
-        el.style.marginTop="auto";
-        el.style.marginBottom="";
-      }
-    };
-
-    $App.createElement=function(tagname){
-      let el=document.createElement(tagname);
-      el.style.boxSizing="border-box";
-      
-      //el.style.position="absolute";
-      this.implementStyleGetterAndSetter(el);
-      el.appJSData={
-        oldDisplayValue: null,
-        cx: null,
-        cy: null,
-        width: null,
-        height: null,
-        align: $App.Canvas.$getAlignment("center"),
-        alignContent: $App.Canvas.$getAlignment("center")
-      };
-      el.updatePosition=function(cx,cy,width,height,align){
-        if(cx===undefined){
-          cx=this.appJSData.cx;
-          cy=this.appJSData.cy;
-          width=this.appJSData.width;
-          height=this.appJSData.height;
-          align=this.appJSData.align;
-        }
-        if(this.appJSData && this.appJSData.parent){
-          if(this.appJSData.parent.updateElementPosition){
-            this.appJSData.parent.updateElementPosition(this,cx,cy,width,height,align);
-          }
-        }else{
-          $App.canvas.updateElementPosition(this,cx,cy,width,height,align);
-        }
-      };
-      el.updateAlignContent=function(v){
-        var a=$App.Canvas.$getAlignment(v);
-        this.appJSData.alignContent=a;
-        // //TODO: Wenn der Inhalt zu groß ist, wird er abgeschnitten!
-        // for(var i=0;i<this.childNodes.length;i++){
-        //   var c=this.childNodes[i];
-        //   $App.alignSelf(c,a);
-        // }
-        if(a.h==="center"){
-          this.style.justifyContent="safe center";
-        }else if(a.h==="left"){
-          this.style.justifyContent="safe left";
-        }else if(a.h==="right"){
-          this.style.justifyContent="safe right";
-        }else{
-          this.style.justifyContent=null;
-        }
-        if(a.v==="middle"){
-          this.style.alignContent="safe center";
-        }else if(a.v==="top"){
-          this.style.alignContent="safe start";
-        }else if(a.v==="bottom"){
-          this.style.alignContent="safe end";
-        }else{
-          this.style.alignContent=null;
-        }
-      };
-      el.updateAlignContent();
-      Object.defineProperty(el,'align', {
-        set: function(v){
-          this.appJSData.align=$App.Canvas.$getAlignment(v);
-          this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height, this.appJSData.align);
-        },
-        get: function(){
-          return this.appJSData.align.h+" "+this.appJSData.align.v;
-        }
-      });
-      Object.defineProperty(el,'alignContent', {
-        set: function(v){
-          this.updateAlignContent(v);
-        },
-        get: function(){
-          return this.appJSData.align.h+" "+this.appJSData.align.v;
-        }
-      });
-      Object.defineProperty(el,'cx', {
-        set: function(v){
-          this.appJSData.cx=v;
-          this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height, this.appJSData.align);
-        },
-        get: function(){
-          return this.appJSData.cx;
-        }
-      });
-      Object.defineProperty(el,'cy', {
-        set: function(v){
-          this.appJSData.cy=v;
-          this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height, this.appJSData.align);
-        },
-        get: function(){
-          return this.appJSData.cy;
-        }
-      });
-      Object.defineProperty(el,'width', {
-        set: function(v){
-          this.appJSData.width=v;
-          this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height, this.appJSData.align);
-        },
-        get: function(){
-          return this.appJSData.width;
-        }
-      });
-      Object.defineProperty(el,'height', {
-        set: function(v){
-          this.appJSData.height=v;
-          this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height, this.appJSData.align);
-        },
-        get: function(){
-          return this.appJSData.height;
-        }
-      });
-      if(tagname==="select"){
-        el._options=el.options;
-        Object.defineProperty(el, 'options', {
-          set: function(options) { 
-            while(this.firstChild){
-              this.removeChild(this.firstChild);
-            }
-            for(let i=0;i<options.length;i++){
-              let opt=options[i];
-              let o=document.createElement("option");
-              o.innerHTML=opt;
-              this.appendChild(o);
-            }
-          },
-          get: function(){
-            return this._options;
-          }
-        });
-      }else if(tagname==="button"){
-        // el.addEventListener("click",function(ev){
-        //   if(window.onAction){
-        //     try{
-        //       ev.stopPropagation();
-        //       window.onAction(this);
-        //     }catch(e){
-        //       $App.handleException(e);
-        //     }
-        //   }
-        // });
-        el.appJSData.label="";
-        Object.defineProperty(el,'value', {
-          set: function(v){
-            this.appJSData.value=v;
-            this.innerHTML=v;
-            //this.updatePosition(this.appJSData.cx,this.appJSData.cy, this.appJSData.width, this.appJSData.height);
-          },
-          get: function(){
-            return this.appJSData.value;
-          }
-        });
-      }else if(tagname==="img"){
-        Object.defineProperty(el,'value', {
-          set: function(v){
-            this.appJSData.value=v;
-            var asset=$App.assets[v];
-            if(asset){
-              var url=asset.url;
-              if(!url.startsWith("data:")){
-                url=(new URL(asset.url,document.baseURI)).href;
-              }
-            }else{
-              var url=v;
-            }
-            this.src=url;
-          },
-          get: function(){
-            return this.appJSData.value;
-          }
-        });
-      }else if(tagname==="div"){
-        
-      }else if(tagname==="input"){
-        // Object.defineProperty(el,'value', {
-        //   set: function(v){
-        //     this.appJSData.value=v;
-        //     this.innerHTML=v;
-        //   },
-        //   get: function(){
-        //     return this.appJSData.value;
-        //   }
-        // });
-      }
-      Object.defineProperty(el, 'visible', {
-        set: function(v) {
-          if(this.appJSData.oldDisplayValue===null){
-            var d=this.style.display;
-            if(d==="none"){
-              d="";
-            }
-            this.appJSData.oldDisplayValue=d;
-          }
-          if(!v){
-            this.style.display="none";
-          }else{
-            this.style.display=this.appJSData.oldDisplayValue;
-          }
-        },
-        get: function(){
-          return this.style.display!=="none";
-        }
-      });
-      return el;
-    };
-    
-    $App.implementStyleGetterAndSetter=function(el){
-      el._style=el.style;
-      Object.defineProperty(el, 'style', {
-        set: function(s) {
-          let rules=s.split(";");
-          for(let i=0;i<rules.length;i++){
-            let r=rules[i].trim();
-            let kv=r.split(":");
-            if(kv.length===2){
-              this._style[kv[0]]=kv[1];
-            }
-          }
-        },
-        get: function(){
-          return this._style;
-        }
-      });
-    };
     
     $App.setup=async function(dontStart){
       this.loadAssets();
       
-      if(!$App.headLoaded && document.head){
-        var style=document.createElement("style");
-        document.head.appendChild(style);
-        style=style.sheet;
-        
-        $App.headLoaded=true;
-      }
       if(!dontStart && document.body){
         this.resizeObserver=new ResizeObserver((entries)=>{
           for(const entry of entries){
-            const boxSize=entry.borderBoxSize;
+            //const boxSize=entry.borderBoxSize;
             entry.target.resize();
           }
         });
@@ -728,25 +463,23 @@ window.appJScode=function(){
         root.id="app-root";
         
         this.body.element.appendChild(root);
-        this.canvas=new $App.Canvas(root,100,100,true);
-        this.canvas.isRootCanvas=true;
-        this.world=new $App.World(this.canvas);
         let left=document.createElement("div");
         left.style="position: absolute; width: 30%; height: 100%; left: 0; top: 0; display: none; z-index: 100;";
         let right=document.createElement("div");
-        right.style="position: absolute; width: 100%; height: 100%; right: 0; top: 0; display: grid; box-sizing: border-box; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; padding: 1rem; user-select: none; -webkit-user-select: none";
+        right.style="position: absolute; width: 100%; height: 100%; right: 0; top: 0; display: grid; box-sizing: border-box";
         right.$canvas=this.canvas;
         this.body.right=right;
         root.appendChild(left);
         root.appendChild(right);
         left.appendChild(this.console.element);
-        right.appendChild(this.canvas.container);
+        this.ui=document.createElement("div");
+        this.ui.className="main-ui-container";
+        this.ui.style="width: 100%; height: 100%;";
+        right.appendChild(this.ui);
         this.body.overlay=document.createElement("div");
         this.body.overlay.style="display: none; position: absolute; width: 100%; height: 100%; top: 0; right: 0; background-color: #00000030";
         right.appendChild(this.body.overlay);
         this.toast=new $App.Toast(right);
-        root.appendChild(this.help.element);
-        left.appendChild(this.help.helpButton);
         
         this.dialog.root=document.createElement("div");
         this.dialog.root.style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; background-color: #aaaa;";
@@ -826,43 +559,6 @@ window.appJScode=function(){
     $App.setWatchedObject=function(obj){
       this.watchedObject=obj;
     }
-
-    $App.setupApp=function(title,favicon,width,height,backgroundColor){
-      if(!this.body.element){
-        this.setupData={
-          title: title,
-          favicon: favicon,
-          width: width,
-          height: height,
-          backgroundColor
-        };
-        return;
-      }else{
-        if(typeof title==="object"){
-          favicon=title.favicon;
-          width=title.width;
-          height=title.height;
-          backgroundColor=title.backgroundColor;
-          title=title.title;
-        }
-      }
-      if(title){
-        var el=document.createElement("title");
-        el.textContent=title;
-        document.head.appendChild(el);
-      }
-      if(favicon){
-        el=document.createElement("link");
-        el.setAttribute("rel","icon");
-        el.setAttribute("href","data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>"+favicon+"</text></svg>");
-        document.head.appendChild(el);
-      }
-      if(!width) width=100;
-      if(!height) height=100;
-      if(!backgroundColor) backgroundColor="white";
-      this.canvas.setSize(width,height,this.body.width,this.body.height);
-      this.body.element.style.backgroundColor=backgroundColor;
-    }
     
     $App.asyncFunctionCall=async function(object,methodname,argumentsArray){
       return await object[methodname].apply(object,argumentsArray);
@@ -881,7 +577,7 @@ window.appJScode=function(){
       if(force===true || w!=$App.body.width || h>$App.body.height){
         $App.body.width=w;
         $App.body.height=h;
-        $App.canvas.resize(w,h);
+        //$App.canvas.resize(w,h);
       }else{
         $App.body.width=w;
         $App.body.height=h;
@@ -2953,7 +2649,7 @@ window.appJScode=function(){
         let parent=this.element.parentElement;
         if(parent){
           let right=parent.nextElementSibling;
-          if(!right.$canvas.isEmpty()){
+          if($App.ui.firstChild){
             this.setVisible(false);
           }
         }
@@ -2973,7 +2669,7 @@ window.appJScode=function(){
         if(parent){
           parent.style.zIndex=this.leftZIndex;
           let right=parent.nextElementSibling;
-          if(right.$canvas.isEmpty()){
+          if(!$App.ui.firstChild){
             right.style.width="0%";
             parent.style.width="100%";
           }else{

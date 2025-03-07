@@ -409,6 +409,41 @@ export class Project{
             border-radius: 100%;
             cursor: pointer;
           }
+          label{
+            user-select: none;
+            -webkit-user-select: none;
+          }
+          .__jcomponent{
+            max-width: 100%;
+            max-height: 100%;
+            overflow: auto;
+            display: inline-block;
+            box-sizing: border-box;
+          }
+          .__jtextfield{
+            min-width: 0;
+            width: 100%;
+          }
+          .__jtextarea{
+            width: 100%;
+            height: 100%;
+            resize: none;
+          }
+          .__canvas>.__jcomponent{
+            position: absolute;
+            left: 0;
+            bottom: 0;
+          }
+          .__canvas-wrapper{
+            contain: strict;
+            width: 100%;
+            height: 100%;
+          }
+          .__canvas{
+            position: absolute;
+            overflow: hidden;
+          }
+          .__
           .java-app-unselectable {
             -webkit-user-select: none;
             user-select: none;
