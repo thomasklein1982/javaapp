@@ -109,10 +109,10 @@ window.appJScode=function(){
         },
         handler: async function(){
           this.updatePhysicalGamepads();
-          let dt=Date.now()-this.startTime;
-          let k=Math.round(dt*this.FPS/1000);
-          if(k>this.currentFrame){
-            this.currentFrame=k;
+          let now=Date.now();
+          let dt=now-this.startTime;
+          if(dt*this.FPS>900){
+            this.startTime=now;
             if((window.onNextFrame||this.customHandler) && !$App.debug.paused && $App.enableOnNextFrame){
               if(this.customHandler){
                 try{
@@ -127,10 +127,6 @@ window.appJScode=function(){
                   $App.handleException(e);
                 }
               }
-            }
-            if(this.currentFrame>this.MAX_FRAMES){
-              this.currentFrame=0;
-              this.startTime=Date.now();
             }
           }
           

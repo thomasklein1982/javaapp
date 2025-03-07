@@ -2114,6 +2114,10 @@ function additionalJSCode(){
       $App.ui.appendChild(this.$el);
       $App.console.adaptSize();
       this.setCSSClass("");
+      if($App.hideConsoleIfUIPresentAfterSetup){
+        //hide console because of ui
+        $App.console.setVisible(false);
+      }
     }
   }
 
