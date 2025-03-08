@@ -256,7 +256,6 @@ export class Project{
         return null;
       };`;
       databaseCode+="$clearAlaSQL();\ntry{";
-      this.database.clear();
       let cmds=this.database.createInMemory(true);
       if(cmds && cmds.length>1){
         for(var i=0;i<cmds.length;i++){

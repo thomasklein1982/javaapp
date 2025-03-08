@@ -88,23 +88,29 @@ export class Database{
       }
     }
   }
-  clear(){
+  clear(saveInitCode){
     Database.clearFromMemory();
     this.tables=[];
     this.separator=";";
     this.changed=true;
-    this.sqlInitCode="";
+    if(!saveInitCode) this.sqlInitCode="";
   }
   createInMemory(commandsOnly){
     if(!commandsOnly){
       Database.clearFromMemory();
     }
     var s=[];
+    if(commandsOnly){
+      s.push(this.sqlInitCode+";\n");
+    }else{
+      this.query(this.sqlInitCode)
+    }
+    s.push();
     for(var i=0;i<this.tables.length;i++){
       var t=this.tables[i];
       s=s.concat(t.createInMemory(commandsOnly));
     }
-    this.query(this.sqlInitCode);
+    
     this.changed=false;
     return s;
   }
