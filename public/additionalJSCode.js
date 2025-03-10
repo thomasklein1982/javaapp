@@ -2551,6 +2551,7 @@ function additionalJSCode(){
         this.container.appendChild(el);
       }
       comp.parent=this;
+      comp.updateTransform();
     }
     remove(comp){
       try{
