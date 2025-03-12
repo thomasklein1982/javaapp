@@ -419,6 +419,9 @@ export class Project{
             display: inline-block;
             box-sizing: border-box;
           }
+          .__jlabel{
+            display: grid;
+          }
           .__jtextfield{
             min-width: 0;
             width: 100%;

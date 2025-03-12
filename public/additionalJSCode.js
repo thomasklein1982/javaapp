@@ -1480,8 +1480,11 @@ function additionalJSCode(){
       this.setVisible(false);
     }
     setVisible(v){
+      if(this.isVisible()==v) return;
       if(!v){
-        this.$lastDisplayValue=this.$el.style.display;
+        if(this.$el.style.display!=="none"){
+          this.$lastDisplayValue=this.$el.style.display;
+        }
         this.$el.style.display="none";
       }else{
         this.$el.style.display=this.$lastDisplayValue;
@@ -1653,20 +1656,26 @@ function additionalJSCode(){
       let parts=v.split(" ");
       if(parts.indexOf("left")>=0){
         this.$el.style.justifySelf="safe start";
+        this.$el.style.justifyItems="safe start";
         //this.$el.style.textAlign="left";
       }else if(parts.indexOf("right")>=0){
         this.$el.style.justifySelf="safe end";
+        this.$el.style.justifyItems="safe end";
         //this.$el.style.textAlign="right";
       }else{
         this.$el.style.justifySelf="safe center";
+        this.$el.style.justifyItems="safe center";
         //this.$el.style.textAlign="center";
       }
       if(parts.indexOf("top")>=0){
         this.$el.style.alignSelf="safe start";
+        this.$el.style.alignItems="safe start";
       }else if(parts.indexOf("bottom")>=0){
         this.$el.style.alignSelf="safe end";
+        this.$el.style.alignItems="safe end";
       }else{
         this.$el.style.alignSelf="safe center";
+        this.$el.style.alignItems="safe center";
       }
     }
     getPanel(){
