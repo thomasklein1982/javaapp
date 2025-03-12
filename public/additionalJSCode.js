@@ -1535,18 +1535,18 @@ function additionalJSCode(){
       if(angle!==0){
         parts.push("rotate("+(-angle)+"deg)");
       }
-      if(this.transform.flippedH){
-        parts.push("scaleX(-1)");
-      }
-      if(this.transform.flippedV){
-        parts.push("scaleY(-1)");
-      }
       if(this.parent instanceof Canvas){
         if(this.parent.pixelWidth>0 && this.sizeChanged){
           this.parent.applyDimensions(this.$el,this.width,this.height);
           this.sizeChanged=false;
         }
         parts.push(this.parent.getTranslation(this.x,this.y,this.width,this.height));
+      }
+      if(this.transform.flippedH){
+        parts.push("scaleX(-1)");
+      }
+      if(this.transform.flippedV){
+        parts.push("scaleY(-1)");
       }
       this.$el.style.transform=parts.join(" ");
     }
