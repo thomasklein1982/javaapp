@@ -435,6 +435,8 @@ export class Project{
             position: absolute;
             left: 0;
             bottom: 0;
+            max-width: none;
+            max-height: none;
           }
           .__canvas-wrapper{
             contain: strict;

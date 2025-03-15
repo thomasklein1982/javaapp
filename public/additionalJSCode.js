@@ -2403,9 +2403,9 @@ function additionalJSCode(){
       // let canvas=document.createElement("canvas");
       // this.canvas=canvas;
       // wrapper.appendChild(this.canvas);
-      this.container=document.createElement("div");
-      wrapper.appendChild(this.container);
-      this.$el=this.container;
+      let container=document.createElement("div");
+      wrapper.appendChild(container);
+      this.$el=container;
       //this.$el=ui.canvas(maxX-minX,maxY-minY,x,y,width,height);
       this.$el.component=this;
       this.pixelWidth=-1;
@@ -2511,6 +2511,7 @@ function additionalJSCode(){
           let s=h/this.lenY;
           let realW=this.lenX*s;
           this.fit.left=(w-realW)/2;
+          this.fit.bottom=0;
           this.fit.width=realW;
           this.fit.height=h;
           this.fit.sy=s;
@@ -2519,6 +2520,7 @@ function additionalJSCode(){
           let s=w/this.lenX;
           let realH=this.lenY*s;
           this.fit.bottom=(h-realH)/2;
+          this.fit.left=0;
           this.fit.height=realH;
           this.fit.width=w;
           this.fit.sy=s;
@@ -2526,14 +2528,16 @@ function additionalJSCode(){
         }
       }
       
-      this.container.style.left=this.fit.left+"px";
-      this.container.style.bottom=this.fit.bottom+"px";
-      this.container.style.width=this.fit.width+"px";
-      this.container.style.height=this.fit.height+"px";
+      this.$el.style.left=this.fit.left+"px";
+      this.$el.style.bottom=this.fit.bottom+"px";
+      this.$el.style.width=this.fit.width+"px";
+      this.$el.style.height=this.fit.height+"px";
 
-      for(let i=0;i<this.container.childNodes.length;i++){
-        let c=this.container.childNodes[i];
-        c.component?.updateTransform();
+      for(let i=0;i<this.$el.childNodes.length;i++){
+        let c=this.$el.childNodes[i];
+        if(!c || !c.component) continue;
+        c.component.sizeChanged=true;
+        c.component.updateTransform();
       }
     }
     applyDimensions(el,w,h){
@@ -2554,27 +2558,27 @@ function additionalJSCode(){
       }else{
         el=comp.$el;
       }
-      if(index>=0 && index<this.container.childNodes.length){
-        this.container.insertBefore(el,this.container.childNodes[index]);
+      if(index>=0 && index<this.$el.childNodes.length){
+        this.$el.insertBefore(el,this.$el.childNodes[index]);
       }else{
-        this.container.appendChild(el);
+        this.$el.appendChild(el);
       }
       comp.parent=this;
       comp.updateTransform();
     }
     remove(comp){
       try{
-        this.container.removeChild(comp.$el);
+        this.$el.removeChild(comp.$el);
       }catch(e){
         return false;
       }
       return true;
     }
     removeAll(){
-      if(this.container.replaceChildren){
-        this.container.replaceChildren();
+      if(this.$el.replaceChildren){
+        this.$el.replaceChildren();
       }else{
-        this.container.innerHTML="";
+        this.$el.innerHTML="";
       }
     }
     setAxisX(min,max){
