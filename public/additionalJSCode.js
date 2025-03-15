@@ -3,6 +3,7 @@
  * statt mit new Klasse(Parameter,...)*/
 
 
+
 function additionalJSCode(){
   window.mousePressed=false;
   window.addEventListener('DOMContentLoaded', ()=>{
@@ -1531,16 +1532,17 @@ function additionalJSCode(){
     }
     updateTransform(){
       let parts=[];
-      let angle=this.transform.rotation;
-      if(angle!==0){
-        parts.push("rotate("+(-angle)+"deg)");
-      }
+      
       if(this.parent instanceof Canvas){
         if(this.parent.pixelWidth>0 && this.sizeChanged){
           this.parent.applyDimensions(this.$el,this.width,this.height);
           this.sizeChanged=false;
         }
         parts.push(this.parent.getTranslation(this.x,this.y,this.width,this.height));
+      }
+      let angle=this.transform.rotation;
+      if(angle!==0){
+        parts.push("rotate("+(-angle)+"deg)");
       }
       if(this.transform.flippedH){
         parts.push("scaleX(-1)");
@@ -2384,9 +2386,10 @@ function additionalJSCode(){
       this.y=y;
       this.r=r;
       this.$el.style.borderRadius="100%";
-      this.$el.style.backgroundColor="gray";
+      this.$el.component=this;
       this.setWidth(r);
       this.setHeight(r);
+      this.setCSSClass("");
     }
   }
 
@@ -2442,53 +2445,53 @@ function additionalJSCode(){
       this.$triggerOnMouseMove=true;
       this.$triggerOnMouseDown=true;
       this.$triggerOnMouseUp=true;
-      // let comp=$new(Circle,0,0,0.01);
-      // this.mouse={
-      //   x: -1,
-      //   y: -1,
-      //   over: false,
-      //   comp
-      // };
-      // // this.add(this.mouse.comp,0);
-      // //this.$el.onpointermove=$handleOnPointerMove;
-      // this.setTriggerOnMouseDown(true);
-      // this.setTriggerOnMouseUp(true);
-      // this.$el.addEventListener("pointerenter",(ev)=>{
-      //   try{
-      //     ev.target.releasePointerCapture(ev.pointerId);
-      //   }catch(e){}
-      //   this.mouse.over=true;
-      //   window.mousePressed=ev.buttons>0;
-      //   this.$updateMousePosition(ev);
-      // },false);
-      // this.$el.addEventListener("pointerdown",(ev)=>{
-      //   try{
-      //     ev.target.releasePointerCapture(ev.pointerId);
-      //   }catch(e){}
-      //   this.mouse.over=true;
-      //   window.mousePressed=true;
-      //   this.$updateMousePosition(ev);
-      // },false);
-      // this.$el.addEventListener("pointermove",(ev)=>{
-      //   try{
-      //     ev.target.releasePointerCapture(ev.pointerId);
-      //   }catch(e){}
-      //   this.mouse.over=true;
-      //   window.mousePressed=ev.buttons>0;
-      //   this.$updateMousePosition(ev);
-      // },false);
-      // this.$el.addEventListener("pointerup",(ev)=>{
-      //   this.mouse.over=true;
-      //   window.mousePressed=false;
-      //   this.$updateMousePosition(ev);
-      // },false);
-      // this.$el.addEventListener("pointerleave",(ev)=>{
-      //   try{
-      //     ev.target.releasePointerCapture(ev.pointerId);
-      //   }catch(e){}
-      //   this.mouse.over=false;
-      //   this.$updateMousePosition(ev);
-      // },false);
+      let comp=$new(Circle,0,0,0.01);
+      this.mouse={
+        x: -1,
+        y: -1,
+        over: false,
+        comp
+      };
+      this.add(this.mouse.comp,0);
+      //this.$el.onpointermove=$handleOnPointerMove;
+      this.setTriggerOnMouseDown(true);
+      this.setTriggerOnMouseUp(true);
+      this.$el.addEventListener("pointerenter",(ev)=>{
+        try{
+          ev.target.releasePointerCapture(ev.pointerId);
+        }catch(e){}
+        this.mouse.over=true;
+        window.mousePressed=ev.buttons>0;
+        this.$updateMousePosition(ev);
+      },false);
+      this.$el.addEventListener("pointerdown",(ev)=>{
+        try{
+          ev.target.releasePointerCapture(ev.pointerId);
+        }catch(e){}
+        this.mouse.over=true;
+        window.mousePressed=true;
+        this.$updateMousePosition(ev);
+      },false);
+      this.$el.addEventListener("pointermove",(ev)=>{
+        try{
+          ev.target.releasePointerCapture(ev.pointerId);
+        }catch(e){}
+        this.mouse.over=true;
+        window.mousePressed=ev.buttons>0;
+        this.$updateMousePosition(ev);
+      },false);
+      this.$el.addEventListener("pointerup",(ev)=>{
+        this.mouse.over=true;
+        window.mousePressed=false;
+        this.$updateMousePosition(ev);
+      },false);
+      this.$el.addEventListener("pointerleave",(ev)=>{
+        try{
+          ev.target.releasePointerCapture(ev.pointerId);
+        }catch(e){}
+        this.mouse.over=false;
+        this.$updateMousePosition(ev);
+      },false);
     }
     resize(w,h){
       if(w===undefined){
@@ -2551,6 +2554,11 @@ function additionalJSCode(){
       let ry=-(y-this.axes.y.min-h/2)*this.fit.sy;
       return "translate("+rx+"px,"+ry+"px)";
     }
+    getPositionInCanvas(rx,ry){
+      let x=rx/this.fit.sx+this.axes.x.min;
+      let y=ry/this.fit.sy+this.axes.y.min;
+      return {x, y};
+    }
     add(comp,index){
       let el;
       if(comp instanceof Canvas){
@@ -2564,6 +2572,7 @@ function additionalJSCode(){
         this.$el.appendChild(el);
       }
       comp.parent=this;
+      comp.sizeChanged=true;
       comp.updateTransform();
     }
     remove(comp){
@@ -2588,7 +2597,7 @@ function additionalJSCode(){
       this.$el.canvas.setAxisY(min,max);
     }
     $updateMousePosition(ev){
-      let canvas=this.$el.canvas;
+      let canvas=this.mouse.comp.parent;
       let x = ev.offsetX;
       let y = ev.offsetY;
       let el=ev.srcElement;
@@ -2597,8 +2606,10 @@ function additionalJSCode(){
       let brTarget=el.getBoundingClientRect();
       x+=brTarget.left-brCanvas.left;
       y+=brTarget.top-brCanvas.top;
-      x=canvas.getCanvasX(x);
-      y=canvas.getCanvasY(y);
+      y=brCanvas.height-y;
+      let pos=canvas.getPositionInCanvas(x,y);
+      x=pos.x;
+      y=pos.y;
       this.mouse.x=x;
       this.mouse.y=y;
       this.mouse.comp.setX(x);
