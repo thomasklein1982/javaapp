@@ -2269,8 +2269,12 @@ function additionalJSCode(){
       this.setAlignment("center");
     }
     setValue(text){
+      this.value=text;
       let v=$handleAssetsInString(text);
       this.$el.innerHTML=v;
+    }
+    getValue(){
+      return this.value;
     }
   }
 
@@ -6395,7 +6399,8 @@ function additionalJSCode(){
       return comps;
     }
     static getUIRoot(){
-      return $App.canvas.container;
+      return $App.ui;
+      //return $App.canvas.container;
     }
     static sendMessage(type, data){
       if(window.parent){
