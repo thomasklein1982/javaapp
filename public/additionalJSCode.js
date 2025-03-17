@@ -1610,6 +1610,7 @@ function additionalJSCode(){
       if(v!==this.height) this.sizeChanged=true;
       this.height=v;
       this.$el.height=v;
+      this.updateTransform();
     }
     getHeight(){
       return this.$el.height;
@@ -1633,6 +1634,7 @@ function additionalJSCode(){
     setCSS(css){
       css=$handleAssetsInCSSCode(css);
       this.$el.style=css;
+      this.updateTransform();
     }
     setCSSClass(className){
       this.$el.className=this.$standardCSSClasses+" "+className;
@@ -1793,8 +1795,6 @@ function additionalJSCode(){
         }
       }
       this.$el=document.createElement("div");
-      this.$el.style.backgroundSize="100% 100%";
-      this.$el.style.backgroundRepeat="no-repeat";
       this.$imageData=null;
       this.$el.component=this;
       this.$el.onclick = $handleOnAction;
@@ -1842,6 +1842,11 @@ function additionalJSCode(){
         url=v;
       }
       this.$el.style.backgroundImage="url("+url+")";
+    }
+    setCSS(css){
+      let url=this.$el.style.backgroundImage;
+      super.setCSS(css);
+      this.$el.style.backgroundImage=url;
     }
     setFlippedV(flip){
       this.transform.flippedV=flip;

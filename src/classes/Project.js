@@ -344,6 +344,8 @@ export class Project{
           }
           .__jimage{
             justify-self: stretch;
+            background-size: 100% 100%;
+            backgroundRepeat: no-repeat;
           }
           .__jframe{
             background-color: white;
