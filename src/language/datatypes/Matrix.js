@@ -48,7 +48,8 @@ export function defineMatrix(clazz){
       {name: "c", type: "int", info: "Spaltennummer (beginnt mit 1)"},
       {name: "values", type: {baseType: "double", dimension: 1}, info: "Die neuen Werte für die Spalte."}
     ],
-    info: "Legt die Werte der c-ten Spalte fest."
+    info: "Legt die Werte der c-ten Spalte fest.",
+    returnType: "Matrix"
   },clazz,false,false);
   createMethod({
     name: "getColumn",
@@ -67,7 +68,8 @@ export function defineMatrix(clazz){
       {name: "r", type: "int", info: "Zeilennummer (beginnt mit 1)"},
       {name: "values", type: {baseType: "double", dimension: 1}, info: "Die neuen Werte für die Zeile."}
     ],
-    info: "Legt die Werte der r-ten Zeile fest."
+    info: "Legt die Werte der r-ten Zeile fest.",
+    returnType: "Matrix"
   },clazz,false,false);
   createMethod({
     name: "getRow",
@@ -79,6 +81,14 @@ export function defineMatrix(clazz){
       dimension: 1
     },
     info: "Gibt die r-te Zeile zurück."
+  },clazz,false,false);
+  createMethod({
+    name: "setFromMatrix",
+    args: [
+      {name: "m", type: "Matrix", info: "Eine andere Matrix mit denselben Dimensionen"}
+    ],
+    info: "Kopiert die Einträge der Matrix in diese Matrix.",
+    returnType: "Matrix"
   },clazz,false,false);
   createMethod({
     name: "multiply",
@@ -177,14 +187,16 @@ export function defineVector(clazz){
     args: [{
       name: "array", type: {baseType: "double", dimension: 1}, info: "Das Array, das die Einträge enthält."
     }],
-    info: "Legt die Einträge des Vektors fest."
+    info: "Legt die Einträge des Vektors fest.",
+    returnType: "Vector"
   },clazz,false,false);
   createMethod({
     name: "setFromVector",
     args: [{
       name: "v", type: "Vector", info: "Ein Vector, dessen Werte übernommen werden sollen."
     }],
-    info: "Legt die Einträge des Vektors fest."
+    info: "Legt die Einträge des Vektors fest.",
+    returnType: "Vector"
   },clazz,false,false);
   createMethod({
     name: "add",

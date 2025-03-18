@@ -1634,6 +1634,7 @@ function additionalJSCode(){
     setCSS(css){
       css=$handleAssetsInCSSCode(css);
       this.$el.style=css;
+      this.sizeChanged=true;
       this.updateTransform();
     }
     setCSSClass(className){
@@ -3104,6 +3105,7 @@ function additionalJSCode(){
       for(let i=0;i<this.colCount;i++){
         row[i]=values[i];
       }
+      return this;
     }
     getColumn(c){
       if(c<1 ||c>this.colCount){
@@ -3125,6 +3127,7 @@ function additionalJSCode(){
       for(let i=0;i<this.rowCount;i++){
         this.rows[i][c-1]=values[i];
       }
+      return this;
     }
     multiply(m){
       if(m.rowCount!==this.colCount){
@@ -3231,6 +3234,18 @@ function additionalJSCode(){
       }
       return M;
     }
+    setFromMatrix(m){
+      if(m.rowCount!==this.rowCount || m.colCount!==this.colCount){
+        throw $new(Exception,"Die Matrix hat "+m.rowCount+" Zeilen und "+m.colCount+" Spalten, sie muss aber "+this.rowCount+" Zeilen und "+this.colCount+" Spalten haben.");
+      }
+      for(let i=0;i<this.rowCount;i++){
+        let row=this.rows[i];
+        for(let j=0;j<this.colCount;j++){
+          row[j]=m.rows[i][j];
+        }
+      }
+      return this;
+    }
   }
 
   class Vector{
@@ -3266,6 +3281,7 @@ function additionalJSCode(){
       for(let i=0;i<this.size;i++){
         this.components[i]=vector.components[i];
       }
+      return this;
     }
     getMaxComponent(){
       let max=-1;
@@ -3325,6 +3341,7 @@ function additionalJSCode(){
       for(let i=0;i<array.length;i++){
         this.components[i]=array[i];
       }
+      return this;
     }
     toString(){
       let t="[";
