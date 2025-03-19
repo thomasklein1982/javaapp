@@ -13,6 +13,14 @@ export function defineMatrix(clazz){
     ]
   },clazz,false,true);
   createMethod({
+    name: "asString",
+    args: [
+      {name: "stellen", type: "int", info: "Anzahl Nachkommastellen", optional: true}
+    ],
+    returnType: "String",
+    info: "Liefert eine String-Repräsentation der Matrix zurück."
+  },clazz,false,false);
+  createMethod({
     name: "set",
     args: [
       {name: "r", type: "int", info: "Zeilennummer (beginnt mit 1)"},
@@ -91,6 +99,14 @@ export function defineMatrix(clazz){
     returnType: "Matrix"
   },clazz,false,false);
   createMethod({
+    name: "setToZero",
+    args: [
+      
+    ],
+    info: "Setzt alle Einträge der Matrix auf 0.",
+    returnType: "Matrix"
+  },clazz,false,false);
+  createMethod({
     name: "multiply",
     args: [
       {name: "m", type: "Matrix", info: "Die Matrix, mit der multipliziert wird. Muss so viele Zeilen haben wie diese Matrix Spalten hat."}
@@ -161,11 +177,27 @@ export function defineVector(clazz){
     ]
   },clazz,false,true);
   createMethod({
+    name: "setToZero",
+    args: [
+    ],
+    returnType: "Vector",
+    info: "Setzt alle Einträge des Vektors auf 0."
+  },clazz,false,false);
+  createMethod({
+    name: "asString",
+    args: [
+      {name: "stellen", type: "int", info: "Anzahl Nachkommastellen"}
+    ],
+    returnType: "String",
+    info: "Liefert eine String-Repräsentation des Vektors zurück."
+  },clazz,false,false);
+  createMethod({
     name: "set",
     args: [
       {name: "pos", type: "int", info: "Position im Vektor (beginnt mit 1)"},
       {name: "value", type: "double", info: "Neuer Wert an dieser Stelle"}
     ],
+    returnType: "Vector",
     info: "Legt den Eintrag an der Position pos fest."
   },clazz,false,false);
   createMethod({

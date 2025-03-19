@@ -3160,6 +3160,15 @@ function additionalJSCode(){
       }
       return res;
     }
+    setToZero(){
+      for(let i=0;i<this.rowCount;i++){
+        let row=this.rows[i];
+        for(let j=0;j<this.colCount;j++){
+          row[j]=0;
+        }
+      }
+      return this;
+    }
     add(m){
       if(m.rowCount!==this.rowCount || m.colCount!==this.colCount){
         throw $new(Exception,"Die Matrix hat "+m.rowCount+" Zeilen und "+m.colCount+" Spalten, sie muss aber "+this.rowCount+" Zeilen und "+this.colCount+" Spalten haben.");
@@ -3197,7 +3206,11 @@ function additionalJSCode(){
       }
       return res;
     }
-    toString(){
+    asString(stellen){
+      return this.toString(stellen);
+    }
+    toString(stellen){
+      if(stellen===undefined) stellen=2;
       let t="(";
       for(let i=0;i<this.rowCount;i++){
         if(i>0){
@@ -3205,7 +3218,7 @@ function additionalJSCode(){
         }
         for(let j=0;j<this.colCount;j++){
           if(j>0) t+=" ";
-          t+=this.rows[i][j].toFixed(2);
+          t+=this.rows[i][j].toFixed(stellen);
         }
       }
       t+=")";
@@ -3261,6 +3274,12 @@ function additionalJSCode(){
     }
     getSize(){
       return this.size;
+    }
+    setToZero(){
+      for(let i=0;i<this.size;i++){
+        this.components[i]=0;
+      }
+      return this;
     }
     set(pos,value){
       if(pos<1 || pos>this.size){
@@ -3343,13 +3362,17 @@ function additionalJSCode(){
       }
       return this;
     }
-    toString(){
+    asString(stellen){
+      return this.toString(stellen);
+    }
+    toString(stellen){
+      if(stellen===undefined) stellen=2;
       let t="[";
       for(let i=0;i<this.size;i++){
         if(i>0){
           t+=" ";
         }
-        t+=this.components[i].toFixed(2);
+        t+=this.components[i].toFixed(stellen);
       }
       t+="]";
       return t;
