@@ -1145,11 +1145,11 @@ function additionalJSCode(){
   class PrintStream{
     $constructor(){}
     async println(text){
-      console.println(text);
+      $App.console.log(text);
       await $Exercise.sleep(1);
     }
     async print(text){
-      console.print(text);
+      $App.console.print(text);
       await $Exercise.sleep(1);
     }
   }
@@ -1531,12 +1531,20 @@ function additionalJSCode(){
       this.updateTransform();
     }
     updateTransform(){
+      //TODO: Canvas-Element im Canvas-Element funktioniert nicht
       let parts=[];
       
       if(this.parent instanceof Canvas){
         if(this.parent.pixelWidth>0 && this.sizeChanged){
-          this.parent.applyDimensions(this.$el,this.width,this.height);
+          let el=this.$el;
+          if(this instanceof Canvas){
+            el=this.wrapper;
+          }
+          this.parent.applyDimensions(el,this.width,this.height); 
           this.sizeChanged=false;
+          if(this instanceof Canvas){
+            this.resize();
+          }
         }
         parts.push(this.parent.getTranslation(this.x,this.y,this.width,this.height));
       }
@@ -2321,6 +2329,7 @@ function additionalJSCode(){
         this.$el.insertBefore(el,ref);
       }
       comp.parent=this;
+    
     }
     setInnerHTML(html){
       this.$el.innerHTML=html;
@@ -2693,9 +2702,7 @@ function additionalJSCode(){
     setOrigin(x,y){
       this.$el.canvas.setOrigin(x,y);
     }
-    setSize(internalWidth,internalHeight,width,height){
-      this.$el.setSize(internalWidth,internalHeight,width,height);
-    }
+    
 
     setMirrored(m){
       this.$el.canvas.setMirrored(m);

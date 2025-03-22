@@ -165,7 +165,7 @@ for(let i=0;i<appjsdata.functions.length;i++){
 
 for(let name in appjsdata.objects){
   let o=appjsdata.objects[name];
-  text+="\nApp."+o.name+"="+o.name+";";
+  text+="\nApp."+o.name+"=window."+o.name+";";
 }
 
 window.appJScode=text;
