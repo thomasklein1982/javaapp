@@ -330,6 +330,7 @@ export class Project{
         ${window.appJScode}
         ${includeSave? '$App.hideConsoleIfUIPresentAfterSetup=true;':''}
         ${window.additionalJSCode}
+        ${window.peerJScode}
         ${databaseCode}
         ${assetsCode}
         window.$exerciseChecker=async()=>{};

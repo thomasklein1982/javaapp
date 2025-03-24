@@ -1695,7 +1695,7 @@ function additionalJSCode(){
     }
     getPanel(){
       let p=this.$el.parentNode;
-      if(p && p.component){
+      if(p && p.component && p.component!==this.$el.component){
         return p.component;
       }else{
         return null;
@@ -4113,6 +4113,20 @@ function additionalJSCode(){
     }
     static binarySearch(){
       
+    }
+  }
+
+  class NetworkSession{
+    $constructor(){
+      this.id=null;
+      this.isHost=false;
+      this.clientID=null;
+    }
+
+    start(sessionID, clientID, isHost){
+      this.id=sessionID;
+      this.clientID=clientID;
+      this.isHost=isHost;
     }
   }
 

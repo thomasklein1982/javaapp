@@ -177,6 +177,12 @@ text=text.substring(pos+1,pos2);
 additionalJSCode=text;
 
 
+text=(peerJScode+"");
+pos=text.indexOf("{");
+pos2=text.lastIndexOf("}");
+text=text.substring(pos+1,pos2);
+peerJScode=text;
+
 
 window.onmessage=function(message){
   let data=message.data;
