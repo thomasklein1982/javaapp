@@ -339,9 +339,6 @@ export class Project{
       </script>
       <style>
         @layer{
-          .__canvas{
-            container-type: size;
-          }
           .__jimage{
             justify-self: stretch;
             background-size: 100% 100%;
@@ -433,7 +430,13 @@ export class Project{
             height: 100%;
             resize: none;
           }
-          .__canvas>.__jcomponent,.__canvas>.__canvas-wrapper>.__jcomponent{
+          .__canvas{
+            contain: strict;
+            overflow: hidden;
+            container-type: size;
+            position: relative;
+          }
+          .__canvas>.__jcomponent,.__canvas>.__canvas-wrapper{
             position: absolute;
             left: 0;
             bottom: 0;
@@ -441,15 +444,10 @@ export class Project{
             max-height: none;
           }
           .__canvas-wrapper{
-            contain: strict;
-            width: 100%;
-            height: 100%;
+            display: flex;
+				    place-content: center;
           }
-          .__canvas{
-            position: absolute;
-            overflow: hidden;
-          }
-          .__
+          
           .java-app-unselectable {
             -webkit-user-select: none;
             user-select: none;

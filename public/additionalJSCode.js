@@ -1534,20 +1534,22 @@ function additionalJSCode(){
       //TODO: Canvas-Element im Canvas-Element funktioniert nicht
       let parts=[];
       
+      // if(this.parent instanceof Canvas){
+      //   if(this.parent.pixelWidth>0 && this.sizeChanged){
+      //     let el=this.$el;
+      //     if(this instanceof Canvas){
+      //       el=this.wrapper;
+      //     }
+      //     this.parent.applyDimensions(el,this.width,this.height); 
+      //     this.sizeChanged=false;
+      //     if(this instanceof Canvas){
+      //       this.resize();
+      //     }
+      //   }
       if(this.parent instanceof Canvas){
-        if(this.parent.pixelWidth>0 && this.sizeChanged){
-          let el=this.$el;
-          if(this instanceof Canvas){
-            el=this.wrapper;
-          }
-          this.parent.applyDimensions(el,this.width,this.height); 
-          this.sizeChanged=false;
-          if(this instanceof Canvas){
-            this.resize();
-          }
-        }
         parts.push(this.parent.getTranslation(this.x,this.y,this.width,this.height));
       }
+      //}
       let angle=this.transform.rotation;
       if(angle!==0){
         parts.push("rotate("+(-angle)+"deg)");
@@ -1558,7 +1560,9 @@ function additionalJSCode(){
       if(this.transform.flippedV){
         parts.push("scaleY(-1)");
       }
-      this.$el.style.transform=parts.join(" ");
+      let el;
+      if(this.wrapper) el=this.wrapper; else el=this.$el;
+      el.style.transform=parts.join(" ");
     }
     move(d){
       this.changeX(d*this.direction.dx);
@@ -1605,23 +1609,31 @@ function additionalJSCode(){
       this.setWidth(width);
       this.setHeight(height);
     }
-    setWidth(v){
-      if(v!==this.width) this.sizeChanged=true;
+    setWidth(v,force){
+      if(v===this.width && !force) return;
       this.width=v;
-      this.$el.width=v;
-      this.updateTransform();
+      if(!this.parent || !this.parent instanceof Canvas) { console.log("kein Canvas",this.parent); return;}
+      let w=100*v/this.parent.lenX;
+      let el;
+      if(this.wrapper) el=this.wrapper; else el=this.$el;
+      el.style.width=w+"cqmin";
+      el.style.left=(-w/2)+"cqmin";
     }
     getWidth(){
-      return this.$el.width;
+      return this.width;
     }
-    setHeight(v){
-      if(v!==this.height) this.sizeChanged=true;
+    setHeight(v, force){
+      if(v===this.height && !force) return;
       this.height=v;
-      this.$el.height=v;
-      this.updateTransform();
+      if(!this.parent || !this.parent instanceof Canvas) return;
+      let w=100*v/this.parent.lenY;
+      let el;
+      if(this.wrapper) el=this.wrapper; else el=this.$el;
+      el.style.height=w+"cqmin";
+      el.style.bottom=(-w/2)+"cqmin";
     }
     getHeight(){
-      return this.$el.height;
+      return this.height;
     }
     setSize(w,h){
       this.setWidth(w);
@@ -1977,9 +1989,6 @@ function additionalJSCode(){
       let el;
       if(comp instanceof Canvas){
         el=comp.wrapper;
-        setTimeout(()=>{
-          comp.resize(comp.wrapper.clientWidth,comp.wrapper.clientHeight);
-        },10);
       }else{
         el=comp.$el;
       }
@@ -2442,6 +2451,7 @@ function additionalJSCode(){
       };
       this.lenX=this.axes.x.max-this.axes.x.min;
       this.lenY=this.axes.y.max-this.axes.y.min;
+      this.$el.style.aspectRatio=this.lenX+"/"+this.lenY;
       this.fit={
         left: 0,
         bottom: 0,
@@ -2451,12 +2461,17 @@ function additionalJSCode(){
         sy: 1
       };
 
-      wrapper.resize=(ev)=>{
-        this.resize(wrapper.clientWidth,wrapper.clientHeight);
+      let resizeObserver=new ResizeObserver((entries)=>{
+        for(const entry of entries){
+          let size=entry.borderBoxSize[0];
+          entry.target.resize(size.inlineSize,size.blockSize);
+        }
+      });
+      resizeObserver.observe(this.wrapper);
 
+      this.wrapper.resize=(w,h)=>{
+        this.resize(w,h);
       }
-      $App.resizeObserver.observe(wrapper);
-
 
       this.setCSSClass("");
       //this.setOrigin(-minX,-minY);
@@ -2513,53 +2528,13 @@ function additionalJSCode(){
       },false);
     }
     resize(w,h){
-      if(w===undefined){
-        w=this.pixelWidth;
-        h=this.pixelHeight;
-      }
       console.log("resize",w,h);
       this.pixelWidth=w;
       this.pixelHeight=h;
-      let dpr=window.devicePixelRatio||1;
-      if(this.sizePolicy==="stretch"){
-        this.fit.left=0;
-        this.fit.bottom=0;
-        this.fit.width=w;
-        this.fit.height=h;
-        this.fit.sx=w/this.lenX;
-        this.fit.sy=h/this.lenY;
+      if(w*this.lenY>=h*this.lenX){
+        this.wrapper.style.flexDirection="";
       }else{
-        if(w*this.lenY>=h*this.lenX){
-          let s=h/this.lenY;
-          let realW=this.lenX*s;
-          this.fit.left=(w-realW)/2;
-          this.fit.bottom=0;
-          this.fit.width=realW;
-          this.fit.height=h;
-          this.fit.sy=s;
-          this.fit.sx=s;
-        }else{
-          let s=w/this.lenX;
-          let realH=this.lenY*s;
-          this.fit.bottom=(h-realH)/2;
-          this.fit.left=0;
-          this.fit.height=realH;
-          this.fit.width=w;
-          this.fit.sy=s;
-          this.fit.sx=s;
-        }
-      }
-      
-      this.$el.style.left=this.fit.left+"px";
-      this.$el.style.bottom=this.fit.bottom+"px";
-      this.$el.style.width=this.fit.width+"px";
-      this.$el.style.height=this.fit.height+"px";
-
-      for(let i=0;i<this.$el.childNodes.length;i++){
-        let c=this.$el.childNodes[i];
-        if(!c || !c.component) continue;
-        c.component.sizeChanged=true;
-        c.component.updateTransform();
+        this.wrapper.style.flexDirection="column";
       }
     }
     applyDimensions(el,w,h){
@@ -2569,9 +2544,9 @@ function additionalJSCode(){
       el.style.height=rh+"px";
     }
     getTranslation(x,y,w,h){
-      let rx=(x-this.axes.x.min-w/2)*this.fit.sx;
-      let ry=-(y-this.axes.y.min-h/2)*this.fit.sy;
-      return "translate("+rx+"px,"+ry+"px)";
+      let rx=100*(x-this.axes.x.min)/this.lenX;
+      let ry=-100*(y-this.axes.y.min)/this.lenY;
+      return "translate("+rx+"cqw,"+ry+"cqh)";
     }
     getPositionInCanvas(rx,ry){
       let x=rx/this.fit.sx+this.axes.x.min;
@@ -2580,7 +2555,7 @@ function additionalJSCode(){
     }
     add(comp,index){
       let el;
-      if(comp instanceof Canvas){
+      if(comp.wrapper){
         el=comp.wrapper;
       }else{
         el=comp.$el;
@@ -2591,7 +2566,8 @@ function additionalJSCode(){
         this.$el.appendChild(el);
       }
       comp.parent=this;
-      comp.sizeChanged=true;
+      comp.setWidth(comp.width,true);
+      comp.setHeight(comp.height,true);
       comp.updateTransform();
     }
     remove(comp){
@@ -2636,7 +2612,14 @@ function additionalJSCode(){
     }
     setSizePolicy(policy){
       this.sizePolicy=policy;
-      this.resize();
+      if(this.sizePolicy==="stretch"){
+        this.wrapper.style.placeContent="stretch";
+        this.$el.style.width="100%";
+        this.$el.style.height="100%";
+      }else{
+        this.wrapper.style.placeContent="center";
+      }
+      //this.resize();
     }
     getSizePolicy(){
       return this.sizePolicy;
