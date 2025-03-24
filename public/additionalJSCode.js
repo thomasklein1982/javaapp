@@ -673,7 +673,12 @@ function additionalJSCode(){
       footerAlert: document.createElement("div"),
       footerPrompt: document.createElement("div"),
       footerConfirm: document.createElement("div"),
-      resolve: null
+      resolve: null,
+      buttonAlertOK: null,
+      buttonPromptOK: null,
+      buttonPromptCancel: null,
+      buttonYes: null,
+      buttonNo: null
     };
     let ui=$App.customDialog;
     ui.backdrop.style="display: none";
@@ -685,12 +690,14 @@ function additionalJSCode(){
     ui.input.id="dialog-input";
     ui.input.style="display: none";
     ui.frame.appendChild(ui.input);
+    ui.input.onkeyup=function(ev){if(ev.keyCode===13) $clickDialogButton('prompt');};
     ui.footerAlert.className="dialog-footer";
     ui.footerAlert.id="dialog-footer-alert";
     let button=document.createElement("button");
     button.className="dialog-footer-button";
     button.onclick=function(){$clickDialogButton('alert')};
     button.innerHTML="OK";
+    ui.buttonAlertOK=button;
     ui.footerAlert.appendChild(button);
     ui.frame.appendChild(ui.footerAlert);
     
@@ -700,11 +707,13 @@ function additionalJSCode(){
     button.className="dialog-footer-button";
     button.onclick=function(){$clickDialogButton('yes')};
     button.innerHTML="Ja";
+    ui.buttonConfirmYes=button;
     ui.footerConfirm.appendChild(button);
     button=document.createElement("button");
     button.className="dialog-footer-button";
     button.onclick=function(){$clickDialogButton('no')};
     button.innerHTML="Nein";
+    ui.buttonConfirmNo=button;
     ui.footerConfirm.appendChild(button);
     ui.frame.appendChild(ui.footerConfirm);
 
@@ -714,6 +723,7 @@ function additionalJSCode(){
     button.className="dialog-footer-button";
     button.onclick=function(){$clickDialogButton('prompt')};
     button.innerHTML="OK";
+    ui.buttonPromptOK=button;
     ui.footerPrompt.appendChild(button);
     ui.frame.appendChild(ui.footerPrompt);
     document.body.appendChild(ui.backdrop);
@@ -819,16 +829,20 @@ function additionalJSCode(){
     $App.customDialog.frame.style.transition="opacity 0.5s";
     setTimeout(()=>{
       $App.customDialog.frame.style.opacity=1;
-    },10);
+    },100);
   }
 
   App.alert=async function(message){
     $setupDialog();
     $showDialog(message,"none","","none","none");
+    $App.customDialog.buttonAlertOK.focus();
     let p=new Promise((resolve,reject)=>{
       $App.customDialog.resolve=resolve;
     });
     let q=await p;
+    $App.customDialog.frame.style.transition="opacity 0.2s";
+    $App.customDialog.frame.style.opacity=0;
+    await $Exercise.sleep(200);
     $App.customDialog.backdrop.style.display="none";
   };
 
@@ -839,10 +853,14 @@ function additionalJSCode(){
     if(defaultValue!==undefined){
       $App.customDialog.input.value=defaultValue;
     }
+    $App.customDialog.input.focus();
     let p=new Promise((resolve,reject)=>{
       $App.customDialog.resolve=resolve;
     });
     let q=await p;
+    $App.customDialog.frame.style.transition="opacity 0.2s";
+    $App.customDialog.frame.style.opacity=0;
+    await $Exercise.sleep(200);
     $App.customDialog.backdrop.style.display="none";
     return q;
   };
@@ -858,6 +876,9 @@ function additionalJSCode(){
       $App.customDialog.resolve=resolve;
     });
     let q=await p;
+    $App.customDialog.frame.style.transition="opacity 0.2s";
+    $App.customDialog.frame.style.opacity=0;
+    await $Exercise.sleep(200);
     $App.customDialog.backdrop.style.display="none";
     return q;
   };
@@ -866,10 +887,14 @@ function additionalJSCode(){
     $setupDialog();
     $App.handleModalDialog();
     $showDialog(message,"none","none","none","");
+    $App.customDialog.buttonConfirmYes.focus();
     let p=new Promise((resolve,reject)=>{
       $App.customDialog.resolve=resolve;
     });
     let q=await p;
+    $App.customDialog.frame.style.transition="opacity 0.2s";
+    $App.customDialog.frame.style.opacity=0;
+    await $Exercise.sleep(200);
     $App.customDialog.backdrop.style.display="none";
     return q;
   };
