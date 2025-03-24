@@ -1613,7 +1613,7 @@ function additionalJSCode(){
       if(v===this.width && !force) return;
       this.width=v;
       if(!this.parent || !this.parent instanceof Canvas) { console.log("kein Canvas",this.parent); return;}
-      let w=100*v/this.parent.lenX;
+      let w=100*v/Math.min(this.parent.lenX,this.parent.lenY);
       let el;
       if(this.wrapper) el=this.wrapper; else el=this.$el;
       el.style.width=w+"cqmin";
