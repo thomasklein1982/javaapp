@@ -1533,17 +1533,19 @@ function additionalJSCode(){
     updateTransform(){
       //TODO: Canvas-Element im Canvas-Element funktioniert nicht
       let parts=[];
-      
+      let el;
+      if(this instanceof Canvas){
+        el=this.wrapper;
+      }else{
+        el=this.$el;
+      }
       if(this.parent instanceof Canvas){
         if(this.parent.pixelWidth>0 && this.sizeChanged){
-          let el=this.$el;
-          if(this instanceof Canvas){
-            el=this.wrapper;
-          }
-          this.parent.applyDimensions(el,this.width,this.height); 
+          this.parent.applyDimensions(el,this.width,this.height);
           this.sizeChanged=false;
           if(this instanceof Canvas){
-            this.resize();
+            let dim=this.parent.getDimensions(this.width,this.height);
+            this.resize(dim.w,dim.h);
           }
         }
         parts.push(this.parent.getTranslation(this.x,this.y,this.width,this.height));
@@ -1558,7 +1560,7 @@ function additionalJSCode(){
       if(this.transform.flippedV){
         parts.push("scaleY(-1)");
       }
-      this.$el.style.transform=parts.join(" ");
+      el.style.transform=parts.join(" ");
     }
     move(d){
       this.changeX(d*this.direction.dx);
@@ -1612,7 +1614,7 @@ function additionalJSCode(){
       this.updateTransform();
     }
     getWidth(){
-      return this.$el.width;
+      return this.width;
     }
     setHeight(v){
       if(v!==this.height) this.sizeChanged=true;
@@ -1621,7 +1623,7 @@ function additionalJSCode(){
       this.updateTransform();
     }
     getHeight(){
-      return this.$el.height;
+      return this.height;
     }
     setSize(w,h){
       this.setWidth(w);
@@ -2420,6 +2422,7 @@ function additionalJSCode(){
       //if(this.$el && this.$el.parentNode) this.$el.parentNode.removeChild(this.$el);
       let wrapper=document.createElement("div");
       this.wrapper=wrapper;
+      wrapper.component=this;
       wrapper.className="__canvas-wrapper";
       wrapper.style.touchAction="none";
       // let canvas=document.createElement("canvas");
@@ -2451,11 +2454,18 @@ function additionalJSCode(){
         sy: 1
       };
 
-      wrapper.resize=(ev)=>{
-        this.resize(wrapper.clientWidth,wrapper.clientHeight);
+      wrapper.resize=(w,h)=>{
+        this.resize(w,h);
 
       }
-      $App.resizeObserver.observe(wrapper);
+      let resizeObserver=new ResizeObserver((entries)=>{
+        for(const entry of entries){
+          const boxSize=entry.borderBoxSize[0];
+          entry.target.resize(boxSize.inlineSize,boxSize.blockSize);
+        }
+      });
+      resizeObserver.observe(this.wrapper);
+      //$App.resizeObserver.observe(wrapper);
 
 
       this.setCSSClass("");
@@ -2512,12 +2522,22 @@ function additionalJSCode(){
         this.$updateMousePosition(ev);
       },false);
     }
+    // setWidth(v){
+    //   if(v!==this.width) this.sizeChanged=true;
+    //   this.width=v;
+    //   this.wrapper.width=v;
+    //   this.updateTransform();
+    // }
+    // setHeight(v){
+    //   if(v!==this.height) this.sizeChanged=true;
+    //   this.height=v;
+    //   this.wrapper.height=v;
+    //   this.updateTransform();
+    // }
     resize(w,h){
-      if(w===undefined){
-        w=this.pixelWidth;
-        h=this.pixelHeight;
+      if(w===undefined || w<=0 || h <=0){
+        return;
       }
-      console.log("resize",w,h);
       this.pixelWidth=w;
       this.pixelHeight=h;
       let dpr=window.devicePixelRatio||1;
@@ -2561,6 +2581,11 @@ function additionalJSCode(){
         c.component.sizeChanged=true;
         c.component.updateTransform();
       }
+    }
+    getDimensions(w,h){
+      let rw=w*this.fit.sx;
+      let rh=h*this.fit.sy;
+      return {w: rw, h: rh};
     }
     applyDimensions(el,w,h){
       let rw=w*this.fit.sx;
@@ -2636,7 +2661,7 @@ function additionalJSCode(){
     }
     setSizePolicy(policy){
       this.sizePolicy=policy;
-      this.resize();
+      this.resize(this.pixelWidth,this.pixelHeight);
     }
     getSizePolicy(){
       return this.sizePolicy;

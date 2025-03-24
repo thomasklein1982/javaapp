@@ -433,7 +433,7 @@ export class Project{
             height: 100%;
             resize: none;
           }
-          .__canvas>.__jcomponent,.__canvas>.__canvas-wrapper>.__jcomponent{
+          .__canvas>.__jcomponent,.__canvas>.__canvas-wrapper{
             position: absolute;
             left: 0;
             bottom: 0;
