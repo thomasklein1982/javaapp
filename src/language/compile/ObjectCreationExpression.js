@@ -122,6 +122,9 @@ export function ObjectCreationExpression(node,source,scope,infos){
   }
   let al=ArgumentList(node,source,scope,clazz.getConstructorRealParameters(typeArguments),clazz.getConstructor(),owner);
   //al=ArgumentList(node,source,scope,method.getRealParameterList(owner.typeArguments),method,owner);
+  if(clazz.name==="NetworkSession"){
+    scope.project.includePeerJS=true;
+  }
   if(clazz.name==="JImage"){
     code="new "+typename.code;
     code="await $App.asyncFunctionCall("+code+"(),'$constructor',["+al.code.substring(1,al.code.length-1)+"])";

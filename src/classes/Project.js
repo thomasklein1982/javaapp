@@ -17,6 +17,7 @@ export class Project{
     this.css="";
     this.database=new Database();
     this.includeAlaSQL=false;
+    this.includePeerJS=false;
     this.assets=[];
     if(!name){
       name="MyApp";
@@ -231,6 +232,10 @@ export class Project{
   getFullAppCode(additionalCode, includeSave, dontCallMain, args, afterMainCallCode){
     if(!additionalCode) additionalCode="";
     this.date=new Date();
+    let peerJScode="";
+    if(this.includePeerJS){
+      peerJScode=window.peerJScode;
+    }
     let databaseCode="";
     if(this.includeAlaSQL){
       databaseCode+=alasql_code+"\nalasql_code();alasql.options.casesensitive=false;\n";
@@ -330,7 +335,7 @@ export class Project{
         ${window.appJScode}
         ${includeSave? '$App.hideConsoleIfUIPresentAfterSetup=true;':''}
         ${window.additionalJSCode}
-        ${window.peerJScode}
+        ${peerJScode}
         ${databaseCode}
         ${assetsCode}
         window.$exerciseChecker=async()=>{};
@@ -669,6 +674,7 @@ export class Project{
   async compile(fromSource,optimizeCompiler){
     app.log("compile project, fromSource="+fromSource+" clazzes="+this.clazzes.length);
     this.includeAlaSQL=false;
+    this.includePeerJS=false;
     /**
      * 1. Alle Klassendeklarationen parsen
      * 2. Alle Memberdeklarationen parsen

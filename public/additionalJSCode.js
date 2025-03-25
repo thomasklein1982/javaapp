@@ -4144,13 +4144,17 @@ function additionalJSCode(){
   class NetworkSession{
     $constructor(id){
       this.id=id;
-      this.isHost=false;
+      this._isServer=false;
       this.username=null;
       this.onMessage=null;
     }
 
+    isServer(){
+      return this._isServer;
+    }
+
     start(){
-      this.isHost=isHost;
+      this._isServer=true;
     }
 
     join(username){
