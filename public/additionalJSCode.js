@@ -4142,16 +4142,35 @@ function additionalJSCode(){
   }
 
   class NetworkSession{
-    $constructor(){
-      this.id=null;
+    $constructor(id){
+      this.id=id;
       this.isHost=false;
-      this.clientID=null;
+      this.username=null;
+      this.onMessage=null;
     }
 
-    start(sessionID, clientID, isHost){
-      this.id=sessionID;
-      this.clientID=clientID;
+    start(){
       this.isHost=isHost;
+    }
+
+    join(username){
+      this.username=username;
+    }
+
+    onMessage(handler){
+      this.onMessage=handler;
+    }
+
+    sendTo(username, message, header){
+
+    }
+
+    sendToAll(message, header){
+
+    }
+
+    sendToServer(message, header){
+
     }
   }
 
@@ -4431,6 +4450,15 @@ function additionalJSCode(){
     }
     getSource(){
       return this.source;
+    }
+  }
+
+  class MessageEvent{
+    $constructor(sender,header,message,time){
+      this.sender=sender;
+      this.header=header;
+      this.message=message;
+      this.time=time;
     }
   }
 

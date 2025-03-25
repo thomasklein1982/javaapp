@@ -312,7 +312,7 @@ export class UIClazz extends Clazz{
   }
 
   getUIPreviewCode(){
-    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;\n$App.console.hide();\nconsole.log('set onstart');setTimeout(async ()=>{await $App.setup();var sheet = window.document.styleSheets[0];sheet.insertRule('.__jcomponent:hover{ background: cyan;opacity: 0.5; }', sheet.cssRules.length);\nwindow.addEventListener('message',function(ev){if(ev.data.type==='select'){$changePreviewSelection(ev.data.id)}});\nconsole.log('start preview');\n(new "+this.name+"("+")).$constructor();},100);",false,true);
+    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;\n$App.console.hide();$App.showConsoleOnStart=false;\nconsole.log('set onstart');setTimeout(async ()=>{await $App.setup();var sheet = window.document.styleSheets[0];sheet.insertRule('.__jcomponent:hover{ background: cyan;opacity: 0.5; }', sheet.cssRules.length);\nwindow.addEventListener('message',function(ev){if(ev.data.type==='select'){$changePreviewSelection(ev.data.id)}});\nconsole.log('start preview');\n(new "+this.name+"("+")).$constructor();},100);",false,true);
     
     return code;
   }

@@ -13,10 +13,10 @@ export function LambdaExpression(node,source,scope,infos){
     inter=infos.assignTarget.type;
     typeArguments=inter.typeArguments;
   }else{
-    throw source.createError("An dieser Stelle kann kein Lamda-Ausdruck übergeben werden.",node);
+    throw source.createError("An dieser Stelle kann kein Lambda-Ausdruck übergeben werden.",node);
   }
   if(inter.dimension>0 || !inter.baseType.isInterface){
-    throw source.createError("An dieser Stelle kann kein Lamda-Ausdruck übergeben werden.",node);
+    throw source.createError("An dieser Stelle kann kein Lambda-Ausdruck übergeben werden.",node);
   }
   let methods=inter.baseType.methods;
   let mcount=0;

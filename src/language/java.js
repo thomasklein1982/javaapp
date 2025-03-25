@@ -33,6 +33,8 @@ import { defineThread } from "./datatypes/Thread.js";
 import { defineQueue } from "./datatypes/Queue.js";
 import { defineStack } from "./datatypes/Stack.js";
 import { defineHashMap } from "./datatypes/HashMap.js";
+import { defineNetworkSession } from "./datatypes/NetworkSession.js";
+import { defineMessageEvent } from "./datatypes/MessageEvent.js";
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
 let boolean=new PrimitiveType("boolean",null,false,"Ein 'boolean' (dt: 'Wahrheitswert') kann nur true oder false sein.",true);
@@ -48,12 +50,13 @@ const Double=new Clazz("Double");
 const Boolean=new Clazz("Boolean");
 const Char=new Clazz("Char");
 let ActionEvent=new Clazz("ActionEvent");
-
+let MessageEvent=new Clazz("MessageEvent");
 let ActionListener=new Clazz("ActionListener",undefined,true);
 let Comparable=new Clazz("Comparable",undefined,true);
 let Comparator=new Clazz("Comparator",undefined,true);
 let Runnable=new Clazz("Runnable",undefined,true);
 let RealFunction=new Clazz("RealFunction",undefined,true);
+let MessageHandler=new Clazz("MessageHandler",undefined,true);
 
 let JavaApp=new Clazz("JavaApp");
 //JavaApp.implementedInterfaces=[ActionListener];
@@ -98,8 +101,7 @@ let File=new Clazz("File");
 let Storage=new Clazz("Storage");
 Storage.staticConstructorMethod="create";
 
-let Session=new Clazz("Session");
-Session.cannotBeInstantiated=true;
+let NetworkSession=new Clazz("NetworkSession");
 
 let Matrix =new Clazz("Matrix");
 let Vector=new Clazz("Vector");
@@ -137,7 +139,7 @@ let Voice=new Clazz("Voice");
 let Thread=new Clazz("Thread");
 
 let datatypes={
-  ActionEvent,ActionListener,ArrayList,Boolean,Canvas,Char,Circle,Class,Comparable,Comparator,Console,DataTable,Database,Double,Exception,Field,File, Gamepad,HashMap,HTMLElement,HtmlPage,InputStream,Integer,JButton,JCheckBox,JComboBox,JComponent,JFrame,JImage,JLabel,JPanel,JSON,JTextArea,JTextComponent,JTextField,JavaApp,Matcher,Math,Matrix,Method,Object,Path,Pattern,PrintStream,Queue,Random, RealFunction,Runnable, Session,Sound,Stack,Storage,String,System,Thread,Time,Timer,UIClass,Vector,Voice,boolean,char,double,int,nullType
+  ActionEvent,ActionListener,ArrayList,Boolean,Canvas,Char,Circle,Class,Comparable,Comparator,Console,DataTable,Database,Double,Exception,Field,File, Gamepad,HashMap,HTMLElement,HtmlPage,InputStream,Integer,JButton,JCheckBox,JComboBox,JComponent,JFrame,JImage,JLabel,JPanel,JSON,JTextArea,JTextComponent,JTextField,JavaApp,Matcher,Math,Matrix,MessageEvent, MessageHandler, Method,NetworkSession,Object,Path,Pattern,PrintStream,Queue,Random, RealFunction,Runnable,Sound,Stack,Storage,String,System,Thread,Time,Timer,UIClass,Vector,Voice,boolean,char,double,int,nullType
 };
 
 //sortieren der Datentypen:
@@ -149,11 +151,11 @@ let datatypes={
 // console.log(array.toString());
 
 let clazzes={
-  nullType,Object, String, Math, Gamepad, Time, Console, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Pattern, Matcher, File, Storage, Session, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, HtmlPage, Sound, Exception, Integer, Double, Char, Boolean, JFrame, JavaApp, InputStream, Comparable, Comparator, ActionEvent, Timer, JSON, Random, UIClass, Class, Field, Method, Voice, Thread, Queue, Stack, HashMap, Circle, Runnable, RealFunction
+  nullType,Object, String, Math, Gamepad, Time, Console, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Pattern, Matcher, File, Storage, NetworkSession, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, HtmlPage, Sound, Exception, Integer, Double, Char, Boolean, JFrame, JavaApp, InputStream, Comparable, Comparator, ActionEvent, Timer, JSON, Random, UIClass, Class, Field, Method, Voice, Thread, Queue, Stack, HashMap, Circle, Runnable, RealFunction, MessageEvent, MessageHandler
 }
 
 let interfaces={
-  ActionListener, Comparable, Comparator, RealFunction, Runnable
+  ActionListener, Comparable, Comparator, MessageHandler, RealFunction, Runnable
 }
 
 export const Java={
@@ -179,6 +181,7 @@ Boolean.cannotBeInstantiated=true;
 boolean.setWrapperClass(Boolean);
 defineMath(Math,Java);
 defineActionEvent(ActionEvent);
+defineMessageEvent(MessageEvent);
 definePrintStream(PrintStream);
 defineInputStream(InputStream);
 defineSystem(System);
@@ -189,7 +192,7 @@ defineGenericClazz(Console,appjsdata.objects.console,Java);
 defineGenericClazz(Path,appjsdata.objects.path,Java);
 
 defineGenericClazz(Time,appjsdata.objects.time,Java);
-defineGenericClazz(Session,appjsdata.objects.session,Java);
+//defineGenericClazz(Session,appjsdata.objects.session,Java);
 defineStorage(Storage);
 defineUIClazzes(Java);
 defineDatabaseClazzes(Java);
@@ -211,6 +214,7 @@ defineInterfaces();
 defineReflectionAPI();
 defineVoice(Voice);
 defineThread(Thread);
+defineNetworkSession(NetworkSession);
 
 for(let v in clazzes){
   let c=clazzes[v];
