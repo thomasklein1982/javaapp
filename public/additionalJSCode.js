@@ -1093,6 +1093,10 @@ function additionalJSCode(){
     onAction(){}
   }
 
+  class MessageListener{
+    onMessage(){}
+  }
+
   class Integer{
     constructor(v){
       this.value=v;
@@ -1628,7 +1632,7 @@ function additionalJSCode(){
     }
     setBounds(x,y,width,height){
       this.setX(x+width/2);
-      this.setY(y+width/2);
+      this.setY(y+height/2);
       this.setWidth(width);
       this.setHeight(height);
     }
@@ -4146,7 +4150,17 @@ function additionalJSCode(){
       this.id=id;
       this._isServer=false;
       this.username=null;
-      this.onMessage=null;
+      this.messageListener=null;
+      this.peerID=this.getPeerID();
+      this.connectionsToClients={};
+      this.newConnectionsToClients={};
+      this.peer=null;
+    }
+
+    getPeerID(){
+      var loc=location.toString();
+      loc=loc.replace(/\W/g,"");
+      return loc+"-"+this.sessionID;
     }
 
     isServer(){
@@ -4155,14 +4169,117 @@ function additionalJSCode(){
 
     start(){
       this._isServer=true;
+      this.debug=false;
+      console.log("starte session als server",this.id,this.peerID);
+      this.connectionsToClients={};
+      this.newConnectionsToClients={};
+      this.peer=new Peer(this.peerID,{debug:0});
+      this.configurePeer();
     }
 
     join(username){
       this.username=username;
+      console.log("trete session bei als client",this.username,this.peerID);
+      if(!this._isServer){
+        this.peer=new Peer(undefined,{debug:0});
+        this.configurePeer();
+      }
+
+    }
+
+    receiveMessage(messageEvent){
+      if(!this.messageListener) return;
+      this.messageListener.onMessage(messageEvent);
+    }
+
+    configurePeer(){
+      this.peer.on('open',()=>{
+        console.log("peer ist open");
+        if(this._isServer){
+          this.receiveMessage($new(MessageEvent,null,"session-started","Eine neue Session wurde gestartet.",Date.now()));
+        }else{
+          console.log("Baue Verbindung zum Server auf...");
+          this.connectionToServer=this.peer.connect(this.peerID);
+          this.connectionToServer.on('open',()=>{
+            console.log("client hat verbindung zum server");
+            console.log("sende gruss an host",this.username,this.peer.id);
+            this.connectionToServer.send({type: "new-connection", clientID: this.username, peerID: this.peer.id});
+            this.receiveMessage($new(MessageEvent,null,"session-joined","Der Session wurde beigetreten.",Date.now()));
+          });
+          this.connectionToServer.on('data',(data)=>{
+            /**client empfaengt nachricht */
+            console.log("client empfaengt nachricht",data);
+            if(data.type==="client-id-of-server"){
+              console.log("client empfaengt id des servers",data.clientID);
+              for(var id of data.allRealClientIDs){
+                if(id!==this.username){
+                  this.receiveMessage($new(MessageEvent,"user-name","",Date.now()));
+                }
+              }
+            }else if(data.type==="message"){
+              if(this.handler.onMessage){
+                this.handler.onMessage(data.sender,data.message);
+              }
+            }else if(data.type==="new-connection"){
+              console.log("client empfaengt neue Verbindung",data.clientID)
+              if(this.handler.onNewConnection){
+                this.handler.onNewConnection(data.clientID);
+              }
+            }
+          })
+        }
+      });
+    
+      this.peer.on('error',(error)=>{
+        console.log("error",error);
+        if(this.handler.onSessionError){
+          this.handler.onSessionError(error);
+        }
+      });
+    
+      this.peer.on('connection',(dataConnection)=>{
+        console.log("neue Connection");
+        if(this.isHost){
+          this.log("neuer Client",dataConnection);
+          this.newConnectionsToClients[dataConnection.peer]=dataConnection;
+        }
+    
+        dataConnection.on('open',()=>{
+          console.log("data connection ist offen");
+          if(!this.isHost){
+            
+          }
+        });
+    
+        dataConnection.on('data',(data)=>{
+          if(this.isHost){
+            /**Server empfaengt nachricht */
+            console.log("server empfaengt nachricht",data);
+            if(data.type==="new-connection"){
+              this.receiveMessage($new(MessageEvent));
+              var con=this.newConnectionsToClients[data.peerID];
+              if(con){
+                this.connectionsToClients[data.clientID]=con;
+                this.connectionsToClients[data.clientID].send({type: "client-id-of-server", clientID: this.clientID, allRealClientIDs: this.getAllClientIDs()});
+                if(this.handler.onNewConnection){
+                  this.handler.onNewConnection(data.clientID);
+                }
+                this.forward(data.clientID,{type: "new-connection", clientID: data.clientID});
+              }
+              delete this.newConnectionsToClients[data.peerID];
+            }else if(data.type==="message"){
+              this.forward(data.sender,data);
+              if(this.handler.onMessage){
+                this.handler.onMessage(data.sender,data.message);
+              }
+            }
+          }
+        });
+      });
     }
 
     onMessage(handler){
-      this.onMessage=handler;
+      this.messageListener=handler;
     }
 
     sendTo(username, message, header){

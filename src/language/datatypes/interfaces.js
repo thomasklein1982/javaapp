@@ -10,7 +10,7 @@ export function defineInterfaces(){
   defineComparator(Java.interfaces.Comparator);
   defineRunnable(Java.interfaces.Runnable);
   defineRealFunction(Java.interfaces.RealFunction);
-  defineMessageHandler(Java.interfaces.MessageHandler);
+  defineMessageListener(Java.interfaces.MessageListener);
 }
 
 function defineRunnable(clazz){
@@ -27,7 +27,7 @@ function defineActionListener(clazz){
   },clazz,false,false);
 }
 
-function defineMessageHandler(clazz){
+function defineMessageListener(clazz){
   createMethod({
     name: "onMessage",
     args: [{name: "ev",type: "MessageEvent"}],

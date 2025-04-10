@@ -47,7 +47,7 @@ export function defineNetworkSession(clazz){
   createMethod({
     name: "onMessage",
     args: [
-      {name: "handler", type: "MessageHandler", default: "(m)->{}"}
+      {name: "listener", type: "MessageListener", default: "(m)->{}"}
     ],
     info: "Legt fest, was passieren soll, wenn eine Nachricht über das Netzwerk empfangen wird."
   },clazz,false,false);
