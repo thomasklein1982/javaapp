@@ -77,25 +77,25 @@
       <template v-if="component.maxX!==undefined">
         <tr>
           <td>min. x:</td>
-          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.minX" style="width: 95%"/></td>
+          <td><InputText type="number" spellcheck="false" @change="emitUpdate()" v-model.number="component.minX" style="width: 95%"/></td>
         </tr>
         <tr>
           <td>max. x:</td>
-          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.maxX" style="width: 95%"/></td>
+          <td><InputText type="number" spellcheck="false" @change="emitUpdate()" v-model.number="component.maxX" style="width: 95%"/></td>
         </tr>
         <tr>
           <td>min. y:</td>
-          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.minY" style="width: 95%"/></td>
+          <td><InputText type="number" spellcheck="false" @change="emitUpdate()" v-model.number="component.minY" style="width: 95%"/></td>
         </tr>
         <tr>
           <td>max. y:</td>
-          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.maxY" style="width: 95%"/></td>
+          <td><InputText type="number" spellcheck="false" @change="emitUpdate()" v-model.number="component.maxY" style="width: 95%"/></td>
         </tr>
       </template>
       <template v-if="component.imageZoom!==undefined">
         <tr>
           <td>Bild-Zoom:</td>
-          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.imageZoom" style="width: 95%"/></td>
+          <td><InputText type="number" spellcheck="false" @change="emitUpdate()" v-model.number="component.imageZoom" style="width: 95%"/></td>
         </tr>
         <!-- <tr>
           <td>Bild-Höhe:</td>
@@ -103,11 +103,11 @@
         </tr> -->
         <tr>
           <td>Bild-Verschiebung-X:</td>
-          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.imageTranslationX" style="width: 95%"/></td>
+          <td><InputText type="number" spellcheck="false" @change="emitUpdate()" v-model.number="component.imageTranslationX" style="width: 95%"/></td>
         </tr>
         <tr>
           <td>Bild-Verschiebung-Y:</td>
-          <td><InputText spellcheck="false" @change="emitUpdate()" v-model="component.imageTranslationY" style="width: 95%"/></td>
+          <td><InputText type="number" spellcheck="false" @change="emitUpdate()" v-model.number="component.imageTranslationY" style="width: 95%"/></td>
         </tr>
       </template>
       <template v-if="component.sizePolicy!==undefined">
