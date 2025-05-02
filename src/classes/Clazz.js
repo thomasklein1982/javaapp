@@ -749,7 +749,9 @@ export class Clazz{
       //   }
       // }
       let comments=parseComments(this.source,node);
-      node=comments.node;
+      if(comments.node){
+        node=comments.node;
+      }
       let description=comments.text;
       if(node.name==="FieldDeclaration"){
         if(this.isInterface){
