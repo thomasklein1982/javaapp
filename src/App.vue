@@ -12,7 +12,7 @@
       :current="current"
       :difficulty="difficulty"
       ref="editor"
-      @help="$refs.dialogHelp.setVisible(true)"
+      @help="showHelp()"
       @open-project-dialog="openProjectDialog"
       :logged-data="loggedData"
     />
@@ -86,6 +86,9 @@ export default{
     },1000);
   },
   methods: {
+    showHelp(){
+      this.$refs.dialogHelp.setVisible(true);
+    },
     log(data,force){
       if(!force && !this.loggingEnabled) return;
       this.loggedData.splice(0,0,{

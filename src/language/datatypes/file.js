@@ -11,6 +11,11 @@ export function defineFile(clazz){
 <pre><code>File f = new File( "Text.txt" );
 f.setContentAsString("Dies ist der Inhalt der Datei.\\nNach einem Zeilenumbruch geht es weiter.");
 f.download();
+</code></pre>
+<h3>Beispiel 2: Text-Datei hochladen und auslesen</h3>
+<pre><code>File f = File.upload( );
+String c = f.getContentAsString( );
+System.out.println( c );
 </code></pre>`;
   createConstructor({
     args: [

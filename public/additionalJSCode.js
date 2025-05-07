@@ -1238,6 +1238,11 @@ function additionalJSCode(){
       let db=await p;
       return new Storage(name,db);
     }
+    async hasKey(key){
+      let keys=await this.getKeys();
+      if(keys.indexOf(key)>=0) return true;
+      return false;
+    }
     async getKeys(){
       let keys;
       if(!window.indexedDB){
@@ -2387,9 +2392,10 @@ function additionalJSCode(){
     }
     getValue(){
       if(!this.$el) return null;
+      
       if('selectedIndex' in this.$el){
         return this.$el.selectedIndex;
-      }else if('checked' in this.$el){
+      }else if(this.$el.type==="checkbox"){
         return this.$el.checked; 
       }else if('value' in this.$el){
         return this.$el.value;
