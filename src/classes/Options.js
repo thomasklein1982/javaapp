@@ -23,6 +23,7 @@ class Options{
     this.autoextendJavaApp=false;
     this.exerciseMode=false;
     this.exerciseMainClassName="Main";
+    this.databaseUiMode=true;
   }
   isEasyMode(){
     return this.voidOptional;
@@ -62,6 +63,7 @@ class Options{
     this.stringCharAtDeliversString=true;
     this.stringIsComparable=true;
     this.autoextendJavaApp=true;
+    this.databaseUiMode=true;
     if(dontSave) return;
     await this.saveToStorage();
   }
@@ -74,6 +76,7 @@ class Options{
     this.stringCharAtDeliversString=true;
     this.stringIsComparable=true;
     this.autoextendJavaApp=true;
+    this.databaseUiMode=true;
     if(dontSave) return;
     await this.saveToStorage();
   }
@@ -86,6 +89,7 @@ class Options{
     this.stringCharAtDeliversString=false;
     this.stringIsComparable=false;
     this.autoextendJavaApp=false;
+    this.databaseUiMode=false;
     if(dontSave) return;
     await this.saveToStorage();
   }

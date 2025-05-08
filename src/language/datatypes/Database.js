@@ -25,12 +25,32 @@ export function defineDatabaseClazzes(Java){
 // }
 
 function defineDatabase(Clazz,Java){
+  Clazz.description=`Die Database-Klasse stellt eine Schnittstelle zur SQL-Datenbank eines Projektes dar. Definiere die Relationen der Datenbank im Menü unter <em>Projekt &rarr; Datenbank</em>.
+  <p>Select-Abfragen liefern Arrays von <Link href="api/JSON">JSON</Link>-Objekten zurück.</p>
+  <h3>Beispiel: Datenbank abfragen</h3>
+  Angenommen, man hat eine Relation <div><code>Kunde( kundennummer, vorname, nachname)</code></div>
+  <p>Dann kann man folgenden Code schreiben:</p>
+<pre><code>Database db=new Database();
+JSON[] res = db.sql( "select * from Kunde");
+System.out.println( res[0].getString("vorname") );
+</code></pre>
+</code></pre>`;
   createConstructor ({
     args: [
       {type: 'String', name: 'name', info: 'Name der Datenbank', optional: true}
     ],
     info: 'Erzeugt ein neues Database-Objekt, das eine Verbindung zur Datenbank herstellt.'
   },Clazz,Java);
+  createMethod({
+    name: "clear",
+    info: "Löscht den kompletten Inhalt der Datenbank.",
+    args: [],
+  },Clazz,false,false,Java);
+  createMethod({
+    name: "reset",
+    info: "Löscht den kompletten Inhalt der Datenbank und setzt alle Tabellen auf den Ursprung zurück.",
+    args: [],
+  },Clazz,false,false,Java);
   createMethod({
     name: "sql",
     info: "Wendet einen SQL-Befehl auf die Datenbank an und liefert eine Ergebnis-Relation zurück.",

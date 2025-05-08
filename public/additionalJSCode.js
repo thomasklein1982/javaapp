@@ -3644,7 +3644,12 @@ function additionalJSCode(){
     $constructor(name){
       
     }
-    
+    clear(){
+      $clearAlaSQL();
+    }
+    reset(){
+      window.$dbCreate();
+    }
     static async create(name){
       let db=new Database();
       if(name){

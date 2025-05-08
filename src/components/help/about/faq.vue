@@ -249,27 +249,25 @@ onTimeout(){
         <template v-slot:normal>
           <p>Du musst den Timer starten und die <code>onTimeout</code>-Methode implementieren. Diese Methode wird aufgerufen, wenn der Timer abläuft. Der Timer startet nicht automatisch neu!</p>
           <pre class="code">
-class MyApp{
-  int zeit = 10;
-  void onAction(JComponent trigger){  
-    if ( trigger.actionCommand == "start timer" ){
-      //starte den Timer, wenn der Button geklickt wird
-      //Timer läuft nach 1000 ms (= 1 Sekunde) ab
-      System.time.start(1000);
-    }
+int zeit = 10;
+void onAction(JComponent trigger){  
+  if ( trigger.actionCommand == "start timer" ){
+    //starte den Timer, wenn der Button geklickt wird
+    //Timer läuft nach 1000 ms (= 1 Sekunde) ab
+    System.time.start(1000);
   }
-  void onTimeout(){
-    //zeit um 1 verringern:
-    zeit--;
-    //UI aktualisieren:
-    Screen.anzeige.setValue ( zeit );
-    //ist die Zeit abgelaufen?
-    if ( zeit == 0){
-      Sound.beep( 440, 1, 1000);
-    }else{
-      //Timer erneut starten:
-      System.time.start(1000);
-    }
+}
+void onTimeout(){
+  //zeit um 1 verringern:
+  zeit--;
+  //UI aktualisieren:
+  Screen.anzeige.setValue ( zeit );
+  //ist die Zeit abgelaufen?
+  if ( zeit == 0){
+    Sound.beep( 440, 1, 1000);
+  }else{
+    //Timer erneut starten:
+    System.time.start(1000);
   }
 }
           </pre>
@@ -277,7 +275,7 @@ class MyApp{
         <template v-slot:hard>
           <p>Verwende eine Instanz der Timer-Klasse:</p>
           <pre class="code">
-            int zeit = 10;
+int zeit = 10;
 JLabel anzeigeZeit;
 Timer timer;
 
@@ -311,6 +309,9 @@ void tick( ) {
           </pre>
         </template>
       </ExampleCode>
+    </AccordionTab>
+    <AccordionTab header="Wie kann ich eine SQL-Datenbank in JavaApp verwenden?">
+      Verwende dazu die <code>Database</code>-Klasse. Schau nach unter <Link href="api/Database">Database</Link>.
     </AccordionTab>
     <AccordionTab header="Wie kann ich Dateien hoch- oder herunterladen?">
       Verwende dazu die <code>File</code>-Klasse. Schau nach unter <Link href="api/File">File</Link>.

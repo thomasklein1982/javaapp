@@ -71,6 +71,7 @@
   import Textarea from 'primevue/textarea';
   import DatabaseNewRelationDialog from "./DatabaseNewRelationDialog.vue";
   import CodeMirrorEditor from "./CodeMirrorEditor.vue";
+import { options } from "../classes/Options";
   
   
   export default {
@@ -81,7 +82,7 @@
       return {
         show: false,
         sqlcommand: "",
-        mode: "ui",
+        mode: options.databaseUiMode? "ui":"code",
         sqlExecution: {
           command: null,
           result: null,
