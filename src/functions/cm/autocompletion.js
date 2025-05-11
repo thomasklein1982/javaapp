@@ -281,9 +281,9 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
           options.push(snippets.inMethod[i]);
         }
       }
-      for(let name in Java.clazzes){
+      for(let name in Java.datatypes){
         //if(name==="nullType") continue;
-        let c=Java.clazzes[name];
+        let c=Java.datatypes[name];
         let typeParametersString="";
         if(c.hasTypeParameters && c.hasTypeParameters()){
           typeParametersString="<>";
