@@ -4645,6 +4645,9 @@ function additionalJSCode(){
       this.$running=true;
       let handler=()=>{
         if($App.debug.paused) return;
+        if(!this.repeats){
+          this.$running=false;
+        }
         for(let i=0;i<this.$actionListeners.length;i++){
           let al=this.$actionListeners[i];
           let ev=$new(ActionEvent,this,0,this.actionCommand,Date.now());
@@ -5192,6 +5195,12 @@ function additionalJSCode(){
       }
 
     }
+    setVisible(v){
+      for(let a in this.buttons){
+        this.buttons[a].setVisible(v);
+      }
+      this.dpad.setVisible(v);
+    }
   }
 
   class DPad{
@@ -5314,6 +5323,13 @@ function additionalJSCode(){
         return null;
       }
     }
+    setVisible(v){
+      for(let a in this.buttons){
+        let b=this.buttons[a];
+        if(!b) continue;
+        b.setVisible(v);
+      }
+    }
     setButtonVisible(button,v){
       let b=this.getButtonByName(button);
       if(b){
@@ -5395,7 +5411,7 @@ function additionalJSCode(){
     }
     setVisible(v){
       if(v){
-        this.ui.style.display="";
+        this.ui.style.display="flex";
       }else{
         this.ui.style.display="none";
       }
