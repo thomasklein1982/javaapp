@@ -919,6 +919,16 @@ function additionalJSCode(){
     return format;
   }
 
+  function $StringJoin(StringClazz,delimiter,array){
+    let s="";
+    if(!array) throw $new(Exception,"NullPointer-Exception: String.join"); 
+    for(let i=0;i<array.length;i++){
+      if(i>0) s+=delimiter;
+      s+=array[i];
+    }
+    return s;
+  }
+
   function $StringCharAtChar(string,index){
     let s=$StringCharAtString(string,index);
     return new $Char(s);
@@ -5882,17 +5892,36 @@ function additionalJSCode(){
     if(typeof obj!=='object'){
       return obj;
     }
-    let json={};
-    for(let a in obj){
-      if(a.startsWith("$")) continue;
-      let b=obj[a];
-      json[a]=await $jstoJSON(b);
+    let json;
+    if(Array.isArray(obj)){
+      json=[];
+      for(let i=0;i<obj.length;i++){
+        let b=obj[i];
+        json.push(await $jstoJSON(b));
+      }
+    }else{
+      json={};
+      for(let a in obj){
+        if(a.startsWith("$")) continue;
+        let b=obj[a];
+        json[a]=await $jstoJSON(b);
+      }
     }
     return json;
   }
 
+  $jsputDataArray=function(json,target){
+    for(let a in json){
+      target[a]=json[a];
+    }
+  };
+
   $jsputData=function(json,target){
     if(!target || !target.constructor) return;
+    if(Array.isArray(target)){
+      $jsputDataArray(json,target);
+      return;
+    }
     let infos=$clazzRuntimeInfos[target.constructor.name];
     if(!infos) return;
     jsonFields={};

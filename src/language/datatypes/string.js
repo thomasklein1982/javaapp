@@ -151,6 +151,14 @@ export function defineString(StringClazz,Java){
     jsName: "$StringFormat"
   },StringClazz,true,false,Java);
   createMethod({
+    name: "join",
+    isExtraFunction: true,
+    args: [{name: 'delimiter',type: "String", info: "String, der zwischen die einzelnen Strings gesetzt wird."}, {name: "array", type: {baseType: "String", dimension: 1}, info: "Ein Array von Strings, die aneinandergehängt werden sollen."}],
+    info: "Verbindet die Strings im Array zu einem einzigen String. Zwischen den Strings steht jeweils eine Kopie des delimiter.",
+    returnType: 'String',
+    jsName: "$StringJoin"
+  },StringClazz,true,false,Java);
+  createMethod({
     name: "matches",
     isExtraFunction: true,
     args: [{name: "regexp",type: "String"}],
