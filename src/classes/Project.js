@@ -458,7 +458,6 @@ export class Project{
             position: absolute;
             overflow: hidden;
           }
-          .__
           .java-app-unselectable {
             -webkit-user-select: none;
             user-select: none;
