@@ -28,6 +28,20 @@ export function defineSound(Clazz,Java){
     ]
   },Clazz,false,false,Java);
   createMethod({
+    name: 'setVolume',
+    args: [
+      {name: 'v', type: 'double'}
+    ],
+    info: "0.0 muted bis 1.0 volle Lautstärke"
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getVolume',
+    args: [
+    ],
+    returnType: "double",
+    info: "0.0 muted bis 1.0 volle Lautstärke"
+  },Clazz,false,false,Java);
+  createMethod({
     name: 'play',
     args: [
       {name: 'loop', type: 'boolean', optional: true}

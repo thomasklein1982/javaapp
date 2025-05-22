@@ -5685,6 +5685,12 @@ function additionalJSCode(){
         this.audio=new Audio(this.url);
       }
     }
+    setVolume(v){
+      this.audio.volume=v;
+    }
+    getVolume(){
+      return this.audio.volume;
+    }
     play(loop){
       this.stop();
       this.audio.loop=loop;
