@@ -256,6 +256,13 @@ export default {
               }
             },
             {
+              label: 'Speichernutzung',
+              icon: 'pi pi-database',
+              command: (ev)=>{
+                this.$emit("storage");
+              }
+            },
+            {
               label: 'Einstellungen',
               icon: 'pi pi-cog',
               command: (ev)=>{

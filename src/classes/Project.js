@@ -313,6 +313,9 @@ export class Project{
     codeMainCall+="\nif("+mainObjectCode+"?.main){await "+mainObjectCode+".main("+JSON.stringify(args)+");"+(afterMainCallCode?afterMainCallCode:"")+"}\n";
     codeMainCall+="\n$App.enableOnNextFrame=true;\nsetTimeout(async ()=>{await window.$exerciseChecker();},100);})();";
     let css=this.prepareCSS(this.css);
+    if(!includeSave){
+      codeMainCall+="; JavaApp.setWatchedObject($main);";
+    }
     codeMainCall="window.addEventListener('DOMContentLoaded',async function(){"+codeMainCall+"});";
     if(dontCallMain){
       codeMainCall="";

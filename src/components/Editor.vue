@@ -39,6 +39,7 @@
         @play-dev="playInNewWindow(true)"
         @terminal="$refs.dialogTerminal.setVisible(true)"
         @logging="$refs.dialogLogging.setVisible(true)"
+        @storage="$refs.dialogStorage.setVisible(true)"
         @tryit="$refs.tryItDialog.setVisible(true)"
       />
       <LinksDialog
@@ -61,6 +62,7 @@
       <DatabaseDialog v-if="project" :database="project.database" ref="dialogDatabase"/>
       <CSSDialog :project="project" ref="dialogCSS"/>
       <TerminalDialog :project="project" ref="dialogTerminal" @run="stopAndPlay"/>
+      <StorageDialog :project="project" ref="dialogStorage"/>
       <SourceFileSettingsDialog ref="dialogSourceFileSettings" :project="project"/>
       <TryItDialog ref="tryItDialog"/>
       <Splitter :gutter-size="splitterSize" ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
@@ -218,6 +220,7 @@ import CodeMirrorEditor from "./CodeMirrorEditor.vue";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "primevue";
 import SourceFileSettingsDialog from "./SourceFileSettingsDialog.vue";
 import LoggingDialog from "./LoggingDialog.vue";
+import StorageDialog from "./StorageDialog.vue";
 
 export default {
   props: {
@@ -698,7 +701,8 @@ export default {
     TabPanel,
     Tab,
     SourceFileSettingsDialog,
-    LoggingDialog
+    LoggingDialog,
+    StorageDialog
   }
 }
 </script>
