@@ -13,7 +13,7 @@
         </tr>
         <tr v-for="(kv,j) in db.keysValues">
           <td>{{ kv.key }}</td>
-          <td>{{ kv.value }}</td>
+          <td style="white-space: pre">{{ kv.value }}</td>
           <td><Button text icon="pi pi-trash" @click="deleteKey(db.storage,kv.key)"/></td>
         </tr>
       </table>

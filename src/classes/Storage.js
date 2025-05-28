@@ -65,7 +65,7 @@ export default class Storage{
       let values=await Promise.all(promises);
       for(let i=0;i<values.length;i++){
         let v=JSON.stringify(values[i],null,2);
-        if(v.length>100) v=v.substring(0,100)+"...";
+        if(v.length>300) v=v.substring(0,300)+"...";
         data.push({
           key: keys[i],
           value: v
