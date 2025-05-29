@@ -275,7 +275,11 @@ export class UIClazz extends Clazz{
         }
       }
       if(c.array){
-        names[c.array]=c;
+        if(standardValue!==undefined){
+          names[c.array]=standardValue;
+        }else{
+          names[c.array]=c;
+        }
       }
       if(c.components){
         UIClazz.getAllAttributesFromComponent(c,names,standardValue);
@@ -419,14 +423,24 @@ export class UIClazz extends Clazz{
       }else{
         type=c.type;
       }
-      let a=createAttribute({
-        name,
-        type: c.array? {baseType: Java.datatypes.JComponent, dimension: 1} : type
-      },this,true);
-      a.isNamedComponent=true;
-      this.attributes[name]=a;
+      if(c.name){
+        let a=createAttribute({
+          name: c.name,
+          type: type
+        },this,true);
+        a.isNamedComponent=true;
+        this.attributes[c.name]=a;
+      }
+      if(c.array){
+        let a=createAttribute({
+          name: c.array,
+          type: {baseType: Java.datatypes.JComponent, dimension: 1}
+        },this,true);
+        a.isNamedComponent=true;
+        this.attributes[c.array]=a;
+      }
     }
-    
+    console.log("attribute",this.attributes);
     this.componentCode="";
     let codeObject={code: "let container0=this;\nwindow.$insertPosition=0;\n"};
     codeObject.code+=this.generateJavaScriptCodeForComponent(this,codeObject,0,null);
@@ -486,6 +500,7 @@ export class UIClazz extends Clazz{
 
     let scope=new Scope(this.project,undefined,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
     //this.compileVariables(scope);
+    //TODO: schreckliche Code-Dopplung, refactor!
     let namedComponents=UIClazz.getAllAttributesFromComponent(this,{},undefined);
     for(let name in namedComponents){
       let c=namedComponents[name];
@@ -496,12 +511,22 @@ export class UIClazz extends Clazz{
       }else{
         type=c.type;
       }
-      let a=createAttribute({
-        name,
-        type: c.array? {baseType: type, dimension: 1} : type
-      },this,true);
-      a.isNamedComponent=true;
-      this.attributes[name]=a;
+      if(c.name){
+        let a=createAttribute({
+          name: c.name,
+          type: type
+        },this,true);
+        a.isNamedComponent=true;
+        this.attributes[c.name]=a;
+      }
+      if(c.array){
+        let a=createAttribute({
+          name: c.array,
+          type: {baseType: Java.datatypes.JComponent, dimension: 1}
+        },this,true);
+        a.isNamedComponent=true;
+        this.attributes[c.array]=a;
+      }
     }
     
     this.componentCode="";
