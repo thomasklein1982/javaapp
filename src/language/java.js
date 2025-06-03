@@ -48,7 +48,7 @@ String.cannotBeInstantiated=true;
 const Integer=new Clazz("Integer");
 const Double=new Clazz("Double");
 const Boolean=new Clazz("Boolean");
-const Char=new Clazz("Char");
+const Character=new Clazz("Character");
 let ActionEvent=new Clazz("ActionEvent");
 let MessageEvent=new Clazz("MessageEvent");
 let ActionListener=new Clazz("ActionListener",undefined,true);
@@ -139,7 +139,7 @@ let Voice=new Clazz("Voice");
 let Thread=new Clazz("Thread");
 
 let datatypes={
-  ActionEvent,ActionListener,ArrayList,Boolean,Canvas,Char,Circle,Class,Comparable,Comparator,Console,DataTable,Database,Double,Exception,Field,File, Gamepad,HashMap,HTMLElement,HtmlPage,InputStream,Integer,JButton,JCheckBox,JComboBox,JComponent,JFrame,JImage,JLabel,JPanel,JSON,JTextArea,JTextComponent,JTextField,JavaApp,Matcher,Math,Matrix,MessageEvent, MessageListener, Method,NetworkSession,Object,Path,Pattern,PrintStream,Queue,Random, RealFunction,Runnable,Sound,Stack,Storage,String,System,Thread,Time,Timer,UIClass,Vector,Voice,boolean,char,double,int,nullType
+  ActionEvent,ActionListener,ArrayList,Boolean,Canvas,Character,Circle,Class,Comparable,Comparator,Console,DataTable,Database,Double,Exception,Field,File, Gamepad,HashMap,HTMLElement,HtmlPage,InputStream,Integer,JButton,JCheckBox,JComboBox,JComponent,JFrame,JImage,JLabel,JPanel,JSON,JTextArea,JTextComponent,JTextField,JavaApp,Matcher,Math,Matrix,MessageEvent, MessageListener, Method,NetworkSession,Object,Path,Pattern,PrintStream,Queue,Random, RealFunction,Runnable,Sound,Stack,Storage,String,System,Thread,Time,Timer,UIClass,Vector,Voice,boolean,char,double,int,nullType
 };
 
 //sortieren der Datentypen:
@@ -151,7 +151,7 @@ let datatypes={
 // console.log(array.toString());
 
 let clazzes={
-  nullType,Object, String, Math, Gamepad, Time, Console, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Pattern, Matcher, File, Storage, NetworkSession, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, HtmlPage, Sound, Exception, Integer, Double, Char, Boolean, JFrame, JavaApp, InputStream, Comparable, Comparator, ActionEvent, Timer, JSON, Random, UIClass, Class, Field, Method, Voice, Thread, Queue, Stack, HashMap, Circle, Runnable, RealFunction, MessageEvent, MessageListener
+  nullType,Object, String, Math, Gamepad, Time, Console, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Pattern, Matcher, File, Storage, NetworkSession, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, HtmlPage, Sound, Exception, Integer, Double, Character, Boolean, JFrame, JavaApp, InputStream, Comparable, Comparator, ActionEvent, Timer, JSON, Random, UIClass, Class, Field, Method, Voice, Thread, Queue, Stack, HashMap, Circle, Runnable, RealFunction, MessageEvent, MessageListener
 }
 
 let interfaces={
@@ -173,9 +173,9 @@ int.setWrapperClass(Integer);
 defineDouble(Double,Java);
 Double.cannotBeInstantiated=true;
 double.setWrapperClass(Double);
-defineChar(Char,Java);
-Char.cannotBeInstantiated=true;
-char.setWrapperClass(Char);
+defineChar(Character,Java);
+Character.cannotBeInstantiated=true;
+char.setWrapperClass(Character);
 defineBoolean(Boolean,Java);
 Boolean.cannotBeInstantiated=true;
 boolean.setWrapperClass(Boolean);

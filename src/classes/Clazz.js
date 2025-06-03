@@ -399,9 +399,9 @@ export class Clazz{
   }
 
   getMethod(name,staticAccess){
-    if(name==="toString"){
-      name="$toString";
-    }
+    // if(name==="toString"){
+    //   name="$toString";
+    // }
     let m=this.methods[name];
     if(!m){
       let sc=this.getRealSuperClazz();

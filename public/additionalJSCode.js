@@ -1151,12 +1151,12 @@ function additionalJSCode(){
       this.value=v;
     }
     static parseBoolean(s){
+      if(!s) return false;
+      s=s.toLowerCase();
       if(s==="true"){
-        this.value=true;
-      }else if(s==="false"){
-        this.value=false;
+        return true;
       }else{
-        throw $new(Exception,"Dieser String kodiert keinen Wahrheitswert:\n"+s);
+        return false;
       }
     }
     static valueOf(v){
@@ -1164,20 +1164,15 @@ function additionalJSCode(){
     }
   }
 
-  class Char{
+  class Character{
     constructor(v){
       this.value=v;
     }
-    static parseChar(s){
-      let v=s+"";
-      if(v.length===1){
-        this.value=v;
-      }else{
-        throw $new(Exception,"Dieser String kodiert keinen Character:\n"+s);
-      }
+    static toString(codePoint){
+      return String.fromCodePoint(codePoint);
     }
     static valueOf(v){
-      return new Char(v);
+      return new Character(v);
     }
   }
 

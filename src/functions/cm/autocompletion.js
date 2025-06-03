@@ -5,6 +5,7 @@ import {createParamsString,snippets} from '../snippets'
 import {Java} from '../../language/java';
 import {getClazzFromState} from './getClazzFromState';
 import { PrimitiveType } from "../../classes/PrimitiveType";
+import { Method } from "../../classes/Method";
 
 const completePropertyAfter = ["PropertyName", ".", "?."]
 const dontCompleteIn = ["TemplateString", "LineComment", "BlockComment",
@@ -223,7 +224,7 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
         //if(clazz.name==="nullType") continue;
         let attributeNames=clazz.getAllAttributeNames();
         for (let name in attributeNames) {
-          if(allAttributeNames[name]) continue;
+          if(allAttributeNames[name]===true) continue;
           allAttributeNames[name]=true;
           let a=clazz.getAttribute(name,isStatic);
           if(a && !a.error && a.isStatic()===isStatic && (!a.isPrivate() || currentClazz.name===clazz.name)){
@@ -241,7 +242,7 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
       let methodNames={};
       while(clazz){
         for (let name in clazz.methods) {
-          if(methodNames[name]) continue;
+          if(methodNames[name]===true) continue;
           methodNames[name]=true;
           let m=clazz.methods[name];
           if(m.isConstructor()) continue;
