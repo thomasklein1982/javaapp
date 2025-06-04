@@ -1435,9 +1435,6 @@ function additionalJSCode(){
     isFlipped(){
       return this.transform.flippedH;
     }
-    addEventListener(type, listener){
-      this.$el.addEventListener(type,listener.actionPerformed,false);
-    }
     getMouseX(){
       return 0;
     }
@@ -1770,6 +1767,11 @@ function additionalJSCode(){
         return -1;
       }
     }
+    addEventListener(type, listener){
+      if(!this.$eventListeners) this.$eventListeners=[];
+      this.$eventListeners.push(listener);
+      this.$el.addEventListener(type,listener.actionPerformed,false);
+    }
     addActionListener(al){
       this.$actionListeners.push(al);
     }
@@ -1778,6 +1780,19 @@ function additionalJSCode(){
       if(index<0) return;
       this.$actionListeners.splice(index,1);
     }
+    removeAllActionListeners(){
+      let als=this.getActionListeners();
+      for(let i=0;i<als.length;i++){
+        this.removeActionListener(als[i]);
+      }
+    }
+    // removeAllEventListeners(){
+    //   //this.removeAllActionListeners();
+    //   let als=this.$eventListeners;
+    //   for(let i=0;i<als.length;i++){
+    //     this.removeActionListener(als[i]);
+    //   }
+    // }
     getActionListeners(){
       let a=$createArray("ActionListener",this.$actionListeners.length,[]);
       for(let i=0;i<this.$actionListeners.length;i++){

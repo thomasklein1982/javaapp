@@ -73,6 +73,12 @@ function defineJComponent(Clazz,Java){
     info: "Entfernt den ActionListener."
   },Clazz,false,false);
   createMethod({
+    name: 'removeAllActionListeners',
+    args: [
+    ],
+    info: "Entfernt alle ActionListener dieser Komponente."
+  },Clazz,false,false);
+  createMethod({
     name: 'getActionListeners',
     args: [
     ],
