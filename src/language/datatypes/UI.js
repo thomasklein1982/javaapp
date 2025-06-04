@@ -66,6 +66,20 @@ function defineJComponent(Clazz,Java){
     info: "Fügt einen ActionListener hinzu, der aufgerufen wird, wenn man mit der Komponente interagiert."
   },Clazz,false,false);
   createMethod({
+    name: 'removeActionListener',
+    args: [
+      {name: "listener",  type: 'ActionListener'}
+    ],
+    info: "Entfernt den ActionListener."
+  },Clazz,false,false);
+  createMethod({
+    name: 'getActionListeners',
+    args: [
+    ],
+    info: "Liefert ein Array mit allen registrierten ActionListenern deser Komponente zurück.",
+    returnType: {baseType: "ActionListener", dimension: 1}
+  },Clazz,false,false);
+  createMethod({
     name: 'getElementById',
     args: [
       {name: 'id', type: 'String'}
@@ -73,6 +87,13 @@ function defineJComponent(Clazz,Java){
     returnType: "HTMLElement",
     info: "Liefert das HTMLElement mit der angegebenen ID zurück."
   },Clazz,false,false);
+  // createMethod({
+  //   name: 'getParentHTMLElement',
+  //   args: [
+  //   ],
+  //   returnType: "HTMLElement",
+  //   info: "Liefert das Eltern-HTMLElement dieser Komponente zurück."
+  // },Clazz,false,false);
   // createMethod({
   //   name: 'setOnAction',
   //   args: [
@@ -1019,6 +1040,13 @@ function defineCanvas(Clazz,Java){
     ],
     info: "Stellt den zuletzt gespeicherten Zustand des Canvas wieder her."
   },Clazz,false,false,Java);
+  createMethod({
+    name: 'getWrapperElement',
+    args: [
+    ],
+    returnType: "HTMLElement",
+    info: ""
+  },Clazz,false,false);
   createMethod({
     name: 'reset',
     args: [

@@ -63,4 +63,12 @@ export function defineHTMLElement(clazz){
     name: 'getValue',
     returnType: 'String'
   },clazz,false,false);
+
+  // createMethod({
+  //   name: 'getParentHTMLElement',
+  //   args: [
+  //   ],
+  //   returnType: "HTMLElement",
+  //   info: "Liefert das Eltern-HTMLElement dieses Elements zurück."
+  // },clazz,false,false);
 }

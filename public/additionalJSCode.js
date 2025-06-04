@@ -1418,6 +1418,12 @@ function additionalJSCode(){
       this.setDirection(0);
 
     }
+    getParentHTMLElement(){
+      if(!this.$el) return null;
+      let e=this.$el.parentElement;
+      if(!e.component) e.component=$new(HTMLElement,e);
+      return e.component;
+    }
     flip(){
       this.transform.flippedH=true;
       this.updateTransform();
@@ -2355,7 +2361,12 @@ function additionalJSCode(){
     getChildElements(){
 
     }
-    
+    getParentHTMLElement(){
+      if(!this.$el) return null;
+      let e=this.$el.parentElement;
+      if(!e.component) e.component=$new(HTMLElement,e);
+      return e.component;
+    }
     add(comp,index){
       let el;
       if(comp instanceof Canvas){
@@ -2462,6 +2473,7 @@ function additionalJSCode(){
       //if(this.$el && this.$el.parentNode) this.$el.parentNode.removeChild(this.$el);
       let wrapper=document.createElement("div");
       this.wrapper=wrapper;
+      this.wrapperComponent=undefined;
       wrapper.component=this;
       wrapper.className="__canvas-wrapper";
       wrapper.style.touchAction="none";
@@ -2621,6 +2633,10 @@ function additionalJSCode(){
         c.component.sizeChanged=true;
         c.component.updateTransform();
       }
+    }
+    getWrapperElement(){
+      if(!this.wrapperComponent) this.wrapperComponent=$new(HTMLElement,this.wrapper);
+      return this.wrapperComponent;
     }
     getDimensions(w,h){
       let rw=w*this.fit.sx;
@@ -2860,6 +2876,8 @@ function additionalJSCode(){
       this.$el.selectedIndex=index;
     }
     setValue(text){
+      if(text===null || text===undefined) return;
+      text+="";
       for(let i=0;i<this.$el.childNodes.length;i++){
         let o=this.$el.childNodes[i];
         if(o.innerHTML===text){
