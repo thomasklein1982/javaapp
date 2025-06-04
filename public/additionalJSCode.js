@@ -1891,7 +1891,8 @@ function additionalJSCode(){
               line: $App.debug.lastLine,
               name: $App.debug.lastName
             });
-            throw message;
+            console.log(message);
+            resolve();
           }
         });
         this.$img.src=this.url;
