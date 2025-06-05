@@ -118,7 +118,7 @@
         <td>onAction auslösen?</td>
         <td><ToggleSwitch v-model="component.onAction"/></td>
       </tr>
-      <tr v-if="component.onMouseDown!==undefined">
+      <!-- <tr v-if="component.onMouseDown!==undefined">
         <td>onMouseDown auslösen?</td>
         <td><ToggleSwitch v-model="component.onMouseDown"/></td>
       </tr>
@@ -129,7 +129,7 @@
       <tr v-if="component.onMouseMove!==undefined">
         <td>onMouseMove auslösen?</td>
         <td><ToggleSwitch v-model="component.onMouseMove"/></td>
-      </tr>
+      </tr> -->
       <tr>
         <td>ActionCommand:</td>
         <td><InputText spellcheck="false" @change="emitUpdate()" v-model.trim="component.actionCommand" style="width: 95%"/></td>
