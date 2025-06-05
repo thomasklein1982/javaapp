@@ -1402,7 +1402,7 @@ function additionalJSCode(){
       this.height=1;
       this.$el=null;
       this.actionCommand="";
-      this.$eventListeners={};
+      this.$eventListeners=null;
       this.$triggerOnAction=false;
       this.$triggerOnMouseDown=false;
       this.$triggerOnMouseUp=false;
