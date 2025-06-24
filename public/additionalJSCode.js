@@ -1034,8 +1034,8 @@ function additionalJSCode(){
 
   function onNextFrame(){
     if(window.$uiPreviewMode===true) return;
-    if($main && $main.onNextFrame){
-      $main.onNextFrame();
+    if(window.$main && window.$main.onNextFrame){
+      window.$main.onNextFrame();
     }else{
       delete window.onNextFrame;
     }
