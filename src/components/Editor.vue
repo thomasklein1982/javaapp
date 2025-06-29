@@ -6,6 +6,7 @@
     />
     <template v-if="!$root.printMode">
       <EditorMenubar
+        v-if="showMenubar"
         :right-closed="rightClosed"
         :project="project"
         :difficulty="difficulty"
@@ -175,7 +176,7 @@
       <span style="position: fixed; bottom: 0.5rem; right: 0.5rem; z-index: 101">
         <span  v-if="!running">
           <Button style="margin-right: 0.2rem" v-if="$root.exerciseCheckerCode && (!running || paused)" label="Prüfen" @click="runExerciseChecker()" icon="pi pi-list-check" />
-          <Button v-if="!running || paused" @click="resume()" icon="pi pi-play" />
+          <Button v-if="showRunButton && (!running || paused)" @click="resume()" icon="pi pi-play" />
         </span>
       </span>
     </template>
@@ -245,6 +246,8 @@ export default {
       breakpoints: [],
       sizeCode: 60,
       rightClosed: false,
+      showMenubar: true,
+      showRunButton: true,
       closeRightAfterStopping: false,
       selectedUIComponent: null
     };
@@ -413,6 +416,16 @@ export default {
         this.sizeCode=Math.max(10,this.sizeCodeSaved);
       }
       this.rightClosed=!this.rightClosed;
+    },
+    setRightVisible(v){
+      if(this.rightClosed!==v) return;
+      this.toggleRight();
+    },
+    setMenubarVisible(v){
+      this.showMenubar=v;
+    },
+    setRunButtonVisible(v){
+      this.showRunButton=v;
     },
     setSplitterSizes(left){
       return;

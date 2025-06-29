@@ -109,6 +109,47 @@ export default{
         window.parent.postMessage({type: "send-exercise-data",data: {project}},"*");
       }
     },
+    sendClassNames(){
+      if(window.parent){
+        let p=this.getProject();
+        let names=[];
+        if(p){
+          for(let i=0;i<p.clazzes.length;i++){
+            names.push(p.clazzes[i].name);
+          }
+        }
+        window.parent.postMessage({type: "give-classnames-answer",data: names},"*");
+      }
+    },
+    setVisibleSidebar(v){
+      this.$refs.editor.setRightVisible(v);
+    },
+    setVisibleMenubar(v){
+      this.$refs.editor.setMenubarVisible(v);
+    },
+    setVisibleRunButton(v){
+      this.$refs.editor.setRunButtonVisible(v);
+    },
+    sendProject(){
+      if(window.parent){
+        let p=this.getProject();
+        let data=p.toJSON();
+        window.parent.postMessage({type: "give-project-answer",data: data},"*");
+      }
+    },
+    switchToEmptyProject(){
+      let p=new Project();
+      this.openProject(p);
+    },
+    addClazz(clazzData){
+      this.$refs.editor.addNewClazz(clazzData);
+    },
+    removeClazz(name){
+      let p=this.getProject();
+      if(!p) return;
+      let c=p.getClazzByName(name);
+      p.removeClazz(c);
+    },
     handleExerciseTest(data){
       console.log("handle exercise test");
       if(this.exerciseMode && window.parent){
@@ -149,6 +190,11 @@ export default{
       }
       this.openProject(p);
       this.exerciseCheckerCode=data.checker;
+    },
+    openProjectFromJSON(data){
+      let p=new Project();
+      p.fromJSON(data);
+      this.openProject(p);
     },
     resetCurrent(line,name){
       if(!line) line=this.current.line;

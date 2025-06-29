@@ -183,10 +183,10 @@ pos2=text.lastIndexOf("}");
 text=text.substring(pos+1,pos2);
 peerJScode=text;
 
-
 window.onmessage=function(message){
-  let data=message.data;
+  if(!message) return;
   let app=window.app;
+  let data=message.data;
   if(data.type==="error"){
     data=data.data;
     app.$refs.editor.setRuntimeError(data);
@@ -210,8 +210,27 @@ window.onmessage=function(message){
   }else if(data.type==="reportError"){
     data=data.data;
     app.$refs.editor.setSourceFileError(data);
+  }else if(data.type==="give-class-names"){
+    app.sendClassNames();
+  }else if(data.type==="give-project"){
+    app.sendProject();
+  }else if(data.type==="add-class"){
+    app.addClazz(data.data);
+  }else if(data.type==="remove-class"){
+    app.removeClazz(data.data.name);
+  }else if(data.type==="open-project"){
+    app.openProjectFromJSON(data.data);
+  }else if(data.type==="open-project-empty"){
+    app.switchToEmptyProject();
+  }else if(data.type==="set-visible-menubar"){
+    app.setVisibleMenubar(data.data.visible);
+  }else if(data.type==="set-visible-sidebar"){
+    app.setVisibleSidebar(data.data.visible);
+  }else if(data.type==="set-visible-run-button"){
+    app.setVisibleRunButton(data.data.visible);
   }
 }
+
 
 document.addEventListener("keydown", function(e) {
   let platform;

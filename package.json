@@ -1,6 +1,6 @@
 {
   "name": "java-app",
-  "version": "8.8.2",
+  "version": "9.0.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

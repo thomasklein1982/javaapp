@@ -20,8 +20,8 @@ export class Project{
     this.includePeerJS=false;
     this.assets=[];
     if(!name){
-      name="MyApp";
-      code="class MyApp{\n  \n  void onStart(){\n    \n  }\n\n  public static void main(String[] args){\n    new MyApp();\n  }\n}";
+      name="Main";
+      code="";
     }
     this.name=name;
     this.date=new Date();
