@@ -84,6 +84,7 @@ export default{
     setInterval(()=>{
       this.sendExerciseData();
     },1000);
+    this.emitEvent("ready");
   },
   methods: {
     showHelp(){
@@ -135,6 +136,21 @@ export default{
         let p=this.getProject();
         let data=p.toJSON();
         window.parent.postMessage({type: "give-project-answer",data: data},"*");
+      }
+    },
+    emitEvent(type, data){
+      if(window.parent){
+        window.parent.postMessage({event: true, type: type, data: data},"*");
+      }
+    },
+    sendFullAppCode(){
+      if(window.parent){
+        let p=this.getProject();
+        let data=null;
+        if(p){
+          data=p.getFullAppCode("$App.hideConsoleIfUIPresentAfterSetup=true;",true);
+        }
+        window.parent.postMessage({type: "give-full-app-code-answer",data: data},"*");
       }
     },
     switchToEmptyProject(){
@@ -196,6 +212,21 @@ export default{
       p.fromJSON(data);
       this.openProject(p);
     },
+    openProjectFromFullAppCode(code){
+      let p=new Project();
+      let ok=true;
+      try{
+        ok=p.fromSaveString(code);
+      }catch(e){
+        ok=false;
+      }
+      if(ok){
+        this.openProject(p); 
+      }
+      if(window.parent){
+        window.parent.postMessage({type: "open-project-from-full-app-code-answer",data: ok},"*");
+      }
+    },
     resetCurrent(line,name){
       if(!line) line=this.current.line;
       if(!name) name=this.current.name;
@@ -207,12 +238,12 @@ export default{
     },
     openProject: function(project){
       //Object.seal(project);
-      console.log("open project",project);
       this.$refs.editor.openProject(project);
       this.showScreen("editor");
       setTimeout(()=>{
         this.setLoggingEnabled(false);
       },1000);
+      this.emitEvent("project-open");
     },
     importProject: function(project){
       this.$refs.editor.importToProject(project);

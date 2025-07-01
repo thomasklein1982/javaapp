@@ -214,12 +214,16 @@ window.onmessage=function(message){
     app.sendClassNames();
   }else if(data.type==="give-project"){
     app.sendProject();
+  }else if(data.type==="give-full-app-code"){
+    app.sendFullAppCode();
   }else if(data.type==="add-class"){
     app.addClazz(data.data);
   }else if(data.type==="remove-class"){
     app.removeClazz(data.data.name);
   }else if(data.type==="open-project"){
     app.openProjectFromJSON(data.data);
+  }else if(data.type==="open-project-from-full-app-code"){
+    app.openProjectFromFullAppCode(data.data);
   }else if(data.type==="open-project-empty"){
     app.switchToEmptyProject();
   }else if(data.type==="set-visible-menubar"){

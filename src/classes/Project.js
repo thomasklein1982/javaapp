@@ -156,9 +156,9 @@ export class Project{
       <script>
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.register('./sw.js').then((r)=>{
-            console.log("Service Worker Registrierung erfolgreich");
+            
           }, (e)=>{
-            console.log("Service Worker Registrierung nicht erfolgreich",e);
+            
           });
         }
         window.language="java";
@@ -330,9 +330,9 @@ export class Project{
       <script>
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.register('./sw.js').then((r)=>{
-            console.log("Service Worker Registrierung erfolgreich");
+            
           }, (e)=>{
-            console.log("Service Worker Registrierung nicht erfolgreich",e);
+            
           });
         }
         window.language="java";
@@ -620,7 +620,7 @@ export class Project{
         finished[c.name]=true;
       }
     }
-    code+="console.log(window.$uiPreviewMode);if(window.$uiPreviewMode){console.log('preview mode')}"
+    code+="\nif(window.$uiPreviewMode){console.log('preview mode')}"
     //code+="\nasync function onStart(){if($main && $main.onStart){$main.onStart();}}\n";
     let clazzInfos={};
     /**Informationen zu allen Klassen anhaengen: Name, Attribute mit Datentyp, factory-Funktion */
@@ -722,8 +722,8 @@ export class Project{
       app.log("project.compile: clazz "+c.name+" compiled: error-count="+c.errors.length);
     }
 
-    let end=Date.now();
-    console.log("parsing done in "+(end-start)+"ms");
+    // let end=Date.now();
+    // console.log("parsing done in "+(end-start)+"ms");
   }
   deleteClazzes(){
     while(this.clazzes.length>0) this.clazzes.pop();
@@ -916,7 +916,6 @@ export class Project{
     }
   }
   fromSaveString(appcode){
-    console.log("from save string");
     this.assets=[];
     let pos=appcode.indexOf(start);
     let saveString;
@@ -928,9 +927,7 @@ export class Project{
       saveString=appcode.substring(pos+start.length,pos2);
     }
     try{
-      console.log("parse");
       var o=JSON.parse(saveString);
-      console.log(o);
       let pos=appcode.indexOf("/****** ASSETS START ******/");
       if(pos>=0){
         let pos2=appcode.indexOf("/****** ASSETS END ******/",pos+12);

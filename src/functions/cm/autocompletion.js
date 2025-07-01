@@ -30,14 +30,14 @@ export function createAutocompletion(){
     if(!clazz) return;
     let pos=context.pos;
     let project=app.$refs.editor.project;
-    console.log("autocomplete");
+    //console.log("autocomplete");
     let lastTypedCharacter=context.state.doc.sliceString(context.pos-1,context.pos);
     if(["{","}",",",";","[","]","(",")"].indexOf(lastTypedCharacter)>=0) return;
     let nodeBefore = context.state.tree.resolveInner(pos, -1);
     nodeBefore=getRealNodeBefore(nodeBefore,pos);
     if(!nodeBefore) return;
     if(dontCompleteIn.includes(nodeBefore.name)) {
-      console.log("dont autocomplete",nodeBefore.name);
+      //console.log("dont autocomplete",nodeBefore.name);
       return;
     }
     if(nodeBefore.name===";"){
@@ -176,7 +176,7 @@ export function createAutocompletion(){
       
     }
     if(annotation){
-      console.log("complete annot",annotation);
+      //console.log("complete annot",annotation);
       return completeProperties(from,annotation.type,annotation.isStatic,annotation.topLevel, method, annotation.scope,clazz);
     }
     return null

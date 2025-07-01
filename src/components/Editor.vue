@@ -254,10 +254,10 @@ export default {
   },
   watch: {
     activeTab(nv,ov){
+      this.$root.emitEvent("tab-change",{index: nv});
       if(this.$refs.editor && nv<this.$refs.editor.length){
         let ed=this.$refs.editor[nv];
         if(!ed.updateLinter) return;
-        console.log("update linter");
         ed.updateLinter();
       }
       this.selectedUIComponent=null;
@@ -359,8 +359,6 @@ export default {
       this.updateUIPreview();
     },
     updateUIPreview(){
-      console.log("update preview")
-
       this.$refs.uipreview.reload();
     },
     clearUIPreview(){
