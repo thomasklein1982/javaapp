@@ -30,7 +30,7 @@ export class Clazz{
     this.hasClazzDeclaration=true;
     this.project=project;
     this.superClazz=null;
-    this.implementedInterfaces=[];
+    this.implementedInterfaces=null;
     this.attributeErrors=null;
     this.errors=null;
     if(this.isInterface){

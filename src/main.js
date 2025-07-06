@@ -44,6 +44,7 @@ import { appjsdata } from './functions/snippets';
 import { definePreset } from '@primevue/themes';
 import { basicSetup, EditorView } from 'codemirror';
 import { html } from '@codemirror/lang-html';
+import Extension from './classes/Extension.js';
 
 "use strict"
 
@@ -232,6 +233,19 @@ window.onmessage=function(message){
     app.setVisibleSidebar(data.data.visible);
   }else if(data.type==="set-visible-run-button"){
     app.setVisibleRunButton(data.data.visible);
+  }else if(data.type==="add-extension"){
+    let p=new Extension(data.data.name);
+    p.fromJSON(data.data);
+    app.addExtension(p);
+  }else if(data.type==="remove-extension"){
+    let ext=app.getExtensionByName(data.data.name);
+    app.removeExtension(ext);
+  }else if(data.type==="give-extension-names"){
+    let names=[];
+    for(let i=0;i<app.extensions.length;i++){
+      names.push(app.extensions[i].name);
+    }
+    app.sendToParentWindow('give-extension-names-answer',names);
   }
 }
 

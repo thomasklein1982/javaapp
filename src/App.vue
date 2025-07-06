@@ -40,6 +40,10 @@ import {version} from "../package.json";
 import { CompileFunctions } from "./language/CompileFunctions";
 import { Java } from "./language/java";
 import { getTimestamp } from "./functions/getTimestamp";
+import { loadLocally, saveLocally } from "./functions/helper";
+import Extension from "./classes/Extension";
+
+const STORAGE_KEY_DATA="JAVA-APP-DATA";
 
 export default{
   data(){
@@ -55,10 +59,13 @@ export default{
       exerciseMode: options.exerciseMode,
       exerciseCheckerCode: "",
       loggedData: [],
-      loggingEnabled: true
+      loggingEnabled: true,
+      extensions: [],
+      extensionsCode: ""
     };
   },
-  mounted(){
+  async mounted(){
+    await this.loadData();
     let hash=location.hash;
     if(hash.indexOf("help")>=0){
       this.$refs.dialogHelp.setVisible(true);
@@ -122,6 +129,58 @@ export default{
         window.parent.postMessage({type: "give-classnames-answer",data: names},"*");
       }
     },
+    getExtensionByName(name){
+      for(let i=0;i<this.extensions.length;i++){
+        let e=this.extensions[i];
+        if(e.name===name){
+          return e;
+        }
+      }
+      return null;
+    },
+    removeExtension(ext){
+      let index=this.extensions.indexOf(ext);
+      if(index<0) return;
+      this.removeExtensionAtIndex(index);
+    },
+    removeExtensionAtIndex(index){
+      let ext=this.extensions[index];
+      this.extensions.splice(index,1);
+      this.saveData();
+      ext.removeFromJava(Java);
+      this.updateExtensions();
+    },
+    addExtension(e){
+      this.extensions.push(e);
+      this.saveData();
+      this.updateExtensions();
+    },
+    updateExtensions(){
+      this.extensionsCode="";
+      for(let i=0;i<this.extensions.length;i++){
+        let ext=this.extensions[i];
+        this.extensionsCode+="\n"+ext.compile(Java);
+      }
+    },
+    saveData(){
+      let data={
+        extensions: this.extensions
+      };
+      saveLocally(STORAGE_KEY_DATA,data);
+    },
+    async loadData(){
+      let data=await loadLocally(STORAGE_KEY_DATA);
+      if(!data) return;
+      //console.log("loaded data",data);
+      this.extensions=[];
+      for(let i=0;i<data.extensions.length;i++){
+        let e=data.extensions[i];
+        let ext=new Extension(e.name,e.clazzes);
+        ext.fromJSON(e);
+        this.extensions.push(ext);
+      }
+      this.updateExtensions();
+    },
     setVisibleSidebar(v){
       this.$refs.editor.setRightVisible(v);
     },
@@ -151,6 +210,11 @@ export default{
           data=p.getFullAppCode("$App.hideConsoleIfUIPresentAfterSetup=true;",true);
         }
         window.parent.postMessage({type: "give-full-app-code-answer",data: data},"*");
+      }
+    },
+    sendToParentWindow(type, data){
+      if(window.parent){
+        window.parent.postMessage({type: type, data: data},"*");
       }
     },
     switchToEmptyProject(){

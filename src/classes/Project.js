@@ -6,6 +6,8 @@ import { options } from "./Options.js";
 import { UIClazz } from "./UIClazz.js";
 import { Database } from "./Database.js";
 import { SourceFile } from "./SourceFile.js";
+import { Package } from "./Package.js";
+
 
 let start="Project Code Start";
 let stop="Project Code Stop";
@@ -16,6 +18,7 @@ export class Project{
     this.clazzes=[];
     this.css="";
     this.database=new Database();
+    this.packages=[];
     this.includeAlaSQL=false;
     this.includePeerJS=false;
     this.assets=[];
@@ -346,6 +349,7 @@ export class Project{
         ${assetsCode}
         window.$exerciseChecker=async()=>{};
         ${additionalCode}
+        ${app.extensionsCode}
         ${js}
         ${codeMainCall}
       </script>
@@ -797,15 +801,27 @@ export class Project{
       this.compile(true);
     }
   }
+  removePackageAtIndex(index){
+    this.packages.splice(index,1);
+  }
+  addPackage(p){
+    this.packages.push(p);
+  }
   toJSON(excludeAssets){
     var t=[];
     for(var i=0;i<this.clazzes.length;i++){
       var c=this.clazzes[i];
       t.push(c.getSaveObject());
     }
+    // let packages=[];
+    // for(let i=0;i<this.packages.length;i++){
+    //   let p=this.packages[i].getSaveObject();
+    //   packages.push(p);
+    // }
     let db=this.database.toCSVString();
     return {
       clazzes: t,
+      packages: this.packages,
       database: db,
       databaseInitCode: this.database.sqlInitCode,
       css: this.css,
@@ -825,6 +841,15 @@ export class Project{
     return start+JSON.stringify(o)+stop;
   }
   fromJSON(o){
+    if(o.packages){
+      this.packages=[];
+      for(let i=0;i<o.packages.length;i++){
+        let p=o.packages[i];
+        let pack=new Package(p.name);
+        pack.fromJSON(p);
+        this.packages.push(pack);
+      }
+    }
     if(o.database){
       this.database.fromCSVString(o.database);
     }

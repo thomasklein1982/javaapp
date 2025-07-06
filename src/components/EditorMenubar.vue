@@ -125,6 +125,13 @@ export default {
                 this.$emit('database');
               }
             },
+            // {
+            //   label: 'Paket-Manager',
+            //   icon: 'pi pi-box',
+            //   command: (ev)=>{
+            //     this.$emit('package');
+            //   }
+            // },
             {
               separator:true
             },
@@ -267,6 +274,13 @@ export default {
               icon: 'pi pi-cog',
               command: (ev)=>{
                 this.$emit("settings");
+              }
+            },
+            {
+              label: 'Erweiterungen',
+              icon: 'pi pi-box',
+              command: (ev)=>{
+                this.$emit("extensions");
               }
             }
           ]

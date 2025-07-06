@@ -12,11 +12,13 @@
       <ToggleSwitch id="showCaretPosition" v-model="settings.showCaretPosition"/><label for="showCaretPosition">Caret-Position anzeigen</label>
     </div>
     <div style="padding: 0.2rem" :style="{display: 'flex', 'justify-content': 'center', 'align-items':'center'}">
+      <span>Editor-Schriftgröße:&nbsp;</span>
       <Button icon="pi pi-minus" @click="changeFontSize(-1)"/>
       <span style="padding: 0.2rem">{{myFontSize}}px</span>
       <Button icon="pi pi-plus" @click="changeFontSize(1)"/>
     </div>
     <div style="padding: 0.2rem" :style="{display: 'flex', 'justify-content': 'center', 'align-items':'center'}">
+      <span>App-Schriftgröße:&nbsp;</span>
       <Button icon="pi pi-minus" @click="changeBodyFontSize(-1)"/>
       <span style="padding: 0.2rem">{{bodyFontSize}}px</span>
       <Button icon="pi pi-plus" @click="changeBodyFontSize(1)"/>

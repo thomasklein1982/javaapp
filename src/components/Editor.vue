@@ -42,6 +42,7 @@
         @logging="$refs.dialogLogging.setVisible(true)"
         @storage="$refs.dialogStorage.setVisible(true)"
         @tryit="$refs.tryItDialog.setVisible(true)"
+        @extensions="$refs.dialogExtensions.setVisible(true)"
       />
       <LinksDialog
         ref="dialogResources"
@@ -62,6 +63,7 @@
       <AssetsDialog :project="project" ref="dialogAssets" @open-image-editor="asset=>$refs.imageEditor.open(asset)"/>
       <DatabaseDialog v-if="project" :database="project.database" ref="dialogDatabase"/>
       <CSSDialog :project="project" ref="dialogCSS"/>
+      <ExtensionManagerDialog :project="project" ref="dialogExtensions"/>
       <TerminalDialog :project="project" ref="dialogTerminal" @run="stopAndPlay"/>
       <StorageDialog :project="project" ref="dialogStorage"/>
       <SourceFileSettingsDialog ref="dialogSourceFileSettings" :project="project"/>
@@ -222,6 +224,7 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from "primevue";
 import SourceFileSettingsDialog from "./SourceFileSettingsDialog.vue";
 import LoggingDialog from "./LoggingDialog.vue";
 import StorageDialog from "./StorageDialog.vue";
+import ExtensionManagerDialog from "./ExtensionManagerDialog.vue";
 
 export default {
   props: {
@@ -713,7 +716,8 @@ export default {
     Tab,
     SourceFileSettingsDialog,
     LoggingDialog,
-    StorageDialog
+    StorageDialog,
+    ExtensionManagerDialog
   }
 }
 </script>

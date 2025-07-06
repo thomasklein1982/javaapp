@@ -35,6 +35,7 @@ import { defineStack } from "./datatypes/Stack.js";
 import { defineHashMap } from "./datatypes/HashMap.js";
 import { defineNetworkSession } from "./datatypes/NetworkSession.js";
 import { defineMessageEvent } from "./datatypes/MessageEvent.js";
+import { Project } from "../classes/Project.js";
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
 let boolean=new PrimitiveType("boolean",null,false,"Ein 'boolean' (dt: 'Wahrheitswert') kann nur true oder false sein.",true);
