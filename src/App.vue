@@ -126,7 +126,7 @@ export default{
             names.push(p.clazzes[i].name);
           }
         }
-        window.parent.postMessage({type: "give-classnames-answer",data: names},"*");
+        window.parent.postMessage({type: "give-classnames-answer",data: names, id: window["javaappID"]},"*");
       }
     },
     getExtensionByName(name){
@@ -194,12 +194,12 @@ export default{
       if(window.parent){
         let p=this.getProject();
         let data=p.toJSON();
-        window.parent.postMessage({type: "give-project-answer",data: data},"*");
+        window.parent.postMessage({type: "give-project-answer",data: data, id: window["javaappID"]},"*");
       }
     },
     emitEvent(type, data){
       if(window.parent){
-        window.parent.postMessage({event: true, type: type, data: data},"*");
+        window.parent.postMessage({event: true, type: type, data: data, id: window["javaappID"]},"*");
       }
     },
     sendFullAppCode(){
@@ -209,12 +209,12 @@ export default{
         if(p){
           data=p.getFullAppCode("$App.hideConsoleIfUIPresentAfterSetup=true;",true);
         }
-        window.parent.postMessage({type: "give-full-app-code-answer",data: data},"*");
+        window.parent.postMessage({type: "give-full-app-code-answer",data: data, id: window["javaappID"]},"*");
       }
     },
     sendToParentWindow(type, data){
       if(window.parent){
-        window.parent.postMessage({type: type, data: data},"*");
+        window.parent.postMessage({type: type, data: data, id: window["javaappID"]},"*");
       }
     },
     switchToEmptyProject(){

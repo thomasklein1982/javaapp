@@ -46,10 +46,21 @@ import { basicSetup, EditorView } from 'codemirror';
 import { html } from '@codemirror/lang-html';
 import Extension from './classes/Extension.js';
 
-"use strict"
+"use strict";
+
+(function(){
+  let hash=location.hash;
+  let pos=hash.indexOf("id=");
+  if(pos<0) return;
+  let pos2=hash.indexOf(";",pos+3);
+  if(pos2<0) return;
+  let id=hash.substring(pos+3,pos2);
+  window["javaappID"]=id;
+})();
 
 const updateSW=registerSW({
   onNeedRefresh(){
+    window.app.emitEvent("update-available");
     let a=confirm("Eine neue Version ist verfügbar. Willst du aktualisieren (empfohlen!)?");
     if(a){
       updateSW();
@@ -212,34 +223,44 @@ window.onmessage=function(message){
     data=data.data;
     app.$refs.editor.setSourceFileError(data);
   }else if(data.type==="give-class-names"){
-    app.sendClassNames();
+    app.sendClassNames(data.data);
   }else if(data.type==="give-project"){
-    app.sendProject();
+    app.sendProject(data.data);
   }else if(data.type==="give-full-app-code"){
-    app.sendFullAppCode();
+    app.sendFullAppCode(data.data);
   }else if(data.type==="add-class"){
     app.addClazz(data.data);
+    app.emitEvent(data.type+"-done");
   }else if(data.type==="remove-class"){
     app.removeClazz(data.data.name);
+    app.emitEvent(data.type+"-done");
   }else if(data.type==="open-project"){
     app.openProjectFromJSON(data.data);
+    app.emitEvent(data.type+"-done");
   }else if(data.type==="open-project-from-full-app-code"){
     app.openProjectFromFullAppCode(data.data);
+    app.emitEvent(data.type+"-done");
   }else if(data.type==="open-project-empty"){
     app.switchToEmptyProject();
+    app.emitEvent(data.type+"-done");
   }else if(data.type==="set-visible-menubar"){
     app.setVisibleMenubar(data.data.visible);
+    app.emitEvent(data.type+"-done");
   }else if(data.type==="set-visible-sidebar"){
     app.setVisibleSidebar(data.data.visible);
+    app.emitEvent(data.type+"-done");
   }else if(data.type==="set-visible-run-button"){
     app.setVisibleRunButton(data.data.visible);
+    app.emitEvent(data.type+"-done");
   }else if(data.type==="add-extension"){
     let p=new Extension(data.data.name);
     p.fromJSON(data.data);
     app.addExtension(p);
+    app.emitEvent(data.type+"-done");
   }else if(data.type==="remove-extension"){
     let ext=app.getExtensionByName(data.data.name);
     app.removeExtension(ext);
+    app.emitEvent(data.type+"-done");
   }else if(data.type==="give-extension-names"){
     let names=[];
     for(let i=0;i<app.extensions.length;i++){
@@ -283,6 +304,8 @@ window.clazzSources={
 
 if(window.parent){
   window.parent.postMessage({
-    type: "LOADING-COMPLETE"
+    event: true,
+    type: "LOADING-COMPLETE",
+    id: window["javaappID"]
   },"*");
 }
