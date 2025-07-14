@@ -73,8 +73,13 @@ export class Scope{
     let pos=node.to;
     this.typeAnnotations[pos]={
       type,isStatic
-    };
-    
+    }; 
+  }
+
+  addTypeAnnotationAt(pos,type,isStatic){
+    this.typeAnnotations[pos]={
+      type,isStatic
+    }; 
   }
 
   getProject(){

@@ -6,6 +6,7 @@
     />
     <template v-if="!$root.printMode">
       <EditorMenubar
+        v-if="showMenubar"
         :right-closed="rightClosed"
         :project="project"
         :difficulty="difficulty"
@@ -39,7 +40,9 @@
         @play-dev="playInNewWindow(true)"
         @terminal="$refs.dialogTerminal.setVisible(true)"
         @logging="$refs.dialogLogging.setVisible(true)"
+        @storage="$refs.dialogStorage.setVisible(true)"
         @tryit="$refs.tryItDialog.setVisible(true)"
+        @extensions="$refs.dialogExtensions.setVisible(true)"
       />
       <LinksDialog
         ref="dialogResources"
@@ -60,7 +63,9 @@
       <AssetsDialog :project="project" ref="dialogAssets" @open-image-editor="asset=>$refs.imageEditor.open(asset)"/>
       <DatabaseDialog v-if="project" :database="project.database" ref="dialogDatabase"/>
       <CSSDialog :project="project" ref="dialogCSS"/>
+      <ExtensionManagerDialog :project="project" ref="dialogExtensions"/>
       <TerminalDialog :project="project" ref="dialogTerminal" @run="stopAndPlay"/>
+      <StorageDialog :project="project" ref="dialogStorage"/>
       <SourceFileSettingsDialog ref="dialogSourceFileSettings" :project="project"/>
       <TryItDialog ref="tryItDialog"/>
       <Splitter :gutter-size="splitterSize" ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
@@ -173,7 +178,7 @@
       <span style="position: fixed; bottom: 0.5rem; right: 0.5rem; z-index: 101">
         <span  v-if="!running">
           <Button style="margin-right: 0.2rem" v-if="$root.exerciseCheckerCode && (!running || paused)" label="Prüfen" @click="runExerciseChecker()" icon="pi pi-list-check" />
-          <Button v-if="!running || paused" @click="resume()" icon="pi pi-play" />
+          <Button v-if="showRunButton && (!running || paused)" @click="resume()" icon="pi pi-play" />
         </span>
       </span>
     </template>
@@ -218,6 +223,8 @@ import CodeMirrorEditor from "./CodeMirrorEditor.vue";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "primevue";
 import SourceFileSettingsDialog from "./SourceFileSettingsDialog.vue";
 import LoggingDialog from "./LoggingDialog.vue";
+import StorageDialog from "./StorageDialog.vue";
+import ExtensionManagerDialog from "./ExtensionManagerDialog.vue";
 
 export default {
   props: {
@@ -242,16 +249,18 @@ export default {
       breakpoints: [],
       sizeCode: 60,
       rightClosed: false,
+      showMenubar: true,
+      showRunButton: true,
       closeRightAfterStopping: false,
       selectedUIComponent: null
     };
   },
   watch: {
     activeTab(nv,ov){
+      this.$root.emitEvent("tab-change",{index: nv});
       if(this.$refs.editor && nv<this.$refs.editor.length){
         let ed=this.$refs.editor[nv];
         if(!ed.updateLinter) return;
-        console.log("update linter");
         ed.updateLinter();
       }
       this.selectedUIComponent=null;
@@ -353,8 +362,6 @@ export default {
       this.updateUIPreview();
     },
     updateUIPreview(){
-      console.log("update preview")
-
       this.$refs.uipreview.reload();
     },
     clearUIPreview(){
@@ -410,6 +417,16 @@ export default {
         this.sizeCode=Math.max(10,this.sizeCodeSaved);
       }
       this.rightClosed=!this.rightClosed;
+    },
+    setRightVisible(v){
+      if(this.rightClosed!==v) return;
+      this.toggleRight();
+    },
+    setMenubarVisible(v){
+      this.showMenubar=v;
+    },
+    setRunButtonVisible(v){
+      this.showRunButton=v;
     },
     setSplitterSizes(left){
       return;
@@ -698,7 +715,9 @@ export default {
     TabPanel,
     Tab,
     SourceFileSettingsDialog,
-    LoggingDialog
+    LoggingDialog,
+    StorageDialog,
+    ExtensionManagerDialog
   }
 }
 </script>

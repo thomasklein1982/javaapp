@@ -12,7 +12,7 @@
       :current="current"
       :difficulty="difficulty"
       ref="editor"
-      @help="$refs.dialogHelp.setVisible(true)"
+      @help="showHelp()"
       @open-project-dialog="openProjectDialog"
       :logged-data="loggedData"
     />
@@ -40,6 +40,10 @@ import {version} from "../package.json";
 import { CompileFunctions } from "./language/CompileFunctions";
 import { Java } from "./language/java";
 import { getTimestamp } from "./functions/getTimestamp";
+import { loadLocally, saveLocally } from "./functions/helper";
+import Extension from "./classes/Extension";
+
+const STORAGE_KEY_DATA="JAVA-APP-DATA";
 
 export default{
   data(){
@@ -55,10 +59,13 @@ export default{
       exerciseMode: options.exerciseMode,
       exerciseCheckerCode: "",
       loggedData: [],
-      loggingEnabled: true
+      loggingEnabled: true,
+      extensions: [],
+      extensionsCode: ""
     };
   },
-  mounted(){
+  async mounted(){
+    await this.loadData();
     let hash=location.hash;
     if(hash.indexOf("help")>=0){
       this.$refs.dialogHelp.setVisible(true);
@@ -84,8 +91,12 @@ export default{
     setInterval(()=>{
       this.sendExerciseData();
     },1000);
+    this.emitEvent("ready");
   },
   methods: {
+    showHelp(){
+      this.$refs.dialogHelp.setVisible(true);
+    },
     log(data,force){
       if(!force && !this.loggingEnabled) return;
       this.loggedData.splice(0,0,{
@@ -105,6 +116,119 @@ export default{
         let project=this.getProject().toJSON();
         window.parent.postMessage({type: "send-exercise-data",data: {project}},"*");
       }
+    },
+    sendClassNames(){
+      if(window.parent){
+        let p=this.getProject();
+        let names=[];
+        if(p){
+          for(let i=0;i<p.clazzes.length;i++){
+            names.push(p.clazzes[i].name);
+          }
+        }
+        window.parent.postMessage({type: "give-classnames-answer",data: names, id: window["javaappID"]},"*");
+      }
+    },
+    getExtensionByName(name){
+      for(let i=0;i<this.extensions.length;i++){
+        let e=this.extensions[i];
+        if(e.name===name){
+          return e;
+        }
+      }
+      return null;
+    },
+    removeExtension(ext){
+      let index=this.extensions.indexOf(ext);
+      if(index<0) return;
+      this.removeExtensionAtIndex(index);
+    },
+    removeExtensionAtIndex(index){
+      let ext=this.extensions[index];
+      this.extensions.splice(index,1);
+      this.saveData();
+      ext.removeFromJava(Java);
+      this.updateExtensions();
+    },
+    addExtension(e){
+      this.extensions.push(e);
+      this.saveData();
+      this.updateExtensions();
+    },
+    updateExtensions(){
+      this.extensionsCode="";
+      for(let i=0;i<this.extensions.length;i++){
+        let ext=this.extensions[i];
+        this.extensionsCode+="\n"+ext.compile(Java);
+      }
+    },
+    saveData(){
+      let data={
+        extensions: this.extensions
+      };
+      saveLocally(STORAGE_KEY_DATA,data);
+    },
+    async loadData(){
+      let data=await loadLocally(STORAGE_KEY_DATA);
+      if(!data) return;
+      //console.log("loaded data",data);
+      this.extensions=[];
+      for(let i=0;i<data.extensions.length;i++){
+        let e=data.extensions[i];
+        let ext=new Extension(e.name,e.clazzes);
+        ext.fromJSON(e);
+        this.extensions.push(ext);
+      }
+      this.updateExtensions();
+    },
+    setVisibleSidebar(v){
+      this.$refs.editor.setRightVisible(v);
+    },
+    setVisibleMenubar(v){
+      this.$refs.editor.setMenubarVisible(v);
+    },
+    setVisibleRunButton(v){
+      this.$refs.editor.setRunButtonVisible(v);
+    },
+    sendProject(){
+      if(window.parent){
+        let p=this.getProject();
+        let data=p.toJSON();
+        window.parent.postMessage({type: "give-project-answer",data: data, id: window["javaappID"]},"*");
+      }
+    },
+    emitEvent(type, data){
+      if(window.parent){
+        window.parent.postMessage({event: true, type: type, data: data, id: window["javaappID"]},"*");
+      }
+    },
+    sendFullAppCode(){
+      if(window.parent){
+        let p=this.getProject();
+        let data=null;
+        if(p){
+          data=p.getFullAppCode("$App.hideConsoleIfUIPresentAfterSetup=true;",true);
+        }
+        window.parent.postMessage({type: "give-full-app-code-answer",data: data, id: window["javaappID"]},"*");
+      }
+    },
+    sendToParentWindow(type, data){
+      if(window.parent){
+        window.parent.postMessage({type: type, data: data, id: window["javaappID"]},"*");
+      }
+    },
+    switchToEmptyProject(){
+      let p=new Project();
+      this.openProject(p);
+    },
+    addClazz(clazzData){
+      this.$refs.editor.addNewClazz(clazzData);
+    },
+    removeClazz(name){
+      let p=this.getProject();
+      if(!p) return;
+      let c=p.getClazzByName(name);
+      p.removeClazz(c);
     },
     handleExerciseTest(data){
       console.log("handle exercise test");
@@ -147,6 +271,26 @@ export default{
       this.openProject(p);
       this.exerciseCheckerCode=data.checker;
     },
+    openProjectFromJSON(data){
+      let p=new Project();
+      p.fromJSON(data);
+      this.openProject(p);
+    },
+    openProjectFromFullAppCode(code){
+      let p=new Project();
+      let ok=true;
+      try{
+        ok=p.fromSaveString(code);
+      }catch(e){
+        ok=false;
+      }
+      if(ok){
+        this.openProject(p); 
+      }
+      if(window.parent){
+        window.parent.postMessage({type: "open-project-from-full-app-code-answer",data: ok},"*");
+      }
+    },
     resetCurrent(line,name){
       if(!line) line=this.current.line;
       if(!name) name=this.current.name;
@@ -158,12 +302,12 @@ export default{
     },
     openProject: function(project){
       //Object.seal(project);
-      console.log("open project",project);
       this.$refs.editor.openProject(project);
       this.showScreen("editor");
       setTimeout(()=>{
         this.setLoggingEnabled(false);
       },1000);
+      this.emitEvent("project-open");
     },
     importProject: function(project){
       this.$refs.editor.importToProject(project);

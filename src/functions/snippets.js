@@ -141,6 +141,12 @@ function createSnippets(data){
     type: "keyword"
   }));
 
+  snippets.inMethod.push(autocomplete.snippetCompletion("switch (${var}) {\n\tcase 0:\n}", {
+    label: "switch-case",
+    info: "Wählt eine Alternative anhand eines Variablenwertes.",
+    type: "keyword"
+  }));
+
   snippets.inMethod.push(autocomplete.snippetCompletion("if (${bedingung}) {\n\t${}\n}", {
     label: "if",
     info: "Die Anweisungen werden nur dann ausgeführt, wenn die Bedingung erfüllt ist.",

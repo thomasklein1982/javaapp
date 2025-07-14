@@ -1846,25 +1846,25 @@ window.appJScode=function(){
     
     $App.addObject("session",false,{
       get isServer(){
-		if(this.session){
-		  return this.session.isHost;
-		}else{
-		  return false;
-		}
+        if(this.session){
+          return this.session.isHost;
+        }else{
+          return false;
+        }
       },
       get myID(){
-		if(this.session){
-          return this.session.clientID;
-		}else{
-		  return null;
-		}
+        if(this.session){
+              return this.session.clientID;
+        }else{
+          return null;
+        }
       },
       get sessionID(){
         if(this.session){
           return this.session.sessionID;
-		}else{
-		  return null;
-		}
+        }else{
+          return null;
+        }
       },
       session: null,
       start: function(sessionID, clientID, isHost, debug){

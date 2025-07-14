@@ -1,6 +1,6 @@
 <template>
   <h1>Easy - Normal - Hard</h1>
-  <p>JavaApp kann in drei verschiedenen Modi betrieben werden, die festlegen, wie genau die syntaktischen und semantischen Vorgaben von Java einghalten werden müssen. Der Modus kann auf der Startseite von JavaApp eingestellt werden.</p>
+  <p>JavaApp kann in drei verschiedenen Modi betrieben werden, die festlegen, wie genau die syntaktischen und semantischen Vorgaben von Java eingehalten werden müssen. Der Modus kann auf der Startseite von JavaApp eingestellt werden.</p>
   <h2>Der harte Modus</h2>
   <p>Dieser Modus versucht, die Vorgaben von Java so exakt wie möglich umzusetzen. Man schreibt also "ganz normalen Java-Code". Einige Abweichungen bleiben aber bestehen:
     <ul>
@@ -36,7 +36,7 @@ JButton button;
 JTextField eingabe;
 JLabel ausgabe;
 
-main( ){
+void main( ){
   //ui erzeugen:
   JFrame frame = new JFrame("1");
   eingabe = new JTextField();

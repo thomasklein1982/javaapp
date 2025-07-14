@@ -30,7 +30,7 @@ export class Clazz{
     this.hasClazzDeclaration=true;
     this.project=project;
     this.superClazz=null;
-    this.implementedInterfaces=[];
+    this.implementedInterfaces=null;
     this.attributeErrors=null;
     this.errors=null;
     if(this.isInterface){
@@ -399,9 +399,9 @@ export class Clazz{
   }
 
   getMethod(name,staticAccess){
-    if(name==="toString"){
-      name="$toString";
-    }
+    // if(name==="toString"){
+    //   name="$toString";
+    // }
     let m=this.methods[name];
     if(!m){
       let sc=this.getRealSuperClazz();
@@ -749,7 +749,9 @@ export class Clazz{
       //   }
       // }
       let comments=parseComments(this.source,node);
-      node=comments.node;
+      if(comments.node){
+        node=comments.node;
+      }
       let description=comments.text;
       if(node.name==="FieldDeclaration"){
         if(this.isInterface){

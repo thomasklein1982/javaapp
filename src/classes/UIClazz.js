@@ -275,7 +275,12 @@ export class UIClazz extends Clazz{
         }
       }
       if(c.array){
-        names[c.array]=c;
+        if(standardValue!==undefined){
+          names[c.array]=standardValue;
+        }else{
+          if(!names[c.array]) names[c.array]=[];
+          names[c.array].push(c);
+        }
       }
       if(c.components){
         UIClazz.getAllAttributesFromComponent(c,names,standardValue);
@@ -312,7 +317,7 @@ export class UIClazz extends Clazz{
   }
 
   getUIPreviewCode(){
-    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;\n$App.console.hide();\nconsole.log('set onstart');setTimeout(async ()=>{await $App.setup();var sheet = window.document.styleSheets[0];sheet.insertRule('.__jcomponent:hover{ background: cyan;opacity: 0.5; }', sheet.cssRules.length);\nwindow.addEventListener('message',function(ev){if(ev.data.type==='select'){$changePreviewSelection(ev.data.id)}});\nconsole.log('start preview');\n(new "+this.name+"("+")).$constructor();},100);",false,true);
+    let code=this.project.getFullAppCode("\n$uiPreviewMode=true;\n$App.console.hide();$App.showConsoleOnStart=false;\nconsole.log('set onstart');setTimeout(async ()=>{await $App.setup();var sheet = window.document.styleSheets[0];sheet.insertRule('.__jcomponent:hover{ background: cyan;opacity: 0.5; }', sheet.cssRules.length);\nwindow.addEventListener('message',function(ev){if(ev.data.type==='select'){$changePreviewSelection(ev.data.id)}});\nconsole.log('start preview');\n(new "+this.name+"("+")).$constructor();},100);",false,true);
     
     return code;
   }
@@ -403,7 +408,8 @@ export class UIClazz extends Clazz{
 
   compile(fromSource,optimizeCompiler){
     super.compile(fromSource,optimizeCompiler);
-    
+    this.compileMemberDeclarations();
+    return;
     let scope=new Scope(this.project,undefined,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
     // this.attributes={};
     // this.methods={};
@@ -419,14 +425,24 @@ export class UIClazz extends Clazz{
       }else{
         type=c.type;
       }
-      let a=createAttribute({
-        name,
-        type: c.array? {baseType: Java.datatypes.JComponent, dimension: 1} : type
-      },this,true);
-      a.isNamedComponent=true;
-      this.attributes[name]=a;
+      if(c.name){
+        let a=createAttribute({
+          name: c.name,
+          type: type
+        },this,true);
+        a.isNamedComponent=true;
+        this.attributes[c.name]=a;
+      }
+      if(c.array){
+        let a=createAttribute({
+          name: c.array,
+          type: {baseType: Java.datatypes.JComponent, dimension: 1}
+        },this,true);
+        a.isNamedComponent=true;
+        this.attributes[c.array]=a;
+      }
     }
-    
+    console.log("attribute",this.attributes);
     this.componentCode="";
     let codeObject={code: "let container0=this;\nwindow.$insertPosition=0;\n"};
     codeObject.code+=this.generateJavaScriptCodeForComponent(this,codeObject,0,null);
@@ -485,20 +501,40 @@ export class UIClazz extends Clazz{
     super.compileMemberDeclarations();
 
     let scope=new Scope(this.project,undefined,undefined,{addLocalVariablesUpdates: false, ignoreVisibilityRestrictions: true});
-    //this.compileVariables(scope);
     let namedComponents=UIClazz.getAllAttributesFromComponent(this,{},undefined);
-    for(let name in namedComponents){
-      let c=namedComponents[name];
-      let type;
-      if(c.type==="UIClazz"){
-        type=c.componentName;
-        type=this.project.getClazzByName(type);
+    for(let n in namedComponents){
+      let c=namedComponents[n];
+      let type=null;
+      let name=null;
+      if(Array.isArray(c)){
+        name=c[0].array;
+        for(let i=0;i<c.length;i++){
+          let comp=c[i];
+          let ctype;
+          if(comp.type==="UIClazz"){
+            ctype=comp.componentName;
+            ctype=this.project.getClazzByName(ctype);
+          }else{
+            ctype=comp.type;
+          }
+          if(type===null) type=ctype;
+          if(type!==ctype){
+            type=Java.datatypes.JComponent;
+          }
+        }
+        type={baseType: type, dimension: 1};
       }else{
-        type=c.type;
+        if(c.type==="UIClazz"){
+          type=c.componentName;
+          type=this.project.getClazzByName(type);
+        }else{
+          type=c.type;
+        }
+        name=c.name;
       }
       let a=createAttribute({
-        name,
-        type: c.array? {baseType: type, dimension: 1} : type
+        name: name,
+        type: type
       },this,true);
       a.isNamedComponent=true;
       this.attributes[name]=a;

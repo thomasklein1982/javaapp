@@ -111,6 +111,14 @@ export function defineJSON(Clazz,Java){
     jsName: "$jstoBoolean"
   },Clazz,false,false);
   createMethod({
+    name: 'toArray',
+    isExtraFunction: true,
+    args: [],
+    info: "",
+    returnType: {baseType: "JSON", dimension: 1},
+    jsName: "$jstoArray"
+  },Clazz,false,false);
+  createMethod({
     name: 'get',
     isExtraFunction: true,
     args: [{name: 'key', type: 'String'}],

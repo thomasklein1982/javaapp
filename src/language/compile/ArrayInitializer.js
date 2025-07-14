@@ -3,8 +3,15 @@ import { CompileFunctions } from "../CompileFunctions";
 import { Java } from "../java";
 
 export function ArrayInitializer(node,source,scope,type){
+  
+  if(type.assignTarget){
+    type=type.assignTarget.type;
+  }
   if(!type){
     throw source.createError("Kein Datentyp angegeben.",node);
+  }
+  if(type.dimension==0){
+    throw source.createError("In einem "+type.baseType.name+" kann kein Array gespeichert werden.",node);
   }
   node=node.firstChild;
   node=node.nextSibling;

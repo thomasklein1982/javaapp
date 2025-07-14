@@ -85,13 +85,15 @@
         this.project.compile();
         let frame=document.createElement('iframe');
         frame.style="background-color: white; width: 100%; height: 100%;";
+        frame.setAttribute("sandbox", "allow-downloads allow-forms allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-modals");
         if(this.$refs.wrapper.firstChild){
           this.$refs.wrapper.removeChild(this.$refs.wrapper.firstChild);
         }
         this.$refs.wrapper.appendChild(frame);
         console.log("start app",this.breakpoints);
-        let prefix=noDebugging?"console.hide();":"$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");";
+        let prefix=noDebugging?"$App.console.hide();":"$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");";
         prefix+=additionalCode;
+        console.log("reload",prefix);
         let code=this.project.getFullAppCode(prefix,false,false,args);
 
         const blob = URL.createObjectURL(

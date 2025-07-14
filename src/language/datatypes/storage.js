@@ -71,6 +71,14 @@ export function defineStorage(clazz){
     info: "Liefert ein Array mit allen verwendeten Schlüsseln dieses Speichers zurück."
   },clazz,false,false);
   createMethod({
+    name: "hasKey",
+    args: [
+      {name: "key",type: "String"}
+    ],
+    returnType: "boolean",
+    info: "Checkt, ob es den Key gibt."
+  },clazz,false,false);
+  createMethod({
     name: "deleteStorage",
     args: [{name: "name", type: "String", info: "Name des Speichers, der gelöscht werden soll."}],
     info: "Löscht einen Speicher von der Festplatte."

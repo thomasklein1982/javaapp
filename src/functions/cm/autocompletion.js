@@ -5,6 +5,7 @@ import {createParamsString,snippets} from '../snippets'
 import {Java} from '../../language/java';
 import {getClazzFromState} from './getClazzFromState';
 import { PrimitiveType } from "../../classes/PrimitiveType";
+import { Method } from "../../classes/Method";
 
 const completePropertyAfter = ["PropertyName", ".", "?."]
 const dontCompleteIn = ["TemplateString", "LineComment", "BlockComment",
@@ -29,14 +30,14 @@ export function createAutocompletion(){
     if(!clazz) return;
     let pos=context.pos;
     let project=app.$refs.editor.project;
-    console.log("autocomplete");
+    //console.log("autocomplete");
     let lastTypedCharacter=context.state.doc.sliceString(context.pos-1,context.pos);
     if(["{","}",",",";","[","]","(",")"].indexOf(lastTypedCharacter)>=0) return;
     let nodeBefore = context.state.tree.resolveInner(pos, -1);
     nodeBefore=getRealNodeBefore(nodeBefore,pos);
     if(!nodeBefore) return;
     if(dontCompleteIn.includes(nodeBefore.name)) {
-      console.log("dont autocomplete",nodeBefore.name);
+      //console.log("dont autocomplete",nodeBefore.name);
       return;
     }
     if(nodeBefore.name===";"){
@@ -175,7 +176,7 @@ export function createAutocompletion(){
       
     }
     if(annotation){
-      console.log("complete annot",annotation);
+      //console.log("complete annot",annotation);
       return completeProperties(from,annotation.type,annotation.isStatic,annotation.topLevel, method, annotation.scope,clazz);
     }
     return null
@@ -223,7 +224,7 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
         //if(clazz.name==="nullType") continue;
         let attributeNames=clazz.getAllAttributeNames();
         for (let name in attributeNames) {
-          if(allAttributeNames[name]) continue;
+          if(allAttributeNames[name]===true) continue;
           allAttributeNames[name]=true;
           let a=clazz.getAttribute(name,isStatic);
           if(a && !a.error && a.isStatic()===isStatic && (!a.isPrivate() || currentClazz.name===clazz.name)){
@@ -241,7 +242,7 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
       let methodNames={};
       while(clazz){
         for (let name in clazz.methods) {
-          if(methodNames[name]) continue;
+          if(methodNames[name]===true) continue;
           methodNames[name]=true;
           let m=clazz.methods[name];
           if(m.isConstructor()) continue;
@@ -281,9 +282,9 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
           options.push(snippets.inMethod[i]);
         }
       }
-      for(let name in Java.clazzes){
+      for(let name in Java.datatypes){
         //if(name==="nullType") continue;
-        let c=Java.clazzes[name];
+        let c=Java.datatypes[name];
         let typeParametersString="";
         if(c.hasTypeParameters && c.hasTypeParameters()){
           typeParametersString="<>";

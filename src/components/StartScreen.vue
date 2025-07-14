@@ -11,6 +11,7 @@
       <Button :disabled="lastProject===null" style="margin: 0.5rem;" icon="pi pi-replay" @click="restoreApp()" label="Letzte App wiederherstellen"/>
       <Button style="margin: 0.5rem;" icon="pi pi-file" @click="$refs.dialogNewApp.setVisible(true)" label="Neue App erstellen"/>
       <Button style="margin: 0.5rem;" icon="pi pi-upload" @click="clickUploadApp()" label="App hochladen"/>
+      <Button style="margin: 0.5rem;" icon="pi pi-question" @click="$root.showHelp()" label="Hilfe anzeigen"/>
     </div>
 
     <InlineMessage style="max-width: 60%; margin-top: 0.8rem" severity="info">

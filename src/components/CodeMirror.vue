@@ -387,7 +387,6 @@ export default {
     let editorTheme=new Compartment();
     let language;
     if(this.clazz.isFirstClazz || this.clazz.isUIClazz()){
-      console.log("use easy without clazz");
       language=javaWithoutClazz;
     }else{
       language=javaWithClazz;
@@ -456,6 +455,7 @@ export default {
                     delta,
                     from
                   }).then(()=>{
+                    this.$root.emitEvent("code-change",{class: this.clazz.name});
                     this.updateLinter();
                   });
                   return;
@@ -485,6 +485,7 @@ export default {
             if(timer) clearTimeout(timer);
             if(updateImmediately){
               this.update(v).then(()=>{
+                this.$root.emitEvent("code-change",{class: this.clazz.name});
                 this.updateLinter();
               });
               changed=false;
@@ -492,6 +493,7 @@ export default {
               timer = setTimeout(() => {
                 if (changed) {
                   this.update(v).then(()=>{
+                    this.$root.emitEvent("code-change",{class: this.clazz.name});
                     this.updateLinter();
                   });
                   //lint.value.source(this.editor);

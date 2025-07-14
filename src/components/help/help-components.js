@@ -52,6 +52,7 @@ import about_whatis from "./about/what-is.vue";
   // import api_timer from "./api/timer.vue";
   import about_faq from "./about/faq.vue";
   import advanced_javascript from "./advanced/javascript.vue";
+  import advanced_save from "./advanced/save.vue";
 
   let components={
     about: {
@@ -275,8 +276,12 @@ import about_whatis from "./about/what-is.vue";
       // }
     },
     advanced: {
-      label: "Für Fortgeschrittene",
+      label: "Spezielle Features",
       components: {
+        save: {
+          label: "Speichern und Laden",
+          comp: advanced_save
+        },
         javascript: {
           label: "JavaScript",
           comp: advanced_javascript

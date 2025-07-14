@@ -57,6 +57,9 @@ export function MethodInvocation(node,source,scope){
           static: true
         };
       }else{
+        if(id.object.type && id.object.type.dimension>0){
+          throw source.createError("Ein Array hat keine Methoden.",node.nextSibling.nextSibling);
+        }
         owner={
           clazz: id.object.type?.baseType,
           static: false,
@@ -67,6 +70,9 @@ export function MethodInvocation(node,source,scope){
       let f=CompileFunctions.get(node,source);
       let fa=f(node,source,scope);
       code+=fa.code;
+      if(fa.type && fa.type.dimension>0){
+        throw source.createError("Ein Array hat keine Methoden.",node.nextSibling.nextSibling);
+      }
       owner={
         clazz: fa.type.baseType,
         static: false,

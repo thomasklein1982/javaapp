@@ -98,7 +98,7 @@ export class Table{
     }
     return commands;
   }
-  $toString(){
+  toString(){
     var s=this.toCSVString();
     var pos=s.indexOf("\n");
     return s.substring(pos+1);

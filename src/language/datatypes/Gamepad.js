@@ -148,4 +148,11 @@ gp.setEventListener( "A", "press", ( ev ) -> {
       {name: "visible", type: "boolean"}
     ]
   },Clazz,false,false);
+  createMethod({
+    name: 'setVisible',
+    args: [
+      {name: "visible", type: "boolean"}
+    ],
+    info: "Blendet das komplette Gamepad ein oder aus."
+  },Clazz,false,false);
 }

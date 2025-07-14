@@ -7,6 +7,7 @@ import { UIClazz } from "./UIClazz.js";
 import { Database } from "./Database.js";
 import { SourceFile } from "./SourceFile.js";
 
+
 let start="Project Code Start";
 let stop="Project Code Stop";
 
@@ -17,10 +18,11 @@ export class Project{
     this.css="";
     this.database=new Database();
     this.includeAlaSQL=false;
+    this.includePeerJS=false;
     this.assets=[];
     if(!name){
-      name="MyApp";
-      code="class MyApp{\n  \n  void onStart(){\n    \n  }\n\n  public static void main(String[] args){\n    new MyApp();\n  }\n}";
+      name="Main";
+      code="";
     }
     this.name=name;
     this.date=new Date();
@@ -155,9 +157,9 @@ export class Project{
       <script>
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.register('./sw.js').then((r)=>{
-            console.log("Service Worker Registrierung erfolgreich");
+            
           }, (e)=>{
-            console.log("Service Worker Registrierung nicht erfolgreich",e);
+            
           });
         }
         window.language="java";
@@ -231,6 +233,10 @@ export class Project{
   getFullAppCode(additionalCode, includeSave, dontCallMain, args, afterMainCallCode){
     if(!additionalCode) additionalCode="";
     this.date=new Date();
+    let peerJScode="";
+    if(this.includePeerJS){
+      peerJScode=window.peerJScode;
+    }
     let databaseCode="";
     if(this.includeAlaSQL){
       databaseCode+=alasql_code+"\nalasql_code();alasql.options.casesensitive=false;\n";
@@ -255,14 +261,17 @@ export class Project{
         } 
         return null;
       };`;
-      databaseCode+="$clearAlaSQL();\ntry{";
+      let dbcreate="\nwindow.$dbCreate=function(){\n";
+      dbcreate+="$clearAlaSQL();\ntry{";
       let cmds=this.database.createInMemory(true);
-      if(cmds && cmds.length>1){
+      
+      if(cmds && cmds.length>0){
         for(var i=0;i<cmds.length;i++){
-          databaseCode+="alasql("+JSON.stringify(cmds[i])+");\n";
+          dbcreate+="alasql("+JSON.stringify(cmds[i])+");\n";
         }
       }
-      databaseCode+="}catch(e){console.log('** Datenbank-Fehler: **');console.log(e);console.log('**************')}\n";
+      dbcreate+="}catch(e){\nconsole.log('** Datenbank-Fehler: **');\nconsole.log(e);\nconsole.log('**************')}\n}\n";
+      databaseCode+=dbcreate+"\nwindow.$dbCreate();";
     }
     let assetsCode="/****** ASSETS START ******/";
     for(let i=0;i<this.assets.length;i++){
@@ -305,6 +314,9 @@ export class Project{
     codeMainCall+="\nif("+mainObjectCode+"?.main){await "+mainObjectCode+".main("+JSON.stringify(args)+");"+(afterMainCallCode?afterMainCallCode:"")+"}\n";
     codeMainCall+="\n$App.enableOnNextFrame=true;\nsetTimeout(async ()=>{await window.$exerciseChecker();},100);})();";
     let css=this.prepareCSS(this.css);
+    if(!includeSave){
+      codeMainCall+="; JavaApp.setWatchedObject($main);";
+    }
     codeMainCall="window.addEventListener('DOMContentLoaded',async function(){"+codeMainCall+"});";
     if(dontCallMain){
       codeMainCall="";
@@ -319,9 +331,9 @@ export class Project{
       <script>
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.register('./sw.js').then((r)=>{
-            console.log("Service Worker Registrierung erfolgreich");
+            
           }, (e)=>{
-            console.log("Service Worker Registrierung nicht erfolgreich",e);
+            
           });
         }
         window.language="java";
@@ -330,10 +342,12 @@ export class Project{
         ${window.appJScode}
         ${includeSave? '$App.hideConsoleIfUIPresentAfterSetup=true;':''}
         ${window.additionalJSCode}
+        ${peerJScode}
         ${databaseCode}
         ${assetsCode}
         window.$exerciseChecker=async()=>{};
         ${additionalCode}
+        ${app.extensionsCode}
         ${js}
         ${codeMainCall}
       </script>
@@ -430,12 +444,6 @@ export class Project{
             height: 100%;
             resize: none;
           }
-          .__canvas{
-            contain: strict;
-            overflow: hidden;
-            container-type: size;
-            position: relative;
-          }
           .__canvas>.__jcomponent,.__canvas>.__canvas-wrapper{
             position: absolute;
             left: 0;
@@ -447,7 +455,6 @@ export class Project{
             display: flex;
 				    place-content: center;
           }
-          
           .java-app-unselectable {
             -webkit-user-select: none;
             user-select: none;
@@ -607,7 +614,7 @@ export class Project{
         finished[c.name]=true;
       }
     }
-    code+="console.log(window.$uiPreviewMode);if(window.$uiPreviewMode){console.log('preview mode')}"
+    code+="\nif(window.$uiPreviewMode){console.log('preview mode')}"
     //code+="\nasync function onStart(){if($main && $main.onStart){$main.onStart();}}\n";
     let clazzInfos={};
     /**Informationen zu allen Klassen anhaengen: Name, Attribute mit Datentyp, factory-Funktion */
@@ -666,6 +673,7 @@ export class Project{
   async compile(fromSource,optimizeCompiler){
     app.log("compile project, fromSource="+fromSource+" clazzes="+this.clazzes.length);
     this.includeAlaSQL=false;
+    this.includePeerJS=false;
     /**
      * 1. Alle Klassendeklarationen parsen
      * 2. Alle Memberdeklarationen parsen
@@ -708,8 +716,8 @@ export class Project{
       app.log("project.compile: clazz "+c.name+" compiled: error-count="+c.errors.length);
     }
 
-    let end=Date.now();
-    console.log("parsing done in "+(end-start)+"ms");
+    // let end=Date.now();
+    // console.log("parsing done in "+(end-start)+"ms");
   }
   deleteClazzes(){
     while(this.clazzes.length>0) this.clazzes.pop();
@@ -902,7 +910,6 @@ export class Project{
     }
   }
   fromSaveString(appcode){
-    console.log("from save string");
     this.assets=[];
     let pos=appcode.indexOf(start);
     let saveString;
@@ -914,9 +921,7 @@ export class Project{
       saveString=appcode.substring(pos+start.length,pos2);
     }
     try{
-      console.log("parse");
       var o=JSON.parse(saveString);
-      console.log(o);
       let pos=appcode.indexOf("/****** ASSETS START ******/");
       if(pos>=0){
         let pos2=appcode.indexOf("/****** ASSETS END ******/",pos+12);

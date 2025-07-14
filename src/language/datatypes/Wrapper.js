@@ -77,23 +77,23 @@ export function defineDouble(Clazz,Java){
 
 export function defineChar(Clazz,Java){
   createMethod({
-    name: 'parseChar',
+    name: 'toString',
     args: [
-      {name: 's', type: 'String'}
+      {name: 'codePoint', type: 'int'}
     ],
-    returnType: "char"
-  },Clazz,true,false,Java);
+    returnType: "String"
+  },Clazz,true,false);
   createMethod({
     name: 'valueOf',
     args: [
       {name: 's', type: ['String','char']}
     ],
-    returnType: "Char"
+    returnType: "Character"
   },Clazz,true,false,Java);
   createMethod({
     name: 'compareTo',
     args: [
-      {name: 'a', type: 'Char'}
+      {name: 'a', type: 'Character'}
     ],
     returnType: "int"
   },Clazz,false,false,Java);

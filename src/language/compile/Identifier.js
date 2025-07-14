@@ -15,14 +15,16 @@ import { Type } from "../../classes/Type";
  * @returns 
  */
 export function Identifier(node,source,scope,infos){
-  let name;
+  let rawName;
   let local=false;
   if(node.src){
     /**Spezialfall (Bug?) siehe ObjectCreationExpression */
-    name=node.src;
+    rawName=node.src;
   }else{
-    name=source.getText(node);
+    rawName=source.getText(node);
   }
+  let name=rawName.trim();
+  let annotationPos=node.to-(rawName.length-name.length);
   if(!/^[a-zA-z0-9_]+$/.test(name)){
     throw source.createError("Der Bezeichner '"+name+"' ist ungültig. Ein Bezeichner darf nur aus Buchstaben, Ziffern und/oder Unterstrichen bestehen.",node);
   }
@@ -51,7 +53,7 @@ export function Identifier(node,source,scope,infos){
         throw source.createError(obj.error,node);
       }
       type=obj.type;
-      scope.addTypeAnnotation(node,type,false);
+      scope.addTypeAnnotationAt(annotationPos,type,false);
     }
   }else{
     //Top-Level
@@ -66,7 +68,7 @@ export function Identifier(node,source,scope,infos){
       code="$u("+code+")";
       local=true;
       type=obj.type;
-      scope.addTypeAnnotation(node,type,false);
+      scope.addTypeAnnotationAt(annotationPos,type,false);
     }else{
       // if(!scope.method){
       //   throw source.createError("Es tut mir leid, ich kann diese Variable nicht außerhalb einer Methode verwenden.",node);
@@ -81,7 +83,7 @@ export function Identifier(node,source,scope,infos){
         obj=scope.getTypeByName(name);
         if(obj){
           type=null;
-          scope.addTypeAnnotation(node,new Type(obj,0),true);
+          scope.addTypeAnnotationAt(annotationPos,new Type(obj,0),true);
         }else{
           throw source.createError("Der Bezeichner '"+name+"' ist undefiniert.",node);
           //t source.createError(error,node);
@@ -92,7 +94,7 @@ export function Identifier(node,source,scope,infos){
         code="this."+code;
         codeAssign=code;
         type=obj.type;
-        scope.addTypeAnnotation(node,type,false);
+        scope.addTypeAnnotationAt(annotationPos,type,false);
         if(!owner){
           scope.addReferencedVariable(name);
         }

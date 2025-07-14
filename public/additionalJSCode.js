@@ -673,7 +673,12 @@ function additionalJSCode(){
       footerAlert: document.createElement("div"),
       footerPrompt: document.createElement("div"),
       footerConfirm: document.createElement("div"),
-      resolve: null
+      resolve: null,
+      buttonAlertOK: null,
+      buttonPromptOK: null,
+      buttonPromptCancel: null,
+      buttonYes: null,
+      buttonNo: null
     };
     let ui=$App.customDialog;
     ui.backdrop.style="display: none";
@@ -685,12 +690,14 @@ function additionalJSCode(){
     ui.input.id="dialog-input";
     ui.input.style="display: none";
     ui.frame.appendChild(ui.input);
+    ui.input.onkeyup=function(ev){if(ev.keyCode===13) $clickDialogButton('prompt');};
     ui.footerAlert.className="dialog-footer";
     ui.footerAlert.id="dialog-footer-alert";
     let button=document.createElement("button");
     button.className="dialog-footer-button";
     button.onclick=function(){$clickDialogButton('alert')};
     button.innerHTML="OK";
+    ui.buttonAlertOK=button;
     ui.footerAlert.appendChild(button);
     ui.frame.appendChild(ui.footerAlert);
     
@@ -700,11 +707,13 @@ function additionalJSCode(){
     button.className="dialog-footer-button";
     button.onclick=function(){$clickDialogButton('yes')};
     button.innerHTML="Ja";
+    ui.buttonConfirmYes=button;
     ui.footerConfirm.appendChild(button);
     button=document.createElement("button");
     button.className="dialog-footer-button";
     button.onclick=function(){$clickDialogButton('no')};
     button.innerHTML="Nein";
+    ui.buttonConfirmNo=button;
     ui.footerConfirm.appendChild(button);
     ui.frame.appendChild(ui.footerConfirm);
 
@@ -714,6 +723,7 @@ function additionalJSCode(){
     button.className="dialog-footer-button";
     button.onclick=function(){$clickDialogButton('prompt')};
     button.innerHTML="OK";
+    ui.buttonPromptOK=button;
     ui.footerPrompt.appendChild(button);
     ui.frame.appendChild(ui.footerPrompt);
     document.body.appendChild(ui.backdrop);
@@ -819,16 +829,20 @@ function additionalJSCode(){
     $App.customDialog.frame.style.transition="opacity 0.5s";
     setTimeout(()=>{
       $App.customDialog.frame.style.opacity=1;
-    },10);
+    },100);
   }
 
   App.alert=async function(message){
     $setupDialog();
     $showDialog(message,"none","","none","none");
+    $App.customDialog.buttonAlertOK.focus();
     let p=new Promise((resolve,reject)=>{
       $App.customDialog.resolve=resolve;
     });
     let q=await p;
+    $App.customDialog.frame.style.transition="opacity 0.2s";
+    $App.customDialog.frame.style.opacity=0;
+    await $Exercise.sleep(200);
     $App.customDialog.backdrop.style.display="none";
   };
 
@@ -839,10 +853,14 @@ function additionalJSCode(){
     if(defaultValue!==undefined){
       $App.customDialog.input.value=defaultValue;
     }
+    $App.customDialog.input.focus();
     let p=new Promise((resolve,reject)=>{
       $App.customDialog.resolve=resolve;
     });
     let q=await p;
+    $App.customDialog.frame.style.transition="opacity 0.2s";
+    $App.customDialog.frame.style.opacity=0;
+    await $Exercise.sleep(200);
     $App.customDialog.backdrop.style.display="none";
     return q;
   };
@@ -858,6 +876,9 @@ function additionalJSCode(){
       $App.customDialog.resolve=resolve;
     });
     let q=await p;
+    $App.customDialog.frame.style.transition="opacity 0.2s";
+    $App.customDialog.frame.style.opacity=0;
+    await $Exercise.sleep(200);
     $App.customDialog.backdrop.style.display="none";
     return q;
   };
@@ -866,10 +887,14 @@ function additionalJSCode(){
     $setupDialog();
     $App.handleModalDialog();
     $showDialog(message,"none","none","none","");
+    $App.customDialog.buttonConfirmYes.focus();
     let p=new Promise((resolve,reject)=>{
       $App.customDialog.resolve=resolve;
     });
     let q=await p;
+    $App.customDialog.frame.style.transition="opacity 0.2s";
+    $App.customDialog.frame.style.opacity=0;
+    await $Exercise.sleep(200);
     $App.customDialog.backdrop.style.display="none";
     return q;
   };
@@ -892,6 +917,16 @@ function additionalJSCode(){
     }
     
     return format;
+  }
+
+  function $StringJoin(StringClazz,delimiter,array){
+    let s="";
+    if(!array) throw $new(Exception,"NullPointer-Exception: String.join"); 
+    for(let i=0;i<array.length;i++){
+      if(i>0) s+=delimiter;
+      s+=array[i];
+    }
+    return s;
   }
 
   function $StringCharAtChar(string,index){
@@ -999,8 +1034,8 @@ function additionalJSCode(){
 
   function onNextFrame(){
     if(window.$uiPreviewMode===true) return;
-    if($main && $main.onNextFrame){
-      $main.onNextFrame();
+    if(window.$main && window.$main.onNextFrame){
+      window.$main.onNextFrame();
     }else{
       delete window.onNextFrame;
     }
@@ -1068,6 +1103,10 @@ function additionalJSCode(){
     onAction(){}
   }
 
+  class MessageListener{
+    onMessage(){}
+  }
+
   class Integer{
     constructor(v){
       this.value=v;
@@ -1112,12 +1151,12 @@ function additionalJSCode(){
       this.value=v;
     }
     static parseBoolean(s){
+      if(!s) return false;
+      s=s.toLowerCase();
       if(s==="true"){
-        this.value=true;
-      }else if(s==="false"){
-        this.value=false;
+        return true;
       }else{
-        throw $new(Exception,"Dieser String kodiert keinen Wahrheitswert:\n"+s);
+        return false;
       }
     }
     static valueOf(v){
@@ -1125,20 +1164,15 @@ function additionalJSCode(){
     }
   }
 
-  class Char{
+  class Character{
     constructor(v){
       this.value=v;
     }
-    static parseChar(s){
-      let v=s+"";
-      if(v.length===1){
-        this.value=v;
-      }else{
-        throw $new(Exception,"Dieser String kodiert keinen Character:\n"+s);
-      }
+    static toString(codePoint){
+      return String.fromCodePoint(codePoint);
     }
     static valueOf(v){
-      return new Char(v);
+      return new Character(v);
     }
   }
 
@@ -1208,6 +1242,11 @@ function additionalJSCode(){
       });
       let db=await p;
       return new Storage(name,db);
+    }
+    async hasKey(key){
+      let keys=await this.getKeys();
+      if(keys.indexOf(key)>=0) return true;
+      return false;
     }
     async getKeys(){
       let keys;
@@ -1363,7 +1402,7 @@ function additionalJSCode(){
       this.height=1;
       this.$el=null;
       this.actionCommand="";
-      this.$eventListeners={};
+      this.$eventListeners=null;
       this.$triggerOnAction=false;
       this.$triggerOnMouseDown=false;
       this.$triggerOnMouseUp=false;
@@ -1379,6 +1418,12 @@ function additionalJSCode(){
       this.setDirection(0);
 
     }
+    getParentHTMLElement(){
+      if(!this.$el) return null;
+      let e=this.$el.parentElement;
+      if(!e.component) e.component=$new(HTMLElement,e);
+      return e.component;
+    }
     flip(){
       this.transform.flippedH=true;
       this.updateTransform();
@@ -1389,9 +1434,6 @@ function additionalJSCode(){
     }
     isFlipped(){
       return this.transform.flippedH;
-    }
-    addEventListener(type, listener){
-      this.$el.addEventListener(type,listener.actionPerformed,false);
     }
     getMouseX(){
       return 0;
@@ -1533,20 +1575,21 @@ function additionalJSCode(){
     updateTransform(){
       //TODO: Canvas-Element im Canvas-Element funktioniert nicht
       let parts=[];
-      
-      // if(this.parent instanceof Canvas){
-      //   if(this.parent.pixelWidth>0 && this.sizeChanged){
-      //     let el=this.$el;
-      //     if(this instanceof Canvas){
-      //       el=this.wrapper;
-      //     }
-      //     this.parent.applyDimensions(el,this.width,this.height); 
-      //     this.sizeChanged=false;
-      //     if(this instanceof Canvas){
-      //       this.resize();
-      //     }
-      //   }
+      let el;
+      if(this instanceof Canvas){
+        el=this.wrapper;
+      }else{
+        el=this.$el;
+      }
       if(this.parent instanceof Canvas){
+        if(this.parent.pixelWidth>0 && this.sizeChanged){
+          this.parent.applyDimensions(el,this.width,this.height);
+          this.sizeChanged=false;
+          if(this instanceof Canvas){
+            let dim=this.parent.getDimensions(this.width,this.height);
+            this.resize(dim.w,dim.h);
+          }
+        }
         parts.push(this.parent.getTranslation(this.x,this.y,this.width,this.height));
       }
       //}
@@ -1560,8 +1603,6 @@ function additionalJSCode(){
       if(this.transform.flippedV){
         parts.push("scaleY(-1)");
       }
-      let el;
-      if(this.wrapper) el=this.wrapper; else el=this.$el;
       el.style.transform=parts.join(" ");
     }
     move(d){
@@ -1605,7 +1646,7 @@ function additionalJSCode(){
     }
     setBounds(x,y,width,height){
       this.setX(x+width/2);
-      this.setY(y+width/2);
+      this.setY(y+height/2);
       this.setWidth(width);
       this.setHeight(height);
     }
@@ -1705,7 +1746,7 @@ function additionalJSCode(){
     }
     getPanel(){
       let p=this.$el.parentNode;
-      if(p && p.component){
+      if(p && p.component && p.component!==this.$el.component){
         return p.component;
       }else{
         return null;
@@ -1735,6 +1776,11 @@ function additionalJSCode(){
         return -1;
       }
     }
+    addEventListener(type, listener){
+      if(!this.$eventListeners) this.$eventListeners=[];
+      this.$eventListeners.push(listener);
+      this.$el.addEventListener(type,listener.actionPerformed,false);
+    }
     addActionListener(al){
       this.$actionListeners.push(al);
     }
@@ -1743,6 +1789,19 @@ function additionalJSCode(){
       if(index<0) return;
       this.$actionListeners.splice(index,1);
     }
+    removeAllActionListeners(){
+      let als=this.getActionListeners();
+      for(let i=0;i<als.length;i++){
+        this.removeActionListener(als[i]);
+      }
+    }
+    // removeAllEventListeners(){
+    //   //this.removeAllActionListeners();
+    //   let als=this.$eventListeners;
+    //   for(let i=0;i<als.length;i++){
+    //     this.removeActionListener(als[i]);
+    //   }
+    // }
     getActionListeners(){
       let a=$createArray("ActionListener",this.$actionListeners.length,[]);
       for(let i=0;i<this.$actionListeners.length;i++){
@@ -1841,7 +1900,8 @@ function additionalJSCode(){
               line: $App.debug.lastLine,
               name: $App.debug.lastName
             });
-            throw message;
+            console.log(message);
+            resolve();
           }
         });
         this.$img.src=this.url;
@@ -2323,7 +2383,12 @@ function additionalJSCode(){
     getChildElements(){
 
     }
-    
+    getParentHTMLElement(){
+      if(!this.$el) return null;
+      let e=this.$el.parentElement;
+      if(!e.component) e.component=$new(HTMLElement,e);
+      return e.component;
+    }
     add(comp,index){
       let el;
       if(comp instanceof Canvas){
@@ -2365,9 +2430,10 @@ function additionalJSCode(){
     }
     getValue(){
       if(!this.$el) return null;
+      
       if('selectedIndex' in this.$el){
         return this.$el.selectedIndex;
-      }else if('checked' in this.$el){
+      }else if(this.$el.type==="checkbox"){
         return this.$el.checked; 
       }else if('value' in this.$el){
         return this.$el.value;
@@ -2429,6 +2495,8 @@ function additionalJSCode(){
       //if(this.$el && this.$el.parentNode) this.$el.parentNode.removeChild(this.$el);
       let wrapper=document.createElement("div");
       this.wrapper=wrapper;
+      this.wrapperComponent=undefined;
+      wrapper.component=this;
       wrapper.className="__canvas-wrapper";
       wrapper.style.touchAction="none";
       // let canvas=document.createElement("canvas");
@@ -2461,13 +2529,18 @@ function additionalJSCode(){
         sy: 1
       };
 
+      wrapper.resize=(w,h)=>{
+        this.resize(w,h);
+
+      }
       let resizeObserver=new ResizeObserver((entries)=>{
         for(const entry of entries){
-          let size=entry.borderBoxSize[0];
-          entry.target.resize(size.inlineSize,size.blockSize);
+          const boxSize=entry.borderBoxSize[0];
+          entry.target.resize(boxSize.inlineSize,boxSize.blockSize);
         }
       });
       resizeObserver.observe(this.wrapper);
+      //$App.resizeObserver.observe(wrapper);
 
       this.wrapper.resize=(w,h)=>{
         this.resize(w,h);
@@ -2527,15 +2600,74 @@ function additionalJSCode(){
         this.$updateMousePosition(ev);
       },false);
     }
+    // setWidth(v){
+    //   if(v!==this.width) this.sizeChanged=true;
+    //   this.width=v;
+    //   this.wrapper.width=v;
+    //   this.updateTransform();
+    // }
+    // setHeight(v){
+    //   if(v!==this.height) this.sizeChanged=true;
+    //   this.height=v;
+    //   this.wrapper.height=v;
+    //   this.updateTransform();
+    // }
     resize(w,h){
-      console.log("resize",w,h);
+      if(w===undefined || w<=0 || h <=0){
+        return;
+      }
       this.pixelWidth=w;
       this.pixelHeight=h;
-      if(w*this.lenY>=h*this.lenX){
-        this.wrapper.style.flexDirection="";
+      let dpr=window.devicePixelRatio||1;
+      if(this.sizePolicy==="stretch"){
+        this.fit.left=0;
+        this.fit.bottom=0;
+        this.fit.width=w;
+        this.fit.height=h;
+        this.fit.sx=w/this.lenX;
+        this.fit.sy=h/this.lenY;
       }else{
-        this.wrapper.style.flexDirection="column";
+        if(w*this.lenY>=h*this.lenX){
+          let s=h/this.lenY;
+          let realW=this.lenX*s;
+          this.fit.left=(w-realW)/2;
+          this.fit.bottom=0;
+          this.fit.width=realW;
+          this.fit.height=h;
+          this.fit.sy=s;
+          this.fit.sx=s;
+        }else{
+          let s=w/this.lenX;
+          let realH=this.lenY*s;
+          this.fit.bottom=(h-realH)/2;
+          this.fit.left=0;
+          this.fit.height=realH;
+          this.fit.width=w;
+          this.fit.sy=s;
+          this.fit.sx=s;
+        }
       }
+      
+      this.$el.style.left=this.fit.left+"px";
+      this.$el.style.bottom=this.fit.bottom+"px";
+      this.$el.style.width=this.fit.width+"px";
+      this.$el.style.height=this.fit.height+"px";
+
+      for(let i=0;i<this.$el.childNodes.length;i++){
+        let c=this.$el.childNodes[i];
+        if(!c || !c.component) continue;
+        c.component.sizeChanged=true;
+        c.component.updateTransform();
+      }
+    }
+    getWrapperElement(){
+      if(!this.wrapperComponent) this.wrapperComponent=$new(HTMLElement,this.wrapper);
+      return this.wrapperComponent;
+    }
+    getDimensions(w,h){
+      let rw=w*this.fit.sx;
+      let rh=h*this.fit.sy;
+      return {w: rw, h: rh};
     }
     applyDimensions(el,w,h){
       let rw=w*this.fit.sx;
@@ -2612,14 +2744,7 @@ function additionalJSCode(){
     }
     setSizePolicy(policy){
       this.sizePolicy=policy;
-      if(this.sizePolicy==="stretch"){
-        this.wrapper.style.placeContent="stretch";
-        this.$el.style.width="100%";
-        this.$el.style.height="100%";
-      }else{
-        this.wrapper.style.placeContent="center";
-      }
-      //this.resize();
+      this.resize(this.pixelWidth,this.pixelHeight);
     }
     getSizePolicy(){
       return this.sizePolicy;
@@ -2778,6 +2903,8 @@ function additionalJSCode(){
       this.$el.selectedIndex=index;
     }
     setValue(text){
+      if(text===null || text===undefined) return;
+      text+="";
       for(let i=0;i<this.$el.childNodes.length;i++){
         let o=this.$el.childNodes[i];
         if(o.innerHTML===text){
@@ -3567,7 +3694,12 @@ function additionalJSCode(){
     $constructor(name){
       
     }
-    
+    clear(){
+      $clearAlaSQL();
+    }
+    reset(){
+      window.$dbCreate();
+    }
     static async create(name){
       let db=new Database();
       if(name){
@@ -4074,6 +4206,156 @@ function additionalJSCode(){
     }
   }
 
+  class NetworkSession{
+    $constructor(id){
+      this.id=id;
+      this._isServer=false;
+      this.username=null;
+      this.messageListener=null;
+      this.peerID=this.getPeerID();
+      this.connectionsToClients={};
+      this.newConnectionsToClients={};
+      this.peer=null;
+    }
+
+    getPeerID(){
+      var loc=location.toString();
+      loc=loc.replace(/\W/g,"");
+      return loc+"-"+this.sessionID;
+    }
+
+    isServer(){
+      return this._isServer;
+    }
+
+    start(){
+      this._isServer=true;
+      this.debug=false;
+      console.log("starte session als server",this.id,this.peerID);
+      this.connectionsToClients={};
+      this.newConnectionsToClients={};
+      this.peer=new Peer(this.peerID,{debug:0});
+      this.configurePeer();
+    }
+
+    join(username){
+      this.username=username;
+      console.log("trete session bei als client",this.username,this.peerID);
+      if(!this._isServer){
+        this.peer=new Peer(undefined,{debug:0});
+        this.configurePeer();
+      }
+
+    }
+
+    receiveMessage(messageEvent){
+      if(!this.messageListener) return;
+      this.messageListener.onMessage(messageEvent);
+    }
+
+    configurePeer(){
+      this.peer.on('open',()=>{
+        console.log("peer ist open");
+        if(this._isServer){
+          this.receiveMessage($new(MessageEvent,null,"session-started","Eine neue Session wurde gestartet.",Date.now()));
+        }else{
+          console.log("Baue Verbindung zum Server auf...");
+          this.connectionToServer=this.peer.connect(this.peerID);
+          this.connectionToServer.on('open',()=>{
+            console.log("client hat verbindung zum server");
+            console.log("sende gruss an host",this.username,this.peer.id);
+            this.connectionToServer.send({type: "new-connection", clientID: this.username, peerID: this.peer.id});
+            this.receiveMessage($new(MessageEvent,null,"session-joined","Der Session wurde beigetreten.",Date.now()));
+          });
+          this.connectionToServer.on('data',(data)=>{
+            /**client empfaengt nachricht */
+            console.log("client empfaengt nachricht",data);
+            if(data.type==="client-id-of-server"){
+              console.log("client empfaengt id des servers",data.clientID);
+              for(var id of data.allRealClientIDs){
+                if(id!==this.username){
+                  this.receiveMessage($new(MessageEvent,"user-name","",Date.now()));
+                }
+              }
+            }else if(data.type==="message"){
+              if(this.handler.onMessage){
+                this.handler.onMessage(data.sender,data.message);
+              }
+            }else if(data.type==="new-connection"){
+              console.log("client empfaengt neue Verbindung",data.clientID)
+              if(this.handler.onNewConnection){
+                this.handler.onNewConnection(data.clientID);
+              }
+            }
+          })
+        }
+      });
+    
+      this.peer.on('error',(error)=>{
+        console.log("error",error);
+        if(this.handler.onSessionError){
+          this.handler.onSessionError(error);
+        }
+      });
+    
+      this.peer.on('connection',(dataConnection)=>{
+        console.log("neue Connection");
+        if(this.isHost){
+          this.log("neuer Client",dataConnection);
+          this.newConnectionsToClients[dataConnection.peer]=dataConnection;
+        }
+    
+        dataConnection.on('open',()=>{
+          console.log("data connection ist offen");
+          if(!this.isHost){
+            
+          }
+        });
+    
+        dataConnection.on('data',(data)=>{
+          if(this.isHost){
+            /**Server empfaengt nachricht */
+            console.log("server empfaengt nachricht",data);
+            if(data.type==="new-connection"){
+              this.receiveMessage($new(MessageEvent));
+              var con=this.newConnectionsToClients[data.peerID];
+              if(con){
+                this.connectionsToClients[data.clientID]=con;
+                this.connectionsToClients[data.clientID].send({type: "client-id-of-server", clientID: this.clientID, allRealClientIDs: this.getAllClientIDs()});
+                if(this.handler.onNewConnection){
+                  this.handler.onNewConnection(data.clientID);
+                }
+                this.forward(data.clientID,{type: "new-connection", clientID: data.clientID});
+              }
+              delete this.newConnectionsToClients[data.peerID];
+            }else if(data.type==="message"){
+              this.forward(data.sender,data);
+              if(this.handler.onMessage){
+                this.handler.onMessage(data.sender,data.message);
+              }
+            }
+          }
+        });
+      });
+    }
+
+    onMessage(handler){
+      this.messageListener=handler;
+    }
+
+    sendTo(username, message, header){
+
+    }
+
+    sendToAll(message, header){
+
+    }
+
+    sendToServer(message, header){
+
+    }
+  }
+
   class ArrayList{
     $constructor(typeArguments,initialCapacity){
       this.$elementType=typeArguments["T"];
@@ -4353,6 +4635,15 @@ function additionalJSCode(){
     }
   }
 
+  class MessageEvent{
+    $constructor(sender,header,message,time){
+      this.sender=sender;
+      this.header=header;
+      this.message=message;
+      this.time=time;
+    }
+  }
+
   /**mimics javax.swing.timer-class */
   class Timer{
     $constructor(delay,actionListener){
@@ -4404,6 +4695,9 @@ function additionalJSCode(){
       this.$running=true;
       let handler=()=>{
         if($App.debug.paused) return;
+        if(!this.repeats){
+          this.$running=false;
+        }
         for(let i=0;i<this.$actionListeners.length;i++){
           let al=this.$actionListeners[i];
           let ev=$new(ActionEvent,this,0,this.actionCommand,Date.now());
@@ -4951,6 +5245,12 @@ function additionalJSCode(){
       }
 
     }
+    setVisible(v){
+      for(let a in this.buttons){
+        this.buttons[a].setVisible(v);
+      }
+      this.dpad.setVisible(v);
+    }
   }
 
   class DPad{
@@ -5073,6 +5373,13 @@ function additionalJSCode(){
         return null;
       }
     }
+    setVisible(v){
+      for(let a in this.buttons){
+        let b=this.buttons[a];
+        if(!b) continue;
+        b.setVisible(v);
+      }
+    }
     setButtonVisible(button,v){
       let b=this.getButtonByName(button);
       if(b){
@@ -5154,7 +5461,7 @@ function additionalJSCode(){
     }
     setVisible(v){
       if(v){
-        this.ui.style.display="";
+        this.ui.style.display="flex";
       }else{
         this.ui.style.display="none";
       }
@@ -5418,6 +5725,12 @@ function additionalJSCode(){
         this.audio=new Audio(this.url);
       }
     }
+    setVolume(v){
+      this.audio.volume=v;
+    }
+    getVolume(){
+      return this.audio.volume;
+    }
     play(loop){
       this.stop();
       this.audio.loop=loop;
@@ -5625,17 +5938,36 @@ function additionalJSCode(){
     if(typeof obj!=='object'){
       return obj;
     }
-    let json={};
-    for(let a in obj){
-      if(a.startsWith("$")) continue;
-      let b=obj[a];
-      json[a]=await $jstoJSON(b);
+    let json;
+    if(Array.isArray(obj)){
+      json=[];
+      for(let i=0;i<obj.length;i++){
+        let b=obj[i];
+        json.push(await $jstoJSON(b));
+      }
+    }else{
+      json={};
+      for(let a in obj){
+        if(a.startsWith("$")) continue;
+        let b=obj[a];
+        json[a]=await $jstoJSON(b);
+      }
     }
     return json;
   }
 
+  $jsputDataArray=function(json,target){
+    for(let a in json){
+      target[a]=json[a];
+    }
+  };
+
   $jsputData=function(json,target){
     if(!target || !target.constructor) return;
+    if(Array.isArray(target)){
+      $jsputDataArray(json,target);
+      return;
+    }
     let infos=$clazzRuntimeInfos[target.constructor.name];
     if(!infos) return;
     jsonFields={};
