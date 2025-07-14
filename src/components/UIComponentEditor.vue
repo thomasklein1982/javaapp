@@ -11,6 +11,9 @@
           <td><InputText type="search" spellcheck="false" v-model.trim="component.name" @change="emitRecompile()" style="width: 95%"/></td>
         </tr>
         <tr>
+          <td colspan="2" style="color: red" v-if="nameError">Der Name muss mit einem Buchstaben beginnen.</td>
+        </tr>
+        <tr>
           <td>Array:</td>
           <td><InputText type="search" spellcheck="false" v-model.trim="component.array" @change="emitRecompile()" style="width: 95%"/></td>
         </tr>
@@ -214,6 +217,14 @@ import TemplateDialog from './TemplateDialog.vue';
       settings: Object
     },
     computed: {
+      nameError(){
+        if(!this.component) return false;
+        let name=this.component.name;
+        if(!/[a-zA-Z_]\w*/.test(name)){
+          return true;
+        }
+        return false;
+      },
       type(){
         if(this.component.type==="JImage"){
           console.log("image");
