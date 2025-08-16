@@ -41,6 +41,7 @@ import { UIClazz } from '../classes/UIClazz';
       sendMessage(msg){
         if(!this.$refs.wrapper.firstChild) return;
         this.$refs.wrapper.firstChild.contentWindow.postMessage(msg);
+        console.log("msg sent",msg);
       },
       clear(){
         if(!(this.uiClazz instanceof UIClazz)) return;

@@ -143,6 +143,7 @@
             <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
               <Insights 
                 v-if="running"
+                :project="project"
                 :line="current.line"
                 :step="current.step"
                 :clazz-name="current.name"
@@ -154,6 +155,7 @@
                 @step="step()"
                 @step-above="stepAbove()"
                 @remove-breakpoints="removeAllBreakpoints()"
+                @send-console-prompt="sendConsolePrompt"
               />
               <UIComponentEditor 
                 v-if="!running && showUIEditor && selectedUIComponent" 
@@ -327,6 +329,9 @@ export default {
     },1000);
   },
   methods: {
+    async sendConsolePrompt(prompt){
+      this.$refs.preview.sendMessage({type: "console-prompt", prompt: prompt});
+    },
     async removeAllBreakpoints(){
       // let tab=this.activeTab;
       for(let i=0;i<this.$refs.editor.length;i++){

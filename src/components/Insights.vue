@@ -38,6 +38,18 @@
         </template>
       </div>
     </div>
+    <div class="console">
+      <div style="display: flex">
+        <CodeMirrorTerminal
+          ref="consoleEditor"
+          v-model="terminal.prompt"
+          style="flex: 1"
+          :project="project"
+          :clazz="currentClazz"
+        />
+        <Button text icon="pi pi-send" @click="sendConsolePrompt"/>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -47,16 +59,25 @@ import AccordionTab from 'primevue/accordiontab';
 import VariableWatcher from './VariableWatcher.vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import { Clazz } from '../classes/Clazz';
+import CodeMirrorTerminal from './CodeMirrorTerminal.vue';
+import { parseJava } from '../functions/parseJava';
+import { CompileFunctions } from '../language/CompileFunctions';
+import { Scope } from '../classes/Scope';
+import { Method } from '../classes/Method';
+import { Source } from '../classes/Source';
+import { Modifiers } from '../classes/Modifiers';
 
 export default{
-  components: {Accordion,AccordionTab, VariableWatcher, Column, DataTable},
-  emits: ["update-scope","resume","step","stop","step-above"],
+  components: {Accordion,AccordionTab, VariableWatcher, Column, DataTable, CodeMirrorTerminal},
+  emits: ["update-scope","resume","step","stop","step-above","send-console-prompt"],
   props: {
     line: Number,
     clazzName: String,
     scope: Object,
     paused: Boolean,
-    step: Number
+    step: Number,
+    project: Object
   },
   watch: {
     line(nv,ov){
@@ -69,6 +90,19 @@ export default{
       this.template.local={};
       this.template.that={};
       this.updateScope();
+    },
+  },
+  computed: {
+    mainClazz(){
+      return this.project.getMainClazz();
+    },
+    currentClazz(){
+      if(this.paused){
+        this.terminal.clazz=this.project.getClazzByName(this.clazzName);
+      }else{
+        this.terminal.clazz=this.mainClazz;
+      }
+      return this.terminal.clazz;
     }
   },
   data(){
@@ -78,16 +112,42 @@ export default{
         that: {},
         main: {main: {}}
       },
+      terminal: {
+        prompt: "",
+        method: new Method(null),
+        clazz: this.mainClazz
+      },
       accordion: [0],
       expandedRows: []
     };
   },
-  computed: {
-
+  mounted(){
+    this.terminal.method.modifiers=new Modifiers();
+    this.terminal.clazz=this.currentClazz;
   },
   methods: {
     updateScope(){
       this.$emit("update-scope",this.template);
+    },
+    sendConsolePrompt(){
+      let method=this.$refs.consoleEditor.method;
+      let p=this.terminal.prompt.trim();
+      if(!p.endsWith(";"))p+=";";
+      let code="{"+p+"}";
+      this.terminal.prompt="";
+      this.$refs.consoleEditor.setCode(this.terminal.prompt);
+      let ast=parseJava(code,true);
+      if(!ast || !ast.topNode || !ast.topNode.firstChild) return;
+      let node=ast.topNode.firstChild;
+      console.log(node);
+      method.bodyNode=node;
+      let source=new Source(code,method.bodyNode,method.clazz);
+      let res=method.compileBody(source,true);
+      if(res.errors.length>0){
+        console.log(res.errors);
+      }else{
+        this.$emit("send-console-prompt","$scope=new $Scope();\n"+res.code);
+      }
     }
   }
 }

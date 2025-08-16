@@ -6157,6 +6157,7 @@ function additionalJSCode(){
       return null;
     }
     setVariable(name,value){
+      if(!name) return;
       let v=this.getVariable(name);
       if(!v) return;
       v.value=value;

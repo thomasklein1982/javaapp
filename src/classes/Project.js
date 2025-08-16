@@ -339,6 +339,17 @@ export class Project{
         window.language="java";
         window.appJSdebugMode=true;
         window.$asyncInitFunctions=[];
+        window.addEventListener("message",async (data)=>{
+          console.log(data);
+          if(data.data.type==="console-prompt"){
+            let p=data.data.prompt;
+            window.$consolePromptThisObject=$App.debug.$scope.thisObject;
+            p=p.replace(/this/g,"$consolePromptThisObject");
+            console.log("console-prompt",p);
+            let func=new Function("return async function(){"+p+"}");
+            console.log(await func()());
+          }
+        }, true);
         ${window.appJScode}
         ${includeSave? '$App.hideConsoleIfUIPresentAfterSetup=true;':''}
         ${window.additionalJSCode}

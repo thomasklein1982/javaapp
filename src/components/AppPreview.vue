@@ -35,6 +35,11 @@
           });
         }
       },
+      sendMessage(data){
+        if(this.frame){
+          this.frame.contentWindow.postMessage(data);
+        }
+      },
       askForScope(template){
         console.log("template",template);
         if(this.frame){

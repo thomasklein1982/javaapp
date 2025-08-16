@@ -32,7 +32,7 @@ export class Clazz{
     this.superClazz=null;
     this.implementedInterfaces=null;
     this.attributeErrors=null;
-    this.errors=null;
+    this.errors=[];
     if(this.isInterface){
       this.src="interface "+this.name+"{\n  \n}";
     }else{

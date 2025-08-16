@@ -8,10 +8,8 @@
 
 <script>
 import { EditorView, basicSetup } from "codemirror";
-import { css, cssCompletionSource } from "@codemirror/lang-css";
-import {html,htmlCompletionSource} from "@codemirror/lang-html";
-import { javascript,javascriptLanguage } from "@codemirror/lang-javascript";
-import { sql } from "@codemirror/lang-sql";
+import { javaLanguage } from "@codemirror/lang-java";
+import {LanguageSupport} from "@codemirror/language";
 import { lintGutter, linter, openLintPanel, closeLintPanel } from "@codemirror/lint";
 import {keymap} from "@codemirror/view";
 import {indentWithTab,redo,undo} from "@codemirror/commands";
@@ -23,58 +21,40 @@ import {gutter, GutterMarker} from "@codemirror/view"
 import {Decoration,ViewPlugin} from "@codemirror/view"
 import { oneDark } from '@codemirror/theme-one-dark';
 import { nextTick } from '@vue/runtime-core';
+import {createAutocompletion } from '../functions/cm/autocompletion';
+import { parseJava } from '../functions/parseJava';
+import { Method } from "../classes/Method";
+import { Modifiers } from "../classes/Modifiers";
 
+const languageConf=new Compartment();
+
+const javaProgram=new LanguageSupport(javaLanguage.configure({top: "Program"}));
 
 export default {
   props: {
-    language: String,
     modelValue: String,
+    clazz: Object,
+    terminalInfos: Object,
     settings: Object,
     fontSize: {
       type: Number,
       default: 20
-    },
-    name: {
-      type: String,
-      default: null
     }
   },
   emits: ["update:modelValue","change","content-changed"],
   computed: {
-    languagePlugins(){
-      console.log("lang",this.language);
-      if(this.language==="html"){
-        return {
-          language: html(),//{autoCloseTags: true}),//.language,
-          completionSource: null//htmlCompletionSource
-        };
-      }else if(this.language==="css"){
-        return {
-          language: css().language,
-          completionSource: cssCompletionSource
-        };
-      }else if(this.language==="javascript"||this.language==="js"){
-        return {
-          language: javascript(),
-          completionSource: null
-        }
-      }else if(this.language==="sql"){
-        console.log("sql",sql)
-        return {
-          language: sql(),
-          completionSource: null
-        }
-      }
-    }
+
   },
   data(){
     return {
       editor: null,
       errorID: 0,
-      runtimeError: null
+      runtimeError: null,
+      method: new Method(null),
     };
   },
   mounted(){
+    this.method.modifiers=new Modifiers();
     let changed=false;
     let timer=null;
     let editorTheme=new Compartment();
@@ -84,26 +64,22 @@ export default {
       lintGutter(),
       editorTheme.of(oneDark),
       indentUnit.of("  "),
+      languageConf.of(javaProgram),
+      autocompletion({override: [createAutocompletion(this.method)]}),
       keymap.of([indentWithTab]),
       EditorView.updateListener.of((v) => {
-        if(timer!==null) clearTimeout(timer);
-        timer=setTimeout(()=>{
-          if(changed){
-            this.$emit('content-changed');
-          }
-          changed=false;
-        },2000);
         if(!v.docChanged) return;
-        changed=true;
+        let code="{"+v.state.doc.toString()+";}";
+        console.log(code);
+        let ast=parseJava(code,true);
+        if(!ast || !ast.topNode || !ast.topNode.firstChild) return;
+        let node=ast.topNode.firstChild;
+        console.log(node);
+        this.method.bodyNode=node;
+        this.method.clazz=this.clazz;
         this.$emit('update:modelValue', this.getCode());
       }),
     ];
-    if(this.languagePlugins){
-      extensions.push(this.languagePlugins.language);
-      if(this.languagePlugins.completionSource){
-        extensions.push(autocompletion({override: [this.languagePlugins.completionSource]}));
-      }
-    }
     this.editor=new EditorView({
       state: EditorState.create({
         doc: this.modelValue,

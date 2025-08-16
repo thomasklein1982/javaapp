@@ -23,9 +23,14 @@ function getRealNodeBefore(node,pos){
   }
 }
 
-export function createAutocompletion(){
+export function createAutocompletion(givenMethod){
   return (context)=>{
-    let clazz=app.$refs.editor.currentClazz;
+    let clazz;
+    if(!givenMethod){
+      clazz=app.$refs.editor.currentClazz;
+    }else{
+      clazz=givenMethod.clazz;
+    }
     //let clazz=getClazzFromState(context.state);
     if(!clazz) return;
     let pos=context.pos;
@@ -43,7 +48,12 @@ export function createAutocompletion(){
     if(nodeBefore.name===";"){
       return;
     }
-    let method=clazz.getMethodByPosition(pos);
+    let method;
+    if(!givenMethod){
+      method=clazz.getMethodByPosition(pos);
+    }else{
+      method=givenMethod;
+    }
     
     let from;
     if(!method){
