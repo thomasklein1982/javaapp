@@ -35,6 +35,7 @@ import { Method } from "../classes/Method";
 import { Modifiers } from "../classes/Modifiers";
 import { Source } from "../classes/Source";
 import { loadLocally, saveLocally } from "../functions/helper";
+import { nextTick } from "vue";
 
 const languageConf=new Compartment();
 
@@ -118,17 +119,14 @@ export default {
   methods: {
     loadHistoryPrompt(){
       let hp=this.selectedHistoryPrompt;
-      this.selectedHistoryPrompt=undefined;
+      nextTick(()=>{
+        this.selectedHistoryPrompt=undefined;
+      });
       this.setCode(hp);
     },
     sendConsolePrompt(){
       let input=this.modelValue.trim();
       if(input.length===0 || input===";") return;
-      if(this.error){
-        this.runtimeError=this.error;
-        return;
-      }
-      this.runtimeError=null;
       let pos=this.historyArray.indexOf(input);
       if(pos<0){
         this.historyArray.push(input);
@@ -141,7 +139,12 @@ export default {
         this.historyArray.push(input);
         this.saveHistory();
       }
-      
+      if(this.error){
+        this.runtimeError=this.error;
+        return;
+      }
+      this.runtimeError=null;
+
       this.$emit("send-prompt","$scope=new $Scope();\n"+this.compiledCode);
       this.setCode("");
       this.compiledCode="";
