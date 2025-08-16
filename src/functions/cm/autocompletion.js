@@ -23,9 +23,10 @@ function getRealNodeBefore(node,pos){
   }
 }
 
-export function createAutocompletion(givenMethod){
+export function createAutocompletion(givenMethod,annotationOffset){
   return (context)=>{
     let clazz;
+    let realAnnotationOffset=annotationOffset? annotationOffset:0;
     if(!givenMethod){
       clazz=app.$refs.editor.currentClazz;
     }else{
@@ -93,7 +94,7 @@ export function createAutocompletion(givenMethod){
     }
 
     //handle error position:
-    if(nodeBefore.parent.type.isError && nodeBefore.parent.prevSibling){
+    if(nodeBefore.parent?.type.isError && nodeBefore.parent?.prevSibling){
       nodeBefore=nodeBefore.parent.prevSibling;
     }
 
@@ -170,14 +171,14 @@ export function createAutocompletion(givenMethod){
       }
       if(nodeBefore.name==="."){
         from++;
-        annotation=method.typeAnnotations[nodeBefore.to-1];
+        annotation=method.typeAnnotations[nodeBefore.to-1+realAnnotationOffset];
       }else{
         if(nodeBefore.prevSibling && nodeBefore.prevSibling.name!=="(" && !nodeBefore.prevSibling.name.endsWith("Op")){
           nodeBefore=nodeBefore.prevSibling;
           if(nodeBefore && nodeBefore.name==="."){
             nodeBefore=nodeBefore.prevSibling;
           }
-          annotation=method.typeAnnotations[nodeBefore.to];
+          annotation=method.typeAnnotations[nodeBefore.to+realAnnotationOffset];
         }else{
           let scope=method.getScopeAtPosition(from);
           annotation={type: new Type(clazz,0), isStatic: method.isStatic(), topLevel: true, scope: scope};

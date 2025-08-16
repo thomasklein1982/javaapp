@@ -329,8 +329,8 @@ export default {
     },1000);
   },
   methods: {
-    async sendConsolePrompt(prompt){
-      this.$refs.preview.sendMessage({type: "console-prompt", prompt: prompt});
+    async sendConsolePrompt(prompt,currentClazz,mainClazz){
+      this.$refs.preview.sendMessage({type: "console-prompt", prompt: prompt, useMainClazz: currentClazz===mainClazz});
     },
     async removeAllBreakpoints(){
       // let tab=this.activeTab;

@@ -206,6 +206,11 @@ a{
 
 .ͼo .cm-tooltip{
   border: 4pt solid white;
+  position: fixed;
+}
+
+.ͼ1 .cm-tooltip.cm-tooltip-autocomplete > ul{
+  overflow-x: visible;
 }
 
 .cm-tooltip-autocomplete, .ͼ1 .cm-completionInfo.cm-completionInfo-right-narrow,.ͼ1 .cm-completionInfo.cm-completionInfo-left-narrow{

@@ -4,8 +4,9 @@ import { Java } from "../java";
 export function ThisExpression(node,source,scope){
   let type=new Type(scope.method.clazz,0);
   scope.addTypeAnnotation(node,type,false);
+  let code=scope.getThisString();
   return {
-    code: "this",
+    code,
     type
   };
 }

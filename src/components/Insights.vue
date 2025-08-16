@@ -38,17 +38,16 @@
         </template>
       </div>
     </div>
-    <div class="console">
-      <div style="display: flex">
-        <CodeMirrorTerminal
-          ref="consoleEditor"
-          v-model="terminal.prompt"
-          style="flex: 1"
-          :project="project"
-          :clazz="currentClazz"
-        />
-        <Button text icon="pi pi-send" @click="sendConsolePrompt"/>
-      </div>
+    <div>
+      <CodeMirrorTerminal
+        ref="consoleEditor"
+        v-model="terminal.prompt"
+        style="flex: 1"
+        :project="project"
+        :clazz="currentClazz"
+        :main-clazz="mainClazz"
+        @send-prompt="sendConsolePrompt"
+      />
     </div>
   </div>
 </template>
@@ -129,25 +128,8 @@ export default{
     updateScope(){
       this.$emit("update-scope",this.template);
     },
-    sendConsolePrompt(){
-      let method=this.$refs.consoleEditor.method;
-      let p=this.terminal.prompt.trim();
-      if(!p.endsWith(";"))p+=";";
-      let code="{"+p+"}";
-      this.terminal.prompt="";
-      this.$refs.consoleEditor.setCode(this.terminal.prompt);
-      let ast=parseJava(code,true);
-      if(!ast || !ast.topNode || !ast.topNode.firstChild) return;
-      let node=ast.topNode.firstChild;
-      console.log(node);
-      method.bodyNode=node;
-      let source=new Source(code,method.bodyNode,method.clazz);
-      let res=method.compileBody(source,true);
-      if(res.errors.length>0){
-        console.log(res.errors);
-      }else{
-        this.$emit("send-console-prompt","$scope=new $Scope();\n"+res.code);
-      }
+    sendConsolePrompt(prompt){
+      this.$emit("send-console-prompt",prompt,this.currentClazz,this.mainClazz);
     }
   }
 }

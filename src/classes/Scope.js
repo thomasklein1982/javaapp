@@ -43,6 +43,12 @@ export class Scope{
   //   c.nodeInfos[node.index]=info;
   // }
 
+  getThisString(){
+    if(!this.method) return "this";
+    if(this.method.thisString) return this.method.thisString;
+    return "this";
+  }
+
   pushAssignmentTargetObject(obj){
     this.assignmentTargetObjectStack.push(obj);
   }

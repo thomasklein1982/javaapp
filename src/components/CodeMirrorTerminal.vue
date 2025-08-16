@@ -1,7 +1,17 @@
 <template>
-  <div id="root">
-    <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px'}"></div>
-    <Message v-if="runtimeError" closable severity="error" @close="runtimeError=null">Z{{runtimeError.line}}: {{runtimeError.error}}</Message>
+  <div id="root" style="overflow-y: visible; overflow-x: visible">
+    <Message v-if="runtimeError" closable severity="error" @close="runtimeError=null">{{runtimeError}}</Message>
+    <div style="display: flex">
+      <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px', 'overflow-y': 'visible', 'overflow-x': 'visible'}"></div>
+      <Button text icon="pi pi-send" @click="sendConsolePrompt"/>
+    </div>
+    <Select
+      :options="historyArray"
+      v-model="selectedHistoryPrompt"
+      placeholder="Alte Anweisungen"
+      @change="loadHistoryPrompt"
+      ref="selectHistory"
+    />
   </div>
   
 </template>
@@ -17,23 +27,26 @@ import { indentUnit } from "@codemirror/language";
 import {openSearchPanel,closeSearchPanel} from '@codemirror/search';
 import {Compartment,EditorState} from '@codemirror/state';
 import {autocompletion} from "@codemirror/autocomplete";
-import {gutter, GutterMarker} from "@codemirror/view"
-import {Decoration,ViewPlugin} from "@codemirror/view"
+import {placeholder} from "@codemirror/view"
 import { oneDark } from '@codemirror/theme-one-dark';
-import { nextTick } from '@vue/runtime-core';
 import {createAutocompletion } from '../functions/cm/autocompletion';
 import { parseJava } from '../functions/parseJava';
 import { Method } from "../classes/Method";
 import { Modifiers } from "../classes/Modifiers";
+import { Source } from "../classes/Source";
+import { loadLocally, saveLocally } from "../functions/helper";
 
 const languageConf=new Compartment();
 
 const javaProgram=new LanguageSupport(javaLanguage.configure({top: "Program"}));
 
+const STORAGE_HISTORY="JavaApp-Storage-Terminal-History";
+
 export default {
   props: {
     modelValue: String,
     clazz: Object,
+    project: Object,
     terminalInfos: Object,
     settings: Object,
     fontSize: {
@@ -50,34 +63,47 @@ export default {
       editor: null,
       errorID: 0,
       runtimeError: null,
+      error: null,
       method: new Method(null),
+      compiledCode: null,
+      historyArray: [],
+      selectedHistoryPrompt: null
     };
   },
   mounted(){
+    this.loadHistory();
     this.method.modifiers=new Modifiers();
-    let changed=false;
-    let timer=null;
+    this.method.thisString="$consolePromptThisObject";
     let editorTheme=new Compartment();
     let extensions=[
-      basicSetup,
       EditorView.lineWrapping,
-      lintGutter(),
+      placeholder("Anweisung eingeben..."),
       editorTheme.of(oneDark),
       indentUnit.of("  "),
       languageConf.of(javaProgram),
-      autocompletion({override: [createAutocompletion(this.method)]}),
+      autocompletion({override: [createAutocompletion(this.method,1)]}),
       keymap.of([indentWithTab]),
       EditorView.updateListener.of((v) => {
         if(!v.docChanged) return;
-        let code="{"+v.state.doc.toString()+";}";
-        console.log(code);
+        this.runtimeError=null;
+        let input=v.state.doc.toString().trim();
+        if(!input.endsWith(";")) input+=";";
+        let code="{"+input+"}";
         let ast=parseJava(code,true);
         if(!ast || !ast.topNode || !ast.topNode.firstChild) return;
         let node=ast.topNode.firstChild;
         console.log(node);
         this.method.bodyNode=node;
         this.method.clazz=this.clazz;
-        this.$emit('update:modelValue', this.getCode());
+        let source=new Source(code,this.method.bodyNode,this.method.clazz);
+        let res=this.method.compileBody(source,true);
+        this.compiledCode=res.code;
+        if(res.errors.length>0){
+          this.error=res.errors[0];
+        }else{
+          this.error=null;
+        }
+        this.$emit('update:modelValue', input);
       }),
     ];
     this.editor=new EditorView({
@@ -90,6 +116,45 @@ export default {
     this.editor.component=this;
   },
   methods: {
+    loadHistoryPrompt(){
+      let hp=this.selectedHistoryPrompt;
+      this.selectedHistoryPrompt=undefined;
+      this.setCode(hp);
+    },
+    sendConsolePrompt(){
+      let input=this.modelValue.trim();
+      if(input.length===0 || input===";") return;
+      if(this.error){
+        this.runtimeError=this.error;
+        return;
+      }
+      this.runtimeError=null;
+      let pos=this.historyArray.indexOf(input);
+      if(pos<0){
+        this.historyArray.push(input);
+        if(this.historyArray.length>20){
+          this.historyArray.pop();
+        }
+        this.saveHistory();
+      }else if(pos<this.historyArray.length-1){
+        this.historyArray.splice(pos,1);
+        this.historyArray.push(input);
+        this.saveHistory();
+      }
+      
+      this.$emit("send-prompt","$scope=new $Scope();\n"+this.compiledCode);
+      this.setCode("");
+      this.compiledCode="";
+    },
+    saveHistory(){
+      saveLocally(STORAGE_HISTORY,this.historyArray);
+    },
+    async loadHistory(){
+      let h=await loadLocally(STORAGE_HISTORY);
+      if(h && Array.isArray(h)){
+        this.historyArray=h;
+      }
+    },
     setCode(code){
       var old=this.editor.state.doc.toString();
       this.editor.dispatch({
@@ -122,7 +187,6 @@ export default {
 
 <style scoped>
   #root{
-    flex: 10;
     overflow-y: hidden;
     display: flex;
     flex-direction: column;

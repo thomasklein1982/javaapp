@@ -45,6 +45,8 @@ export function Block(node,source,scope){
     if(node.name==='}' || options.classOptional && node.type.isError && node.firstChild && node.firstChild.name==="}"){
       open=false;
       break;
+    }else if(node.name===";"){
+      
     }else{
       try{
         

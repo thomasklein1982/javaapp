@@ -91,7 +91,7 @@ export function Identifier(node,source,scope,infos){
         //throw source.createError(obj.error,node);
       }else{
         /**Attribut: */
-        code="this."+code;
+        code=scope.getThisString()+"."+code;
         codeAssign=code;
         type=obj.type;
         scope.addTypeAnnotationAt(annotationPos,type,false);

@@ -10,6 +10,7 @@ import { Type } from "../../classes/Type";
 import { ArrayAccess } from "./ArrayAccess";
 import { CompileFunctions } from "../CompileFunctions";
 import { SourceFile } from "../../classes/SourceFile";
+import { ThisExpression } from "./ThisExpression";
 /**
  * 
  * @param {*} node 
@@ -38,14 +39,14 @@ export function MethodInvocation(node,source,scope){
     if(staticContext){
       throw source.createError("Das Schlüsselwort 'this' existiert nicht in statischen Methoden.",node);
     }
-    code+="this";
+    code+=scope.getThisString();
     node=node.nextSibling.nextSibling;
   }else if(node.name==="MethodName"){
     owner.clazz=scope.method.clazz;
     if(staticContext){
       owner.static=true;
     }
-    code+="this";
+    code+=scope.getThisString();
   }else{
     if(node.name==="Identifier"){
       let id=Identifier(node,source,scope);

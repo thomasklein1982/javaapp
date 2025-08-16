@@ -343,11 +343,12 @@ export class Project{
           console.log(data);
           if(data.data.type==="console-prompt"){
             let p=data.data.prompt;
+            let useMainClazz=data.data.useMainClazz;
+            window.$consolePromptThisObject=useMainClazz? $main : $App.debug.$scope.thisObject;
+            console.log("console-prompt",p,window.$consolePromptThisObject);
+            let func=new Function("return async function(){ "+p+"}");
+            await func()();
             window.$consolePromptThisObject=$App.debug.$scope.thisObject;
-            p=p.replace(/this/g,"$consolePromptThisObject");
-            console.log("console-prompt",p);
-            let func=new Function("return async function(){"+p+"}");
-            console.log(await func()());
           }
         }, true);
         ${window.appJScode}
