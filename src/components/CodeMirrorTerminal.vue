@@ -3,15 +3,12 @@
     <Message v-if="runtimeError" closable severity="error" @close="runtimeError=null">{{runtimeError}}</Message>
     <div style="display: flex">
       <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px', 'overflow-y': 'visible', 'overflow-x': 'visible'}"></div>
+      <Button text icon="pi pi-angle-up" @click="toggleOldCommands"/>
       <Button text icon="pi pi-send" @click="sendConsolePrompt"/>
+      <Popover ref="oldCommands">
+        <Button fluid text style="font-family: monospace;" v-for="(h,i) in historyArray" :label="h" @click="insertPrompt(h)"/>
+      </Popover>
     </div>
-    <Select
-      :options="historyArray"
-      v-model="selectedHistoryPrompt"
-      placeholder="Alte Anweisungen"
-      @change="loadHistoryPrompt"
-      ref="selectHistory"
-    />
   </div>
   
 </template>
@@ -36,6 +33,7 @@ import { Modifiers } from "../classes/Modifiers";
 import { Source } from "../classes/Source";
 import { loadLocally, saveLocally } from "../functions/helper";
 import { nextTick } from "vue";
+import { Popover } from "primevue";
 
 const languageConf=new Compartment();
 
@@ -44,6 +42,9 @@ const javaProgram=new LanguageSupport(javaLanguage.configure({top: "Program"}));
 const STORAGE_HISTORY="JavaApp-Storage-Terminal-History";
 
 export default {
+  components: {
+    Popover
+  },
   props: {
     modelValue: String,
     clazz: Object,
@@ -75,6 +76,7 @@ export default {
     this.loadHistory();
     this.method.modifiers=new Modifiers();
     this.method.thisString="$consolePromptThisObject";
+    this.method.sysoutStatements=true;
     let editorTheme=new Compartment();
     let extensions=[
       EditorView.lineWrapping,
@@ -117,12 +119,12 @@ export default {
     this.editor.component=this;
   },
   methods: {
-    loadHistoryPrompt(){
-      let hp=this.selectedHistoryPrompt;
-      nextTick(()=>{
-        this.selectedHistoryPrompt=undefined;
-      });
-      this.setCode(hp);
+    insertPrompt(p){
+      this.setCode(p);
+      this.$refs.oldCommands.hide();
+    },
+    toggleOldCommands(event) {
+      this.$refs.oldCommands.toggle(event);
     },
     sendConsolePrompt(){
       let input=this.modelValue.trim();

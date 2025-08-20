@@ -108,7 +108,9 @@ export function Identifier(node,source,scope,infos){
       throw source.createError("'"+name+"' ist undefiniert",node);
     }
   }
-  //scope.setNodeInfo(node,type);
+  // if(scope.method?.sysoutStatements && !node.parent.parent?.parent?.parent){
+  //   code="$App.console.log("+code+")";
+  // }
   return {
     code: code,
     codeAssign,

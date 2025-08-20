@@ -16,10 +16,9 @@ export function ExpressionStatement(node,source,scope){
     }
     throw (source.createErrorAt("';' erwartet.",node.to));
   }
-  if(a.local && scope.addLocalVariablesUpdates && !scope.optimizeCompiler){
-    a.code+=";";//eval('$locals["+JSON.stringify(a.name)+"]="+a.name+"');";
-  }else{
-    a.code+=";";
+  if(scope.method?.sysoutStatements && !node.parent.parent?.parent?.parent){
+    a.code="$App.console.log("+a.code+")";
   }
+  a.code+=";";
   return a;
 }
