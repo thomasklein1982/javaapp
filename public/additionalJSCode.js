@@ -1176,6 +1176,25 @@ function additionalJSCode(){
     }
   }
 
+  class Console{
+    $constructor(){}
+    static async print(text){
+      await System.out.print(text);
+    }
+    static async read(){
+      return await System.console().readLine();
+    }
+    static async printLine(text){
+      await System.out.println(text);
+    }
+    static async wait(){
+      await System.console().read();
+    }
+    static async clear(){
+      await System.console().clear();
+    }
+  }
+
   class PrintStream{
     $constructor(){}
     async println(text){
@@ -1192,6 +1211,9 @@ function additionalJSCode(){
     $constructor(){}
     async read(){
       return await $App.console.read();
+    }
+    async readln(){
+      return await System.console().readLine();
     }
   }
 

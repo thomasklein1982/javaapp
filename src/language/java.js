@@ -36,6 +36,7 @@ import { defineHashMap } from "./datatypes/HashMap.js";
 import { defineNetworkSession } from "./datatypes/NetworkSession.js";
 import { defineMessageEvent } from "./datatypes/MessageEvent.js";
 import { Project } from "../classes/Project.js";
+import { defineConsole } from "./datatypes/Console.js";
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
 let boolean=new PrimitiveType("boolean",null,false,"Ein 'boolean' (dt: 'Wahrheitswert') kann nur true oder false sein.",true);
@@ -189,7 +190,8 @@ defineSystem(System);
 defineJavaApp(JavaApp);
 
 defineGamepad(Gamepad);
-defineGenericClazz(Console,appjsdata.objects.console,Java);
+defineConsole(Console);
+//defineGenericClazz(Console,appjsdata.objects.console,Java);
 defineGenericClazz(Path,appjsdata.objects.path,Java);
 
 defineGenericClazz(Time,appjsdata.objects.time,Java);
