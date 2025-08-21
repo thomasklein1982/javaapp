@@ -35,6 +35,7 @@ export class Method{
     this.hide=false;
     this.comment=comment;
     this.allowedArgsCounts=null;
+    this.jsCode=null;
   }
   getFrom(){
     return this.node.from+this.nodeOffset;
@@ -81,6 +82,7 @@ export class Method{
     } 
   }
   getJavaScriptCode(additionalJSCode){
+    if(this.jsCode) return this.jsCode;
     let code;
     if(this.isConstructor()){
       code="async $constructor";

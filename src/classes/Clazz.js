@@ -14,6 +14,7 @@ import  * as autocomplete  from "@codemirror/autocomplete";
 import { createMethod } from "../language/helper/createMethod";
 import { parseComments } from "../functions/parseComments";
 import { appjsdata } from "../functions/snippets";
+import { Modifiers } from "./Modifiers";
 
 export class Clazz{
   constructor(name,project,isInterface){
@@ -23,6 +24,7 @@ export class Clazz{
     this.cannotBeInstantiated=false;
     this.isAbstract=false;
     this.isHidden=false;
+    this.visibility="tab code uml";
     this.isEditorShown=true;
     this.isInterface=isInterface===true;
     this.wrappedPrimitiveType=null;
@@ -44,6 +46,8 @@ export class Clazz{
     this.clazzBody=null;
     this.attributes={};
     this.methods={};
+    this.hiddenAttributes=null;
+    this.hiddenMethods=null;
     this.typeParameters=null;
     this.node=null;
     this.references=[];
@@ -85,6 +89,16 @@ export class Clazz{
     if(obj.isHidden){
       this.isHidden=true;
     }
+    if(obj.visibility){
+      this.visibility=obj.visibility;
+    }
+    if(obj.hiddenAttributes){
+      this.hiddenAttributes=obj.hiddenAttributes;
+    }
+    if(obj.hiddenMethods){
+      this.hiddenMethods=obj.hiddenMethods;
+    }
+    console.log("restore clazz",this.name,this,obj);
   }
   sortMembers(){
     let as=[];
@@ -739,6 +753,38 @@ export class Clazz{
   }
 
   compileMemberNodes(scope,node){
+    /**
+     * add Hidden Methods and Attributes:
+     */
+    if(this.hiddenAttributes){
+      for(let i=0;i<this.hiddenAttributes.length;i++){
+        let a=this.hiddenAttributes[i];
+        if(!(a instanceof Attribute)){
+          let attr=new Attribute(this);
+          attr.type=new Type(a.type.name,a.type.dimension);
+          attr.type.baseType=this.getTypeByName(a.type.name);
+          attr.modifiers=new Modifiers();
+          attr.modifiers.visibility="private";
+          attr.name=a.name;
+          this.hiddenAttributes[i]=attr;
+        }
+        this.attributes[a.name]=this.hiddenAttributes[i];
+      }
+    }
+    if(this.hiddenMethods){
+      for(let i=0;i<this.hiddenMethods.length;i++){
+        let m=this.hiddenMethods[i];
+        if(!(m instanceof Method)){
+          let met=new Method(this,false);
+          met.jsCode=m.jsCode;
+          met.modifiers=new Modifiers();
+          met.modifiers.visibility="private";
+          met.name=m.name;
+          this.hiddenMethods[i]=met;
+        }
+        this.methods[m.name]=this.hiddenMethods[i];
+      }
+    }
     let hasConstructor=false;
     this.attributeErrors=[];
     while(node){

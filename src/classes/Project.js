@@ -311,7 +311,7 @@ export class Project{
     }
     /* alle Funktionen aus window.$asyncInitFunctions werden aufgerufen:*/
     codeMainCall+="\nfor(let i=0;i<window.$asyncInitFunctions.length;i++){await window.$asyncInitFunctions[i]();}";
-    codeMainCall+="\nif("+mainObjectCode+"?.main){await "+mainObjectCode+".main("+JSON.stringify(args)+");"+(afterMainCallCode?afterMainCallCode:"")+"}\n";
+    codeMainCall+="\nif("+mainObjectCode+"?.$realMainMethod){\nawait "+mainObjectCode+".$realMainMethod();"+(afterMainCallCode?afterMainCallCode:"")+"\n} else if("+mainObjectCode+"?.main){\nawait "+mainObjectCode+".main("+JSON.stringify(args)+");"+(afterMainCallCode?afterMainCallCode:"")+"}\n";
     codeMainCall+="\n$App.enableOnNextFrame=true;\nsetTimeout(async ()=>{await window.$exerciseChecker();},100);})();";
     let css=this.prepareCSS(this.css);
     if(!includeSave){
