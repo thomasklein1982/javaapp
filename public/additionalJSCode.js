@@ -1182,6 +1182,10 @@ function additionalJSCode(){
       await System.out.print(text);
     }
     static async read(){
+      if(Console.overrideReadCommands && Console.overrideReadCommandsIndex<Console.overrideReadCommands.length){
+        Console.overrideReadCommandsIndex++;
+        return Console.overrideReadCommands[Console.overrideReadCommandsIndex-1];
+      }
       return await System.console().readLine();
     }
     static async printLine(text){
@@ -1194,6 +1198,9 @@ function additionalJSCode(){
       await System.console().clear();
     }
   }
+  //false: "normales" Verhalten, String-Array: Werte, die bei Read-Aufrufen automatisch eingesetzt werden.
+  Console.overrideReadCommands=false;
+  Console.overrideReadCommandsIndex=0;
 
   class PrintStream{
     $constructor(){}
@@ -6743,6 +6750,7 @@ function additionalJSCode(){
     }
     static getConsoleContent(){
       let array=$App.console.getTextContent();
+      while(array[array.length-1].length===0) array.pop();
       return array.join("\n").split("\n");
     }
     static showCheckButton(){
@@ -6821,6 +6829,7 @@ function additionalJSCode(){
       return array;
     }
     static randomFrom(array,k){
+      if(k===undefined) k=1;
       let r=$Exercise.getRandomizedCopy(array);
       let drawn=[];
       for(let i=0;i<k;i++){

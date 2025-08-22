@@ -604,7 +604,7 @@ export default {
       this.$root.resetCurrent(-1);
       this.clearRuntimeErrors();
       this.running=true;
-      this.$refs.preview.reload(false,null,`window.$exerciseChecker=async ()=>{${this.$root.exerciseCheckerCode}}`);
+      this.$refs.preview.reload(false,null,`window.isChecking=true;window.$exerciseChecker=async ()=>{${this.$root.exerciseCheckerCode}};`);
     },
     stopAndPlay(infos){
       this.stop();

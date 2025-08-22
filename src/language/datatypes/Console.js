@@ -9,8 +9,7 @@ export function defineConsole(clazz){
       {
         name: "text",
         type: ["double","int","boolean","char","String","Object"],
-        info: "Der Wert, der ausgegeben werden soll.",
-        optional: true
+        info: "Der Text, der ausgegeben werden soll."
       }
     ],
     info: "Gibt eine Zeile Text aus."
@@ -21,8 +20,7 @@ export function defineConsole(clazz){
       {
         name: "text",
         type: ["String","int","double","boolean","char","Object"],
-        info: "Der Wert, der ausgegeben werden soll.",
-        optional: true
+        info: "Der Text, der ausgegeben werden soll."
       }
     ],
     info: "Gibt den Text aus."
