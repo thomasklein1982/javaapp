@@ -367,7 +367,8 @@ export class Clazz{
       let sc=this.getRealSuperClazz();
       if(sc && sc.getAttribute){
         a=sc.getAttribute(name,staticAccess);
-        if(a.modifiers.visibility==="private") a=null; else return a;
+        if(!a || a.error) a=null;
+        else if(a.isPrivate()) a=null; else return a;
       }
     }
     if(!a){
@@ -422,10 +423,8 @@ export class Clazz{
       let sc=this.getRealSuperClazz();
       if(sc){
         m=sc.getMethod(name,staticAccess);
-        if(m.modifiers.visibility==="private") m=null; else return m;
-        if(m && m.error){
-          m=null;
-        }
+        if(!m || m.error) m=null;
+        else if(m.isPrivate()) m=null; else return m;
       }
     }
     if(!m || !(m instanceof Method)){
