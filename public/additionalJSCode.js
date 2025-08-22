@@ -58,8 +58,8 @@ function additionalJSCode(){
   function $n(a){return a;}
   function $s(v){if(v) return v+"";else return v;}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
-  function $isInstanceOf(obj,typename){
-
+  function $isInstanceOf(obj,type){
+    return obj instanceof type;
   }
 
   function $randomInt(obj, min, max){
