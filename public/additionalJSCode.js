@@ -58,8 +58,21 @@ function additionalJSCode(){
   function $n(a){return a;}
   function $s(v){if(v) return v+"";else return v;}
   Object.defineProperty(String.prototype,'len',{value: function(){return this.length;}, writeable: false});
-  function $isInstanceOf(obj,type){
-    return obj instanceof type;
+  function $isInstanceOf(obj,objType, compareType){
+    if(objType.dimension!==compareType.dimension) return false;
+    //TODO: quick and dirty, muss eigene Class-Hierarchy durchgehen 
+    let dim=objType.dimension;
+    while(dim>0){
+      obj=obj[0];
+      dim--;
+    }
+    //es gibt ein Problem bei JSON obj=new JSON(); JSON t=(JSON) obj; bin nicht sicher, ob es nur bei JSON auftaucht
+    try{
+      return obj instanceof compareType.baseType;
+    }catch(e){
+      //das ist nicht korrekt, aber erst einmal ein Workaround
+      return true;
+    }
   }
 
   function $randomInt(obj, min, max){
@@ -531,12 +544,17 @@ function additionalJSCode(){
   }
 
   function $getFileContentAsString(obj){
-    let data=obj.data;
-    data=data.split(",");
-    data=data[data.length-1];
-    data=window.atob(data);
-    data=data.replace(/\r\n/g,"\n")
-    return data;
+    try{
+      let data=obj.data;
+      
+      data=data.split(",");
+      data=data[data.length-1];
+      data=window.atob(data);
+      data=data.replace(/\r\n/g,"\n")
+      return data;
+    }catch(e){
+      return obj.data;
+    }
   }
 
   function $setFileContentAsString(obj,data){
@@ -624,7 +642,7 @@ function additionalJSCode(){
     document.body.removeChild(downloadAnchor);
   }
 
-  async function $upload(){
+  async function $upload(asText){
     var p=new Promise(function(resolve,reject){
       $App.$uploadCallback(function(data,fileName,mime){
         //data=data.replace(/\r\n/g,"\n");
@@ -633,10 +651,18 @@ function additionalJSCode(){
           fileName: fileName,
           mime: mime
         });
-      },{dataURL: true});
+      },{dataURL: !(asText===true)});
     });
     var q=await p;
+    q.contentIsDataURL=!(asText===true);
     return q;
+  }
+
+  async function $uploadAsText(){
+    return await $upload(true);
+  }
+  async function $uploadAsDataURL(){
+    return await $upload(false);
   }
 
   function $toRadians(obj,x){
@@ -1184,7 +1210,9 @@ function additionalJSCode(){
     static async read(){
       if(Console.overrideReadCommands && Console.overrideReadCommandsIndex<Console.overrideReadCommands.length){
         Console.overrideReadCommandsIndex++;
-        return Console.overrideReadCommands[Console.overrideReadCommandsIndex-1];
+        let v=Console.overrideReadCommands[Console.overrideReadCommandsIndex-1];
+        await Console.printLine(v);
+        return v;
       }
       return await System.console().readLine();
     }

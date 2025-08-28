@@ -201,6 +201,7 @@ window.onmessage=function(message){
   let data=message.data;
   if(data.type==="error"){
     data=data.data;
+    app.emitEvent("runtime-error",data);
     app.$refs.editor.setRuntimeError(data);
   }else if(data.type==="debug-pause"){
     app.paused=true;

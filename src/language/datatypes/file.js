@@ -73,12 +73,28 @@ System.out.println( c );
     info: 'Lädt die Datei herunter, sodass der*die User*in die Datei auf seinem*ihrem Gerät speichern können.',
     jsName: "$downloadFile",
   },clazz,false,false);
+  // createMethod({
+  //   name: "upload",
+  //   isExtraFunction: true,
+  //   returnType: "File",
+  //   args: [],
+  //   info: 'Erlaubt es dem User eine Datei von seinem:ihrem Gerät hochzuladen und liefert die Datei zurück.',
+  //   jsName: "$upload",
+  // },clazz,true,false);
   createMethod({
-    name: "upload",
+    name: "uploadAsText",
     isExtraFunction: true,
     returnType: "File",
     args: [],
     info: 'Erlaubt es dem User eine Datei von seinem:ihrem Gerät hochzuladen und liefert die Datei zurück.',
-    jsName: "$upload",
+    jsName: "$uploadAsText",
+  },clazz,true,false);
+  createMethod({
+    name: "uploadAsDataURL",
+    isExtraFunction: true,
+    returnType: "File",
+    args: [],
+    info: 'Erlaubt es dem User eine Datei von seinem:ihrem Gerät hochzuladen und liefert die Datei zurück.',
+    jsName: "$uploadAsDataURL",
   },clazz,true,false);
 }

@@ -42,7 +42,10 @@ export function CastExpression(node,source,scope){
   if(destType.isChar()){
     code="(new $Char("+code+"))";
   }
-  code="(async (v)=>{if(!$isInstanceOf(v,"+destType.toString()+")){throw $new(Exception,'Typen nicht kompatibel')} return v;})("+value.code+")";
+  function typeAsString(type){
+    return "{baseType: "+type.baseType+", dimension: "+type.dimension+"}";
+  }
+  code="(async (v)=>{if(!$isInstanceOf(v,"+typeAsString(type)+","+typeAsString(destType)+")){throw $new(Exception,'Typen nicht kompatibel')} return v;})("+value.code+")";
 
   return {
     code,
