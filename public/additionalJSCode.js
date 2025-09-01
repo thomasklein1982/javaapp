@@ -6778,7 +6778,7 @@ function additionalJSCode(){
     }
     static getConsoleContent(){
       let array=$App.console.getTextContent();
-      while(array[array.length-1].length===0) array.pop();
+      while(array.length>0 && array[array.length-1].length===0) array.pop();
       return array.join("\n").split("\n");
     }
     static showCheckButton(){
