@@ -6,7 +6,8 @@ import { options } from "./Options.js";
 import { UIClazz } from "./UIClazz.js";
 import { Database } from "./Database.js";
 import { SourceFile } from "./SourceFile.js";
-
+import { mimes } from "../consts/mimes";
+import { urlToDataURL } from "../functions/urlToDataURL.js";
 
 let start="Project Code Start";
 let stop="Project Code Stop";
@@ -769,6 +770,24 @@ export class Project{
   deleteAssetAt(index){
     this.assets.splice(index,1);
   }
+  getAssetByName(name){
+    for(let i=0;i<this.assets.length;i++){
+      let a=this.assets[i];
+      if(a.name===name) return a;
+    }
+    return null;
+  }
+  async addAssetFromURL(url, name){
+    let pos=url.lastIndexOf("/");
+    let filename=url.substring(pos+1);
+    let s=filename.split(".");
+    if(!name) name=s[0];
+    let ext=s[1];
+    let mime=mimes[ext];
+    let code=await urlToDataURL(url);
+    let asset={name, file: {name: filename, mime, code}};
+    this.addAsset(asset);
+  }
   /**
    * fuegt die Klassen, Assets und Datenbank-Relationen diesem Projekt hinzu. Überschreibt gleichnamiges.
    * @param {*} p 
@@ -850,8 +869,21 @@ export class Project{
       this.css=o.css;
     }
     if(o.assets){
-      if(o.assets.splice){
-        this.assets=o.assets;
+      if(o.assets.splice && o.assets.length>0){
+        let a=o.assets[0];
+        if(a?.url){
+          //alle Assets muessen erst geladen werden:
+          let loadAssets=async ()=>{
+            for(let i=0;i<o.assets.length;i++){
+              let a = o.assets[i];
+              await this.addAssetFromURL(a.url, a.name);
+            }
+          };
+          loadAssets();
+        }else{
+          //alle Assets einfach uebernehmen
+          this.assets=o.assets;
+        }
       }
     }
     if(o.name){
