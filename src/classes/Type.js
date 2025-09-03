@@ -158,6 +158,10 @@ export class Type{
       castFromStringToPrimitive=true;
       value.type=this;
     }
+    if(value.type.isChar() && this.isString() && options.autocast){
+      value.type=this;
+      value.code="("+value.code+".char)";
+    }
     if(this.isInt() && value.type.isDouble()){
       if(!options.autocast) return false;
       value.type=this;

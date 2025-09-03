@@ -1,3 +1,4 @@
+import { options } from "../../classes/Options";
 import { Type } from "../../classes/Type";
 import { CompileFunctions } from "../CompileFunctions";
 import { Java } from "../java";
@@ -86,16 +87,28 @@ function resolveTermOperations(term,operations,source){
           throw source.createError("Der Operator '"+op+"' funktioniert nur mit Wahrheitswerten (boolean).",left.node.parent);
         }
       }else if(op==="=="||op==="!="){
-        if(left.type.isChar()){
-          left.code=left.code+".int";
-          left.type=new Type(Java.datatypes.int,0);
-        }
-        if(right.type.isChar()){
-          right.code=right.code+".int";
-          right.type=new Type(Java.datatypes.int,0);
+        if(left.type.isChar() && right.type.isString()){
+          if(options.autocast){
+            left.code=left.code+".char";
+            left.type=new Type(Java.datatypes.String,0);
+          }
+        }else if(right.type.isChar() && left.type.isString()){
+          if(options.autocast){
+            right.code=right.code+".char";
+            right.type=new Type(Java.datatypes.String,0);
+          }
+        }else{
+          if(left.type.isChar()){
+            left.code=left.code+".int";
+            left.type=new Type(Java.datatypes.int,0);
+          }
+          if(right.type.isChar()){
+            right.code=right.code+".int";
+            right.type=new Type(Java.datatypes.int,0);
+          }
         }
         if(!left.type.isSubtypeOf(right.type) && !right.type.isSubtypeOf(left.type)){
-          throw source.createError("Die Datentypen '"+left.type+"' und '"+right.type+"' sind nicht kompatibel.",left.node.parent);
+          throw source.createError("Die Datentypen '"+left.type+"' und '"+right.type+"' können nicht verglichen werden.",left.node.parent);
         }
         code=left.code+op+"="+right.code;
         type=new Type(Java.datatypes.boolean,0);

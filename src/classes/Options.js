@@ -60,7 +60,7 @@ class Options{
     this.mainOptional=true;
     this.autocast=true;
     this.instantiateUIClasses=true;
-    this.stringCharAtDeliversString=true;
+    this.stringCharAtDeliversString=false;
     this.stringIsComparable=true;
     this.autoextendJavaApp=true;
     this.databaseUiMode=true;
@@ -73,7 +73,7 @@ class Options{
     this.mainOptional=false;
     this.autocast=true;
     this.instantiateUIClasses=false;
-    this.stringCharAtDeliversString=true;
+    this.stringCharAtDeliversString=false;
     this.stringIsComparable=true;
     this.autoextendJavaApp=true;
     this.databaseUiMode=true;
