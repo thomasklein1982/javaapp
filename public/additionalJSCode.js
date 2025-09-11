@@ -68,6 +68,9 @@ function additionalJSCode(){
     }
     //es gibt ein Problem bei JSON obj=new JSON(); JSON t=(JSON) obj; bin nicht sicher, ob es nur bei JSON auftaucht
     try{
+      if(compareType.baseType===String){
+        return obj===null || obj.constructor===String;
+      }
       return obj instanceof compareType.baseType;
     }catch(e){
       //das ist nicht korrekt, aber erst einmal ein Workaround
@@ -5859,7 +5862,7 @@ function additionalJSCode(){
           let value=v.value[i];
           let name="["+i+"]";
 
-          d.v[i]=$getData(name,{dimension:v.dimension-1,elType,value}, name);
+          d.v[i]=$getData(name,{dimension:v.dimension-1,elType,value}, template[name]);
         }
       }else{
         d.v={};

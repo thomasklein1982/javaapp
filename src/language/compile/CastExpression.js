@@ -45,7 +45,7 @@ export function CastExpression(node,source,scope){
   function typeAsString(type){
     return "{baseType: "+type.baseType+", dimension: "+type.dimension+"}";
   }
-  code="(async (v)=>{if(!$isInstanceOf(v,"+typeAsString(type)+","+typeAsString(destType)+")){throw $new(Exception,'Typen nicht kompatibel')} return v;})("+value.code+")";
+  code="await (async (v)=>{if(!$isInstanceOf(v,"+typeAsString(type)+","+typeAsString(destType)+")){throw $new(Exception,'Typen nicht kompatibel')} return v;})("+value.code+")";
 
   return {
     code,
