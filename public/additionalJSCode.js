@@ -2100,9 +2100,10 @@ function additionalJSCode(){
       let el;
       if(comp instanceof Canvas){
         el=comp.wrapper;
-        setTimeout(()=>{
-          comp.resize(comp.wrapper.clientWidth,comp.wrapper.clientHeight);
-        },10);
+        //weiß nicht mehr, warum das drin war???
+        // setTimeout(()=>{
+        //   //comp.resize(comp.wrapper.clientWidth,comp.wrapper.clientHeight);
+        // },10);
       }else{
         el=comp.$el;
       }
@@ -2539,6 +2540,12 @@ function additionalJSCode(){
       this.setHeight(r);
       this.setCSSClass("");
     }
+    // getX(){
+    //   return this.$el.cx;
+    // }
+    // getY(){
+    //   return this.$el.cy;
+    // }
   }
 
   class Canvas extends JPanel{
@@ -2553,9 +2560,11 @@ function additionalJSCode(){
       wrapper.component=this;
       wrapper.className="__canvas-wrapper";
       wrapper.style.touchAction="none";
-      // let canvas=document.createElement("canvas");
-      // this.canvas=canvas;
-      // wrapper.appendChild(this.canvas);
+      let canvas=document.createElement("canvas");
+      canvas.style.position="absolute";
+      this.canvas=canvas;
+      this.ctx=canvas.getContext("2d");
+      wrapper.appendChild(this.canvas);
       let container=document.createElement("div");
       wrapper.appendChild(container);
       this.$el=container;
@@ -2579,7 +2588,9 @@ function additionalJSCode(){
         width: 0,
         height: 0,
         sx: 1,
-        sy: 1
+        sy: 1,
+        scaleX: 1,
+        scaleY: 1
       };
 
       wrapper.resize=(w,h)=>{
@@ -2593,7 +2604,6 @@ function additionalJSCode(){
         }
       });
       resizeObserver.observe(this.wrapper);
-      //$App.resizeObserver.observe(wrapper);
 
 
       this.setCSSClass("");
@@ -2669,14 +2679,14 @@ function additionalJSCode(){
       this.pixelWidth=w;
       this.pixelHeight=h;
       let dpr=window.devicePixelRatio||1;
-      if(this.sizePolicy==="stretch"){
-        this.fit.left=0;
-        this.fit.bottom=0;
-        this.fit.width=w;
-        this.fit.height=h;
-        this.fit.sx=w/this.lenX;
-        this.fit.sy=h/this.lenY;
-      }else{
+      // if(this.sizePolicy==="stretch"){
+      //   this.fit.left=0;
+      //   this.fit.bottom=0;
+      //   this.fit.width=w;
+      //   this.fit.height=h;
+      //   this.fit.sx=w/this.lenX;
+      //   this.fit.sy=h/this.lenY;
+      // }else{
         if(w*this.lenY>=h*this.lenX){
           let s=h/this.lenY;
           let realW=this.lenX*s;
@@ -2686,6 +2696,8 @@ function additionalJSCode(){
           this.fit.height=h;
           this.fit.sy=s;
           this.fit.sx=s;
+          this.fit.scaleX=w/realW;
+          this.fit.scaleY=1;
         }else{
           let s=w/this.lenX;
           let realH=this.lenY*s;
@@ -2695,13 +2707,34 @@ function additionalJSCode(){
           this.fit.width=w;
           this.fit.sy=s;
           this.fit.sx=s;
+          this.fit.scaleX=1;
+          this.fit.scaleY=h/realH;
         }
-      }
+      // }
       
       this.$el.style.left=this.fit.left+"px";
       this.$el.style.bottom=this.fit.bottom+"px";
       this.$el.style.width=this.fit.width+"px";
-      this.$el.style.height=this.fit.height+"px";
+      this.$el.style.height=this.fit.height+"px";    
+      this.canvas.style.left=this.$el.style.left;
+      this.canvas.style.bottom=this.$el.style.bottom;
+      this.canvas.style.width=this.$el.style.width;
+      this.canvas.style.height=this.$el.style.height;
+      this.applySizePolicy();
+      
+
+      let snapshot = this.canvas.toDataURL();
+
+      this.canvas.width=Math.round(this.fit.width*dpr);
+      this.canvas.height=Math.round(this.fit.height*dpr);
+
+      (() => {
+        let img = new Image();
+        img.onload=()=>{
+            this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+        };
+        img.src = snapshot;
+      })()
 
       for(let i=0;i<this.$el.childNodes.length;i++){
         let c=this.$el.childNodes[i];
@@ -2731,9 +2764,25 @@ function additionalJSCode(){
       return "translate("+rx+"px,"+ry+"px)";
     }
     getPositionInCanvas(rx,ry){
-      let x=rx/this.fit.sx+this.axes.x.min;
-      let y=ry/this.fit.sy+this.axes.y.min;
+      let x=(rx/this.fit.sx+this.axes.x.min);
+      let y=(ry/this.fit.sy+this.axes.y.min);
       return {x, y};
+    }
+    getXInPixels(x){
+      let dpr=window.devicePixelRatio||1;
+      return (x-this.axes.x.min)*this.fit.sx*dpr;
+    }
+    getYInPixels(y){
+      let dpr=window.devicePixelRatio||1;
+      return (this.axes.y.max-y-this.axes.y.min)*this.fit.sy*dpr;
+    }
+    getWidthInPixels(w){
+      let dpr=window.devicePixelRatio||1;
+      return w*this.fit.sx*dpr;
+    }
+    getHeightInPixels(h){
+      let dpr=window.devicePixelRatio||1;
+      return h*this.fit.sy*dpr;
     }
     add(comp,index){
       let el;
@@ -2776,13 +2825,18 @@ function additionalJSCode(){
       let canvas=this.mouse.comp.parent;
       let x = ev.offsetX;
       let y = ev.offsetY;
+      //console.log("1st",x.toFixed(2),y.toFixed(2));
       let el=ev.srcElement;
+      //console.log(ev.srcElement);
       if(el.isCanvas) el=el.parentElement;
       let brCanvas=this.$el.getBoundingClientRect();
       let brTarget=el.getBoundingClientRect();
       x+=brTarget.left-brCanvas.left;
       y+=brTarget.top-brCanvas.top;
-      y=brCanvas.height-y;
+      let sy=this.sizePolicy==="stretch"?this.fit.scaleY:1;
+      y=brCanvas.height/sy-y;
+      //console.log("2nd",brTarget.top-brCanvas.top,brCanvas.height,x.toFixed(2),y.toFixed(2),this.fit.scaleY);
+      //console.log("mouse",x,y,this.fit.scaleX,this.fit.scaleY);
       let pos=canvas.getPositionInCanvas(x,y);
       x=pos.x;
       y=pos.y;
@@ -2793,7 +2847,16 @@ function additionalJSCode(){
     }
     setSizePolicy(policy){
       this.sizePolicy=policy;
-      this.resize(this.pixelWidth,this.pixelHeight);
+      this.applySizePolicy();
+      //this.resize(this.pixelWidth,this.pixelHeight);
+    }
+    applySizePolicy(){
+      if(this.sizePolicy==="stretch"){
+        this.canvas.style.transform="scale("+(this.fit.scaleX)+","+(this.fit.scaleY)+")";
+      }else{
+        this.canvas.style.transform="";
+      }
+      this.$el.style.transform=this.canvas.style.transform;
     }
     getSizePolicy(){
       return this.sizePolicy;
@@ -2854,7 +2917,7 @@ function additionalJSCode(){
       this.$el.canvas.setTransform(m00,m10,m01,m11,m02,m12);
     }
     redraw(){
-      this.$el.canvas.redraw();
+      
     }
     setOrigin(x,y){
       this.$el.canvas.setOrigin(x,y);
@@ -2871,7 +2934,7 @@ function additionalJSCode(){
       this.$el.canvas.setOpacity(o);
     }
     clear(){
-      this.$el.canvas.clear();
+      this.canvas.width=this.canvas.width;
     }
     clearRect(cx,cy,w,h){
       this.$el.canvas.clearRect(cx,cy,w,h);
@@ -2882,47 +2945,88 @@ function additionalJSCode(){
     setFont(fontName){
       this.$el.canvas.setFont(fontName);
     }
-    setLinewidth(w){
-      this.$el.canvas.setLinewidth(w);
+    setLineWidth(w){
+      w=this.getWidthInPixels(w);
+      this.ctx.lineWidth=w;
     }
     write(text,x,y,align){
       this.$el.canvas.write(text,x,y,align);
     }
+    paintCircle(x,y,r,draw){
+      let cx=this.getXInPixels(x);
+      let cy=this.getYInPixels(y);
+      r=this.getWidthInPixels(r);
+      this.ctx.beginPath();
+      this.ctx.arc(cx,cy,r,0,2*Math.PI);
+      if(draw){
+        this.ctx.stroke();
+      }else{
+        this.ctx.fill();
+      }
+    }
     drawCircle(x,y,r){
-      this.$el.canvas.drawCircle(x,y,r);
+      this.paintCircle(x,y,r,true);
     }
     fillCircle(x,y,r){
-      this.$el.canvas.fillCircle(x,y,r);
+      this.paintCircle(x,y,r,false);
     }
     drawRect(cx,cy,w,h){
-      this.$el.canvas.drawRect(cx,cy,w,h);
+      this.paintRect(cx,cy,w,h,true);
     }
     fillRect(cx,cy,w,h){
-      this.$el.canvas.fillRect(cx,cy,w,h);
+      this.paintRect(cx,cy,w,h,false);
+    }
+    paintRect(cx,cy,w,h,draw){
+      let x=this.getXInPixels(cx-w/2);
+      let y=this.getYInPixels(cy+h/2);
+      w=this.getWidthInPixels(w);
+      h=this.getHeightInPixels(h);
+      this.ctx.beginPath();
+      this.ctx.rect(x,y,w,h);
+      if(draw)  this.ctx.stroke();
+      else this.ctx.fill();
     }
     drawLine(x1,y1,x2,y2){
-      this.$el.canvas.drawLine(x1,y1,x2,y2);
+      x1=this.getXInPixels(x1);
+      y1=this.getYInPixels(y1);
+      x2=this.getXInPixels(x2);
+      y2=this.getYInPixels(y2);
+      this.ctx.beginPath();
+      this.ctx.moveTo(x1,y1);
+      this.ctx.lineTo(x2,y2);
+      this.ctx.stroke();
     }
     beginPath(x,y){
-      this.$el.canvas.beginPath(x,y);
+      this.ctx.beginPath();
+      this.moveTo(x,y);
+    }
+    moveTo(x,y){
+      x=this.getXInPixels(x);
+      y=this.getYInPixels(y);
+      this.ctx.moveTo(x,y);
     }
     lineTo(x,y){
-      this.$el.canvas.lineTo(x,y);
+      x=this.getXInPixels(x);
+      y=this.getYInPixels(y);
+      this.ctx.lineTo(x,y);
     }
     closePath(){
-      this.$el.canvas.closePath();
+      this.context.closePath();
     }
     drawPath(){
-      this.$el.canvas.drawPath();
+      this.ctx.stroke();
     }
     fillPath(){
-      this.$el.canvas.fillPath();
+      this.ctx.fill();
     }
     isPointInPath(x,y){
-      return this.$el.canvas.isPointInPath(x,y);
+      x=this.getXInPixels(x);
+      y=this.getYInPixels(y);
+      return this.ctx.isPointInPath(x,y);
     }
     setColor(c){
-      this.$el.canvas.setColor(c);
+      this.ctx.strokeStyle=c;
+      this.ctx.fillStyle=this.ctx.strokeStyle;
     }
     drawImage(image,cx,cy,w,h,angle,mirrored){
       this.$el.canvas.drawImage(image,cx,cy,w,h,angle,mirrored);

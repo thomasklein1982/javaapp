@@ -1138,7 +1138,7 @@ function defineCanvas(Clazz,Java){
     info: 'Legt die Schriftart für die write-Befehle fest.'
   },Clazz,false,false,Java);
   createMethod({
-    name: 'setLinewidth',
+    name: 'setLineWidth',
     args: [{name: 'w', type: 'double', info: 'Dicke der Linien'}],
     info: 'Legt die Breite der gezeichneten Linien fest.'
   },Clazz,false,false,Java);
@@ -1173,22 +1173,35 @@ function defineCanvas(Clazz,Java){
     info: 'Zeichnet eine gerade Linie.'
   },Clazz,false,false,Java);
   createMethod({
+    name: 'beginPath',
+    args: [{name: "x", type: "double"}, {name: "y", type: "double"}],
+    info: 'Beginnt einen neuen Grafik-Pfad am Punkt ( x | y ).'
+  },Clazz,false,false);
+  createMethod({
+    name: 'closePath',
+    args: [],
+    info: 'Schließt den Grafik-Pfad mit einer geraden Linie zum Anfangspunkt ab.'
+  },Clazz,false,false);
+  createMethod({
+    name: 'drawPath',
+    args: [],
+    info: 'Zeichnet den Grafik-Pfad als Linie.'
+  },Clazz,false,false);
+  createMethod({
+    name: 'fillPath',
+    args: [],
+    info: 'Füllt den Grafik-Pfad aus.'
+  },Clazz,false,false);
+  createMethod({
+    name: 'lineTo',
+    args: [{name: "x", type: "double"}, {name: "y", type: "double"}],
+    info: 'Zieht eine gerade Linie zum Punkt ( x | y ).'
+  },Clazz,false,false);
+  createMethod({
     name: 'setColor',
     args: [{name: 'farbe', type: 'String'}],
     info: 'Legt die Farbe für die nachfolgenden Zeichnungen fest.'
   },Clazz,false,false,Java);
-  // createMethod({
-  //   name: 'getMouseX',
-  //   args: [],
-  //   info: 'Liefert die aktuelle x-Koordinate der Maus innerhalb dieses Canvas.',
-  //   returnType: 'double'
-  // },Clazz,false,false,Java);
-  // createMethod({
-  //   name: 'getMouseY',
-  //   args: [],
-  //   info: 'Liefert die aktuelle y-Koordinate der Maus innerhalb dieses Canvas.',
-  //   returnType: 'double'
-  // },Clazz,false,false,Java);
   createMethod({
     name: 'getMouse',
     args: [],
