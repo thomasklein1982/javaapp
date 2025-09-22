@@ -2549,8 +2549,9 @@ function additionalJSCode(){
   }
 
   class Canvas extends JPanel{
-    $constructor(minX,maxX,minY,maxY){
+    async $constructor(minX,maxX,minY,maxY){
       super.$constructor();
+      this.sizePolicy="fit";
       //this.$standardCSSClasses="_java-app-canvas __jcomponent";
       this.$standardCSSClasses+=" __canvas";
       //if(this.$el && this.$el.parentNode) this.$el.parentNode.removeChild(this.$el);
@@ -2593,17 +2594,20 @@ function additionalJSCode(){
         scaleY: 1
       };
 
-      wrapper.resize=(w,h)=>{
-        this.resize(w,h);
-
-      }
       let resizeObserver=new ResizeObserver((entries)=>{
         for(const entry of entries){
           const boxSize=entry.borderBoxSize[0];
           entry.target.resize(boxSize.inlineSize,boxSize.blockSize);
         }
       });
-      resizeObserver.observe(this.wrapper);
+      let p=new Promise((resolve,reject)=>{
+        wrapper.resize=(w,h)=>{
+          this.resize(w,h);
+          resolve();
+        }
+        resizeObserver.observe(this.wrapper);
+      });
+      await p;
 
 
       this.setCSSClass("");
