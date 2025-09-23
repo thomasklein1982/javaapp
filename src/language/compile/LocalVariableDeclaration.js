@@ -9,13 +9,17 @@ export function LocalVariableDeclaration(node,source,scope){
   
 
   node=node.firstChild;
-  if(node.name==="ScopedTypeName"){
+  if(node.name==="ScopedTypeName" || node.name==="ArrayType" && node.firstChild?.name==="ScopedTypeName"){
     /**der compiler landet hier, wenn auf ein Attribut zugegriffen werden soll und dahinter Code steht. Das verhindert die Autocompletion, z.B.
      * b.a
      * weiterer Code
      */
     if(node.firstChild!==node.lastChild){
-      FieldAccess(node.parent, source, scope);
+      let n=node;
+      if(node.name==="ArrayType"){
+        n=n.firstChild.firstChild;
+      }
+      FieldAccess(n.parent, source, scope);
     }else{
       Identifier(node.firstChild,source,scope);
     }
