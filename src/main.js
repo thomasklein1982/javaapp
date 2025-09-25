@@ -195,10 +195,11 @@ pos2=text.lastIndexOf("}");
 text=text.substring(pos+1,pos2);
 peerJScode=text;
 
-window.onmessage=function(message){
+window.onmessage=async function(message){
   if(!message) return;
   let app=window.app;
   let data=message.data;
+  console.log("message javapp",data);
   if(data.type==="error"){
     data=data.data;
     app.emitEvent("runtime-error",data);
@@ -238,6 +239,10 @@ window.onmessage=function(message){
   }else if(data.type==="open-project"){
     app.openProjectFromJSON(data.data);
     app.emitEvent(data.type+"-done");
+  }else if(data.type==="open-project-and-run"){
+    app.openProjectFromJSON(data.data);
+    let res=await app.run();//TODO!!
+    app.emitEvent(data.type+"-done", {result: res});
   }else if(data.type==="open-project-from-full-app-code"){
     app.openProjectFromFullAppCode(data.data);
     app.emitEvent(data.type+"-done");

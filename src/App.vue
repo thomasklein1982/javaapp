@@ -291,6 +291,9 @@ export default{
         window.parent.postMessage({type: "open-project-from-full-app-code-answer",data: ok},"*");
       }
     },
+    async run(){
+      this.$refs.editor.resume();
+    },
     resetCurrent(line,name){
       if(!line) line=this.current.line;
       if(!name) name=this.current.name;
@@ -308,6 +311,9 @@ export default{
         this.setLoggingEnabled(false);
       },1000);
       this.emitEvent("project-open");
+    },
+    run: function(){
+
     },
     importProject: function(project){
       this.$refs.editor.importToProject(project);
