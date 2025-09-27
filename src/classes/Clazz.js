@@ -488,7 +488,7 @@ export class Clazz{
   }
 
   isMainClazz(){
-     return (this.hasStaticMainMethod()||options.mainOptional&&this.isFirstClazz);
+     return (this.hasStaticMainMethod()||this.isFirstClazz);
   }
 
   getRuntimeInfos(){

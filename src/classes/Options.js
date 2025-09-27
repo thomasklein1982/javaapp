@@ -29,7 +29,7 @@ class Options{
     return this.voidOptional;
   }
   isHardMode(){
-    return !this.voidOptional && !this.mainOptional && !this.autocast && !this.instantiateUIClasses && !this.stringCharAtDeliversString && !this.stringIsComparable && !this.autoextendJavaApp;
+    return !this.voidOptional && !this.autocast && !this.instantiateUIClasses && !this.stringCharAtDeliversString && !this.stringIsComparable && !this.autoextendJavaApp;
   }
   difficulty(){
     if(this.isEasyMode())return 0;
@@ -70,7 +70,7 @@ class Options{
   async changeToNormal(dontSave){
     this.classOptional=true;
     this.voidOptional=false;
-    this.mainOptional=false;
+    this.mainOptional=true;
     this.autocast=true;
     this.instantiateUIClasses=false;
     this.stringCharAtDeliversString=false;
@@ -83,7 +83,7 @@ class Options{
   async changeToHard(dontSave){
     this.classOptional=true;
     this.voidOptional=false;
-    this.mainOptional=false;
+    this.mainOptional=true;
     this.autocast=false;
     this.instantiateUIClasses=false;
     this.stringCharAtDeliversString=false;

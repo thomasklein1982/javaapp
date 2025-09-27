@@ -199,7 +199,6 @@ window.onmessage=async function(message){
   if(!message) return;
   let app=window.app;
   let data=message.data;
-  console.log("message javapp",data);
   if(data.type==="error"){
     data=data.data;
     app.emitEvent("runtime-error",data);

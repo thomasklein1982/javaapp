@@ -1,6 +1,6 @@
 <template>
   <h1>Easy - Normal - Hard</h1>
-  <p>JavaApp kann in drei verschiedenen Modi betrieben werden, die festlegen, wie genau die syntaktischen und semantischen Vorgaben von Java eingehalten werden müssen. Der Modus kann auf der Startseite von JavaApp eingestellt werden.</p>
+  <p>JavaApp kann in drei verschiedenen Modi betrieben werden, die festlegen, wie genau die syntaktischen und semantischen Vorgaben von Java eingehalten werden müssen. Der Modus kann auf der Startseite von JavaApp eingestellt werden. Die IDE merkt sich dann die zuletzt gewählte Schwierigkeitsstufe, sodass diese Auswahl nur einmalig vorgenommen werden muss.</p>
   <h2>Der harte Modus</h2>
   <p>Dieser Modus versucht, die Vorgaben von Java so exakt wie möglich umzusetzen. Man schreibt also "ganz normalen Java-Code". Einige Abweichungen bleiben aber bestehen:
     <ul>
@@ -13,7 +13,7 @@
   <p>Ziel dieses Modus ist, einige Ecken und Kanten von Java abzuschleifen, die für Anfänger*innen schwierig und unnötig kompliziert sind:
     <ul>
       <li>Automatisches Parsen von Strings: Jeder String wird implizit in einen int oder einen double umgewandelt, ohne dass Integer.parseInt oder Double.parseDouble notwendig sind.
-        <p>Es ist also z.B. möglich <code class="line">int a="2";</code> zu schreiben und <code>a</code> erhält dann den Wert <code>2</code>. Bei Problemen wird eine Exception geworfen.
+        <p>Es ist also z.B. möglich <code class="line">int a = "2";</code> zu schreiben und <code>a</code> erhält dann den Wert <code>2</code>. Bei Problemen wird eine Exception geworfen.
         </p></li>
       <li>Strings sind vergleichbar: Strings können mit <code>==</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>&lt;</code> und <code>&gt;</code> verglichen werden. Es ist kein <code>compareTo</code> erforderlich.</li>
       <li><code>String.charAt</code> liefert einen <code>String</code> zurück: Normalerweise würde ein <code>char</code> zurückgegeben.</li>
@@ -23,8 +23,6 @@
   <h2>Der einfache Modus</h2>
   <p>Dieser Modus nimmt alles aus Java heraus, was für Anfänger*innen keinen Sinn macht. Neben den Erleichterungen des normalen Modus wird zusätzlich folgendes geändert:
     <ul>
-      <li>Klassendeklaration wird optional: Die Hauptklasse benötigt keine Klassendeklaration mehr. Man kann direkt Attribute und Methoden deklarieren. Bei allen weiteren Klasse wird die Klassendeklaration weiterhin benötigt.</li>
-      <li><code>main</code>-Methode wird optional: Es wird keine <code>main</code>-Methode mehr benötigt. Wenn es keine gibt, wird automatisch die erste Klasse zur Hauptklasse.</li>
       <li>Schlüsselwort <code>void</code> wird optional: Bei Methoden ohne Rückgabe kann auf das Schlüsselwort <code>void</code> verzichtet werden.</li>
     </ul>
   </p>

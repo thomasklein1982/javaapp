@@ -46,12 +46,15 @@
         <td><Select @change="emitUpdate()" :options="['text','number']" v-model="component.inputType" style="width: 95%"/></td>
       </tr>
       <tr v-if="type && type.labels && type.labels.value!==undefined">
-        <td>Wert:</td>
+        <td>Wert:{{ component.valueType }}</td>
         <td v-if="component.valueType==='Boolean'">
           <ToggleSwitch @change="emitUpdate()" v-model="component.value"/>
         </td>
         <td v-else-if="component.valueType===undefined || component.valueType==='inline-text'">
           <InputText type="search" spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%"/>
+        </td>
+        <td v-else-if="component.valueType==='assets'">
+          <Select editable spellcheck="false" placeholder="Wähle ein Asset" @change="emitUpdate()" v-model="component.value" :options="assetNames" style="width: 95%"/>
         </td>
         <td v-else-if="component.valueType==='text' || !maximized">
           <TextArea rows="2" spellcheck="false" @change="emitUpdate()" v-model="component.value" style="width: 95%; resize: vertical"/>
@@ -214,6 +217,14 @@ import TemplateDialog from './TemplateDialog.vue';
       settings: Object
     },
     computed: {
+      assetNames(){
+        let n=this.project.assets.length;
+        let names=[];
+        for(let i=0;i<n;i++){
+          names.push(this.project.assets[i].name);
+        }
+        return names;
+      },
       type(){
         if(this.component.type==="JImage"){
           console.log("image");

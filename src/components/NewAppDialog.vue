@@ -132,7 +132,7 @@ void onNextFrame( ) {
                       {
                         "type": "JImage",
                         "value": "https://thomaskl.uber.space/Webapps/Assets/graphics/overworld/water-1.png",
-                        "valueType": "inline-text",
+                        "valueType": "assets",
                         "onAction": false,
                         "actionCommand": "",
                         "imageZoom": 1,
@@ -149,7 +149,7 @@ void onNextFrame( ) {
                       {
                         "type": "JImage",
                         "value": "https://thomaskl.uber.space/Webapps/Assets/graphics/monster/merfolk_water.png",
-                        "valueType": "inline-text",
+                        "valueType": "assets",
                         "onAction": false,
                         "actionCommand": "",
                         "imageZoom": 1,

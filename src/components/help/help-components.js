@@ -70,14 +70,14 @@ import about_whatis from "./about/what-is.vue";
           label: "Easy - Normal - Hard",
           comp: about_modes
         },
+        lifecycle: {
+          label: "Lebenszyklus",
+          comp: about_lifecycle
+        },
         faq: {
           label: "FAQ",
           comp: about_faq
         },
-        // lifecycle: {
-        //   label: "Lebenszyklus",
-        //   comp: about_lifecycle
-        // },
       }
     },
     assets: {
