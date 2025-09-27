@@ -596,9 +596,9 @@ window.appJScode=function(){
       if(kb.lastKeycodeDown!==k){
         kb.lastKeycodeDown=k;
         if($App.debug.paused) return;
-        if(window.onKeyDown){
+        if(window.$main.onKeyDown){
           try{
-            window.onKeyDown(k);
+            $main.onKeyDown(k);
           }catch(e){
             $App.handleException(e);
           }
@@ -611,9 +611,9 @@ window.appJScode=function(){
       delete kb.down[k];
       kb.lastKeycodeDown=-1;
       if($App.debug.paused) return;
-      if(window.onKeyUp){
+      if(window.$main.onKeyUp){
         try{
-          window.onKeyUp(k);
+          $main.onKeyUp(k);
         }catch(e){
           $App.handleException(e);
         }
