@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+<head>
+	<style>
+		html,body{
+			width: 100%;
+			height: 100%;
+			padding: 0;
+		}
+		iframe{
+			width: 70%;
+			height: 70%;
+		}
+		textarea{
+			display: block;
+			width: 90%;
+			min-height: 5cm;
+		}
+	</style>
+	<script>
+		let javaapp, frame_id=0;
+		let output, input, select_id;
+		window.onmessage=function(message){
+			message=message.data;
+			if(message.event){
+				console.log(message.id,message.type,message.data);
+			}else if(message.type==="give-full-app-code-answer"){
+				output.value=message.data;
+			}else if(message.type.endsWith("answer")){
+				output.value=JSON.stringify(message.data,null,2);
+			}
+		}
+		
+		function start(){
+			javaapp=[document.getElementById("iframe0").contentWindow,document.getElementById("iframe1").contentWindow];
+			input=document.getElementById("input");
+			output=document.getElementById("output");
+			select_id=document.getElementById("select_id");
+		}
+		function changeID(){
+			frame_id=(select_id.selectedIndex);
+		}
+		function openProjectEmpty(){
+			javaapp[frame_id].postMessage({type: 'open-project-empty'},"*");
+		}
+		function giveClassNames(){
+			javaapp[frame_id].postMessage({type: 'give-class-names'},"*");
+		}
+		function giveExtensionNames(){
+			javaapp[frame_id].postMessage({type: 'give-extension-names'},"*");
+		}
+		function giveProject(){
+			javaapp[frame_id].postMessage({type: 'give-project'},"*");
+		}
+		function giveFullAppCode(){
+			javaapp[frame_id].postMessage({type: 'give-full-app-code'},"*");
+		}
+		function openProject(){
+			let p=JSON.parse(input.value);
+			javaapp[frame_id].postMessage({type: 'open-project', data: p}, "*");
+		}
+		function openProjectFromFullAppCode(){
+			let p=input.value;
+			javaapp[frame_id].postMessage({type: 'open-project-from-full-app-code', data: p}, "*");
+		}
+		function addClass(){
+			let p=JSON.parse(input.value);
+			javaapp[frame_id].postMessage({type: 'add-class', data: p}, "*");
+		}
+		function removeClass(){
+			let p=JSON.parse(input.value);
+			javaapp[frame_id].postMessage({type: 'remove-class', data: p}, "*");
+		}
+		function setVisibleSidebar(){
+			let p=JSON.parse(input.value);
+			javaapp[frame_id].postMessage({type: 'set-visible-sidebar', data: p}, "*");
+		}
+		function setVisibleMenubar(){
+			let p=JSON.parse(input.value);
+			javaapp[frame_id].postMessage({type: 'set-visible-menubar', data: p}, "*");
+		}
+		function setVisibleRunButton(){
+			let p=JSON.parse(input.value);
+			javaapp[frame_id].postMessage({type: 'set-visible-run-button', data: p}, "*");
+		}
+		function addExtension(){
+			let p=JSON.parse(input.value);
+			javaapp[frame_id].postMessage({type: 'add-extension', data: p}, "*");
+		}
+		function removeExtension(){
+			let p=JSON.parse(input.value);
+			javaapp[frame_id].postMessage({type: 'remove-extension', data: p}, "*");
+		}
+		function showExample(data){
+			let s=JSON.stringify(data,null,2);
+			input.value=s;
+		}
+	</script>
+</head>
+<body onload="start()">
+	<h1>iFrame id=0</h1>
+	<iframe id="iframe0" src="https://thomaskl.uber.space/Apps/java-app/#id=0;" srcs="http://localhost:5174/#id=0;"></iframe>
+	<h1>iFrame id=1</h1>
+	<iframe id="iframe1" src="https://thomaskl.uber.space/Apps/java-app/#id=1;" srcs="http://localhost:5174/#id=1;"></iframe>
+	<div>
+		Aktuelle ID = <select id="select_id" onchange="changeID()">
+			<option>0</option>
+			<option>1</option>
+		</select>
+	</div>
+	<h1>Befehle ohne Parameter</h1>
+	<button onclick="openProjectEmpty()">open-project-empty</button>
+	<button onclick="giveClassNames()">give-class-names</button>
+	<button onclick="giveProject()">give-project</button>
+	<button onclick="giveFullAppCode()">give-full-app-code</button>
+	<button onclick="giveExtensionNames()">give-extension-names</button>
+	<h1>Befehle mit Parametern</h1>
+	<p>Parameter in die nachfolgende Textarea eingeben:</p>
+	<textarea id="input"></textarea>
+	<div>
+		<button onclick="openProject()">open-project</button>
+		<button onclick='showExample({"clazzes":[{"name":"Main","src":"void main( ) {\n  \n}\n\n","isHidden":false},{"name":"Screen","src":"","components":[{"type":"JButton","value":"Klicken","x":50,"y":50,"width":100,"height":100,"name":"","previewID":"P5861195"}],"cssClass":"","cssCode":"","template":"1"}],"database":"","databaseInitCode":"","css":"","assets":[],"name":"MyApp","description":"","theme_color":"black","background_color":"black","icon":null,"urls":["./"],"date":"2025-06-29T21:37:12.218Z","javaappVersion":"8.8.5"})'>?</button>
+	</div>
+	<div>
+		<button onclick="openProjectFromFullAppCode()">open-project-from-full-app-code</button>
+		<button onclick='alert("Füge den kompletten Quellcode der HTML-Datei ein.")'>?</button>
+	</div>
+	<div>
+		<button onclick="addClass()">add-class</button>
+		<button onclick='showExample({name: "Test", type: "class|uiclass|interface|html|css|js"})'>?</button>
+	</div>
+	<div>
+		<button onclick="removeClass()">remove-class</button>
+		<button onclick='showExample({name: "Test"})'>?</button>
+	</div>
+	<div>
+		<button onclick="setVisibleSidebar()">set-visible-sidebar</button>
+		<button onclick='showExample({visible: false})'>?</button>
+	</div>
+	<div>
+		<button onclick="setVisibleMenubar()">set-visible-menubar</button>
+		<button onclick='showExample({visible: false})'>?</button>
+	</div>
+	<div>
+		<button onclick="setVisibleRunButton()">set-visible-run-button</button>
+		<button onclick='showExample({visible: false})'>?</button>
+	</div>
+	<div>
+		<button onclick="addExtension()">add-extension</button>
+		<button onclick='showExample({"javaappVersion":"9.0.0","name":"Paket","clazzes":[{"name":"Person","src":"class Person{\n  String name;\n  private int alter=10;\n\n  Person(String n, int a){\n    name=n;\n    alter=a;\n  }\n\n  public int getAlter(){\n    return alter;\n  }\n  \n  private void test(){\n    System.out.println( \"test\" );\n  }\n}","isHidden":false},{"name":"Lehrkraft","src":"class Lehrkraft extends Person{\n  String[] faecher;\n\n  void unterrichten(){\n    System.out.println( faecher );\n  }\n}","isHidden":false}]})'>?</button>
+	</div>
+	<div>
+		<button onclick="removeExtension()">remove-extension</button>
+		<button onclick='showExample({name: "Paket"})'>?</button>
+	</div>
+	<h1>Output</h1>
+	<p>Hier werden alle Antworten angezeigt:</h1>
+	<textarea id="output"></textarea>
+	
+</body>
+</html>

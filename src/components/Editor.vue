@@ -128,7 +128,7 @@
             </TabPanels>
           </Tabs>
         </SplitterPanel>
-        <SplitterPanel v-show="!rightClosed" :size="100-sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">  
+        <SplitterPanel :size="100-sizeCode" style="overflow: hidden; height: 100%" :style="{display: rightClosed? 'none': 'flex', flexDirection: 'column'}">
           <Splitter :gutter-size="splitterSize" layout="vertical" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
             <SplitterPanel style="overflow: hidden;">
               <UIPreview 
@@ -286,6 +286,7 @@ export default {
       return this.$refs.editor[this.activeTab];
     },
     splitterSize(){
+      if(this.rightClosed) return 0;
       return 8;
     },
     currentClazz(){

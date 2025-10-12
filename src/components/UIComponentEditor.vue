@@ -46,7 +46,7 @@
         <td><Select @change="emitUpdate()" :options="['text','number']" v-model="component.inputType" style="width: 95%"/></td>
       </tr>
       <tr v-if="type && type.labels && type.labels.value!==undefined">
-        <td>Wert:{{ component.valueType }}</td>
+        <td>Wert:</td>
         <td v-if="component.valueType==='Boolean'">
           <ToggleSwitch @change="emitUpdate()" v-model="component.value"/>
         </td>
