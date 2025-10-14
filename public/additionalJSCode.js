@@ -3185,7 +3185,7 @@ function additionalJSCode(){
       this.$standardCSSClasses+=" __jtextarea";
       this.$el=document.createElement("textarea");//ui.textarea(placeholder,x,y,width,height);
       this.$el.placeholder=placeholder;
-      this.setAlignment("top");
+      this.setAlignment("top left");
       this.$el.spellCheck=false;
       this.$el.component=this;
       this.$el.onchange = $handleOnAction;
@@ -4364,18 +4364,19 @@ function additionalJSCode(){
   }
 
   class NetworkSession{
-    $constructor(id){
-      this.id=id;
+    $constructor(){
+      this.id=null;
+      this.connected=false;
       this._isServer=false;
       this.username=null;
       this.messageListener=null;
-      this.peerID=this.getPeerID();
       this.connectionsToClients={};
       this.newConnectionsToClients={};
       this.peer=null;
     }
 
     getPeerID(){
+      return this.sessionID;
       var loc=location.toString();
       loc=loc.replace(/\W/g,"");
       return loc+"-"+this.sessionID;
@@ -4385,24 +4386,32 @@ function additionalJSCode(){
       return this._isServer;
     }
 
-    start(){
+    async start(id, username){
+      this.sessionID=id;
+      this.username=username;
+      this.peerID=this.getPeerID();
       this._isServer=true;
       this.debug=false;
-      console.log("starte session als server",this.id,this.peerID);
+      console.log("starte session als server",this.sessionID,this.peerID);
       this.connectionsToClients={};
       this.newConnectionsToClients={};
       this.peer=new Peer(this.peerID,{debug:0});
-      this.configurePeer();
+      let ok=await this.configurePeerServer();
+      if(!ok) return false;
+      return await this.connect(this.sessionID,this.username);
     }
 
-    join(username){
+    async connect(id,username){
+      this.sessionID=id;
       this.username=username;
-      console.log("trete session bei als client",this.username,this.peerID);
       if(!this._isServer){
         this.peer=new Peer(undefined,{debug:0});
-        this.configurePeer();
+        return await this.configurePeerClient();
+      }else{
+        this.connected=true;
       }
-
+      console.log("trete session bei als client",this.username,this.peerID);
+      return true;
     }
 
     receiveMessage(messageEvent){
@@ -4410,90 +4419,101 @@ function additionalJSCode(){
       this.messageListener.onMessage(messageEvent);
     }
 
-    configurePeer(){
-      this.peer.on('open',()=>{
-        console.log("peer ist open");
-        if(this._isServer){
-          this.receiveMessage($new(MessageEvent,null,"session-started","Eine neue Session wurde gestartet.",Date.now()));
-        }else{
-          console.log("Baue Verbindung zum Server auf...");
-          this.connectionToServer=this.peer.connect(this.peerID);
-          this.connectionToServer.on('open',()=>{
-            console.log("client hat verbindung zum server");
-            console.log("sende gruss an host",this.username,this.peer.id);
-            this.connectionToServer.send({type: "new-connection", clientID: this.username, peerID: this.peer.id});
-            this.receiveMessage($new(MessageEvent,null,"session-joined","Der Session wurde beigetreten.",Date.now()));
+    async openPeer(){
+      const p=new Promise((accept,reject)=>{
+        this.peer.on('open',()=>{
+          console.log("peer ist open");
+          accept(true);
+        });
+        this.peer.on('error',(error)=>{
+          console.log("peer error",error);
+          accept(false);
+        });
+        setTimeout(()=>{
+          console.log("timeout");
+          accept(false);
+        },5000);
+      });
+      let q=await p;
+      console.log("promise q",q);
+      return q;
+    }
+
+    async configurePeerServer(){
+      let p=new Promise((accept,reject)=>{
+        this.peer.on('open',()=>{
+          console.log("peer ist open");
+          this.peer.on('connection',(dataConnection)=>{
+            console.log("server: neue Connection");
+            this.newConnectionsToClients[dataConnection.peer]=dataConnection;
+        
+            dataConnection.on('data',(data)=>{
+              /**Server empfaengt nachricht */
+              console.log("server empfaengt nachricht",data);
+              if(data.type==="new-connection"){
+                var con=this.newConnectionsToClients[data.peerID];
+                if(con){
+                  this.connectionsToClients[data.username]=con;
+                  con.send({type: "confirm-connection-from-server"});
+                }
+                delete this.newConnectionsToClients[data.peerID];
+              }else if(data.type==="send-message-to-everybody"){
+                console.log("server empfängt message");
+                let m=data.messageEvent;
+                m=$new(MessageEvent,m.sender,m.header,m.message,m.time);
+                this.sendMessageAsServer(this.connectionsToClients,m,true);
+              }else if(data.type==="send-message-to-others"){
+                console.log("server empfängt message");
+                let m=data.messageEvent;
+                m=$new(MessageEvent,m.sender,m.header,m.message,m.time);
+
+                this.sendMessageAsServer(this.connectionsToClients,m,false);
+              }
+            });
           });
-          this.connectionToServer.on('data',(data)=>{
-            /**client empfaengt nachricht */
-            console.log("client empfaengt nachricht",data);
-            if(data.type==="client-id-of-server"){
-              console.log("client empfaengt id des servers",data.clientID);
-              for(var id of data.allRealClientIDs){
-                if(id!==this.username){
-                  this.receiveMessage($new(MessageEvent,"user-name","",Date.now()));
-                }
-              }
-            }else if(data.type==="message"){
-              if(this.handler.onMessage){
-                this.handler.onMessage(data.sender,data.message);
-              }
-            }else if(data.type==="new-connection"){
-              console.log("client empfaengt neue Verbindung",data.clientID)
-              if(this.handler.onNewConnection){
-                this.handler.onNewConnection(data.clientID);
-              }
-            }
-          })
-        }
-      });
-    
-      this.peer.on('error',(error)=>{
-        console.log("error",error);
-        if(this.handler.onSessionError){
-          this.handler.onSessionError(error);
-        }
-      });
-    
-      this.peer.on('connection',(dataConnection)=>{
-        console.log("neue Connection");
-        if(this.isHost){
-          this.log("neuer Client",dataConnection);
-          this.newConnectionsToClients[dataConnection.peer]=dataConnection;
-        }
-    
-        dataConnection.on('open',()=>{
-          console.log("data connection ist offen");
-          if(!this.isHost){
-            
-          }
+          accept(true);
         });
-    
-        dataConnection.on('data',(data)=>{
-          if(this.isHost){
-            /**Server empfaengt nachricht */
-            console.log("server empfaengt nachricht",data);
-            if(data.type==="new-connection"){
-              this.receiveMessage($new(MessageEvent));
-              var con=this.newConnectionsToClients[data.peerID];
-              if(con){
-                this.connectionsToClients[data.clientID]=con;
-                this.connectionsToClients[data.clientID].send({type: "client-id-of-server", clientID: this.clientID, allRealClientIDs: this.getAllClientIDs()});
-                if(this.handler.onNewConnection){
-                  this.handler.onNewConnection(data.clientID);
-                }
-                this.forward(data.clientID,{type: "new-connection", clientID: data.clientID});
+        setTimeout(()=>{
+          accept(false);
+        },5000);
+      });
+      return await p;
+    }
+
+    async configurePeerClient(){
+      let p=new Promise((accept,reject)=>{
+        this.peer.on('open',()=>{
+          console.log("peer ist open");
+          console.log("Baue Verbindung zum Server auf...",this.sessionID);
+          this.connectionToServer=this.peer.connect(this.sessionID);
+          this.connectionToServer.on('error',async (err)=>{
+            console.log("client peer error",err);
+            accept(false);
+          });
+          console.log("on error added");
+          this.connectionToServer.on('open',async ()=>{
+            this.connected=true;
+            console.log("client hat verbindung zum server");
+            console.log("sende username an server",this.username,this.peer.id);
+            this.connectionToServer.send({type: "new-connection", username: this.username, peerID: this.peer.id});
+            this.connectionToServer.on('data',(data)=>{
+              /**client empfaengt bestätigung vom Server */
+              console.log("client empfaengt bestätigung vom Server",data);
+              if(data.type==="confirm-connection-from-server"){
+                this.connectionToServer.on('data',(data)=>{
+                  /**client empfaengt nachricht */
+                  console.log("client empfaengt nachricht",data);
+                  this.receiveMessage($new(MessageEvent,data.sender,data.header,data.message,data.time));
+                });
+                accept(true);
               }
-              delete this.newConnectionsToClients[data.peerID];
-            }else if(data.type==="message"){
-              this.forward(data.sender,data);
-              if(this.handler.onMessage){
-                this.handler.onMessage(data.sender,data.message);
-              }
-            }
-          }
+            });
+          });
         });
       });
+      let q=await p;
+      console.log("configurePeerClient result",q,this.connected);
+      return q;
     }
 
     onMessage(handler){
@@ -4501,15 +4521,61 @@ function additionalJSCode(){
     }
 
     sendTo(username, message, header){
-
+      if(!this.connectionToServer) return;
+      this.connectionToServer.send({type: "send-message-to", sender: this.username, target: username, peerID: this.peer.id});
     }
 
-    sendToAll(message, header){
+    sendToEverybody(message, header){
+      let m=$new(MessageEvent,this.username,header,message,Date.now());
+      if(this._isServer){
+        this.sendMessageAsServer(this.connectionsToClients,m, true);
+      }else{
+        if(this.connectionToServer){
+          this.connectionToServer.send({type: "send-message-to-everybody", messageEvent: m});
+        }
+      }
+    }
 
+    sendMessageAsServer(recipientIDs,messageEvent, receiveSelf){
+      for(let pid in recipientIDs){
+        let r=this.connectionsToClients[pid]; //$new(MessageEvent,data.sender,data.message,Date.now()
+        r.send(messageEvent);
+      }
+      if(receiveSelf) this.receiveMessage(messageEvent);
     }
 
     sendToServer(message, header){
+      if(!this.connectionToServer) return;
+      this.connectionToServer.send({type: "send-message-to-server", sender: this.username, peerID: this.peer.id});
+    }
 
+    getOtherUsernames(username){
+      let ids={};
+      for(let pid in this.connectionsToClients){
+        if(pid!==username) ids[pid]=true;
+      }
+      return ids;
+    }
+
+    sendToOthers(message, header){
+      let m=$new(MessageEvent,this.username,header,message,Date.now());
+      if(this._isServer){
+        let ids=this.getOtherUsernames(this.username);
+        this.sendMessageAsServer(ids,m, false);
+      }else{
+        if(this.connectionToServer){
+          this.connectionToServer.send({type: "send-message-to-others", messageEvent: m});
+        }
+      }
+    }
+
+    getID(){
+      if(this.peer) return this.peer.id;
+      return null;
+    }
+
+    isConnected(){
+      return this.connected;
     }
   }
 

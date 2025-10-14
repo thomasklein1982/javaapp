@@ -1,43 +1,31 @@
 import { createConstructor } from "../helper/createConstructor";
 import { createMethod } from "../helper/createMethod";
 
-export function defineNetworkSession(clazz){
+export function defineSocket(clazz){
   createConstructor({
     args: [
-      
     ]
   },clazz);
-  createMethod({
-    name: "start",
-    args: [
-      {name: 'sessionId', type: 'String'},
-      {name: "username", type: "String"}
-    ],
-    info: "Startet diesen Computer als Server der Netzwerk-Sitzung."
-  },clazz,false,false);
+  // createMethod({
+  //   name: "start",
+  //   args: [],
+  //   info: "Startet diesen Computer als Server der Netzwerk-Sitzung."
+  // },clazz,false,false);
   createMethod({
     name: "connect",
     args: [
-      {name: 'sessionId', type: 'String'},
+      {name: "serverID", type: "String"},
       {name: "username", type: "String"}
     ],
-    info: "Baut eine Verbindung zu einem Server auf und identifiziert sich mit einem Username."
+    info: "Baut eine Verbindung zum Server mit der angegebenen serverID auf und identifiziert sich mit dem username."
   },clazz,false,false);
   createMethod({
-    name: "sendToOthers",
+    name: "send",
     args: [
       {name: "message", type: "String"},
       {name: "header", type: "String", optional: true}
     ],
     info: "Sendet eine Nachricht an alle anderen Clients."
-  },clazz,false,false);
-  createMethod({
-    name: "sendToEverybody",
-    args: [
-      {name: "message", type: "String"},
-      {name: "header", type: "String", optional: true}
-    ],
-    info: "Sendet eine Nachricht an alle Clients."
   },clazz,false,false);
   createMethod({
     name: "sendToServer",
@@ -62,21 +50,5 @@ export function defineNetworkSession(clazz){
       {name: "listener", type: "MessageListener", default: "(m)->{}"}
     ],
     info: "Legt fest, was passieren soll, wenn eine Nachricht über das Netzwerk empfangen wird."
-  },clazz,false,false);
-  createMethod({
-    name: "getID",
-    args: [
-      
-    ],
-    info: "Liefert die ID dieser Netzwerk-Session zurück oder null, wenn die Session nicht verbunden ist.",
-    returnType: "String",
-  },clazz,false,false);
-  createMethod({
-    name: "isConnected",
-    args: [
-      
-    ],
-    info: "Liefert true, falls diese Session mit einem Server verbunden ist.",
-    returnType: "boolean",
   },clazz,false,false);
 }
