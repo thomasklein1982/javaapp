@@ -8,6 +8,13 @@ export function defineNetworkSession(clazz){
     ]
   },clazz);
   createMethod({
+    name: "showStartDialog",
+    args: [
+      
+    ],
+    info: ""
+  },clazz,false,false);
+  createMethod({
     name: "start",
     args: [
       {name: 'sessionId', type: 'String'},
@@ -15,6 +22,7 @@ export function defineNetworkSession(clazz){
     ],
     info: "Startet diesen Computer als Server der Netzwerk-Sitzung."
   },clazz,false,false);
+
   createMethod({
     name: "connect",
     args: [

@@ -2,8 +2,6 @@
  * neue Objekte der definierten Klassen müssen mit $new(Klasse,Parameter,...) erzeugt werden 
  * statt mit new Klasse(Parameter,...)*/
 
-
-
 function additionalJSCode(){
   window.mousePressed=false;
   window.addEventListener('DOMContentLoaded', ()=>{
@@ -4373,6 +4371,75 @@ function additionalJSCode(){
       this.connectionsToClients={};
       this.newConnectionsToClients={};
       this.peer=null;
+      this.dialog=null;
+    }
+
+    async showStartDialog(){
+      if(!this.dialog){
+        this.dialog={
+          backdrop: document.createElement("div"),
+          frame: document.createElement("div"),
+          label: document.createElement("div"),
+          inputID: document.createElement("input"),
+          inputName: document.createElement("input"),
+          startAsServer: document.createElement("button"),
+          startAsClient: document.createElement("button")
+        };
+        this.dialog.backdrop.style="z-index: 1000; display: none; position: fixed; left: 0; right: 0; top: 0; bottom: 0; place-items: center; background-color: rgba(0, 0, 0, 0.5)";
+        this.dialog.frame.style="background-color: white; border-radius: 0.5rem; box-shadow: 5px 5px 5px teal; padding: 1rem; display: flex; flex-direction: column; overflow: auto; transition: opacity 0.5s; opacity: 0; max-width: 80%; max-height: 80%;";
+        let style="height: 2rem; min-width: 0; min-height: 0";
+        this.dialog.inputID.style=style;
+        this.dialog.inputName.style=style;
+        this.dialog.label.innerHTML="<h2 style='text-align: center'>Netzwerk-Session</h2>";
+        this.dialog.startAsClient.textContent="Als Client beitreten";
+        this.dialog.startAsServer.textContent="Als Server starten";
+        this.dialog.backdrop.appendChild(this.dialog.frame);
+        this.dialog.frame.appendChild(this.dialog.label);
+        let panel=document.createElement("div");
+        panel.style="margin: 0.5rem; display: grid; grid-template: 1fr/6rem 1fr; align-items: center;";
+        this.dialog.frame.appendChild(panel);
+        let label=document.createElement("div");
+        label.innerHTML="SessionID:";
+        panel.appendChild(label);
+        panel.appendChild(this.dialog.inputID);
+        label=document.createElement("div");
+        label.innerHTML="Name:";
+        panel.appendChild(label);
+        panel.appendChild(this.dialog.inputName);
+        panel=document.createElement("div");
+        panel.style="margin: 0.5rem; display: grid; grid-template: 1fr/1fr 1fr; min-height: 2rem; align-items: stretch";
+        this.dialog.frame.appendChild(panel);
+        panel.appendChild(this.dialog.startAsServer);
+        panel.appendChild(this.dialog.startAsClient);
+        document.body.appendChild(this.dialog.backdrop);
+      }
+      this.dialog.backdrop.style.display="grid";
+      this.dialog.frame.style.opacity="1";
+      return;
+      this.content.innerHTML="<div style='text-align: center;padding: 0.3rem; font-weight: bold'>Netzwerk-Session</div><div><div style='padding: 0.3rem'><input id='appjs-in-session-id' style='width: 100%; min-height: 1cm;' type='text' placeholder='Session-ID'></div><div style='padding: 0.3rem'><input id='appjs-in-client-id' style='width: 100%;min-height: 1cm;' type='text' placeholder='Deine ID'></div></div><div><button style='min-height: 1cm' onclick='$App.dialog._startSession(true)'>Starte als Server</button><button style='min-height: 1cm' onclick='$App.dialog._startSession(false)'>Verbinde als Client</button></div>";
+      this.root.style.display="";
+      var data=localStorage.getItem("appjs-session-data");
+      if(data){
+        try{
+          data=JSON.parse(data);
+          if(data.sessionID && data.clientID){
+            document.getElementById('appjs-in-session-id').value=data.sessionID;
+            document.getElementById('appjs-in-client-id').value=data.clientID;
+          }
+        }catch(e){
+
+        }
+      }
+      let p=new Promise((resolve,reject)=>{
+        this._startSession=(asServer)=>{
+          let a=this.startSession(asServer);
+          if(a){
+            resolve();
+          }
+        };
+      });
+      let q=await p;
+      return q;
     }
 
     getPeerID(){
@@ -4468,6 +4535,11 @@ function additionalJSCode(){
                 m=$new(MessageEvent,m.sender,m.header,m.message,m.time);
 
                 this.sendMessageAsServer(this.connectionsToClients,m,false);
+              }else if(data.type==="send-message-to-server"){
+                console.log("server empfängt message");
+                let m=data.messageEvent;
+                m=$new(MessageEvent,m.sender,m.header,m.message,m.time);
+                this.receiveMessage(m);
               }
             });
           });
@@ -4559,10 +4631,12 @@ function additionalJSCode(){
     sendToServer(message, header){
       let m=$new(MessageEvent,this.username,header,message,Date.now());
       if(this._isServer){
-
+        this.receiveMessage(m);
+      }else{
+        if(this.connectionToServer){
+          this.connectionToServer.send({type: "send-message-to-server", messageEvent: m});
+        }
       }
-      if(!this.connectionToServer) return;
-      this.connectionToServer.send({type: "send-message-to-server", sender: this.username, peerID: this.peer.id});
     }
 
     getOtherUsernames(username){
