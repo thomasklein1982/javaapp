@@ -4521,8 +4521,20 @@ function additionalJSCode(){
     }
 
     sendTo(username, message, header){
-      if(!this.connectionToServer) return;
-      this.connectionToServer.send({type: "send-message-to", sender: this.username, target: username, peerID: this.peer.id});
+      let m=$new(MessageEvent,this.username,header,message,Date.now());
+      if(this.username===username){
+        this.receiveMessage(m);
+        return;
+      }
+      if(this._isServer){
+        let rec={};
+        rec[username]=true;
+        this.sendMessageAsServer(rec,m, false);
+      }else{
+        if(this.connectionToServer){
+          this.connectionToServer.send({type: "send-message-to", recipient: username, messageEvent: m});
+        }
+      }
     }
 
     sendToEverybody(message, header){
@@ -4545,6 +4557,10 @@ function additionalJSCode(){
     }
 
     sendToServer(message, header){
+      let m=$new(MessageEvent,this.username,header,message,Date.now());
+      if(this._isServer){
+
+      }
       if(!this.connectionToServer) return;
       this.connectionToServer.send({type: "send-message-to-server", sender: this.username, peerID: this.peer.id});
     }
