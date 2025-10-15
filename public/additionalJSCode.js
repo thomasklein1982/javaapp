@@ -4385,7 +4385,7 @@ function additionalJSCode(){
           startAsServer: document.createElement("button"),
           startAsClient: document.createElement("button")
         };
-        this.dialog.backdrop.style="z-index: 1000; display: none; position: fixed; left: 0; right: 0; top: 0; bottom: 0; place-items: center; background-color: rgba(0, 0, 0, 0.5)";
+        this.dialog.backdrop.style="z-index: 10; display: grid; position: fixed; left: 0; right: 0; top: 0; bottom: 0; place-items: center; background-color: rgba(0, 0, 0, 0.5)";
         this.dialog.frame.style="background-color: white; border-radius: 0.5rem; box-shadow: 5px 5px 5px teal; padding: 1rem; display: flex; flex-direction: column; overflow: auto; transition: opacity 0.5s; opacity: 0; max-width: 80%; max-height: 80%;";
         let style="height: 2rem; min-width: 0; min-height: 0";
         this.dialog.inputID.style=style;
@@ -4413,32 +4413,68 @@ function additionalJSCode(){
         panel.appendChild(this.dialog.startAsClient);
         document.body.appendChild(this.dialog.backdrop);
       }
+      this.dialog.startAsClient.disabled=false;
+      this.dialog.startAsServer.disabled=false;
       this.dialog.backdrop.style.display="grid";
       this.dialog.frame.style.opacity="1";
-      return;
-      this.content.innerHTML="<div style='text-align: center;padding: 0.3rem; font-weight: bold'>Netzwerk-Session</div><div><div style='padding: 0.3rem'><input id='appjs-in-session-id' style='width: 100%; min-height: 1cm;' type='text' placeholder='Session-ID'></div><div style='padding: 0.3rem'><input id='appjs-in-client-id' style='width: 100%;min-height: 1cm;' type='text' placeholder='Deine ID'></div></div><div><button style='min-height: 1cm' onclick='$App.dialog._startSession(true)'>Starte als Server</button><button style='min-height: 1cm' onclick='$App.dialog._startSession(false)'>Verbinde als Client</button></div>";
-      this.root.style.display="";
-      var data=localStorage.getItem("appjs-session-data");
+      let data=localStorage.getItem("javaapp-session-data");
       if(data){
         try{
           data=JSON.parse(data);
-          if(data.sessionID && data.clientID){
-            document.getElementById('appjs-in-session-id').value=data.sessionID;
-            document.getElementById('appjs-in-client-id').value=data.clientID;
+          if(data.sessionID && data.userName){
+            this.dialog.inputID.value=data.sessionID;
+            this.dialog.inputName.value=data.clientID;
           }
         }catch(e){
 
         }
       }
       let p=new Promise((resolve,reject)=>{
-        this._startSession=(asServer)=>{
-          let a=this.startSession(asServer);
-          if(a){
-            resolve();
+        this.dialog.startAsClient.onclick=async ()=>{
+          let id=this.dialog.inputID.value.trim();
+          let username=this.dialog.inputName.value.trim();
+          if(id.length===0 || username.length===0){
+            System.alert("Session-ID und Benutzername dürfen nicht leer sein.");
+            return;
           }
+          this.dialog.startAsClient.disabled=true;
+          this.dialog.startAsServer.disabled=true;
+          let count=0;
+          let timer=setInterval(()=>{
+            this.dialog.startAsClient.textContent="Als Client beitreten "+(count===0?"/":"\\");
+            if(count===0) count=1; else count=0;
+          },1000);
+          let a=await this.connect(id,username);
+          clearInterval(timer);
+          resolve(a);
+        };
+        this.dialog.startAsServer.onclick=async ()=>{
+          let id=this.dialog.inputID.value.trim();
+          let username=this.dialog.inputName.value.trim();
+          if(id.length===0 || username.length===0){
+            System.alert("Session-ID und Benutzername dürfen nicht leer sein.");
+            return;
+          }
+          this.dialog.startAsClient.disabled=true;
+          this.dialog.startAsServer.disabled=true;
+          let count=0;
+          let timer=setInterval(()=>{
+            this.dialog.startAsServer.textContent="Als Server starten "+(count===0?"/":"\\");
+            if(count===0) count=1; else count=0;
+          },1000);
+          let a=await this.start(id,username);
+          clearInterval(timer);
+          resolve(a);
         };
       });
       let q=await p;
+      if(!q){
+        System.alert("Verbindungsaufbau fehlgeschlagen...");
+        this.dialog.startAsClient.disabled=false;
+        this.dialog.startAsServer.disabled=false;
+        return;
+      }
+      this.dialog.backdrop.style.display="none";
       return q;
     }
 
@@ -4540,6 +4576,17 @@ function additionalJSCode(){
                 let m=data.messageEvent;
                 m=$new(MessageEvent,m.sender,m.header,m.message,m.time);
                 this.receiveMessage(m);
+              }else if(data.type==="send-message-to"){
+                console.log("server empfängt message");
+                let m=data.messageEvent;
+                m=$new(MessageEvent,m.sender,m.header,m.message,m.time);
+                if(data.recipient===this.username){
+                  this.receiveMessage(m);
+                }else{
+                  let ids={};
+                  ids[data.recipient]=true;
+                  this.sendMessageAsServer(ids,m,false);
+                }
               }
             });
           });
