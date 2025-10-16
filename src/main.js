@@ -272,6 +272,22 @@ window.onmessage=async function(message){
       names.push(app.extensions[i].name);
     }
     app.sendToParentWindow('give-extension-names-answer',names);
+  }else if(data.type==="give-current-class"){
+    let answer=null;
+    if(app.$refs.editor){
+      let index=app.$refs.editor?.activeTab;
+      let c=app.$refs.editor?.currentClazz;
+      if(!c){
+        c=null;
+      }else{
+        c=c.name;
+      }
+      answer={
+        name: c,
+        index: index
+      };
+    }
+    app.sendToParentWindow('give-current-class-answer',answer);
   }
 }
 
@@ -310,7 +326,7 @@ window.clazzSources={
 if(window.parent){
   window.parent.postMessage({
     event: true,
-    type: "LOADING-COMPLETE",
+    type: "loading-complete",
     id: window["javaappID"]
   },"*");
 }

@@ -19,11 +19,12 @@
 	</style>
 	<script>
 		let javaapp, frame_id=0;
-		let output, input, select_id;
+		let output, input, select_id, events;
 		window.onmessage=function(message){
 			message=message.data;
 			if(message.event){
 				console.log(message.id,message.type,message.data);
+        events.value=events.value+"\n id = "+message.id+", type = "+message.type+", message = "+JSON.stringify(message.data);
 			}else if(message.type==="give-full-app-code-answer"){
 				output.value=message.data;
 			}else if(message.type.endsWith("answer")){
@@ -36,6 +37,7 @@
 			input=document.getElementById("input");
 			output=document.getElementById("output");
 			select_id=document.getElementById("select_id");
+      events=document.getElementById("events");
 		}
 		function changeID(){
 			frame_id=(select_id.selectedIndex);
@@ -51,6 +53,9 @@
 		}
 		function giveProject(){
 			javaapp[frame_id].postMessage({type: 'give-project'},"*");
+		}
+    function giveCurrentClass(){
+			javaapp[frame_id].postMessage({type: 'give-current-class'},"*");
 		}
 		function giveFullAppCode(){
 			javaapp[frame_id].postMessage({type: 'give-full-app-code'},"*");
@@ -99,18 +104,21 @@
 </head>
 <body onload="start()">
 	<h1>iFrame id=0</h1>
-	<iframe id="iframe0" src="https://thomaskl.uber.space/Apps/java-app/#id=0;" srcs="http://localhost:5174/#id=0;"></iframe>
+	<iframe id="iframe0" srcs="https://thomaskl.uber.space/Apps/java-app/#id=0;" src="http://localhost:5174/#id=0;"></iframe>
 	<h1>iFrame id=1</h1>
-	<iframe id="iframe1" src="https://thomaskl.uber.space/Apps/java-app/#id=1;" srcs="http://localhost:5174/#id=1;"></iframe>
+	<iframe id="iframe1" srcs="https://thomaskl.uber.space/Apps/java-app/#id=1;" src="http://localhost:5174/#id=1;"></iframe>
 	<div>
 		Aktuelle ID = <select id="select_id" onchange="changeID()">
 			<option>0</option>
 			<option>1</option>
 		</select>
 	</div>
+  <h1>Events</h1>
+  <textarea id="events"></textarea>
 	<h1>Befehle ohne Parameter</h1>
 	<button onclick="openProjectEmpty()">open-project-empty</button>
 	<button onclick="giveClassNames()">give-class-names</button>
+  <button onclick="giveCurrentClass()">give-current-class</button>
 	<button onclick="giveProject()">give-project</button>
 	<button onclick="giveFullAppCode()">give-full-app-code</button>
 	<button onclick="giveExtensionNames()">give-extension-names</button>

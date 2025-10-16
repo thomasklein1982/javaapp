@@ -290,6 +290,7 @@ export default {
       return 8;
     },
     currentClazz(){
+      if(!this.project) return null;
       if(this.project.clazzes.length===0 || this.activeTab>=this.project.clazzes.length){
         return null;
       }
@@ -666,6 +667,7 @@ export default {
         return;
       }
       this.project.addClazz(c);
+      this.$root.emitEvent("new-class",{name: c.name})
     },
     trashCurrentClazz(){
       if(!this.currentClazz || this.activeTab===0){

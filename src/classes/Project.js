@@ -593,7 +593,7 @@ export class Project{
     }
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
-      if(c.hasDynamicMainMethod()){
+      if(c.hasDynamicMainMethod && c.hasDynamicMainMethod()){
         return c;
       }
     }

@@ -4468,10 +4468,12 @@ function additionalJSCode(){
         };
       });
       let q=await p;
+      this.dialog.startAsClient.textContent="Als Client beitreten";
+      this.dialog.startAsServer.textContent="Als Server starten";
+      this.dialog.startAsClient.disabled=false;
+      this.dialog.startAsServer.disabled=false;
       if(!q){
-        System.alert("Verbindungsaufbau fehlgeschlagen...");
-        this.dialog.startAsClient.disabled=false;
-        this.dialog.startAsServer.disabled=false;
+        System.alert("Verbindungsaufbau fehlgeschlagen...");  
         return;
       }
       this.dialog.backdrop.style.display="none";
