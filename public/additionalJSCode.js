@@ -4571,8 +4571,8 @@ function additionalJSCode(){
                 console.log("server empfängt message");
                 let m=data.messageEvent;
                 m=$new(MessageEvent,m.sender,m.header,m.message,m.time);
-
-                this.sendMessageAsServer(this.connectionsToClients,m,false);
+                let ids=this.getOtherUsernames(m.sender);
+                this.sendMessageAsServer(ids,m,true);
               }else if(data.type==="send-message-to-server"){
                 console.log("server empfängt message");
                 let m=data.messageEvent;

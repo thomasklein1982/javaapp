@@ -331,6 +331,16 @@ export default {
     },1000);
   },
   methods: {
+    setCurrentClazz(name){
+      if(!this.project) return;
+      for(let i=0;i<this.project.clazzes.length;i++){
+        let c=this.project.clazzes[i];
+        if(c.name===name){
+          this.activeTab=i;
+          return;
+        }
+      }
+    },
     async sendConsolePrompt(prompt,currentClazz,mainClazz){
       this.$refs.preview.sendMessage({type: "console-prompt", prompt: prompt, useMainClazz: currentClazz===mainClazz});
     },

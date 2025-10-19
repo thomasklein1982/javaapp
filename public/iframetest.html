@@ -11,6 +11,9 @@
 			width: 70%;
 			height: 70%;
 		}
+    details{
+      margin: 0.5rem;
+    }
 		textarea{
 			display: block;
 			width: 90%;
@@ -19,7 +22,7 @@
 	</style>
 	<script>
 		let javaapp, frame_id=0;
-		let output, input, select_id, events;
+		let output, input, select_id, events, iframes;
 		window.onmessage=function(message){
 			message=message.data;
 			if(message.event){
@@ -34,6 +37,7 @@
 		
 		function start(){
 			javaapp=[document.getElementById("iframe0").contentWindow,document.getElementById("iframe1").contentWindow];
+      iframes=[document.getElementById("iframe0"),document.getElementById("iframe1")];
 			input=document.getElementById("input");
 			output=document.getElementById("output");
 			select_id=document.getElementById("select_id");
@@ -41,6 +45,13 @@
 		}
 		function changeID(){
 			frame_id=(select_id.selectedIndex);
+      if(frame_id===0){
+        iframes[0].style.display="";
+        iframes[1].style.display="none";
+      }else{
+        iframes[0].style.display="none";
+        iframes[1].style.display="";
+      }
 		}
 		function openProjectEmpty(){
 			javaapp[frame_id].postMessage({type: 'open-project-empty'},"*");
@@ -103,16 +114,61 @@
 	</script>
 </head>
 <body onload="start()">
-	<h1>iFrame id=0</h1>
-	<iframe id="iframe0" srcs="https://thomaskl.uber.space/Apps/java-app/#id=0;" src="http://localhost:5174/#id=0;"></iframe>
-	<h1>iFrame id=1</h1>
-	<iframe id="iframe1" srcs="https://thomaskl.uber.space/Apps/java-app/#id=1;" src="http://localhost:5174/#id=1;"></iframe>
-	<div>
+  <h1>Java-App per iframe einbinden</h1>
+  <details>
+    <summary>Anleitung</summary>
+    <ul>
+      <li>Java-App kann per iframe eingebunden werden. Der HTML-Code dazu lautet
+        <div>
+          <code>&lt;iframe src="https://thomaskl.uber.space/Apps/java-app/#id=0;">&lt;/iframe></code>
+        </div>
+      </li>
+      <li>Die ID kann auch weggelassen werden. Sie dient dazu, leicht zu identifizieren, von welcher JavaApp eine Nachricht kommt, für den Fall, dass mehrere iframes mit JavaApp eingebunden werden.</li>
+      <li>Per JavaScript der Form <code>iframe.contentWindow.postMessage({type: 'command', data: {...}},"*");</code> können Befehle an JavaApp gesendet werden, z. B.
+        <div>
+          <code>iframe.contentWindow.postMessage({type: 'open-project-empty'},"*");</code>
+        </div>
+        um ein neues leeres Projekt zu öffnen.
+      </li>
+      <li>JavaApp sendet aktiv <em>Ereignisse</em> an das Eltern-Fenster. 
+        <ol>
+          <li>
+            Um diese Ereignisse und andere Antworten von JavaApp zu empfangen, muss man die <code>onmessage</code>-Methode von window implementieren, z. B. so
+      <div><pre>
+window.onmessage=function(message){
+  message=message.data;
+  console.log(message.id,message.type,message.data);
+  if(message.event){
+    //Ereignis von JavaApp
+    ...
+  }else if(message.type==="give-current-class-answer"){
+    //Antwort der Anfrage "give-current-class"
+    ...
+  }else ...
+}
+      </pre></div>
+          </li>
+          <li>JavaApp sendet <code>ready</code>, wenn die App vollständig geladen ist und verwendet werden kann.</li>
+        </ol>
+      </li>
+      <li>Gesendete Befehle bewirken, dass JavaApp eine <em>Antwort</em> schickt: 
+        <ol>
+          <li>Bei Anfragen wie <code>"give-current-class"</code> (die alle mit <code>"give"</code> anfangen) ist der <code>type</code> immer der <code>type</code> der Anfrage, gefolgt von <code>"-answer"</code>. Im obigen Fall also <code>"give-current-class-answer"</code>.</li>
+          <li>Bei anderen Befehlen sendet JavaApp eine Antwort der Form <code>"[Type des Befehls]-done"</code>, also z. B. <code>"open-project-empty-done"</code></li>
+        </ol>
+        <li>Schauen Sie sich einfach den Quellcode dieser HTML-Datei an, um eine Beispiel-Implementierung mit zwei iFrames zu sehen.</li>
+      </li>
+    </ul>
+  </details>
+  <div>
 		Aktuelle ID = <select id="select_id" onchange="changeID()">
 			<option>0</option>
 			<option>1</option>
 		</select>
 	</div>
+	<iframe id="iframe0" srcs="https://thomaskl.uber.space/Apps/java-app/#id=0;" src="http://localhost:5174/#id=0;"></iframe>
+	<iframe style="display: none" id="iframe1" srcs="https://thomaskl.uber.space/Apps/java-app/#id=1;" src="http://localhost:5174/#id=1;"></iframe>
+	
   <h1>Events</h1>
   <textarea id="events"></textarea>
 	<h1>Befehle ohne Parameter</h1>
@@ -152,6 +208,10 @@
 	<div>
 		<button onclick="setVisibleRunButton()">set-visible-run-button</button>
 		<button onclick='showExample({visible: false})'>?</button>
+	</div>
+  <div>
+		<button onclick="setCurrentClass()">set-current-class</button>
+		<button onclick='showExample({name: "Test"})'>?</button>
 	</div>
 	<div>
 		<button onclick="addExtension()">add-extension</button>

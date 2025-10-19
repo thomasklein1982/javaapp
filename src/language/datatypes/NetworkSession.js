@@ -2,6 +2,7 @@ import { createConstructor } from "../helper/createConstructor";
 import { createMethod } from "../helper/createMethod";
 
 export function defineNetworkSession(clazz){
+  clazz.description=`Diese Klasse dient dazu, Netzwerkverbindungen zwischen zwei oder mehr Apps zu managen. Damit kann beispielsweise ein Chat oder ein Multiplayer-Spiel entwickelt werden.`;
   createConstructor({
     args: [
       

@@ -861,6 +861,7 @@ window.appJScode=function(){
       this.outputDiv=document.createElement("div");
       this.outputDiv.style="height: 100%; overflow: auto;";
       this.element.appendChild(this.outputDiv);
+      this.reading=false;
       this.nextLine();
     };
     
@@ -905,6 +906,15 @@ window.appJScode=function(){
       /**println */
       log: function(){
         let div=this.currentLineDiv;
+        let outputIndex=this.output.length-1;
+        if(this.reading){
+          div=document.createElement("div");
+          div.style.whiteSpace="pre-wrap";
+          div.style.minHeight="2ex";
+          this.outputDiv.insertBefore(div,this.currentLineDiv);
+          this.output.splice(this.output.length-1,0,"");
+          outputIndex--;
+        }
         let args=[];
         for(let i=0;i<arguments.length;i++){
           let obj=arguments[i];
@@ -919,14 +929,24 @@ window.appJScode=function(){
             //item.style.marginRight="1em";
             item.textContent=obj;
           }
-          this.output[this.output.length-1]+=item.textContent;
+          this.output[outputIndex]+=item.textContent;
           div.appendChild(item);
         }
-        this.nextLine();
+        if(!this.reading) this.nextLine();
+        console.log(this.output);
         //this.outputDiv.appendChild(div);
       },
       print: function(){
         let div=this.currentLineDiv;
+        let outputIndex=this.output.length-1;
+        if(this.reading){
+          div=document.createElement("div");
+          div.style.whiteSpace="pre-wrap";
+          div.style.minHeight="2ex";
+          this.outputDiv.insertBefore(div,this.currentLineDiv);
+          this.output.splice(this.output.length-1,0,"");
+          outputIndex--;
+        }
         for(let i=0;i<arguments.length;i++){
           let obj=arguments[i];
           if(obj===undefined) obj="";
@@ -940,11 +960,11 @@ window.appJScode=function(){
             //item.style.marginRight="1em";
             item.textContent=obj;
           }
-          this.output[this.output.length-1]+=item.textContent;
+          this.output[outputIndex]+=item.textContent;
           div.appendChild(item);
         }
+        console.log(this.output);
         //this.outputDiv.appendChild(div);
-        
       },
       read: async function(){
         let p=new Promise((resolve,reject)=>{
@@ -955,6 +975,7 @@ window.appJScode=function(){
         return res;
       },
       readLine: async function(prompt){
+        this.reading=true;
         if(prompt) this.print(prompt);
         let inp=document.createElement("input");
         this.readInput=inp;
@@ -982,6 +1003,7 @@ window.appJScode=function(){
           inp.resolve=resolve;
         });
         let q=await p;
+        this.reading=false;
         this.nextLine();
         return q;
       },
@@ -1003,17 +1025,6 @@ window.appJScode=function(){
             },"*");
           }
         }
-        // if($App.language==="js"){
-        //   this.updateFromObject(window,sharedVariables);
-        // }else if($App.language==="java"){
-        //   this.updateFromObject($App.debug.object? $App.debug.object : $main,sharedVariables);
-        // }
-        // if(window.parent!==window && sharedVariables){
-        //   window.parent.postMessage({
-        //     type: "update-shared-variables",
-        //     sharedVariables: sharedVariables
-        //   },"*");
-        // }
       },
       updateLocalVariables: function(variables){
         this.localVariables=variables;

@@ -190,6 +190,9 @@ export default{
     setVisibleRunButton(v){
       this.$refs.editor.setRunButtonVisible(v);
     },
+    setCurrentClazz(v){
+      this.$refs.editor.setCurrentClazz(v);
+    },
     sendProject(){
       if(window.parent){
         let p=this.getProject();

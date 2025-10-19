@@ -257,6 +257,9 @@ window.onmessage=async function(message){
   }else if(data.type==="set-visible-run-button"){
     app.setVisibleRunButton(data.data.visible);
     app.emitEvent(data.type+"-done");
+  }else if(data.type==="set-current-class"){
+    app.setCurrentClazz(data.data.name);
+    app.emitEvent(data.type+"-done");
   }else if(data.type==="add-extension"){
     let p=new Extension(data.data.name);
     p.fromJSON(data.data);
@@ -287,7 +290,7 @@ window.onmessage=async function(message){
         index: index
       };
     }
-    app.sendToParentWindow('give-current-class-answer',answer);
+    app.sendToParentWindow(data.type+'-answer',answer);
   }
 }
 

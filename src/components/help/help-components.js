@@ -13,6 +13,7 @@ import about_whatis from "./about/what-is.vue";
   import datatypes_char from "./datatypes/char.vue";
   import datatypes_double from "./datatypes/double.vue";
   import datatypes_int from "./datatypes/int.vue";
+  import iframe from "./advanced/iframe.vue";
   // import api_canvas from "./api/canvas.vue";
   // import api_datatable from "./api/datatable.vue";
   // import api_htmlelement from "./api/htmlelement.vue";
@@ -101,6 +102,23 @@ import about_whatis from "./about/what-is.vue";
         },
       }
     },
+    advanced: {
+      label: "Spezielle Features",
+      components: {
+        save: {
+          label: "Speichern und Laden",
+          comp: advanced_save
+        },
+        javascript: {
+          label: "JavaScript",
+          comp: advanced_javascript
+        },
+        iframe: {
+          label: "Per iFrame einbinden",
+          comp: iframe
+        },
+      }
+    },
     datatypes: {
       label: "Primitive Datentypen",
       components: {
@@ -124,170 +142,8 @@ import about_whatis from "./about/what-is.vue";
     },
     api: {
       label: "JavaApp-Klassenbibliothek",
-      // components: {
-      //   actionevent: {
-      //     label: "ActionEvent",
-      //     comp: api_actionevent
-      //   },
-      //   arraylist: {
-      //     label: "ArrayList",
-      //     comp: api_arraylist
-      //   },
-      //   boolean: {
-      //     label: "Boolean",
-      //     comp: api_boolean
-      //   },
-      //   canvas: {
-      //     label: "Canvas",
-      //     comp: api_canvas,
-      //   },
-      //   char: {
-      //     label: "Char",
-      //     comp: api_char
-      //   },
-      //   database: {
-      //     label: "Database",
-      //     comp: api_database
-      //   },
-      //   datatable: {
-      //     label: "DataTable",
-      //     comp: api_datatable
-      //   },
-      //   double: {
-      //     label: "Double",
-      //     comp: api_double
-      //   },
-      //   exception: {
-      //     label: "Exception",
-      //     comp: api_exception
-      //   },
-      //   file: {
-      //     label: "File",
-      //     comp: api_file
-      //   },
-      //   htmlelement: {
-      //     label: "HTMLElement",
-      //     comp: api_htmlelement
-      //   },
-      //   inputstream: {
-      //     label: "InputStream",
-      //     comp: api_inputstream
-      //   },
-      //   integer: {
-      //     label: "Integer",
-      //     comp: api_integer
-      //   },
-      //   javaapp: {
-      //     label: "JavaApp",
-      //     comp: api_javaapp
-      //   },
-      //   jbutton: {
-      //     label: "JButton",
-      //     comp: api_jbutton
-      //   },
-      //   jcheckbox: {
-      //     label: "JCheckBox",
-      //     comp: api_jcheckbox
-      //   },
-      //   jcombobox: {
-      //     label: "JComboBox",
-      //     comp: api_jcombobox
-      //   },
-      //   jcomponent: {
-      //     label: "JComponent",
-      //     comp: api_jcomponent
-      //   },
-      //   jimage: {
-      //     label: "JImage",
-      //     comp: api_jimage
-      //   },
-      //   jlabel: {
-      //     label: "JLabel",
-      //     comp: api_jlabel
-      //   },
-      //   jpanel: {
-      //     label: "JPanel",
-      //     comp: api_jpanel
-      //   },
-      //   json: {
-      //     label: "JSON",
-      //     comp: api_json
-      //   },
-      //   jtextarea: {
-      //     label: "JTextArea",
-      //     comp: api_jtextarea
-      //   },
-      //   jtextfield: {
-      //     label: "JTextField",
-      //     comp: api_jtextfield
-      //   },
-      //   matcher: {
-      //     label: "Matcher",
-      //     comp: api_matcher
-      //   },
-      //   math: {
-      //     label: "Math",
-      //     comp: api_math
-      //   },
-      //   matrix: {
-      //     label: "Matrix",
-      //     comp: api_matrix
-      //   },
-      //   object: {
-      //     label: "Object",
-      //     comp: api_object
-      //   },
-      //   pattern: {
-      //     label: "Pattern",
-      //     comp: api_pattern
-      //   },
-      //   printstream: {
-      //     label: "PrintStream",
-      //     comp: api_printstream
-      //   },
-      //   random: {
-      //     label: "Random",
-      //     comp: api_random
-      //   },
-      //   record: {
-      //     label: "Record",
-      //     comp: api_record
-      //   },
-      //   sound: {
-      //     label: "Sound",
-      //     comp: api_sound
-      //   },
-      //   string: {
-      //     label: "String",
-      //     comp: api_string
-      //   },
-      //   system: {
-      //     label: "System",
-      //     comp: api_system
-      //   },
-      //   timer: {
-      //     label: "Timer",
-      //     comp: api_timer
-      //   },
-      //   vector: {
-      //     label: "Vector",
-      //     comp: api_vector
-      //   },
-      // }
     },
-    advanced: {
-      label: "Spezielle Features",
-      components: {
-        save: {
-          label: "Speichern und Laden",
-          comp: advanced_save
-        },
-        javascript: {
-          label: "JavaScript",
-          comp: advanced_javascript
-        }
-      }
-    }
+    
   }
 
 

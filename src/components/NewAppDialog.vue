@@ -202,8 +202,9 @@ void main( ) {
     System.out.println( m.sender+": "+m.message );
   });
   while(true){
+    Console.print("Deine Nachricht: ");
     String m=Console.read();
-    session.sendToEverybody(m);
+    session.sendToOthers(m);
   }
 }`,
           ]
