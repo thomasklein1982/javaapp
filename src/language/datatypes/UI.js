@@ -617,6 +617,16 @@ function defineJImage(Clazz,Java){
     returnType: "int",
     info: 'Liefert die Höhe des Bildes in Pixeln zurück.'
   },Clazz,false,false,Java);
+
+  createMethod({
+    name: 'getPixelData',
+    args: [
+      {name: "x", type: "double"},
+      {name: "y", type: "double"},
+    ],
+    returnType: {baseType: "int", dimension: 1},
+    info: 'Liefert die Farbe des Bildes an den Koordinaten (x | y) zurück in Form eines Arrays mit vier Werten: Rot, Grün, Blau und Alpha.'
+  },Clazz,false,false,Java);
   
   // createMethod({
   //   name: 'setFlippedV',

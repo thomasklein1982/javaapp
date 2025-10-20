@@ -1988,11 +1988,22 @@ function additionalJSCode(){
     getPixelHeight(){
       return this.$img.naturalHeight;
     }
-    getPixelData(left,top){
+    getPixelData(x,y){
+      let w=this.getWidth();
+      let h=this.getHeight();
+      let W=this.getPixelWidth();
+      let H=this.getPixelHeight();
+      let cx=this.getX();
+      let cy=this.getY();
+      let left=Math.round((x-cx+w/2)*W/w);
+      let top=Math.round((cy+h/2-y)*H/h);
+      return this.$getPixelData(left,top);
+    }
+    $getPixelData(left,top){
       let w=this.getPixelWidth();
       let h=this.getPixelHeight();
-      if(left>=w) return null;
-      if(top>=h) return null;
+      if(left>=w || left<0) return null;
+      if(top>=h || top<0) return null;
       if(!this.$imageData){
         let canvas=document.createElement("canvas");
         
