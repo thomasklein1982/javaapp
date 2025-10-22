@@ -10,7 +10,7 @@
     <p>Wähle eine der folgenden Möglichkeiten:</p>
     <div style="text-align: center">
       <Button :disabled="lastProject===null" style="margin: 0.5rem;" icon="pi pi-replay" @click="restoreApp()" label="Letztes Projekt wiederherstellen"/>
-      <Button style="margin: 0.5rem;" icon="pi pi-file" @click="$refs.dialogNewApp.setVisible(true)" label="Neues Projekt erstellen"/>
+      <Button style="margin: 0.5rem;" icon="pi pi-file" @click="clickNewProject()" label="Neues Projekt erstellen"/>
       <Button style="margin: 0.5rem;" icon="pi pi-upload" @click="clickUploadApp()" label="Projekt hochladen"/>
       <Button style="margin: 0.5rem;" icon="pi pi-question" @click="$root.showHelp()" label="Hilfe anzeigen"/>
     </div>
@@ -80,6 +80,9 @@ export default {
     });
   },
   methods: {
+    clickNewProject(){
+      this.$refs.dialogNewApp.setVisible(true);
+    },
     async changeMode(difficulty){
       if(difficulty===0){
         await options.changeToEasy();

@@ -108,7 +108,11 @@
                         ref="sourceFileEditor"
                         @content-changed="updateUIPreview()"
                       />
-                      <Button icon="pi pi-cog" @click="$refs.dialogSourceFileSettings.open(c)" style="position: absolute; right: 0.2rem; top: 0.2rem;"/>
+                      <div style="position: absolute; right: 0.2rem; top: 0.2rem;">
+                        <Button @click="compileProjectAndUpdateUIPreview()" icon="pi pi-refresh"/>
+                        <Button icon="pi pi-cog" @click="$refs.dialogSourceFileSettings.open(c)" />
+                        <Button icon="pi pi-trash" @click="removeCurrentClazz()"/>
+                      </div>
                     </div>
                     <CodeMirror
                       v-else-if="isJava(c)"
@@ -336,6 +340,11 @@ export default {
     },1000);
   },
   methods: {
+    removeCurrentClazz(){
+      let a=confirm("Willst du die Datei "+this.currentClazz.name+" wirklich löschen?");
+      if(!a) return;
+      this.project.removeClazz(this.currentClazz);
+    },
     setCurrentClazz(name){
       if(!this.project) return;
       for(let i=0;i<this.project.clazzes.length;i++){

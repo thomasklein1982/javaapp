@@ -1,14 +1,19 @@
 <template>
   <Dialog header="Neue App" v-model:visible="show"  :maximizable="true" :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '50vw'}">
     <div style="margin-top: 0.5rem;">
-      Name der neuen App:
-      <InputText type="search" placeholdertext="Name der neuen App" v-model="name"/>
+      Name des neuen Projekts:
+      <InputText type="search" placeholdertext="Name des neuen Projekts" v-model="name"/>
       <small v-if="nameerror" style="display: block; color: red">{{nameerror}}</small>
     </div>
-    <div style="margin-top: 0.5rem">Wähle eine Vorlage für die neue App:</div>
-    <Listbox optionLabel="name" :options="templates" v-model="template"/>
-    <small style="display: block">{{template? template.description: 'Keine Vorlage ausgewählt'}}</small>
-    <div style="text-align: right">
+    <template v-if="$root.options.webMode">
+      
+    </template>
+    <template v-else>
+      <div style="margin-top: 0.5rem">Wähle eine Vorlage für die neue App:</div>
+      <Listbox optionLabel="name" :options="templates" v-model="template"/>
+      <small style="display: block">{{template? template.description: 'Keine Vorlage ausgewählt'}}</small>
+    </template>
+    <div style="text-align: right; margin-top: 0.5rem;">
       <Button :disabled="nameerror || !template" @click="clickOK()" label="OK"/> <Button @click="show=false" label="Abbrechen"/>
     </div>
   </Dialog>

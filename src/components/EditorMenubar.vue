@@ -1,7 +1,10 @@
 <template>
   <Menubar :model="items" class="noprint">
     <template #start>
-      <template v-if="isEasy">
+      <template v-if="isWeb">
+        <span style="position: relative; white-space: nowrap;"><img alt="logo" src="/icon-white-transparent.png" style="height: 2rem" ><span style="font-size: 60%; writing-mode: vertical-lr;">Web!</span></span>
+      </template>
+      <template v-else-if="isEasy">
         <span style="position: relative; white-space: nowrap;"><img alt="logo" src="/icon-white-transparent.png" style="height: 2rem" ><span style="font-size: 60%; color: yellow; writing-mode: vertical-lr;">Easy!</span></span>
       </template>
       <template v-else-if="isNormal">
@@ -60,6 +63,9 @@ export default {
     };
   },
   computed: {
+    isWeb(){
+      return options.webMode;
+    },
     isEasy(){
       return this.difficulty===0;
     },
@@ -99,7 +105,7 @@ export default {
               separator:true
             },
             {
-              label: 'App-Details',
+              label: 'Projekt-Details',
               icon: 'pi pi-ellipsis-v',
               command: (ev)=>{
                 this.$emit('details');
