@@ -1,20 +1,21 @@
 <template>
   <div style="text-align: center; position: absolute; left: 0; top: 0; background-color: #1f2d40; color: white; z-index: 2; width: 100%; height: 100%; overflow-y: auto">
     <h1 style="margin-bottom: 0">Willkommen bei</h1>
-    <span style="position: relative"><img alt="logo" src="/Logo-white.png" style="width: 3cm"><span v-if="isEasy" style="font-size: 120%; color: yellow; writing-mode: vertical-lr;">Easy!</span><span v-else-if="isHard" style="font-size: 120%; color: red; writing-mode: vertical-lr;">Hard!</span></span>
+    <span style="position: relative"><img alt="logo" src="/Logo-white.png" style="width: 3cm"><span v-if="isWeb" style="writing-mode: vertical-lr;">Web!</span><span v-else-if="isEasy" style="font-size: 120%; color: yellow; writing-mode: vertical-lr;">Easy!</span><span v-else-if="isHard" style="font-size: 120%; color: red; writing-mode: vertical-lr;">Hard!</span></span>
     
     <p>Version {{$root.version}}</p>
-    <p>Mit JavaApp kannst du Web-Apps mit Java programmieren, die auf allen Geräten laufen.</p>
+    <p v-if="$root.options.webMode">Mit JavaApp-Web! kannst du Webseiten mit HTML, CSS und JavaScript erstellen.</p>
+    <p v-else>Mit JavaApp kannst du Web-Apps mit Java programmieren, die auf allen Geräten laufen.</p>
     
     <p>Wähle eine der folgenden Möglichkeiten:</p>
     <div style="text-align: center">
-      <Button :disabled="lastProject===null" style="margin: 0.5rem;" icon="pi pi-replay" @click="restoreApp()" label="Letzte App wiederherstellen"/>
-      <Button style="margin: 0.5rem;" icon="pi pi-file" @click="$refs.dialogNewApp.setVisible(true)" label="Neue App erstellen"/>
-      <Button style="margin: 0.5rem;" icon="pi pi-upload" @click="clickUploadApp()" label="App hochladen"/>
+      <Button :disabled="lastProject===null" style="margin: 0.5rem;" icon="pi pi-replay" @click="restoreApp()" label="Letztes Projekt wiederherstellen"/>
+      <Button style="margin: 0.5rem;" icon="pi pi-file" @click="$refs.dialogNewApp.setVisible(true)" label="Neues Projekt erstellen"/>
+      <Button style="margin: 0.5rem;" icon="pi pi-upload" @click="clickUploadApp()" label="Projekt hochladen"/>
       <Button style="margin: 0.5rem;" icon="pi pi-question" @click="$root.showHelp()" label="Hilfe anzeigen"/>
     </div>
 
-    <InlineMessage style="max-width: 60%; margin-top: 0.8rem" severity="info">
+    <InlineMessage v-if="!$root.options.webMode" style="max-width: 60%; margin-top: 0.8rem" severity="info">
       <template v-if="isEasy">
         JavaApp ist im "Easy"-Modus. Das bedeutet, dass einige Dinge deutlich vereinfacht werden.
       </template>
@@ -55,6 +56,9 @@ export default {
     }
   },
   computed: {
+    isWeb(){
+      return options.webMode;
+    },
     isEasy(){
       return this.difficulty===0;
     },

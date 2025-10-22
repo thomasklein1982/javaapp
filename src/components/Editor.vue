@@ -72,56 +72,60 @@
         <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">
           <Tabs v-model:value="activeTab" :scrollable="true" class="editor-tabs" >
             <TabList>
-              <Tab v-for="(c,i) in project.clazzes" :value="i" v-show="c.isEditorShown || i===activeTab">
-                <span v-if="c.isInterface" class="pi pi-info-circle" style="font-size: small; margin-right: 0.2rem"/><span v-if="c.isHidden">(</span>{{i!==activeTab && c?.name?.length>20? c?.name?.substring(0,17)+"...":c?.name}}{{ c.fileType!==undefined? "."+c.fileType:"" }} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span><span v-if="c.isHidden">)</span>
-              </Tab>
+              <template v-for="(c,i) in project.clazzes">
+                <Tab :value="i" v-if="i>0 || !webMode" v-show="c.isEditorShown || i===activeTab">
+                  <span v-if="c.isInterface" class="pi pi-info-circle" style="font-size: small; margin-right: 0.2rem"/><span v-if="c.isHidden">(</span>{{i!==activeTab && c?.name?.length>20? c?.name?.substring(0,17)+"...":c?.name}}{{ c.fileType!==undefined? "."+c.fileType:"" }} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span><span v-if="c.isHidden">)</span>
+                </Tab>
+              </template>
               <Tab :value="project.clazzes.length">
                 <span class="pi pi-fw pi-plus" style="padding-left: 0.5rem; margin-right: 4rem"/>
               </Tab>
             </TabList>
             <TabPanels>
-              <TabPanel v-for="(c,i) in project.clazzes" :value="i" :key="'tab-'+i">
-                <template v-if="c.isHidden">
-                  Der Code dieser Klasse ist versteckt.
-                </template>
-                <template v-else>
-                  <UIEditor 
-                    v-if="isUIClazz(c)"
-                    :clazz="c"
-                    :settings="settings"
-                    @select="updateSelectedUIComponent"
-                    @recompile="compileProjectAndUpdateUIPreview()"
-                    @isolatedupdate="compileUIClazzAndUpdatePreview()"
-                    ref="uiEditor"
-                  >
-                  </UIEditor>
-                  <div v-else-if="isSourceFile(c)" :style="{position: 'relative', flex: 1, display: 'flex', 'flex-direction': 'column'}">
-                    <CodeMirrorEditor
-                      :language="c.fileType"
-                      v-model="c.src"
-                      :name="c.name"
+              <template v-for="(c,i) in project.clazzes" :key="'tab-'+i">
+                <TabPanel :value="i" v-if="i>0 || !$root.options.webMode">
+                  <template v-if="c.isHidden">
+                    Der Code dieser Klasse ist versteckt.
+                  </template>
+                  <template v-else>
+                    <UIEditor 
+                      v-if="isUIClazz(c)"
+                      :clazz="c"
+                      :settings="settings"
+                      @select="updateSelectedUIComponent"
+                      @recompile="compileProjectAndUpdateUIPreview()"
+                      @isolatedupdate="compileUIClazzAndUpdatePreview()"
+                      ref="uiEditor"
+                    >
+                    </UIEditor>
+                    <div v-else-if="isSourceFile(c)" :style="{position: 'relative', flex: 1, display: 'flex', 'flex-direction': 'column'}">
+                      <CodeMirrorEditor
+                        :language="c.fileType"
+                        v-model="c.src"
+                        :name="c.name"
+                        :settings="settings"
+                        :font-size="fontSize"
+                        ref="sourceFileEditor"
+                        @content-changed="updateUIPreview()"
+                      />
+                      <Button icon="pi pi-cog" @click="$refs.dialogSourceFileSettings.open(c)" style="position: absolute; right: 0.2rem; top: 0.2rem;"/>
+                    </div>
+                    <CodeMirror
+                      v-else-if="isJava(c)"
+                      :clazz="c"
+                      :tab-index="i"
+                      :disabled="paused"
+                      :project="project"
                       :settings="settings"
                       :font-size="fontSize"
-                      ref="sourceFileEditor"
-                      @content-changed="updateUIPreview()"
+                      @recompilepreview="compileProjectAndUpdateUIPreview()"
+                      :current="paused && i===activeTab ? current : null"
+                      @caretupdate="updateCaretPosition"
+                      ref="editor"
                     />
-                    <Button icon="pi pi-cog" @click="$refs.dialogSourceFileSettings.open(c)" style="position: absolute; right: 0.2rem; top: 0.2rem;"/>
-                  </div>
-                  <CodeMirror
-                    v-else-if="isJava(c)"
-                    :clazz="c"
-                    :tab-index="i"
-                    :disabled="paused"
-                    :project="project"
-                    :settings="settings"
-                    :font-size="fontSize"
-                    @recompilepreview="compileProjectAndUpdateUIPreview()"
-                    :current="paused && i===activeTab ? current : null"
-                    @caretupdate="updateCaretPosition"
-                    ref="editor"
-                  />
-                </template>
-              </TabPanel>
+                  </template>
+                </TabPanel>
+              </template>
               <TabPanel :value="project.clazzes.length">
                 <NewClazzWizard :project="project" @confirm="addNewClazz"/>
               </TabPanel>
@@ -140,7 +144,7 @@
               />
               <AppPreview v-show="running || isJava(currentClazz)" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
             </SplitterPanel>
-            <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
+            <SplitterPanel v-if="!$root.options.webMode" style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
               <Insights 
                 v-if="running"
                 :project="project"
@@ -177,7 +181,7 @@
           </Splitter>
         </SplitterPanel>
       </Splitter>
-      <span style="position: fixed; bottom: 0.5rem; right: 0.5rem; z-index: 101">
+      <span v-if="!webMode" style="position: fixed; bottom: 0.5rem; right: 0.5rem; z-index: 101">
         <span  v-if="!running">
           <Button style="margin-right: 0.2rem" v-if="$root.exerciseCheckerCode && (!running || paused)" label="Prüfen" @click="runExerciseChecker()" icon="pi pi-list-check" />
           <Button v-if="showRunButton && (!running || paused)" @click="resume()" icon="pi pi-play" />
@@ -238,7 +242,8 @@ export default {
   data(){
     return {
       useBlockEditor: false,
-      activeTab: 0,
+      activeTab: this.$root.options.webMode? 1: 0,
+      webMode: this.$root.options.webMode,
       running: false,
       caretPosition: 0,
       project: null,
@@ -517,7 +522,7 @@ export default {
       p.compile(true);
       setTimeout(()=>{
         this.compileProjectAndUpdateUIPreview();
-        this.activeTab=0;
+        this.activeTab=this.webMode? 1: 0;
       },100);
       
     },

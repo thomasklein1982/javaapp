@@ -5,6 +5,8 @@
   </div>
 </template>
 <script>
+import { options } from '../classes/Options';
+
   export default {
     props: {
       project: Object,
@@ -96,7 +98,12 @@
         }
         this.$refs.wrapper.appendChild(frame);
         console.log("start app",this.breakpoints);
-        let prefix=noDebugging?"$App.console.hide();":"$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");";
+        let prefix;
+        if(options.webMode){
+          prefix="$App.console.hide();";
+        }else{
+          prefix=noDebugging?"$App.console.hide();":"$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");";
+        }
         prefix+=additionalCode;
         console.log("reload",prefix);
         let code=this.project.getFullAppCode(prefix,false,false,args);

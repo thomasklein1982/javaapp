@@ -11,7 +11,7 @@
         </div>
       </div>
       <small v-if="nameError" class="p-error">{{nameError}}</small>
-      <template v-if="sourceFile.fileType==='html'">
+      <template v-if="sourceFile.fileType==='html' && !$root.options.webMode">
         <p :style="{display: 'flex', 'place-items': 'center'}"><ToggleSwitch id="use-global-css" v-model="data.useGlobalCSS"/> <label for="use-global-css" style="margin-left: 0.4rem;">Projekt-CSS-Sheet verwenden</label></p>
       </template>
     </template>

@@ -1,15 +1,23 @@
 <template>
   <div class="p-buttonset" :style="{display: 'grid', gap: '0.2rem', 'grid-template':'1fr 1fr/1fr 1fr 1fr'}">
-    <Button :severity="type==='class'?'primary':'secondary'" label="Klasse" @click="type='class'"/>
-    <Button :severity="type==='interface'?'primary':'secondary'" label="Interface" @click="type='interface'"/>
-    <Button :severity="type==='uiclass'?'primary':'secondary'" label="UI-Klasse" @click="type='uiclass'"/>
+    <template v-if="!$root.options.webMode">
+      <Button :severity="type==='class'?'primary':'secondary'" label="Klasse" @click="type='class'"/>
+      <Button :severity="type==='interface'?'primary':'secondary'" label="Interface" @click="type='interface'"/>
+      <Button :severity="type==='uiclass'?'primary':'secondary'" label="UI-Klasse" @click="type='uiclass'"/>
+    </template>
     <Button :severity="type==='html'?'primary':'secondary'" label="HTML" @click="type='html'"/>
     <Button :severity="type==='css'?'primary':'secondary'" label="CSS" @click="type='css'"/>
     <Button :severity="type==='js'?'primary':'secondary'" label="JavaScript" @click="type='js'"/>
   </div>
   <h1>{{labelAdd}}</h1>
-  
-  <InputText type="search" clazz="nameError?'':'p-invalid'" v-model.trim="name" :placeholder="labelName"/>
+  <div :style="{display: 'flex', 'place-items':'baseline'}">
+    <div :style="{flex: 1}">
+      <InputText id="filename" type="search" clazz="nameError?'':'p-invalid'" v-model.trim="name" :placeholder="labelName" fluid/>
+    </div>
+    <div>
+      .{{ extension }}
+    </div>
+  </div>
   <small v-if="nameError" class="p-error">{{nameError}}</small>
   <small v-else-if="nameWarning" class="p-warning">{{nameWarning}}</small>
   <small v-else>Der Name geht in Ordnung.</small>
@@ -27,7 +35,7 @@ export default {
   data: function(){
     return {
       name: '',
-      type: "class"
+      type: this.$root.options.webMode? "html":"class"
     };
   },
   computed: {
@@ -51,6 +59,16 @@ export default {
         'js': "Name der neuen JavaScript-Datei"
       }[this.type];
     },
+    extension(){
+      return {
+        'class': "java",
+        'interface': "java",
+        'uiclass': "java",
+        'html': "html",
+        'css': "css",
+        'js': "js"
+      }[this.type];
+    },
     typeName(){
       if(type==="class"){
         return "Klasse";
@@ -67,7 +85,9 @@ export default {
     },
     realName(){
       if(this.name.length===0) return this.name;
-      return this.name.charAt(0).toUpperCase()+this.name.substring(1);
+      if(this.type==="class" || this.type==="interface" || this.type==="uiclass")
+        return this.name.charAt(0).toUpperCase()+this.name.substring(1);
+      else return this.name;
     },
     nameError(){
       if(this.realName.length===0){

@@ -37,6 +37,7 @@
 
 <script>
 import { Checkbox } from 'primevue';
+import { options } from '../classes/Options';
 
 export default {
   components: {
@@ -106,6 +107,7 @@ export default {
             },
             {
               label: 'CSS',
+              visible: !options.webMode,
               icon: 'pi pi-palette',
               command: (ev)=>{
                 this.$emit('css');
@@ -120,6 +122,7 @@ export default {
             },
             {
               label: 'Datenbank',
+              visible: !options.webMode,
               icon: 'pi pi-database',
               command: (ev)=>{
                 this.$emit('database');
@@ -145,6 +148,7 @@ export default {
             {
               label: 'Kompilieren',
               icon: 'pi pi-forward',
+              visible: !options.webMode,
               command: (ev)=>{
                 this.$emit("compile");
               }
@@ -157,6 +161,7 @@ export default {
             {
               label: 'Ausführen',
               icon: 'pi pi-fw pi-play',
+              visible: !options.webMode,
               command: (ev)=>{
                 this.$emit("play");
               }
@@ -171,6 +176,7 @@ export default {
             {
               label: 'Ausführen (eigenes Fenster)',
               icon: 'pi pi-fw pi-play',
+              visible: !options.webMode,
               command: (ev)=>{
                 this.$emit("play-window");
               }
@@ -178,12 +184,14 @@ export default {
             {
               label: 'Ausführen (mit DEV-Tools)',
               icon: 'pi pi-fw pi-play',
+              visible: !options.webMode,
               command: (ev)=>{
                 this.$emit("play-dev");
               }
             },
             {
               label: 'Formatieren',
+              visible: !options.webMode,
               icon: 'pi pi-fw pi-align-left',
               command: (ev)=>{
                 this.$emit("prettify");
@@ -191,6 +199,7 @@ export default {
             },
             {
               label: 'Kommentar umschalten',
+              visible: !options.webMode,
               icon: 'pi pi-fw pi-comment',
               command: (ev)=>{
                 this.$emit("toggle-comment");
@@ -205,6 +214,7 @@ export default {
             },
             {
               label: 'Fehler anzeigen',
+              visible: !options.webMode,
               icon: 'pi pi-fw pi-exclamation-circle',
               command: (ev)=>{
                 this.$emit("lint");

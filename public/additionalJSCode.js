@@ -2329,7 +2329,7 @@ function additionalJSCode(){
     $constructor(){
       this.$el=document.createElement("iframe");
       this.$el.$HtmlPage=this;
-      $App.ui.appendChild();
+      $App.ui.appendChild(this.$el);
       this.$el.style="background-color: white; left: 0; top: 0; width: 100%; height: 100%; position: absolute;border: none;margin:0;padding:0;";
       $App.console.adaptSize();
     }

@@ -174,6 +174,7 @@ export class Project{
         window.$exerciseChecker=async()=>{};
         window.addEventListener('DOMContentLoaded',async function(){
           await $App.setup();
+          $App.console.hide();
           await $createAllUIClazzes(${uiclazzesString});
           
         });
@@ -322,6 +323,7 @@ export class Project{
     if(dontCallMain){
       codeMainCall="";
     }
+    let webModeCode="window.webMode="+options.webMode+";";
     let code=`<!doctype html>
 <html>
     <head>
@@ -330,6 +332,7 @@ export class Project{
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
       <link rel="manifest" href="./manifest.webmanifest">
       <script>
+        ${webModeCode}
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.register('./sw.js').then((r)=>{
             
@@ -353,7 +356,7 @@ export class Project{
           }
         }, true);
         ${window.appJScode}
-        ${includeSave? '$App.hideConsoleIfUIPresentAfterSetup=true;':''}
+        ${includeSave? '$App.hideConsoleIfUIPresentAfterSetup=!webMode;':''}
         ${window.additionalJSCode}
         ${peerJScode}
         ${databaseCode}
