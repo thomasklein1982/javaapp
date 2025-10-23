@@ -1,3 +1,12 @@
+
+
+if(import.meta.env.MODE==="web"){
+  let title=document.getElementById("title");
+  let touchIcon=document.getElementById("apple-touch-icon");
+  title.textContent="WebEd";
+  touchIcon.href="./web-icon-big.png";
+}
+
 import { createApp } from 'vue'
 import './style.css';
 import App from './App.vue'
