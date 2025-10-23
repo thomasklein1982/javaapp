@@ -2,8 +2,45 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from "vite-plugin-pwa";
 
-export default defineConfig((mode)=>{
-  console.log("build mode",mode);
+export default defineConfig(({mode})=>{
+  let manifest;
+  if(mode=="web"){
+    manifest={
+      name: 'WebEd',
+      description: 'Erstelle Webseiten mit HTML, CSS und JavaScript',
+      theme_color: '#ffffff',
+      icons: [
+        {
+          src: 'web-icon-128.png',
+          sizes: '128x128',
+          type: 'image/png',
+        },
+        {
+          src: 'web-icon-big.png',
+          sizes: '512x512',
+          type: 'image/png',
+        }
+      ]
+    };
+  }else{
+    manifest={
+      name: 'JavaApp',
+      description: 'Erstelle deine eigenen Apps mit Java',
+      theme_color: '#ffffff',
+      icons: [
+        {
+          src: 'icon.png',
+          sizes: '128x128',
+          type: 'image/png',
+        },
+        {
+          src: 'icon512.png',
+          sizes: '512x512',
+          type: 'image/png',
+        }
+      ]
+    };
+  }
   let standard={
     esbuild: {
       supported: {
@@ -19,23 +56,7 @@ export default defineConfig((mode)=>{
         },
         includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png', 'icon-transparent.png','Logo.png', 'additionalJSCode.js','icon-transparent.png','assets/primeicons.c9eaf535.eot','assets/*.ttf'],  
         //assetsInclude: ["assets/*.ttf"],
-        manifest: {
-          name: 'JavaApp',
-          description: 'Erstelle deine eigenen Apps mit Java',
-          theme_color: '#ffffff',
-          icons: [
-            {
-              src: 'icon.png',
-              sizes: '128x128',
-              type: 'image/png',
-            },
-            {
-              src: 'icon512.png',
-              sizes: '512x512',
-              type: 'image/png',
-            }
-          ]
-        }
+        manifest: manifest 
       })
     ],
     base: "./"

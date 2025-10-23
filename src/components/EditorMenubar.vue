@@ -2,7 +2,7 @@
   <Menubar :model="items" class="noprint">
     <template #start>
       <template v-if="isWeb">
-        <span style="position: relative; white-space: nowrap;"><img alt="logo" src="/icon-white-transparent.png" style="height: 2rem" ><span style="font-size: 60%; writing-mode: vertical-lr;">Web!</span></span>
+        <span style="position: relative; white-space: nowrap;"><img alt="logo" src="/web-icon-big.png" style="height: 2rem" ></span>
       </template>
       <template v-else-if="isEasy">
         <span style="position: relative; white-space: nowrap;"><img alt="logo" src="/icon-white-transparent.png" style="height: 2rem" ><span style="font-size: 60%; color: yellow; writing-mode: vertical-lr;">Easy!</span></span>
@@ -113,7 +113,7 @@ export default {
             },
             {
               label: 'CSS',
-              visible: !isWeb,
+              visible: !this.isWeb,
               icon: 'pi pi-palette',
               command: (ev)=>{
                 this.$emit('css');
@@ -128,7 +128,7 @@ export default {
             },
             {
               label: 'Datenbank',
-              visible: !isWeb,
+              visible: !this.isWeb,
               icon: 'pi pi-database',
               command: (ev)=>{
                 this.$emit('database');

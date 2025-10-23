@@ -1,10 +1,16 @@
 <template>
   <div style="text-align: center; position: absolute; left: 0; top: 0; background-color: #1f2d40; color: white; z-index: 2; width: 100%; height: 100%; overflow-y: auto">
     <h1 style="margin-bottom: 0">Willkommen bei</h1>
-    <span style="position: relative"><img alt="logo" src="/Logo-white.png" style="width: 3cm"><span v-if="isWeb" style="writing-mode: vertical-lr;">Web!</span><span v-else-if="isEasy" style="font-size: 120%; color: yellow; writing-mode: vertical-lr;">Easy!</span><span v-else-if="isHard" style="font-size: 120%; color: red; writing-mode: vertical-lr;">Hard!</span></span>
+    <template v-if="isWeb">
+      <img alt="logo" src="/web-icon-big.png" style="width: 3cm">
+    </template>
+    <span v-else style="position: relative"><img alt="logo" src="/Logo-white.png" style="width: 3cm"><span v-if="isWeb" style="writing-mode: vertical-lr;">Web!</span><span v-else-if="isEasy" style="font-size: 120%; color: yellow; writing-mode: vertical-lr;">Easy!</span><span v-else-if="isHard" style="font-size: 120%; color: red; writing-mode: vertical-lr;">Hard!</span></span>
     
     <p>Version {{$root.version}}</p>
-    <p v-if="$root.webMode">Mit JavaApp-Web! kannst du Webseiten mit HTML, CSS und JavaScript erstellen. Test</p>
+    <template v-if="$root.webMode">
+      <p>Mit WebEd kannst du Webseiten mit HTML, CSS und JavaScript erstellen.</p> 
+      <p>WebEd ist eine Variante von <a href="https://thomaskl.uber.space/Apps/java-app/" arget="_blank">JavaApp</a></p>
+    </template>
     <p v-else>Mit JavaApp kannst du Web-Apps mit Java programmieren, die auf allen Geräten laufen.</p>
     
     <p>Wähle eine der folgenden Möglichkeiten:</p>
@@ -57,7 +63,7 @@ export default {
   },
   computed: {
     isWeb(){
-      return options.webMode;
+      return this.$root.webMode;
     },
     isEasy(){
       return this.difficulty===0;
