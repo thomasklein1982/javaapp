@@ -523,6 +523,14 @@ export class Clazz{
     return 0;
   }
 
+  getFileName(){
+    return this.name+"."+this.getFileExtension();
+  }
+
+  getFileExtension(){
+    return "java";
+  }
+
   generateSrcAndTree(src,withoutClazzDeclaration){
     let code=src;
     // if(!this.hasClazzDeclaration){

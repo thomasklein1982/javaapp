@@ -98,35 +98,43 @@
                       ref="uiEditor"
                     >
                     </UIEditor>
-                    <div v-else-if="isSourceFile(c)" :style="{position: 'relative', flex: 1, display: 'flex', 'flex-direction': 'column'}">
-                      <CodeMirrorEditor
-                        :language="c.fileType"
-                        v-model="c.src"
-                        :name="c.name"
-                        :settings="settings"
-                        :font-size="fontSize"
-                        ref="sourceFileEditor"
-                        @content-changed="updateUIPreview()"
-                      />
+                    <div v-else :style="{position: 'relative', flex: 1, display: 'flex', 'flex-direction': 'column'}">
+                      <template v-if="isSourceFile(c)">
+                        <CodeMirrorEditor
+                          :language="c.fileType"
+                          v-model="c.src"
+                          :name="c.name"
+                          :file="c"
+                          :settings="settings"
+                          :font-size="fontSize"
+                          ref="sourceFileEditor"
+                          @content-changed="updateUIPreview()"
+                        />
+                      </template>
+                      <template v-else-if="isJava(c)">
+                        <CodeMirror
+                          :clazz="c"
+                          :tab-index="i"
+                          :disabled="paused"
+                          :project="project"
+                          :settings="settings"
+                          :font-size="fontSize"
+                          @recompilepreview="compileProjectAndUpdateUIPreview()"
+                          :current="paused && i===activeTab ? current : null"
+                          @caretupdate="updateCaretPosition"
+                          ref="editor"
+                        />
+                      </template>
                       <div style="position: absolute; right: 0.2rem; top: 0.2rem;">
-                        <Button @click="compileProjectAndUpdateUIPreview()" icon="pi pi-refresh"/>
-                        <Button icon="pi pi-cog" @click="$refs.dialogSourceFileSettings.open(c)" />
-                        <Button icon="pi pi-trash" @click="removeCurrentClazz()"/>
+                        <template v-if="isSourceFile(c)">
+                          <Button @click="compileProjectAndUpdateUIPreview()" icon="pi pi-refresh"/>
+                          <Button icon="pi pi-cog" @click="$refs.dialogSourceFileSettings.open(c)" />
+                        </template>
+                        <Button icon="pi pi-download" @click="downloadCurrentClazz()"/>
+                        <Button :disabled="i===0" icon="pi pi-trash" @click="removeCurrentClazz()"/>
                       </div>
                     </div>
-                    <CodeMirror
-                      v-else-if="isJava(c)"
-                      :clazz="c"
-                      :tab-index="i"
-                      :disabled="paused"
-                      :project="project"
-                      :settings="settings"
-                      :font-size="fontSize"
-                      @recompilepreview="compileProjectAndUpdateUIPreview()"
-                      :current="paused && i===activeTab ? current : null"
-                      @caretupdate="updateCaretPosition"
-                      ref="editor"
-                    />
+                    
                   </template>
                 </TabPanel>
               </template>
@@ -235,6 +243,7 @@ import SourceFileSettingsDialog from "./SourceFileSettingsDialog.vue";
 import LoggingDialog from "./LoggingDialog.vue";
 import StorageDialog from "./StorageDialog.vue";
 import ExtensionManagerDialog from "./ExtensionManagerDialog.vue";
+import { mimes } from "../consts/mimes.js";
 
 export default {
   props: {
@@ -340,6 +349,11 @@ export default {
     },1000);
   },
   methods: {
+    downloadCurrentClazz(){
+      let c=this.currentClazz;
+      if(!c) return;
+      download(c.src,c.getFileName(),mimes[c.getFileExtension()]);
+    },
     removeCurrentClazz(){
       let a=confirm("Willst du die Datei "+this.currentClazz.name+" wirklich löschen?");
       if(!a) return;
@@ -530,6 +544,11 @@ export default {
       this.project=p;
       p.compile(true);
       setTimeout(()=>{
+        let sfedits=this.$refs.sourceFileEditor;
+        for(let i=0;i<sfedits.length;i++){
+          let ed=sfedits[i];
+          ed.setCode(ed.file.src);  
+        }
         this.compileProjectAndUpdateUIPreview();
         this.activeTab=this.webMode? 1: 0;
       },100);
@@ -589,8 +608,16 @@ export default {
     async uploadProject(){
       //this.database.clear();
       let p=await uploadProject();
-      this.openProjectDialog(p,true);
-      //await this.openProject(p,this.useBlockEditor);
+      if(import.meta.env.MODE==="web"){
+        try{
+          await this.openProject(p);
+        }catch(e){
+          console.log(e);
+          this.openProjectDialog(p,true);
+        }
+      }else{
+        this.openProjectDialog(p,true);
+      }
     },
     prettifyCode(){
       if(this.currentEditor){

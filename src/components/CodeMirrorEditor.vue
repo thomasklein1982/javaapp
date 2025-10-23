@@ -27,6 +27,7 @@ import { nextTick } from '@vue/runtime-core';
 
 export default {
   props: {
+    file: Object,
     language: String,
     modelValue: String,
     settings: Object,

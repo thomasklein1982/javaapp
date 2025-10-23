@@ -94,7 +94,9 @@ export class SourceFile{
   compileMemberDeclarations(){}
   compileMethods(){}
   resolveSuperClazz(){}
-  generateSrcAndTree(){}
+  generateSrcAndTree(src){
+    this.src=src;
+  }
   getMethodByPosition(){}
   getRealSuperClazz(){
     return this.superClazz;
@@ -105,6 +107,12 @@ export class SourceFile{
   }
   getAllAttributeNames(){
     return [];
+  }
+  getFileName(){
+    return this.name+"."+this.getFileExtension();
+  }
+  getFileExtension(){
+    return this.fileType;
   }
   isUIClazz(){return false;}
   isNative(){return false;}

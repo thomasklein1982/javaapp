@@ -17,12 +17,16 @@
     </template>
     <template #footer>
       <Button icon="pi pi-times" severity="secondary" label="Abbrechen" @click="confirm()"/>
-      <Button icon="pi pi-check" label="OK" @click="confirm()"/>
+      <Button icon="pi pi-check" :disabled="nameError" label="OK" @click="confirm()"/>
     </template>
   </Dialog>
 </template>
 
 <script>
+import { Clazz } from '../classes/Clazz';
+import { UIClazz } from '../classes/UIClazz';
+
+
 export default {
   components: {
 
@@ -64,10 +68,23 @@ export default {
       }
       let c=this.project.getClazzByName(name);
       if(c){
-        if(c.isNative()){
-          return "Es gibt bereits eine eingebaute Klasse mit diesem Namen.";
-        }else{
-          return "Es gibt bereits eine Klasse mit diesem Namen.";
+        let ext=null;
+        let ext2={
+          'class': "java",
+          'interface': "java",
+          'uiclass': "java",
+          'html': "html",
+          'css': "css",
+          'js': "js"
+        }[this.sourceFile.fileType];
+        if(c instanceof Clazz || c instanceof UIClazz) ext="java";
+        else if(c instanceof SourceFile) ext=c.fileType;
+        if(ext===ext2 || ext==="html" && ext2==="java" || ext==="java" && ext2==="html"){
+          if(c.isNative()){
+            return "Es gibt bereits eine eingebaute Klasse mit diesem Namen.";
+          }else{
+            return "Es gibt bereits eine Datei mit diesem Namen.";
+          }
         }
       }
       return false;

@@ -9,8 +9,14 @@ import { SourceFile } from "./SourceFile.js";
 import { mimes } from "../consts/mimes";
 import { urlToDataURL } from "../functions/urlToDataURL.js";
 
-let start="Project Code Start";
-let stop="Project Code Stop";
+let start, stop;
+if(import.meta.env.MODE==="web"){
+  start="WebEd Code Start";
+  stop="WebEd Code Stop";
+}else{
+  start="Project Code Start";
+  stop="Project Code Stop";
+}
 
 export class Project{
   constructor(name,code){
@@ -659,6 +665,20 @@ export class Project{
         c.compileDeclarations(true);
       }
     }
+  }
+  isFileNameOK(name,extension){
+    let c=this.getClazzByName(name);
+    if(!c) return true;
+    let ext=null;
+    if(extension==="ui") extension="java";
+    if(extension==="html") extension="java";
+    if(c instanceof Clazz || c instanceof UIClazz) ext="java";
+    else if(c instanceof SourceFile) ext=c.fileType;
+    if(ext==="html") ext="java";
+    if(ext===extension){
+      return false;
+    }
+    return true;
   }
   getClazzByName(name){
     let i=this.getClazzIndexByName(name);

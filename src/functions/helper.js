@@ -13,7 +13,7 @@ export function download(data,filename,mime,noDownload){
       filename+=extension;
     }
   }else{
-    if(mime.substring(0,4).toLowerCase()!="text"){
+    if(mime!=="application/json" && mime.substring(0,4).toLowerCase()!="text"){
       /*dataurl*/
       var bin = window.atob(data.split(',')[1]);
       var arrayBuffer=new ArrayBuffer(bin.length),
@@ -51,19 +51,24 @@ function uploadCallback(callback,options){
   if(options && options.multi){fi.multiple=true;}
   
   fi.handleCallback=()=>{
-    //alert("handle callback");
-    var fileReader=new FileReader();
-    var file=fi.files[0];
-    fileReader.addEventListener("load",(e)=>{
-      document.body.removeChild(fi);
-      var code=e.target.result;
-      callback(code,file.name,file.type);
-      //alert("called callback");
-    },false);
-    if(options &&options.dataURL){
-      fileReader.readAsDataURL(file);
-    }else{
-      fileReader.readAsText(file);
+    let results=[];
+    for(let i=0;i<fi.files.length;i++){
+      let fileReader=new FileReader();
+      let file=fi.files[i];
+      fileReader.addEventListener("load",(e)=>{
+        let code=e.target.result;
+        results.push({code,fileName: file.name,mime: file.type});
+        if(results.length===fi.files.length){
+          document.body.removeChild(fi);
+          callback(results);
+        }
+        //alert("called callback");
+      },false);
+      if(options &&options.dataURL){
+        fileReader.readAsDataURL(file);
+      }else{
+        fileReader.readAsText(file);
+      }
     }
   };
 
@@ -77,12 +82,19 @@ function uploadCallback(callback,options){
 
 export async function upload(options){
   var p=new Promise(function(resolve,reject){
-    uploadCallback(function(code,fileName,mime){
-      resolve({
-        code: code,
-        fileName: fileName,
-        mime: mime
-      });
+    uploadCallback(function(fileData){
+      if(!options.multi){
+        let code=fileData[0].code;
+        let fileName=fileData[0].fileName;
+        let mime=fileData[0].mime;
+        resolve({
+          code,
+          fileName,
+          mime
+        });
+      }else{
+        resolve(fileData);
+      }
     },options);
   });
   var q=await p;

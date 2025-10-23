@@ -57,7 +57,7 @@
             <Button icon="pi pi-copy" @click="clickDuplicateUIClazz()"/>
             <Button icon="pi pi-trash" @click="clickRemoveUIClazz($event)"/>
             <Button @click="$emit('recompile',true)" icon="pi pi-refresh"/>
-            
+            <Button @click="downloadUIClazz()" icon="pi pi-download"/>
           </div>
           <div style="font-family: monospace; color: red">
             <div v-for="(e,i) in this.component.errors"><template v-if="e.line">Z{{ e.line.number }}: {{ e.message }}</template><template v-else>{{ e }}</template></div>
@@ -144,6 +144,7 @@
   import {Sortable} from "sortablejs-vue3";
   import { UIClazz } from "../classes/UIClazz";
 import { nextTick } from "vue";
+import { download } from "../functions/helper";
 
   export default{
     props: {
@@ -266,6 +267,11 @@ import { nextTick } from "vue";
       // this.id=this.component.previewID;
     },
     methods: {
+      downloadUIClazz(){
+        let c=this.component;
+        let s=c.getSaveObject();
+        download(JSON.stringify(s),c.getFileName(),"application/json");
+      },
       getRandomId(){
         return "P"+Math.floor(Math.random()*10000000);
       },

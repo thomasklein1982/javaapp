@@ -110,6 +110,10 @@ export class UIClazz extends Clazz{
      */
   }
 
+  getFileExtension(){
+    return "ui";
+  }
+
   getPrimitiveTypeByName(name){
     return Java.datatypes[name];
   }

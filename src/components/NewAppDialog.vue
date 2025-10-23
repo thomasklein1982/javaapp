@@ -46,7 +46,7 @@ export default {
   data(){
     return {
       show: false,
-      name: "MyApp",
+      name: this.$root.webMode? "MySite":"MyApp",
       template: null,
       templates: [
         {
