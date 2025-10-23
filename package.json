@@ -3,8 +3,15 @@
   "version": "9.7.0",
   "scripts": {
     "dev": "vite",
+    "dev-web": "vite --mode web",
     "build": "vite build",
+    "build-web": "vite build --mode web",
     "serve": "vite preview"
+  },
+  "build": {
+    "javaapp": {
+      "TEST": "Bla"
+    }
   },
   "dependencies": {
     "@codemirror/lang-html": "^6.4.9",

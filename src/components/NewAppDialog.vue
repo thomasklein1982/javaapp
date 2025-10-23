@@ -5,7 +5,7 @@
       <InputText type="search" placeholdertext="Name des neuen Projekts" v-model="name"/>
       <small v-if="nameerror" style="display: block; color: red">{{nameerror}}</small>
     </div>
-    <template v-if="$root.options.webMode">
+    <template v-if="$root.webMode">
       
     </template>
     <template v-else>

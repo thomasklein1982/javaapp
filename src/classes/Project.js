@@ -323,7 +323,7 @@ export class Project{
     if(dontCallMain){
       codeMainCall="";
     }
-    let webModeCode="window.webMode="+options.webMode+";";
+    let webModeCode="window.webMode="+this.$root.webMode+";";
     let code=`<!doctype html>
 <html>
     <head>

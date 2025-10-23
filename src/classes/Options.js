@@ -24,7 +24,6 @@ class Options{
     this.exerciseMode=false;
     this.exerciseMainClassName="Main";
     this.databaseUiMode=true;
-    this.webMode=false;
   }
   isEasyMode(){
     return this.voidOptional;
@@ -118,9 +117,6 @@ class Options{
         }
         if(hash.startsWith("#exercise-mode")){
           this.exerciseMode=true;
-        }
-        if(hash.startsWith("#web")){
-          this.webMode=true;
         }
       }
     }

@@ -54,7 +54,7 @@ export default{
       printMode: false,
       current: {line: -1, step: 0, name: null, $scope: {local: null, main: null, that: null}},
       difficulty: options.difficulty(),
-      options,
+      webMode: import.meta.env.MODE==="web",
       tryItMode: location.hash.indexOf("tryit")>=0,
       tryItName: null,
       exerciseMode: options.exerciseMode,

@@ -99,7 +99,7 @@ import { options } from '../classes/Options';
         this.$refs.wrapper.appendChild(frame);
         console.log("start app",this.breakpoints);
         let prefix;
-        if(options.webMode){
+        if(this.$root.webMode){
           prefix="$App.console.hide();";
         }else{
           prefix=noDebugging?"$App.console.hide();":"$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");";

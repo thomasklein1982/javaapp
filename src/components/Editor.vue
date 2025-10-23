@@ -83,7 +83,7 @@
             </TabList>
             <TabPanels>
               <template v-for="(c,i) in project.clazzes" :key="'tab-'+i">
-                <TabPanel :value="i" v-if="i>0 || !$root.options.webMode">
+                <TabPanel :value="i" v-if="i>0 || !$root.webMode">
                   <template v-if="c.isHidden">
                     Der Code dieser Klasse ist versteckt.
                   </template>
@@ -148,7 +148,7 @@
               />
               <AppPreview v-show="running || isJava(currentClazz)" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
             </SplitterPanel>
-            <SplitterPanel v-if="!$root.options.webMode" style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
+            <SplitterPanel v-if="!$root.webMode" style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
               <Insights 
                 v-if="running"
                 :project="project"
@@ -246,8 +246,8 @@ export default {
   data(){
     return {
       useBlockEditor: false,
-      activeTab: this.$root.options.webMode? 1: 0,
-      webMode: this.$root.options.webMode,
+      activeTab: this.$root.webMode? 1: 0,
+      webMode: this.$root.webMode,
       running: false,
       caretPosition: 0,
       project: null,

@@ -1,6 +1,6 @@
 <template>
   <div class="p-buttonset" :style="{display: 'grid', gap: '0.2rem', 'grid-template':'1fr 1fr/1fr 1fr 1fr'}">
-    <template v-if="!$root.options.webMode">
+    <template v-if="!$root.webMode">
       <Button :severity="type==='class'?'primary':'secondary'" label="Klasse" @click="type='class'"/>
       <Button :severity="type==='interface'?'primary':'secondary'" label="Interface" @click="type='interface'"/>
       <Button :severity="type==='uiclass'?'primary':'secondary'" label="UI-Klasse" @click="type='uiclass'"/>
@@ -35,7 +35,7 @@ export default {
   data: function(){
     return {
       name: '',
-      type: this.$root.options.webMode? "html":"class"
+      type: this.$root.webMode? "html":"class"
     };
   },
   computed: {
