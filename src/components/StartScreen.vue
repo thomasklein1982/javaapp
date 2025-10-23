@@ -4,7 +4,7 @@
     <span style="position: relative"><img alt="logo" src="/Logo-white.png" style="width: 3cm"><span v-if="isWeb" style="writing-mode: vertical-lr;">Web!</span><span v-else-if="isEasy" style="font-size: 120%; color: yellow; writing-mode: vertical-lr;">Easy!</span><span v-else-if="isHard" style="font-size: 120%; color: red; writing-mode: vertical-lr;">Hard!</span></span>
     
     <p>Version {{$root.version}}</p>
-    <p v-if="$root.options.webMode">Mit JavaApp-Web! kannst du Webseiten mit HTML, CSS und JavaScript erstellen.</p>
+    <p v-if="$root.options.webMode">Mit JavaApp-Web! kannst du Webseiten mit HTML, CSS und JavaScript erstellen. Test</p>
     <p v-else>Mit JavaApp kannst du Web-Apps mit Java programmieren, die auf allen Geräten laufen.</p>
     
     <p>Wähle eine der folgenden Möglichkeiten:</p>
