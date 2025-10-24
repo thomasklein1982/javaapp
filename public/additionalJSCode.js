@@ -29,7 +29,7 @@ function additionalJSCode(){
         page.show();
       }else if(message.type==="reportError"){
         console.log("Fehler!",message.data);
-        if(window.parent){
+        if(window.parent!==window){
           window.parent.postMessage(message);
         }
         //alert("Fehler Datei "+message.data.file+" in Zeile "+message.data.line+": "+message.data.error);
@@ -111,13 +111,24 @@ function additionalJSCode(){
     }
   }
 
-  async function $createAllUIClazzes(constructors){
+  async function $createAllUIClazzes(constructors, startpage){
+    if(!startpage) startpage="index";
     if(window.uiClazzObjects) return;
     window.uiClazzObjects={};
+    
     for(let i=0;i<constructors.length;i++){
       let c=constructors[i];
       await c.$createSelf();
       window.uiClazzObjects[c.name]=c;
+    }
+    if(window.webMode){
+      if(window.uiClazzObjects[startpage]){
+        await window.uiClazzObjects[startpage].show();
+      }
+      for(let a in window.uiClazzObjects){
+        let c=window.uiClazzObjects[a];
+        c.$self.$el.style.display="block";
+      }
     }
   }
 
@@ -7159,7 +7170,7 @@ function additionalJSCode(){
       //return $App.canvas.container;
     }
     static sendMessage(type, data){
-      if(window.parent){
+      if(window.parent!==window){
         console.log("send message zu editor",type, data);
         window.parent.postMessage({type: type, data: data});
       }

@@ -139,10 +139,8 @@ export class Project{
     let uiclazzes=this.getUIClazzes();
     for(let i=0;i<uiclazzes.length;i++){
       let c=uiclazzes[i];
-      if(c.name===startPage.name) continue;
       uiclazzesString.push(c.name);
     }
-    uiclazzesString.push(startPage.name);
     uiclazzesString="["+uiclazzesString.join(",")+"]";
 
     let js="";
@@ -153,7 +151,7 @@ export class Project{
     }
 
     let css=this.prepareCSS(this.css);
-
+    let webModeCode="window.webMode="+(import.meta.env.MODE==="web")+";";
     let code=`<!doctype html>
 <html>
     <head>
@@ -162,6 +160,7 @@ export class Project{
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
       <link rel="manifest" href="./manifest.webmanifest">
       <script>
+        ${webModeCode}
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.register('./sw.js').then((r)=>{
             
@@ -181,8 +180,7 @@ export class Project{
         window.addEventListener('DOMContentLoaded',async function(){
           await $App.setup();
           $App.console.hide();
-          await $createAllUIClazzes(${uiclazzesString});
-          
+          await $createAllUIClazzes(${uiclazzesString},"${startPage.name}");
         });
         
       </script>
@@ -303,7 +301,7 @@ export class Project{
       uiclazzesString+=c.name+",";
     }
     uiclazzesString+="]";
-    let codeMainCall="(async function(){await $App.setup();\nawait $createAllUIClazzes("+uiclazzesString+");";;
+    let codeMainCall="(async function(){await $App.setup();\nawait $createAllUIClazzes("+uiclazzesString+");";
     let mainObjectCode; /**der Name der Klasse oder des Objekts, das die Main-Methode enthält */
     if(mainClazz){
       if(mainClazz.hasStaticMainMethod()){

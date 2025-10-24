@@ -57,7 +57,6 @@ import Extension from './classes/Extension.js';
 
 "use strict";
 
-console.log(import.meta.env);
 
 (function(){
   let hash=location.hash;

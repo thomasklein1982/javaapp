@@ -18,6 +18,17 @@ export class SourceFile{
     this.superClazz=Java.clazzes.HtmlPage;
     /**der erste Kindknoten des ClassBody: */
     this.src="";
+    if(this.fileType==="html"){
+      this.src=`<!DOCTYPE HTML>
+<html>
+  <head>
+    
+  </head>
+  <body>
+    
+  </body>
+</html>`
+    }
   }
   getSaveObject(){
     let o={};
@@ -210,7 +221,7 @@ export class SourceFile{
     }
     let erudaCode="";
     if(includeEruda){
-      erudaCode=`(()=>{console.log(window);
+      erudaCode=`(()=>{
       window.addEventListener('DOMContentLoaded',()=>{let script = document.createElement('script'); 
       script.src="https://cdn.jsdelivr.net/npm/eruda"; 
       document.body.append(script);
@@ -220,8 +231,9 @@ export class SourceFile{
     })})();`;
     }
 
-    src=`<script>${erudaCode}\nwindow.onerror=function(error, source, line, col, event){$reportError({error,line,col, file: ${JSON.stringify(this.name)}})}; function $reportError(data){window.parent.postMessage({type: 'reportError', data })}</script>`+src;
+    src=`<script>window.onerror=function(error, source, line, col, event){$reportError({error,line,col, file: ${JSON.stringify(this.name)}})}; function $reportError(data){window.parent.postMessage({type: 'reportError', data })}</script>`+src;
     src+=`\n<script>
+      ${erudaCode}
       $main={
         ${javaAPI}
       };
@@ -253,12 +265,11 @@ export class SourceFile{
         });
       }
       function $replaceObjectURLs(){
-        console.log("replace object urls");
+        if(!window.$servedFiles) window.$servedFiles={};
         let els=document.querySelectorAll("[href]");
         for(let i=0;i<els.length;i++){
           let e=els[i];
           let href=e.getAttribute('href');
-          console.log("e",e,e.href,window.$servedFiles[e.href],e.getAttribute('href'));
           let file=window.$servedFiles[href];
           if(file){
             e.href=file.url;
@@ -270,7 +281,6 @@ export class SourceFile{
           let e=els[i];
           let src=e.getAttribute('src');
           let file=window.$servedFiles[src];
-          console.log("src",e,src,file);
           if(file){
             const s = document.createElement('script');
             s.src = file.url;
@@ -281,7 +291,7 @@ export class SourceFile{
       }
       window.$servedFiles=(`;
     src=JSON.stringify(src);
-    src+="+JSON.stringify(window.$servedFiles)+\");console.log('served',window.$servedFiles);$replaceObjectURLs();</script>\";";
+    src+="+JSON.stringify(window.$servedFiles)+\");$replaceObjectURLs();</script>\";";
     src=src.replace(/</g,"\\x3C");
     return src;
   }
@@ -314,6 +324,9 @@ export class SourceFile{
     // code+=attributesCode;
     code+=`static async $createSelf(){
       ${this.name}.$self=$new(${this.name});
+      if(window.webMode){
+        ${this.name}.$self.$el.style.display="none";
+      }
       ${this.name}.$self.$el.id="${this.name}.html";
       let code=${this.getStringifiedSourceCode(includeEruda)};
       ${this.name}.$self.$el.srcdoc=code;

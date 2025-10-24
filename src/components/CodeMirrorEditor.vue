@@ -43,7 +43,6 @@ export default {
   emits: ["update:modelValue","change","content-changed"],
   computed: {
     languagePlugins(){
-      console.log("lang",this.language);
       if(this.language==="html"){
         return {
           language: html(),//{autoCloseTags: true}),//.language,
