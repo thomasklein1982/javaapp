@@ -62,7 +62,7 @@ import { UIClazz } from '../classes/UIClazz';
           this.$refs.wrapper.removeChild(this.$refs.wrapper.firstChild);
         }
         this.$refs.wrapper.appendChild(frame);
-        let code=this.uiClazz.getUIPreviewCode();
+        let code=this.uiClazz.getUIPreviewCode(import.meta.env.MODE==="web");
         let doc=frame.contentWindow.document;
         doc.open();
         doc.write(code);

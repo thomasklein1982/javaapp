@@ -1173,23 +1173,37 @@ function additionalJSCode(){
     }
   }
 
-  class Boolean{
-    constructor(v){
-      this.value=v;
-    }
-    static parseBoolean(s){
-      if(!s) return false;
-      s=s.toLowerCase();
-      if(s==="true"){
-        return true;
-      }else{
-        return false;
-      }
-    }
-    static valueOf(v){
-      return new Boolean(v);
+  function $BooleanParseBoolean(obj,s){
+    if(!s) return false;
+    s=s.toLowerCase();
+    if(s==="true"){
+      return true;
+    }else{
+      return false;
     }
   }
+
+  function $BooleanValueOf(obj,v){
+    return new Boolean(v);
+  }
+
+  // class Boolean{
+  //   constructor(v){
+  //     this.value=v;
+  //   }
+  //   static parseBoolean(s){
+  //     if(!s) return false;
+  //     s=s.toLowerCase();
+  //     if(s==="true"){
+  //       return true;
+  //     }else{
+  //       return false;
+  //     }
+  //   }
+  //   static valueOf(v){
+  //     return new Boolean(v);
+  //   }
+  // }
 
   class Character{
     constructor(v){

@@ -37,18 +37,23 @@ export function defineInteger(Clazz,Java){
 export function defineBoolean(Clazz,Java){
   createMethod({
     name: 'parseBoolean',
+    isExtraFunction: true,
     args: [
       {name: 's', type: 'String'}
     ],
-    returnType: "boolean"
+    returnType: "boolean",
+    jsName: "$BooleanParseBoolean",
   },Clazz,true,false,Java);
-  createMethod({
-    name: 'valueOf',
-    args: [
-      {name: 's', type: ['String','boolean']}
-    ],
-    returnType: "Boolean"
-  },Clazz,true,false,Java);
+  //TODO: Funktioniert nicht:
+  // createMethod({
+  //   name: 'valueOf',
+  //   isExtraFunction: true,
+  //   args: [
+  //     {name: 's', type: ['String','boolean']}
+  //   ],
+  //   returnType: "Boolean",
+  //   jsName: "$BooleanValueOf"
+  // },Clazz,true,false,Java);
 }
 
 export function defineDouble(Clazz,Java){

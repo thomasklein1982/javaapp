@@ -511,6 +511,7 @@ window.appJScode=function(){
         if(this.showConsoleOnStart){
           this.console.setVisible(true);
         }
+        if(window.webMode) this.console.hide();
         this.onResize();
         this.animationFrame=async ()=>{
           await $App.gameloop.handler();

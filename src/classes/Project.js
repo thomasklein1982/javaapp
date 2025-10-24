@@ -128,7 +128,7 @@ export class Project{
     return -1;
   }
   
-  getUIPreviewCode(startPage){
+  getUIPreviewCode(startPage,includeEruda){
     let assetsCode="/****** ASSETS START ******/";
     for(let i=0;i<this.assets.length;i++){
       let a=this.assets[i];
@@ -149,7 +149,7 @@ export class Project{
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
       if(!(c instanceof UIClazz || c instanceof SourceFile)) continue;
-      js+=c.getJavaScriptCode();
+      js+=c.getJavaScriptCode(includeEruda);
     }
 
     let css=this.prepareCSS(this.css);
@@ -329,7 +329,7 @@ export class Project{
     if(dontCallMain){
       codeMainCall="";
     }
-    let webModeCode="window.webMode="+(import.meta.env.mode==="web")+";";
+    let webModeCode="window.webMode="+(import.meta.env.MODE==="web")+";";
     let code=`<!doctype html>
 <html>
     <head>

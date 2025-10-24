@@ -116,7 +116,7 @@ export class SourceFile{
   }
   isUIClazz(){return false;}
   isNative(){return false;}
-  getStringifiedSourceCode(){
+  getStringifiedSourceCode(includeEruda){
     let src=this.src;
     this.attributes={};
     if(this.useGlobalCSS && this.project.css.trim().length>0){
@@ -208,8 +208,19 @@ export class SourceFile{
         javaAPI+=mn+": async function(){return await $java('"+mn+"',arguments)},"
       }
     }
-    
-    src=`<script>window.onerror=function(error, source, line, col, event){$reportError({error,line,col, file: ${JSON.stringify(this.name)}})}; function $reportError(data){window.parent.postMessage({type: 'reportError', data })}</script>`+src;
+    let erudaCode="";
+    if(includeEruda){
+      erudaCode=`(()=>{console.log(window);
+      window.addEventListener('DOMContentLoaded',()=>{let script = document.createElement('script'); 
+      script.src="https://cdn.jsdelivr.net/npm/eruda"; 
+      document.body.append(script);
+      script.onload = function () { 
+        eruda.init(); 
+      };
+    })})();`;
+    }
+
+    src=`<script>${erudaCode}\nwindow.onerror=function(error, source, line, col, event){$reportError({error,line,col, file: ${JSON.stringify(this.name)}})}; function $reportError(data){window.parent.postMessage({type: 'reportError', data })}</script>`+src;
     src+=`\n<script>
       $main={
         ${javaAPI}
@@ -274,15 +285,15 @@ export class SourceFile{
     src=src.replace(/</g,"\\x3C");
     return src;
   }
-  getJavaScriptCode(){
+  getJavaScriptCode(includeEruda){
     if(this.fileType==="html"){
-      return this.getHtmlJavaScriptCode();
+      return this.getHtmlJavaScriptCode(includeEruda);
     }else{
       return this.getServeFileJavaScriptCode();
     }
   }
-  getUIPreviewCode(){
-    let code=this.project.getUIPreviewCode(this);
+  getUIPreviewCode(includeEruda){
+    let code=this.project.getUIPreviewCode(this,includeEruda);
     return code;
   }
   getServeFileJavaScriptCode(){
@@ -291,7 +302,7 @@ export class SourceFile{
     return code;
   }
 
-  getHtmlJavaScriptCode(){
+  getHtmlJavaScriptCode(includeEruda){
     let code="class "+this.name+" extends HtmlPage";
     code+="{";
     code+="\nstatic $self;\n";//=$new("+this.name+");";
@@ -304,7 +315,7 @@ export class SourceFile{
     code+=`static async $createSelf(){
       ${this.name}.$self=$new(${this.name});
       ${this.name}.$self.$el.id="${this.name}.html";
-      let code=${this.getStringifiedSourceCode()};
+      let code=${this.getStringifiedSourceCode(includeEruda)};
       ${this.name}.$self.$el.srcdoc=code;
       let p=new Promise((fulfill,reject)=>{
         ${this.name}.$self.$el.onload=async (ev)=>{
