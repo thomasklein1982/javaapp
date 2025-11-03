@@ -315,11 +315,20 @@ export class Clazz{
         args=[];
         for(let i=0;i<m.params.parameters.length;i++){
           let a=m.params.parameters[i];
+          let baseType,dim;
+          //TODO: Das ist nur ein Hot-Fix!
+          if(Array.isArray(a.type)){
+            baseType=a.type[0].baseType;
+            dim=a.type[0].dimension;
+          }else{
+            baseType=a.type.baseType;
+            dim=a.type.dimension;
+          }
           args.push({
             name: a.name,
             type: {
-              baseType: a.type.baseType.name,
-              dimension: a.type.dimension
+              baseType: baseType.name,
+              dimension: dim
             }
           });
         }

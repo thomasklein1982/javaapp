@@ -545,9 +545,11 @@ export default {
       p.compile(true);
       setTimeout(()=>{
         let sfedits=this.$refs.sourceFileEditor;
-        for(let i=0;i<sfedits.length;i++){
-          let ed=sfedits[i];
-          ed.setCode(ed.file.src);  
+        if(sfedits){
+          for(let i=0;i<sfedits.length;i++){
+            let ed=sfedits[i];
+            ed.setCode(ed.file.src);  
+          }
         }
         this.compileProjectAndUpdateUIPreview();
         this.activeTab=this.webMode? 1: 0;
