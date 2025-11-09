@@ -37,6 +37,7 @@ export class SourceFile{
     o.isHidden=this.isHidden;
     o.fileType=this.fileType;
     o.useGlobalCSS=this.useGlobalCSS;
+    o.isEditorShown=this.isEditorShown;
     return o;
   }
 
@@ -86,6 +87,8 @@ export class SourceFile{
     }else{
       this.src="";
     }
+    this.isEditorShown=true;
+    if(obj.isEditorShown===false) this.isEditorShown=false;
     if(obj.useGlobalCSS){
       this.useGlobalCSS=obj.useGlobalCSS;
     }else{

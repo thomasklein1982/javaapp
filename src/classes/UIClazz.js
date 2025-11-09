@@ -397,11 +397,12 @@ export class UIClazz extends Clazz{
     o.cssClass=this.cssClass;
     o.cssCode=this.cssCode;
     o.template=this.template;
+    o.isEditorShown=this.isEditorShown;
     return o;
   }
 
   restoreFromSaveObject(obj){
-    let props=["name","src","components","cssClass","template","cssCode","isHidden"];
+    let props=["name","src","components","cssClass","template","cssCode","isHidden","isEditorShown"];
     for(let i=0;i<props.length;i++){
       let p=props[i];
       if(obj[p]!==undefined){

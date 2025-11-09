@@ -75,12 +75,9 @@
             <TabList>
               <template v-for="(c,i) in project.clazzes">
                 <Tab :value="i" v-if="i>0 || !webMode" v-show="c.isEditorShown">
-                  <span v-if="c.isInterface" class="pi pi-info-circle" style="font-size: small; margin-right: 0.2rem"/><span v-if="c.isHidden">(</span>{{i!==activeTab && c?.name?.length>20? c?.name?.substring(0,17)+"...":c?.name}}{{ c.fileType!==undefined? "."+c.fileType:"" }} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span><span v-if="c.isHidden">)</span>
+                  <span v-if="c.isInterface" class="pi pi-info-circle" style="font-size: small; margin-right: 0.2rem"/><span v-if="c.isHidden">(</span>{{i!==activeTab && c?.name?.length>20? c?.name?.substring(0,17)+"...":c?.name}}{{ c.fileType!==undefined? "."+c.fileType:"" }} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span><Button v-if="activeTab===i" @click="hideEditor(i)" style="height: auto; padding:0" icon="pi pi-times-circle" rounded text severity="secondary" size="small"/><span v-if="c.isHidden">)</span>
                 </Tab>
               </template>
-              <Tab :value="project.clazzes.length">
-                <span class="pi pi-fw pi-plus" style="padding-left: 0.5rem; margin-right: 4rem"/>
-              </Tab>
             </TabList>
             <TabPanels>
               <template v-for="(c,i) in project.clazzes" :key="'tab-'+i">
@@ -131,17 +128,12 @@
                           <Button @click="compileProjectAndUpdateUIPreview()" icon="pi pi-refresh"/>
                           <Button icon="pi pi-cog" @click="$refs.dialogSourceFileSettings.open(c)" />
                         </template>
-                        <Button icon="pi pi-download" @click="downloadCurrentClazz()"/>
-                        <Button :disabled="i===0" icon="pi pi-trash" @click="removeCurrentClazz()"/>
                       </div>
                     </div>
                     
                   </template>
                 </TabPanel>
               </template>
-              <TabPanel :value="project.clazzes.length">
-                <NewClazzWizard :project="project" @confirm="addNewClazz"/>
-              </TabPanel>
             </TabPanels>
           </Tabs>
         </SplitterPanel>
@@ -206,7 +198,11 @@
       :project="project"
       @open-file="setActiveTab"
       @hide="updateActiveTab"
+      @add-file="showNewClazzDialog=true"
     />
+    <Dialog header="Neue Datei" v-model:visible="showNewClazzDialog">
+      <NewClazzWizard :project="project" @confirm="addNewClazz"/>
+    </Dialog>
   </div>
 </template>
 
@@ -264,6 +260,7 @@ export default {
     return {
       useBlockEditor: false,
       activeTab: this.$root.webMode? 1: 0,
+      showNewClazzDialog: false,
       webMode: this.$root.webMode,
       running: false,
       caretPosition: 0,
@@ -289,6 +286,7 @@ export default {
       let c=this.project.clazzes[nv];
       if(c) c.isEditorShown=true;
       if(this.$refs.editor && nv<this.$refs.editor.length){
+        
         let ed=this.$refs.editor[nv];
         if(!ed.updateLinter) return;
         ed.updateLinter();
@@ -359,19 +357,31 @@ export default {
     },1000);
   },
   methods: {
+    hideEditor(index){
+      let c=this.project.clazzes[index];
+      c.isEditorShown=false;
+      if(index===this.activeTab){
+        setTimeout(()=>{
+          this.updateActiveTab(index);
+        },10);
+      }
+    },
     setActiveTab(index){
       this.activeTab=index;
       this.$forceUpdate();
     },
     setActiveTabToFirstVisibleFile(){
-      for(let i=0;i<this.project.clazzes.length;i++){
+      let start=this.webMode? 1:0;
+      for(let i=start;i<this.project.clazzes.length;i++){
         let c=this.project.clazzes[i];
         if(c.isEditorShown) {
           this.activeTab=i;
           return;
         }
       }
-      this.activeTab=this.webMode? 1:0;
+      this.activeTab=start;
+      let c=this.project.clazzes[this.activeTab];
+      if(c) c.isEditorShown=true;
     },
     updateActiveTab(startTab){
       if(startTab===undefined) return;
@@ -755,7 +765,8 @@ export default {
         return;
       }
       this.project.addClazz(c);
-      this.$root.emitEvent("new-class",{name: c.name})
+      this.$root.emitEvent("new-class",{name: c.name});
+      this.showNewClazzDialog=false;
     },
     trashCurrentClazz(){
       if(!this.currentClazz || this.activeTab===0){
@@ -820,5 +831,7 @@ export default {
 </script>
 
 <style scoped>
-
+.editor-tabs .p-tab{
+  padding: 0.5rem;
+}
 </style>

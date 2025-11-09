@@ -106,6 +106,16 @@ export default {
               separator:true
             },
             {
+              label: 'Dateien',
+              icon: 'pi pi-copy',
+              command: (ev)=>{
+                this.$emit('showfiles');
+              }
+            },
+            {
+              separator:true
+            },
+            {
               label: 'Projekt-Details',
               icon: 'pi pi-ellipsis-v',
               command: (ev)=>{
