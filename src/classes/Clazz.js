@@ -25,7 +25,7 @@ export class Clazz{
     this.isAbstract=false;
     this.isHidden=false;
     this.visibility="tab code uml";
-    this.isEditorShown=true;
+    this.isEditorShown=true; //ob die Datei im Editor geöffnet ist oder nicht
     this.isInterface=isInterface===true;
     this.wrappedPrimitiveType=null;
     this.comment="";
@@ -71,6 +71,7 @@ export class Clazz{
     o.name=this.name;
     o.src=this.src;
     o.isHidden=this.isHidden;
+    o.isEditorShown=this.isEditorShown;
     return o;
   }
 
@@ -89,6 +90,8 @@ export class Clazz{
     if(obj.isHidden){
       this.isHidden=true;
     }
+    this.isEditorShown=true;
+    if(obj.isEditorShown===false) this.isEditorShown=false;
     if(obj.visibility){
       this.visibility=obj.visibility;
     }

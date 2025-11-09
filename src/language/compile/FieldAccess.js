@@ -106,6 +106,9 @@ export function FieldAccess(node,source,scope){
       object=Identifier(node,source,scope,{owner});
       code+=object.code;
       let type=object.type;
+      if(!type){
+        throw source.createError("'"+object?.name+"' hat keinen Datentyp oder der Datentyp ist unbekannt.",node);
+      }
       if(!type.baseType){
         type=new Type(type,0);
       }

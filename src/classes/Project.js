@@ -614,11 +614,9 @@ export class Project{
     let mainClazz=null;
     let finished={};
     let remaining=[];
+    mainClazz=this.getMainClazz();
     for(let i=0;i<this.clazzes.length;i++){
       let c=this.clazzes[i];
-      if(!mainClazz && c.hasStaticMainMethod()){
-        mainClazz=c;
-      }
       remaining.push(c);
     }
     if(!mainClazz && options.mainOptional){

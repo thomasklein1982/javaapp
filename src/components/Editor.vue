@@ -43,7 +43,7 @@
         @storage="$refs.dialogStorage.setVisible(true)"
         @tryit="$refs.tryItDialog.setVisible(true)"
         @extensions="$refs.dialogExtensions.setVisible(true)"
-        @showfiles="$refs.fileDrawer.open()"
+        @showfiles="$refs.fileDrawer.open(activeTab)"
       />
       <LinksDialog
         ref="dialogResources"
@@ -74,7 +74,7 @@
           <Tabs v-model:value="activeTab" :scrollable="true" class="editor-tabs" >
             <TabList>
               <template v-for="(c,i) in project.clazzes">
-                <Tab :value="i" v-if="i>0 || !webMode" v-show="c.isEditorShown || i===activeTab">
+                <Tab :value="i" v-if="i>0 || !webMode" v-show="c.isEditorShown">
                   <span v-if="c.isInterface" class="pi pi-info-circle" style="font-size: small; margin-right: 0.2rem"/><span v-if="c.isHidden">(</span>{{i!==activeTab && c?.name?.length>20? c?.name?.substring(0,17)+"...":c?.name}}{{ c.fileType!==undefined? "."+c.fileType:"" }} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span><span v-if="c.isHidden">)</span>
                 </Tab>
               </template>
@@ -201,7 +201,12 @@
         </span>
       </span>
     </template>
-    <FileDrawer ref="fileDrawer" :project="project"/>
+    <FileDrawer 
+      ref="fileDrawer" 
+      :project="project"
+      @open-file="setActiveTab"
+      @hide="updateActiveTab"
+    />
   </div>
 </template>
 
@@ -281,6 +286,8 @@ export default {
   watch: {
     activeTab(nv,ov){
       this.$root.emitEvent("tab-change",{index: nv});
+      let c=this.project.clazzes[nv];
+      if(c) c.isEditorShown=true;
       if(this.$refs.editor && nv<this.$refs.editor.length){
         let ed=this.$refs.editor[nv];
         if(!ed.updateLinter) return;
@@ -352,6 +359,31 @@ export default {
     },1000);
   },
   methods: {
+    setActiveTab(index){
+      this.activeTab=index;
+      this.$forceUpdate();
+    },
+    setActiveTabToFirstVisibleFile(){
+      for(let i=0;i<this.project.clazzes.length;i++){
+        let c=this.project.clazzes[i];
+        if(c.isEditorShown) {
+          this.activeTab=i;
+          return;
+        }
+      }
+      this.activeTab=this.webMode? 1:0;
+    },
+    updateActiveTab(startTab){
+      if(startTab===undefined) return;
+      for(let i=startTab;i<this.project.clazzes.length;i++){
+        let c=this.project.clazzes[i];
+        if(c.isEditorShown) {
+          this.activeTab=i;
+          return;
+        }
+      }
+      this.setActiveTabToFirstVisibleFile();
+    },
     downloadCurrentClazz(){
       let c=this.currentClazz;
       if(!c) return;
@@ -555,7 +587,7 @@ export default {
           }
         }
         this.compileProjectAndUpdateUIPreview();
-        this.activeTab=this.webMode? 1: 0;
+        this.setActiveTabToFirstVisibleFile();
       },100);
       
     },
