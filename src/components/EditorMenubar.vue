@@ -33,6 +33,7 @@
         <Button severity="secondary" rounded size="small" style="margin-right: 0.5rem" label="" icon="pi pi-undo" @click="$emit('undo')"/>
         <Button severity="secondary" rounded size="small" style="margin-right: 0.5rem" label="" icon="pi pi-refresh" @click="$emit('redo')"/>
       </template>
+      <Button severity="secondary" rounded size="small" style="margin-right: 0.5rem" label="" icon="pi pi-copy" @click="$emit('showfiles')"/>
       <Button severity="secondary" rounded size="small" style="margin-right: 0.5rem" label="" :icon="rightClosed? 'pi pi-eye-slash': 'pi pi-eye'" @click="$emit('toggleright')"/>
     </template>
   </Menubar>  
@@ -244,10 +245,6 @@ export default {
           ]
         },
         {
-          label: "Workspace",
-          items: []
-        },
-        {
           label: "Extras",
           items: [
           {
@@ -302,17 +299,6 @@ export default {
           ]
         }
       ];
-      if(this.project){
-        let workspace=items[items.length-2];
-        for(let i=0;i<this.project.clazzes.length;i++){
-          let c=this.project.clazzes[i];
-          workspace.items.push({
-            label: c.name,
-            file: c,
-            
-          });
-        }
-      }
       if(this.$root.tryItMode){
         items[0].label="TryIt: "+this.$root.tryItName;
         items[0].items[0]={

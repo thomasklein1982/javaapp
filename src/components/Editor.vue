@@ -43,6 +43,7 @@
         @storage="$refs.dialogStorage.setVisible(true)"
         @tryit="$refs.tryItDialog.setVisible(true)"
         @extensions="$refs.dialogExtensions.setVisible(true)"
+        @showfiles="$refs.fileDrawer.open()"
       />
       <LinksDialog
         ref="dialogResources"
@@ -200,6 +201,7 @@
         </span>
       </span>
     </template>
+    <FileDrawer ref="fileDrawer" :project="project"/>
   </div>
 </template>
 
@@ -244,6 +246,7 @@ import LoggingDialog from "./LoggingDialog.vue";
 import StorageDialog from "./StorageDialog.vue";
 import ExtensionManagerDialog from "./ExtensionManagerDialog.vue";
 import { mimes } from "../consts/mimes.js";
+import FileDrawer from "./FileDrawer.vue";
 
 export default {
   props: {
@@ -778,7 +781,8 @@ export default {
     SourceFileSettingsDialog,
     LoggingDialog,
     StorageDialog,
-    ExtensionManagerDialog
+    ExtensionManagerDialog,
+    FileDrawer
   }
 }
 </script>
