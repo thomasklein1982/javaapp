@@ -43,7 +43,6 @@ import { options } from '../classes/Options';
         }
       },
       askForScope(template){
-        console.log("template",template);
         if(this.frame){
           this.frame.contentWindow.postMessage({
             type: "getScope",
@@ -97,7 +96,6 @@ import { options } from '../classes/Options';
           this.$refs.wrapper.removeChild(this.$refs.wrapper.firstChild);
         }
         this.$refs.wrapper.appendChild(frame);
-        console.log("start app",this.breakpoints);
         let prefix;
         if(this.$root.webMode){
           prefix="$App.console.hide();";
@@ -105,7 +103,6 @@ import { options } from '../classes/Options';
           prefix=noDebugging?"$App.console.hide();":"$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");";
         }
         prefix+=additionalCode;
-        console.log("reload",prefix);
         let code=this.project.getFullAppCode(prefix,false,false,args);
 
         const blob = URL.createObjectURL(

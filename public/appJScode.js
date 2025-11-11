@@ -178,7 +178,6 @@ window.appJScode=function(){
             if($App.body.overlay){
               $App.body.overlay.style.display='';
             }
-            console.log("post debug pause");
             var p=new Promise((resolve,reject)=>{
               window.parent.postMessage({
                 type: "debug-pause",
@@ -225,15 +224,12 @@ window.appJScode=function(){
             this.resolve();
             $App.debug.resetCallDepth();
           }else if(data.type==="debug-step-above"){
-            console.log("step above");
             this.paused=false;
             this.stepAbove=true;
             $App.debug.resetCallDepth();
             this.resolve();
           }else if(data.type==="getScope"){
-            console.log("get scope",this.$scope);
             let $scope=this.$scope.getData(JSON.parse(data.template));
-            console.log("getScope",data.template);
             window.parent.postMessage({type: "getScope", data: $scope});
           }
           if(this.paused){
@@ -558,7 +554,10 @@ window.appJScode=function(){
     }
     
     $App.asyncFunctionCall=async function(object,methodname,argumentsArray){
-      return await object[methodname].apply(object,argumentsArray);
+      $App.debug.incCallDepth();
+      let o=await object[methodname].apply(object,argumentsArray);
+      $App.debug.decCallDepth();
+      return o;
     };
     
     $App.onResize=function(force){

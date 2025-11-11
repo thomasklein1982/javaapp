@@ -348,7 +348,6 @@ export class Project{
         window.appJSdebugMode=true;
         window.$asyncInitFunctions=[];
         window.addEventListener("message",async (data)=>{
-          console.log(data);
           if(data.data.type==="console-prompt"){
             let p=data.data.prompt;
             let useMainClazz=data.data.useMainClazz;
