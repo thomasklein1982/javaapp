@@ -96,7 +96,7 @@
                       ref="uiEditor"
                     >
                     </UIEditor>
-                    <div v-else :style="{position: 'relative', flex: 1, display: 'flex', 'flex-direction': 'column'}">
+                    <div v-else :style="{position: 'relative', flex: 1, display: 'flex', 'flex-direction': 'column', 'overflow': 'auto'}">
                       <template v-if="isSourceFile(c)">
                         <CodeMirrorEditor
                           :language="c.fileType"

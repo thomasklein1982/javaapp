@@ -80,6 +80,7 @@ export default {
       let items= [
         {
           label: 'Projekt',
+          icon: 'pi pi-folder',
           items: [
             {
               label: 'Neu',
@@ -100,16 +101,6 @@ export default {
               icon: 'pi pi-download',
               command: (ev)=>{
                 this.$emit('download');
-              }
-            },
-            {
-              separator:true
-            },
-            {
-              label: 'Dateien',
-              icon: 'pi pi-copy',
-              command: (ev)=>{
-                this.$emit('showfiles');
               }
             },
             {
@@ -173,7 +164,15 @@ export default {
           ]
         },
         {
+          label: 'Dateien',
+          icon: 'pi pi-copy',
+          command: (ev)=>{
+            this.$emit('showfiles');
+          }
+        },
+        {
           label: 'Aktion',
+          icon: 'pi pi-hammer',
           items: [
             {
               label: 'Ausführen',
@@ -216,7 +215,7 @@ export default {
             },
             {
               label: 'Kommentar umschalten',
-              visible: !this.isWeb,
+              //visible: !this.isWeb,
               icon: 'pi pi-fw pi-comment',
               command: (ev)=>{
                 this.$emit("toggle-comment");
@@ -256,6 +255,7 @@ export default {
         },
         {
           label: "Extras",
+          icon: 'pi pi-star',
           items: [
           {
               label: 'Hilfe',

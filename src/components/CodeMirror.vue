@@ -3,7 +3,7 @@
     <Toast/>
     <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px'}"></div>
     <div v-show="disabled" @click="clickDisabled()" style="cursor: not-allowed" :style="disableDivStyle" id="disable-div"></div>
-    <Message v-if="displayedRuntimeError" severity="error" @close="dismissRuntimeError()">Z{{displayedRuntimeError.line}}: {{displayedRuntimeError.message}}</Message>
+    <Message v-if="displayedRuntimeError" closable severity="error" @close="dismissRuntimeError()">Z{{displayedRuntimeError.line}}: {{displayedRuntimeError.message}}</Message>
   </div>
   
 </template>

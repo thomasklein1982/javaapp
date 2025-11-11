@@ -4892,8 +4892,14 @@ function additionalJSCode(){
       comparator=comparator.compare;
       let f=comparator.toString();
       f=f.replace(/\$scope\.(?:push|pop)Layer\(\);/g,"");
-      f=f.replace(/\$App.debug.line\(\d+,"[^"]+",\$scope\);/g,"");
-      comparator=$Exercise.convertAsyncArrowFunction(f);
+      f=f.replace(/await \$App.debug.line\(\d+,"[^"]+",\$scope\);/g,"");
+      let pos=f.indexOf("{");
+      let pos1=f.indexOf("(");
+      let func=f.substring(pos);
+      let params=f.substring(pos1+1,pos-1).trim();
+      params=params.replace(/[^a-zA-Z0-9_$,]/g,"").trim().split(",");
+      const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+      comparator=AsyncFunction(params[0],params[1],func); //$Exercise.convertAsyncArrowFunction(f);
       // let n=this.size();
       // for(let i=0;i<n;i++){
       //   for(let j=0;j<n-i-1;j++){
@@ -4904,7 +4910,8 @@ function additionalJSCode(){
       //     }
       //   }
       // }
-      this.elements.sort((a,b)=>comparator(a,b));
+      $Exercise.mergeSort(this.elements,comparator);
+      //this.elements.sort((a,b)=>comparator(a,b));
     }
   }
 
@@ -6820,25 +6827,44 @@ function additionalJSCode(){
       }
       return f;
     }
-    static mergeSort(array,comp,helpArray,from,toExclusive){
+    static async mergeSort(array,comp,helpArray,from,toExclusive){
       if(!helpArray){
         helpArray=new Array(array.length);
-        from1=0;
+        from=0;
         toExclusive=array.length;
       }
-      if(from>=toExclusive){
+      if(from>=toExclusive-1){
         return;
       }
       let middle=Math.floor((from+toExclusive)/2);
-      this.mergeSort(array,comp,helpArray,from,middle);
-      this.mergeSort(array,comp,helpArray,middle,toExclusive);
-      this.merge()
+      await this.mergeSort(array,comp,helpArray,from,middle);
+      await this.mergeSort(array,comp,helpArray,middle,toExclusive);
+      await this.merge(array,comp,helpArray,from,middle,toExclusive);
     }
-    static merge(array,comp,helpArray,from,from1,toExclusive){
+    static async merge(array,comp,helpArray,from,from1,toExclusive){
       let i1=from;
       let i2=from1;
       for(let i=from;i<toExclusive;i++){
-        //if(comp(i1,i2))
+        if(i1>=from1){
+          helpArray[i]=array[i2];
+          i2++;
+        }else if(i2>=toExclusive){
+          helpArray[i]=array[i1];
+          i1++;
+        }else{
+          let a1=array[i1];
+          let a2=array[i2];
+          if(await comp(a1,a2)<=0){
+            helpArray[i]=a1;
+            i1++;
+          }else{
+            helpArray[i]=a2;
+            i2++;
+          }
+        }
+      }
+      for(let i=from;i<toExclusive;i++){
+        array[i]=helpArray[i];
       }
     }
     static doubleEquals(a,b){
