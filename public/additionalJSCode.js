@@ -4891,16 +4891,16 @@ function additionalJSCode(){
     async sort(comparator){
       $Exercise.setDebugEnabled(false);
       comparator=comparator.compare;
-      let f=comparator.toString();
-      f=f.replace(/\$scope\.(?:push|pop)Layer\(\);/g,"");
-      f=f.replace(/await \$App.debug.line\(\d+,"[^"]+",\$scope\);/g,"");
-      let pos=f.indexOf("{");
-      let pos1=f.indexOf("(");
-      let func=f.substring(pos);
-      let params=f.substring(pos1+1,pos-1).trim();
-      params=params.replace(/[^a-zA-Z0-9_$,]/g,"").trim().split(",");
-      const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-      comparator=AsyncFunction(params[0],params[1],func); //$Exercise.convertAsyncArrowFunction(f);
+      // let f=comparator.toString();
+      // f=f.replace(/\$scope\.(?:push|pop)Layer\(\);/g,"");
+      // f=f.replace(/await \$App.debug.line\(\d+,"[^"]+",\$scope\);/g,"");
+      // let pos=f.indexOf("{");
+      // let pos1=f.indexOf("(");
+      // let func=f.substring(pos);
+      // let params=f.substring(pos1+1,pos-1).trim();
+      // params=params.replace(/[^a-zA-Z0-9_$,]/g,"").trim().split(",");
+      // const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+      // comparator=AsyncFunction(params[0],params[1],func); //$Exercise.convertAsyncArrowFunction(f);
       // let n=this.size();
       // for(let i=0;i<n;i++){
       //   for(let j=0;j<n-i-1;j++){
@@ -4913,7 +4913,6 @@ function additionalJSCode(){
       // }
       await $Exercise.mergeSort(this.elements,comparator);
       $Exercise.setDebugEnabled(true);
-      //this.elements.sort((a,b)=>comparator(a,b));
     }
   }
 
