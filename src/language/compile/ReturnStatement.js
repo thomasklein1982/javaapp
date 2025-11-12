@@ -13,7 +13,7 @@ export function ReturnStatement(node,source,scope){
       type: null
     };
   }
-  let code="return (";
+  let code="return ";
   if(!node.nextSibling){
     throw (source.createError("';' erwartet.",node));
   }
@@ -40,7 +40,7 @@ export function ReturnStatement(node,source,scope){
       throw source.createError("Diese Methode muss ein "+returnType.toString()+" zurückliefern.",node);
     }
   }
-  code+=");";
+  code+=";";
   if(node.type.isError || node.name!==";"){
     throw (source.createError("';' erwartet.",node));
   }
