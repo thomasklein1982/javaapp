@@ -258,6 +258,9 @@ window.onmessage=async function(message){
   }else if(data.type==="open-project-empty"){
     app.switchToEmptyProject();
     app.emitEvent(data.type+"-done");
+  }else if(data.type==="open-file-manager"){
+    app.openFileManager();
+    app.emitEvent(data.type+"-done");
   }else if(data.type==="set-visible-menubar"){
     app.setVisibleMenubar(data.data.visible);
     app.emitEvent(data.type+"-done");

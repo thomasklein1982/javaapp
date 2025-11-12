@@ -43,7 +43,7 @@
         @storage="$refs.dialogStorage.setVisible(true)"
         @tryit="$refs.tryItDialog.setVisible(true)"
         @extensions="$refs.dialogExtensions.setVisible(true)"
-        @showfiles="$refs.fileDrawer.open(activeTab)"
+        @showfiles="openFileDrawer()"
       />
       <LinksDialog
         ref="dialogResources"
@@ -498,6 +498,9 @@ export default {
     toggleComment(){
       let cm=this.$refs.editor[this.activeTab];
       cm.toggleComment();
+    },
+    openFileDrawer(){
+      this.$refs.fileDrawer.open(this.activeTab);
     },
     toggleRight(){
       if(!this.rightClosed){

@@ -182,6 +182,9 @@ export default{
       }
       this.updateExtensions();
     },
+    openFileManager(){
+      this.$refs.editor.openFileDrawer();
+    },
     setVisibleSidebar(v){
       this.$refs.editor.setRightVisible(v);
     },

@@ -56,6 +56,9 @@
 		function openProjectEmpty(){
 			javaapp[frame_id].postMessage({type: 'open-project-empty'},"*");
 		}
+    function openFileManager(){
+			javaapp[frame_id].postMessage({type: 'open-file-manager'},"*");
+		}
 		function giveClassNames(){
 			javaapp[frame_id].postMessage({type: 'give-class-names'},"*");
 		}
@@ -166,13 +169,14 @@ window.onmessage=function(message){
 			<option>1</option>
 		</select>
 	</div>
-	<iframe id="iframe0" srcs="https://thomaskl.uber.space/Apps/java-app/#id=0;" src="http://localhost:5174/#id=0;"></iframe>
-	<iframe style="display: none" id="iframe1" srcs="https://thomaskl.uber.space/Apps/java-app/#id=1;" src="http://localhost:5174/#id=1;"></iframe>
+	<iframe id="iframe0" src="https://thomaskl.uber.space/Apps/java-app/#id=0;" srcs="http://localhost:5174/#id=0;"></iframe>
+	<iframe style="display: none" id="iframe1" src="https://thomaskl.uber.space/Apps/java-app/#id=1;" srcs="http://localhost:5174/#id=1;"></iframe>
 	
   <h1>Events</h1>
   <textarea id="events"></textarea>
 	<h1>Befehle ohne Parameter</h1>
 	<button onclick="openProjectEmpty()">open-project-empty</button>
+  <button onclick="openFileManager()">open-project-empty</button>
 	<button onclick="giveClassNames()">give-class-names</button>
   <button onclick="giveCurrentClass()">give-current-class</button>
 	<button onclick="giveProject()">give-project</button>
