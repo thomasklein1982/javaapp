@@ -33,7 +33,6 @@
         <Button severity="secondary" rounded size="small" style="margin-right: 0.5rem" label="" icon="pi pi-undo" @click="$emit('undo')"/>
         <Button severity="secondary" rounded size="small" style="margin-right: 0.5rem" label="" icon="pi pi-refresh" @click="$emit('redo')"/>
       </template>
-      <Button severity="secondary" rounded size="small" style="margin-right: 0.5rem" label="" icon="pi pi-copy" @click="$emit('showfiles')"/>
       <Button severity="secondary" rounded size="small" style="margin-right: 0.5rem" label="" :icon="rightClosed? 'pi pi-eye-slash': 'pi pi-eye'" @click="$emit('toggleright')"/>
     </template>
   </Menubar>  
@@ -162,13 +161,6 @@ export default {
               }
             },
           ]
-        },
-        {
-          label: 'Dateien',
-          icon: 'pi pi-copy',
-          command: (ev)=>{
-            this.$emit('showfiles');
-          }
         },
         {
           label: 'Aktion',
