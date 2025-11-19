@@ -120,6 +120,15 @@ export default {
         changes: {from: 0, to: old.length, insert: code}
       });
     },
+    updateLinter(){
+
+    },
+    prettifyCode(){
+      
+    },
+    clearRuntimeErrors(){
+      this.runtimeError=null;
+    },
     setRuntimeError(error){
       this.errorID++;
       if(error){

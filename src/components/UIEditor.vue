@@ -83,6 +83,12 @@
       };
     },
     methods: {
+      clearRuntimeErrors(){
+
+      },
+      updateLinter(){
+
+      },
       showCodeDialog(){
         this.$refs.uiEditorCode.open(this.clazz);
       },

@@ -72,13 +72,13 @@
       <div style="display: flex; flex: 1; height: 1%"><!--TODO: Ist das so richtig??-->
         <div id="actionButtons">
           <div><Button icon="pi pi-copy" @click="openFileDrawer()" text size="large"/></div>
-          <div><Button :disabled="!(showRunButton && (!running || paused))" @click="resume()" icon="pi pi-play" size="large" text /></div>
+          <div><Button v-if="!webMode" :disabled="!(showRunButton && (!running || paused))" @click="resume()" icon="pi pi-play" size="large" text /></div>
           <div><Button :disabled="!((!running || paused))" @click="prettifyCode()" icon="pi pi-fw pi-align-left" size="large" text /></div>
           <div><Button @click="toggleComment()" icon="pi" size="large" text>
             //
           </Button></div>
           <div><Button @click="currentEditor?.toggleSearchPanel()" icon="pi pi-search" size="large" text /></div>
-          <div><Button @click="currentEditor?.toggleLintPanel()" icon="pi pi-fw pi-exclamation-circle" size="large" text /></div>
+          <div><Button v-if="!webMode" @click="currentEditor?.toggleLintPanel()" icon="pi pi-fw pi-exclamation-circle" size="large" text /></div>
         </div>
         <Splitter :gutter-size="splitterSize" ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
           <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">
@@ -104,7 +104,7 @@
                         @select="updateSelectedUIComponent"
                         @recompile="compileProjectAndUpdateUIPreview()"
                         @isolatedupdate="compileUIClazzAndUpdatePreview()"
-                        ref="uiEditor"
+                        ref="editor"
                       >
                       </UIEditor>
                       <div v-else :style="{position: 'relative', flex: 1, display: 'flex', 'flex-direction': 'column', 'overflow': 'auto'}">
@@ -116,7 +116,7 @@
                             :file="c"
                             :settings="settings"
                             :font-size="fontSize"
-                            ref="sourceFileEditor"
+                            ref="editor"
                             @content-changed="updateUIPreview()"
                           />
                         </template>
@@ -599,8 +599,8 @@ export default {
     setSourceFileError(error){
       let i=this.project.getClazzIndexByName(error.file);
       if(i>=0){
-        for(let j=0;j<this.$refs.sourceFileEditor.length;j++){
-          let editor=this.$refs.sourceFileEditor[j];
+        for(let j=0;j<this.$refs.editor.length;j++){
+          let editor=this.$refs.editor[j];
           if(editor.name===error.file){
             editor.setRuntimeError(error);
           }
@@ -643,11 +643,13 @@ export default {
       this.project=p;
       p.compile(true);
       setTimeout(()=>{
-        let sfedits=this.$refs.sourceFileEditor;
+        let sfedits=this.$refs.editor;
         if(sfedits){
           for(let i=0;i<sfedits.length;i++){
             let ed=sfedits[i];
-            ed.setCode(ed.file.src);  
+            if(ed.file){
+              ed.setCode(ed.file.src);
+            }
           }
         }
         this.compileProjectAndUpdateUIPreview();
