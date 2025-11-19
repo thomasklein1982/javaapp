@@ -70,15 +70,16 @@
       <SourceFileSettingsDialog ref="dialogSourceFileSettings" :project="project"/>
       <TryItDialog ref="tryItDialog"/>
       <div style="display: flex; flex: 1; height: 1%"><!--TODO: Ist das so richtig??-->
-        <div id="actionButtons">
-          <div><Button icon="pi pi-copy" @click="openFileDrawer()" text size="large"/></div>
-          <div><Button v-if="!webMode" :disabled="!(showRunButton && (!running || paused))" @click="resume()" icon="pi pi-play" size="large" text /></div>
-          <div><Button :disabled="!((!running || paused))" @click="prettifyCode()" icon="pi pi-fw pi-align-left" size="large" text /></div>
-          <div><Button @click="toggleComment()" icon="pi" size="large" text>
+        <div id="actionButtons" style="overflow: auto">
+          <div><Button title="Dateien" icon="pi pi-copy" @click="openFileDrawer()" text size="large"/></div>
+          <div><Button title="Ausführen" v-if="!webMode" :disabled="!(showRunButton && (!running || paused))" @click="resume()" icon="pi pi-play" size="large" text /></div>
+          <div><Button title="Formatieren" :disabled="!((!running || paused))" @click="prettifyCode()" icon="pi pi-fw pi-align-left" size="large" text /></div>
+          <div><Button title="Kommentar umschalten" @click="toggleComment()" icon="pi" size="large" text>
             //
           </Button></div>
-          <div><Button @click="currentEditor?.toggleSearchPanel()" icon="pi pi-search" size="large" text /></div>
-          <div><Button v-if="!webMode" @click="currentEditor?.toggleLintPanel()" icon="pi pi-fw pi-exclamation-circle" size="large" text /></div>
+          <div><Button title="Suchen/Ersetzen" @click="currentEditor?.toggleSearchPanel()" icon="pi pi-search" size="large" text /></div>
+          <div><Button title="Fehler anzeigen" @click="currentEditor?.toggleLintPanel()" icon="pi pi-fw pi-exclamation-circle" size="large" text /></div>
+          <div><Button title="Kompilieren" v-if="!webMode" @click="compileProject()" icon="pi pi-forward" size="large" text /></div>
         </div>
         <Splitter :gutter-size="splitterSize" ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
           <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">

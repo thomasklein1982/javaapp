@@ -103,6 +103,9 @@ export class SourceFile{
   compile(){
     
   }
+  getConstructorParameters(){
+    return null;
+  }
   compileDeclaration(){}
   compileDeclarationTypeParameters(){}
   compileMemberDeclarations(){}

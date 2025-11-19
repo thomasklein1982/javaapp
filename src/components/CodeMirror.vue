@@ -31,7 +31,10 @@ import { nextTick } from '@vue/runtime-core';
 import {createAutocompletion } from '../functions/cm/autocompletion';
 import { options } from "../classes/Options";
 
-import {hoverTooltip} from "@codemirror/view"
+import {hoverTooltip} from "@codemirror/view";
+import prettier from "prettier";
+import javaPlugin from "prettier-plugin-java";
+
 
 // const addMethodMark = StateEffect.define({
 //   map: ({from, to}, change) => ({from: change.mapPos(from), to: change.mapPos(to)})
@@ -659,17 +662,24 @@ export default {
     lineAt(pos){
       return this.state.doc.lineAt(pos);
     },
-    prettifyCode(){
-      var code=this.getCode();
-      code=js_beautify(code,{
-        "indent_size": 2,
-        "max_preserve_newlines": 2,
-        "indent_empty_lines": true,
-        "space_in_paren": true,
-        "space_in_empty_paren": true,
-        "keep_array_indentation": true
+    async prettifyCode(){
+
+      let code=this.getCode();
+      code=await prettier.format(code, {
+        parser: "java",
+        tabWidth: 2,
+        arrowParens: "always",
+        plugins: [javaPlugin],
       });
-      code=code.replace(/\) - > \{/g,") -> {");
+      // code=js_beautify(code,{
+      //   "indent_size": 2,
+      //   "max_preserve_newlines": 2,
+      //   "indent_empty_lines": true,
+      //   "space_in_paren": true,
+      //   "space_in_empty_paren": true,
+      //   "keep_array_indentation": true
+      // });
+      // code=code.replace(/\) - > \{/g,") -> {");
       this.editor.dispatch({
         changes: {from: 0, to: this.size, insert: code}
       });

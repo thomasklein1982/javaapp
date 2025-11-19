@@ -1,6 +1,6 @@
 {
   "name": "java-app",
-  "version": "11.0.1",
+  "version": "11.1.0",
   "scripts": {
     "dev": "vite",
     "dev-web": "vite --mode web",
@@ -16,11 +16,11 @@
     "@primevue/themes": "^4.2.0",
     "codemirror": "^6.0.1",
     "json5": "^2.2.3",
+    "prettier-plugin-java": "^2.7.7",
     "primeicons": "7.0.0",
     "primevue": "^4.0.4",
     "sortablejs": "^1.15.0",
     "sortablejs-vue3": "^1.2.10",
-    "vite-plugin-pwa": "^0.16.7",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5",
     "vuedraggable": "^4.1.0"
@@ -28,8 +28,8 @@
   "devDependencies": {
     "@vite-pwa/assets-generator": "^0.2.4",
     "@vitejs/plugin-vue": "^5.0.4",
-    "vite": "^5.2.10",
-    "vite-plugin-pwa": "^0.20.0",
+    "vite": "^7.2.2",
+    "vite-plugin-pwa": "^1.1.0",
     "workbox-window": "^7.1.0"
   }
 }

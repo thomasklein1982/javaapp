@@ -101,7 +101,6 @@ export class Clazz{
     if(obj.hiddenMethods){
       this.hiddenMethods=obj.hiddenMethods;
     }
-    console.log("restore clazz",this.name,this,obj);
   }
   sortMembers(){
     let as=[];

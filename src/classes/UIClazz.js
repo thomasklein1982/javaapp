@@ -385,10 +385,6 @@ export class UIClazz extends Clazz{
     return code;
   }  
 
-  getConstructorParameters(){
-    return [];
-  }
-
   getSaveObject(){
     let o={};
     o.name=this.name;
@@ -409,6 +405,10 @@ export class UIClazz extends Clazz{
         this[p]=obj[p];
       }
     }
+  }
+
+  getConstructorParameters(){
+    return null;
   }
 
   compile(fromSource,optimizeCompiler){

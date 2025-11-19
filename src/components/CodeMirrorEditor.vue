@@ -14,7 +14,7 @@ import { javascript,javascriptLanguage } from "@codemirror/lang-javascript";
 import { sql } from "@codemirror/lang-sql";
 import { lintGutter, linter, openLintPanel, closeLintPanel } from "@codemirror/lint";
 import {keymap} from "@codemirror/view";
-import {indentWithTab,redo,undo} from "@codemirror/commands";
+import {indentWithTab,redo,toggleComment,undo} from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
 import {openSearchPanel,closeSearchPanel} from '@codemirror/search';
 import {Compartment,EditorState} from '@codemirror/state';
@@ -23,7 +23,13 @@ import {gutter, GutterMarker} from "@codemirror/view"
 import {Decoration,ViewPlugin} from "@codemirror/view"
 import { oneDark } from '@codemirror/theme-one-dark';
 import { nextTick } from '@vue/runtime-core';
+import prettier from "prettier";
+import esTreePlugin from "prettier/plugins/estree";
+import acorn from "prettier/plugins/acorn";
+import htmlPlugin from "prettier/plugins/html";
+import cssPlugin from "prettier/plugins/postcss";
 
+console.log(esTreePlugin,htmlPlugin,cssPlugin);
 
 export default {
   props: {
@@ -123,8 +129,24 @@ export default {
     updateLinter(){
 
     },
-    prettifyCode(){
-      
+    async prettifyCode(){
+      let code=this.getCode();
+      let size=code.length;
+      let options={tabWidth: 2};
+      if(this.language==="html"){
+        options.parser="html";
+        options.plugins=[htmlPlugin];
+      }else if(this.language==="css"){
+        options.parser="css";
+        options.plugins=[cssPlugin];
+      }else if(this.language==="js"){
+        options.parser="acorn";
+        options.plugins=[esTreePlugin,acorn];
+      }
+      code=await prettier.format(code, options);
+      this.editor.dispatch({
+        changes: {from: 0, to: size, insert: code}
+      });
     },
     clearRuntimeErrors(){
       this.runtimeError=null;
@@ -148,7 +170,41 @@ export default {
     },
     focus(){
       this.editor.focus();
-    }
+    },
+    toggleComment(){
+      toggleComment(this.editor);
+    },
+    openSearchPanel(){
+      
+      openSearchPanel(this.editor);
+      this.isSearchPanelOpen=true;
+    },
+    closeSearchPanel(){
+      closeSearchPanel(this.editor);
+      this.isSearchPanelOpen=false;
+    },
+    toggleSearchPanel(){
+      if(this.isSearchPanelOpen){
+        this.closeSearchPanel();
+      }else{
+        this.openSearchPanel();
+      }
+    },
+    openLintPanel(){
+      openLintPanel(this.editor);
+      this.isLintPanelOpen=true;
+    },
+    closeLintPanel(){
+      closeLintPanel(this.editor);
+      this.isLintPanelOpen=false;
+    },
+    toggleLintPanel(){
+      if(this.isLintPanelOpen){
+        this.closeLintPanel();
+      }else{
+        this.openLintPanel();
+      }
+    },
   }
 }
 </script>
