@@ -361,7 +361,8 @@ export default {
   },
   computed: {
     currentEditor(){
-      return this.$refs.editor[this.activeTab];
+      let index=this.activeTab-(this.webMode? 1:0);
+      return this.$refs.editor[index];
     },
     splitterSize(){
       if(this.rightClosed) return 0;
@@ -548,8 +549,8 @@ export default {
       this.caretPosition=pos;
     },
     toggleComment(){
-      let cm=this.$refs.editor[this.activeTab];
-      cm.toggleComment();
+      //let cm=this.$refs.editor[this.activeTab];
+      this.currentEditor?.toggleComment();
     },
     openFileDrawer(){
       this.$refs.fileDrawer.open(this.activeTab);

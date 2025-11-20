@@ -163,7 +163,8 @@ export default {
       return this.editor.state.doc.toString();
     },
     undo(){
-      undo({state: this.editor.viewState.state, dispatch: this.editor.dispatch});
+      undo(this.editor);
+      //undo({state: this.editor.viewState.state, dispatch: this.editor.dispatch});
     },
     redo(){
       redo({state: this.editor.viewState.state, dispatch: this.editor.dispatch});

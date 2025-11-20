@@ -291,7 +291,7 @@ export class SourceFile{
             const s = document.createElement('script');
             s.src = file.url;
             document.body.appendChild(s);
-            
+            e.remove();
           }
         }
       }
