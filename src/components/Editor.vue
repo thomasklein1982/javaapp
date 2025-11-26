@@ -71,15 +71,16 @@
       <TryItDialog ref="tryItDialog"/>
       <div style="display: flex; flex: 1; height: 1%"><!--TODO: Ist das so richtig??-->
         <div id="actionButtons" style="overflow: auto">
-          <div><Button title="Dateien" icon="pi pi-copy" @click="openFileDrawer()" text size="large"/></div>
-          <div><Button title="Ausführen" v-if="!webMode" :disabled="!(showRunButton && (!running || paused))" @click="resume()" icon="pi pi-play" size="large" text /></div>
-          <div><Button title="Formatieren" :disabled="!((!running || paused))" @click="prettifyCode()" icon="pi pi-fw pi-align-left" size="large" text /></div>
-          <div><Button title="Kommentar umschalten" @click="toggleComment()" icon="pi" size="large" text>
-            //
+          <div><Button title="Dateimanager" :label="showActionButtonLabels?'Dateimanager':''" icon="pi pi-copy" @click="openFileDrawer()" text size="large"/></div>
+          <div><Button title="Ausführen" v-if="!webMode" :label="showActionButtonLabels?'Ausführen':''" :disabled="!(showRunButton && (!running || paused))" @click="resume()" icon="pi pi-play" size="large" text /></div>
+          <div><Button title="Formatieren" :label="showActionButtonLabels?'Code Formatieren':''" :disabled="!((!running || paused))" @click="prettifyCode()" icon="pi pi-align-left" size="large" text /></div>
+          <div><Button title="Kommentar umschalten" @click="toggleComment()" size="large" text>
+            <span class="p-button-icon p-button-icon-left" data-pc-section="icon">//</span><span v-if="showActionButtonLabels" class="p-button-label" data-pc-section="label">Kommentar umschalten</span>
           </Button></div>
-          <div><Button title="Suchen/Ersetzen" @click="currentEditor?.toggleSearchPanel()" icon="pi pi-search" size="large" text /></div>
-          <div><Button title="Fehler anzeigen" @click="currentEditor?.toggleLintPanel()" icon="pi pi-fw pi-exclamation-circle" size="large" text /></div>
-          <div><Button title="Kompilieren" v-if="!webMode" @click="compileProject()" icon="pi pi-forward" size="large" text /></div>
+          <div><Button title="Suchen/Ersetzen" :label="showActionButtonLabels?'Suchen/Ersetzen':''" @click="currentEditor?.toggleSearchPanel()" icon="pi pi-search" size="large" text /></div>
+          <div><Button title="Fehler anzeigen" :label="showActionButtonLabels?'Fehler anzeigen':''" @click="currentEditor?.toggleLintPanel()" icon="pi pi-exclamation-circle" size="large" text /></div>
+          <div><Button title="Kompilieren" v-if="!webMode" :label="showActionButtonLabels?'Kompilieren':''" @click="compileProject()" icon="pi pi-forward" size="large" text /></div>
+          <div><Button title="Labels umschalten" :label="showActionButtonLabels?'Labels ausblenden':''" @click="showActionButtonLabels=!showActionButtonLabels" icon="pi pi-question" size="large" text /></div>
         </div>
         <Splitter :gutter-size="splitterSize" ref="splitter" @resizeend="handleResize" :style="{flex: 1}" style="overflow: hidden;width: 100%;">
           <SplitterPanel :size="sizeCode" style="overflow: hidden; height: 100%" :style="{display: 'flex', flexDirection: 'column'}">
@@ -159,7 +160,13 @@
                   :selected-component="selectedUIComponent"
                   :project="project"
                 />
-                <AppPreview v-show="running || isJava(currentClazz)" :paused="paused" :breakpoints="breakpoints" :project="project" ref="preview"/>
+                <AppPreview 
+                  v-show="showAppPreviewWhenNotRunning || running || isJava(currentClazz)" 
+                  :paused="paused" 
+                  :breakpoints="breakpoints" 
+                  :project="project" 
+                  ref="preview"
+                />
               </SplitterPanel>
               <SplitterPanel v-if="!$root.webMode" style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
                 <Insights 
@@ -311,12 +318,14 @@ export default {
   data(){
     return {
       useBlockEditor: false,
+      showActionButtonLabels: false,
       activeTab: this.$root.webMode? 1: 0,
       showNewClazzDialog: false,
       webMode: this.$root.webMode,
       running: false,
       caretPosition: 0,
       project: null,
+      showAppPreviewWhenNotRunning: false,
       fontSize: 20,
       settings: {
         optimizeCompiler: false,
@@ -643,7 +652,13 @@ export default {
       this.clearRuntimeErrors();
       //this.database.clear();
       this.project=p;
-      p.compile(true);
+      await p.compile(true);
+      //info-trainer-exercises: showAppPreviewWhenNotRunning (bee)
+      let mainClazz=p.getClazzByName("Main");
+      if(mainClazz && mainClazz.methods.$appPreviewMethod){
+        this.showAppPreviewWhenNotRunning=true;
+        this.stop();
+      }
       setTimeout(()=>{
         let sfedits=this.$refs.editor;
         if(sfedits){
@@ -807,6 +822,9 @@ export default {
       this.$root.paused=false;
       this.running=false;
       this.$root.resetCurrent(-1);
+      if(this.showAppPreviewWhenNotRunning){
+        this.$refs.preview.reload(true,null,"window.$showPreviewOnly=true;");
+      }
     },
     addNewClazz(clazzData){
       let c;

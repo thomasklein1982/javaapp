@@ -235,6 +235,7 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
         //if(clazz.name==="nullType") continue;
         let attributeNames=clazz.getAllAttributeNames();
         for (let name in attributeNames) {
+          if(name.startsWith("$")) continue;
           if(allAttributeNames[name]===true) continue;
           allAttributeNames[name]=true;
           let a=clazz.getAttribute(name,isStatic);
@@ -253,6 +254,7 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
       let methodNames={};
       while(clazz){
         for (let name in clazz.methods) {
+          if(name.startsWith("$")) continue;
           if(methodNames[name]===true) continue;
           methodNames[name]=true;
           let m=clazz.methods[name];

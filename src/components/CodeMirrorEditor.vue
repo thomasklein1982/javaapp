@@ -9,27 +9,23 @@
 <script>
 import { EditorView, basicSetup } from "codemirror";
 import { css, cssCompletionSource } from "@codemirror/lang-css";
-import {html,htmlCompletionSource} from "@codemirror/lang-html";
-import { javascript,javascriptLanguage } from "@codemirror/lang-javascript";
+import {html} from "@codemirror/lang-html";
+import { javascript } from "@codemirror/lang-javascript";
 import { sql } from "@codemirror/lang-sql";
-import { lintGutter, linter, openLintPanel, closeLintPanel } from "@codemirror/lint";
+import { lintGutter, openLintPanel, closeLintPanel } from "@codemirror/lint";
 import {keymap} from "@codemirror/view";
 import {indentWithTab,redo,toggleComment,undo} from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
 import {openSearchPanel,closeSearchPanel} from '@codemirror/search';
 import {Compartment,EditorState} from '@codemirror/state';
 import {autocompletion} from "@codemirror/autocomplete";
-import {gutter, GutterMarker} from "@codemirror/view"
-import {Decoration,ViewPlugin} from "@codemirror/view"
 import { oneDark } from '@codemirror/theme-one-dark';
-import { nextTick } from '@vue/runtime-core';
 import prettier from "prettier";
 import esTreePlugin from "prettier/plugins/estree";
 import acorn from "prettier/plugins/acorn";
 import htmlPlugin from "prettier/plugins/html";
 import cssPlugin from "prettier/plugins/postcss";
 
-console.log(esTreePlugin,htmlPlugin,cssPlugin);
 
 export default {
   props: {
@@ -120,12 +116,15 @@ export default {
     this.editor.component=this;
   },
   methods: {
-    setCode(code){
-      var old=this.editor.state.doc.toString();
-      this.editor.dispatch({
-        changes: {from: 0, to: old.length, insert: code}
-      });
+    setCode(){
+      //wird nicht gebraucht wegen v-model
     },
+    // setCode2(code){
+    //   var old=this.editor.state.doc.toString();
+    //   this.editor.dispatch({
+    //     changes: {from: 0, to: old.length, insert: code}
+    //   });
+    // },
     updateLinter(){
 
     },

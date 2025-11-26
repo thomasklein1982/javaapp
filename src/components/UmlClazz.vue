@@ -5,11 +5,13 @@
       <span :style="clazz.isInterface?'font-style: italic':''">{{clazz.name}}</span><template v-if="clazz.typeParameters">&lt;<span v-for="(t,i) in clazz.typeParameters">{{(i>0? ',':'')+ t.name }}</span>&gt;</template>
     </div>
     <div class="attributes">
-      <UmlMember :member="a" v-for="(a,i) in attributes" :key="'attr'+i"></UmlMember>
+      <template v-for="(a,i) in attributes" :key="'attr'+i">
+        <UmlMember v-if="!a.name.startsWith('$')" :member="a" ></UmlMember>
+      </template>
     </div>
     <div class="methods">
       <template v-for="(m,i) in methods" :key="'ms'+i">
-        <UmlMember v-if="!m.hide" :member="m"></UmlMember>
+        <UmlMember v-if="!m.hide && !m.name.startsWith('$')" :member="m"></UmlMember>
       </template>
     </div>
   </div>
