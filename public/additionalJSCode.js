@@ -2228,11 +2228,10 @@ function additionalJSCode(){
     }
     getIndexOf(child){
       let n=this.getChildCount();
-      let index=0;
       for(let i=0;i<n;i++){
         let c=this.getChild(i);
         if(c===child){
-          return index;
+          return i;
         }
       }
       return -1;
@@ -2711,18 +2710,6 @@ function additionalJSCode(){
         this.$updateMousePosition(ev);
       },false);
     }
-    // setWidth(v){
-    //   if(v!==this.width) this.sizeChanged=true;
-    //   this.width=v;
-    //   this.wrapper.width=v;
-    //   this.updateTransform();
-    // }
-    // setHeight(v){
-    //   if(v!==this.height) this.sizeChanged=true;
-    //   this.height=v;
-    //   this.wrapper.height=v;
-    //   this.updateTransform();
-    // }
     resize(w,h){
       if(w===undefined || w<=0 || h <=0){
         return;
@@ -2867,10 +2854,16 @@ function additionalJSCode(){
       }
     }
     setAxisX(min,max){
-      this.$el.canvas.setAxisX(min,max);
+      this.axes.x.min=min;
+      this.axes.x.max=max;
+      this.lenX=this.axes.x.max-this.axes.x.min;
+      this.resize(this.pixelWidth,this.pixelHeight);
     }
     setAxisY(min,max){
-      this.$el.canvas.setAxisY(min,max);
+      this.axes.y.min=min;
+      this.axes.y.max=max;
+      this.lenY=this.axes.y.max-this.axes.y.min;
+      this.resize(this.pixelWidth,this.pixelHeight);
     }
     $updateMousePosition(ev){
       let canvas=this.mouse.comp.parent;
