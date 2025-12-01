@@ -1,7 +1,8 @@
 <template>
   <Drawer v-model:visible="show" header="Dateien" @hide="$emit('close',activeTabInEditor)">
     <div>
-      <Button @click="clickAddNewFile()" icon="pi pi-plus" label="Neue Datei"/>
+      <Button @click="clickAddNewFile()" icon="pi pi-plus" label="Neu"/>
+      <Button label="Hochladen" icon="pi pi-upload" @click="uploadFile()"/>
       <Sortable
         :list="files"
         item-key="id"
@@ -15,7 +16,7 @@
         style="overflow: auto"
       >
         <template #item="{element,index}">
-          <div class="flex-container" style="align-items: center" :style="{backgroundColor: element===selectedFile? '#333':''}"><div class="flex handle file-name" @click="clickFile(element,index)">{{ element }} <span v-if="element.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span></div><div><Button severity="secondary" icon="pi pi-download" @click="downloadClazz(element)"/><Button severity="secondary" icon="pi pi-trash" @click="removeClazz(index,element)"/></div></div>
+          <div class="flex-container" style="align-items: center" :style="{backgroundColor: element===selectedFile? '#333':''}"><div class="flex handle file-name" @click="clickFile(element,index)">{{ element.name }}.{{ element.getFileExtension() }} <span v-if="element.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span></div><div><Button severity="secondary" icon="pi pi-download" @click="downloadClazz(element)"/><Button severity="secondary" icon="pi pi-trash" @click="removeClazz(index,element)"/></div></div>
         </template>
       </Sortable>
     </div>
@@ -25,8 +26,11 @@
 <script>
 import { Drawer, ToggleButton } from 'primevue';
 import {Sortable} from "sortablejs-vue3";
-import { download } from '../functions/helper';
+import { download, upload } from '../functions/helper';
 import { mimes } from '../consts/mimes';
+import { SourceFile } from '../classes/SourceFile';
+import { Clazz } from '../classes/Clazz';
+import { UIClazz } from '../classes/UIClazz';
 
 export default{
   components: {
@@ -48,16 +52,66 @@ export default{
     }
   },
   methods: {
+    async uploadFile(){
+      let files=await upload({ multi: true});
+      console.log(files);
+      let errors=[];
+      for(let i=0;i<files.length;i++){
+        let f=files[i];
+        let name=f.fileName;
+        let code=f.code;
+        let p=name.lastIndexOf(".");
+        let ext=name.substring(p+1);
+        name=name.substring(0,p);
+        name=name.replace(/\W/g,"");
+        if(ext!=="html" && ext!=="css" && ext!=="js" && ext!=="java" && ext!=="ui"){
+          errors.push(f);
+          continue;
+        }
+        console.log("import ",f,name);
+        let j=1;
+        let baseName=name;
+        while(!this.project.isFileNameOK(name,ext)){
+          name=baseName+="_"+j;
+          j++;
+        }
+        let c;
+        if(ext==='java'){
+          c=new Clazz(name,this.project,false);
+          c.src=code;
+        }else if(ext==='ui'){
+          c=new UIClazz(name,this.project);
+          try{
+            let o=JSON.parse(code);
+            o.name=name;
+            c.restoreFromSaveObject(o);
+          }catch(e){
+
+          }
+        }else{
+          c=new SourceFile(name,ext,this.project);
+          c.src=code;
+        }
+        this.project.addClazz(c);
+        this.files.push(c);
+        this.$root.emitEvent("new-class",{name})
+      }
+      if(errors.length>0)
+        alert(errors.length+" Dateien konnten nicht geladen werden:\n- "+errors.map((v)=>v.fileName).join("\n- "));
+    },
     open(activeTabInEditor){
       this.selectedFile=null;
       this.activeTabInEditor=activeTabInEditor;
       this.firstFile=this.project.clazzes[0];
+      this.updateFilesFromProject();
+      this.show=true;
+    },
+    updateFilesFromProject(){
       this.files=[];
       let start=this.$root.webMode? 1: 0;
       for(let i=start;i<this.project.clazzes.length;i++){
         this.files.push(this.project.clazzes[i]);
       }
-      this.show=true;
     },
     close(){
       this.show=false;

@@ -72,7 +72,10 @@
       <div style="display: flex; flex: 1; height: 1%"><!--TODO: Ist das so richtig??-->
         <div id="actionButtons" style="overflow: auto">
           <div><Button title="Dateimanager" :label="showActionButtonLabels?'Dateimanager':''" icon="pi pi-copy" @click="openFileDrawer()" text size="large"/></div>
-          <div><Button title="Ausführen" v-if="!webMode" :label="showActionButtonLabels?'Ausführen':''" :disabled="!(showRunButton && (!running || paused))" @click="resume()" icon="pi pi-play" size="large" text /></div>
+          <div v-if="!webMode">
+            <Button v-if="!running||paused" title="Ausführen" :label="showActionButtonLabels?'Ausführen':''" :disabled="!showRunButton" @click="resume()" icon="pi pi-play" size="large" text />
+            <Button v-else title="Anhalten" :label="showActionButtonLabels?'Anhalten':''" :disabled="!showRunButton" @click="stop()" icon="pi pi-times" size="large" text />
+          </div>
           <div><Button title="Formatieren" :label="showActionButtonLabels?'Code Formatieren':''" :disabled="!((!running || paused))" @click="prettifyCode()" icon="pi pi-align-left" size="large" text /></div>
           <div><Button title="Kommentar umschalten" @click="toggleComment()" size="large" text>
             <span class="p-button-icon p-button-icon-left" data-pc-section="icon">//</span><span v-if="showActionButtonLabels" class="p-button-label" data-pc-section="label">Kommentar umschalten</span>
@@ -834,7 +837,7 @@ export default {
         c=new UIClazz(clazzData.name,this.project);
       }else if(clazzData.type==='class'){
         c=new Clazz(clazzData.name,this.project,false);
-      }else if(clazzData.type==='html'||clazzData.type==="css"||clazzData.type==="js"){
+      }else if(clazzData.type==='html'||clazzData.type==="css"||clazzData.type==="js"||clazzData.type==="txt"){
         c=new SourceFile(clazzData.name,clazzData.type,this.project);
       }else{
         alert("Dieses Feature ist noch in Entwicklung");

@@ -100,6 +100,7 @@ let Matcher=new Clazz("Matcher");
 Matcher.cannotBeInstantiated=true;
 
 let File=new Clazz("File");
+File.staticConstructorMethod="create";
 let Storage=new Clazz("Storage");
 Storage.staticConstructorMethod="create";
 

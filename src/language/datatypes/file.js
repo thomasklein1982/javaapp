@@ -25,7 +25,7 @@ System.out.println( c );
         info: "Name der Datei, einschließlich Endung (z. B. '.txt')"
       }
     ],
-    info: "Erzeugt eine neue, leere Datei."
+    info: "Erzeugt eine neue, leere Datei oder lädt die entsprechende Datei."
   },clazz);
 
   createMethod({

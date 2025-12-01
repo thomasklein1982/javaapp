@@ -544,10 +544,23 @@ function additionalJSCode(){
   };
 
   class $File{
-    $constructor(name){
+    constructor(name){
       this.fileName=name;
       this.data="";
-      this.contentIsDataURL=false;
+      this.contentIsDataURL=false; 
+    }
+
+    static async create(name){
+      console.log("create file");
+      let file=new $File(name); 
+      if(window.$servedFiles && window.$servedFiles[name]){
+
+        console.log("new File 1", name);
+        let f=await fetch(window.$servedFiles[name].url);
+        file.data=await f.text();
+        console.log("new File 2", name);
+      }
+      return file;
     }
   }
 
@@ -559,9 +572,9 @@ function additionalJSCode(){
     try{
       let data=obj.data;
       
-      data=data.split(",");
-      data=data[data.length-1];
-      data=window.atob(data);
+      // data=data.split(",");
+      // data=data[data.length-1];
+      // data=window.atob(data);
       data=data.replace(/\r\n/g,"\n")
       return data;
     }catch(e){

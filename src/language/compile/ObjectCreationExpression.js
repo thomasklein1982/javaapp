@@ -135,7 +135,7 @@ export function ObjectCreationExpression(node,source,scope,infos){
     if(clazz.staticConstructorMethod.isExtraFunction){
       code="await "+clazz.staticConstructorMethod.functionName+al.code;  
     }else{
-      code="await "+clazz.name+"."+clazz.staticConstructorMethod+al.code;
+      code="await "+typename.code+"."+clazz.staticConstructorMethod+al.code;
     }
   }else if(!clazz.isNative()){
     code="new "+typename.code;

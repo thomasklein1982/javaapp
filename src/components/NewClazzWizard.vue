@@ -10,6 +10,7 @@
       <Button :severity="type==='html'?'primary':'secondary'" label="HTML" @click="type='html'"/>
       <Button :severity="type==='css'?'primary':'secondary'" label="CSS" @click="type='css'"/>
       <Button :severity="type==='js'?'primary':'secondary'" label="JavaScript" @click="type='js'"/>
+      <Button :severity="type==='txt'?'primary':'secondary'" label="Text" @click="type='txt'"/>
     </div>
     
     <div style="margin-top: 0.5rem; margin-bottom: 0.5rem;" :style="{display: 'flex', 'place-items':'baseline'}">
@@ -63,7 +64,8 @@ export default {
         'uiclass': "Neue UI-Klasse hinzufügen",
         'html': "Neue HTML-Datei hinzufügen",
         'css': "Neue CSS-Datei hinzufügen",
-        'js': "Neue JavaScript-Datei hinzufügen"
+        'js': "Neue JavaScript-Datei hinzufügen",
+        'txt': "Neue Text-Datei hinzufügen"
       }[this.type];
     },
     labelName(){
@@ -73,7 +75,8 @@ export default {
         'uiclass': "Name der neuen UI-Klasse",
         'html': "Name der neuen HTML-Datei",
         'css': "Name der neuen CSS-Datei",
-        'js': "Name der neuen JavaScript-Datei"
+        'js': "Name der neuen JavaScript-Datei",
+        'txt': "Name der neuen Text-Datei"
       }[this.type];
     },
     extension(){
@@ -83,7 +86,8 @@ export default {
         'uiclass': "java",
         'html': "html",
         'css': "css",
-        'js': "js"
+        'js': "js",
+        'txt': 'txt'
       }[this.type];
     },
     typeName(){
@@ -128,7 +132,8 @@ export default {
           'uiclass': "java",
           'html': "html",
           'css': "css",
-          'js': "js"
+          'js': "js",
+          'txt': "txt"
         }[this.type];
         if(c instanceof Clazz || c instanceof UIClazz) ext="java";
         else if(c instanceof SourceFile) ext=c.fileType;
