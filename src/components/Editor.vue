@@ -622,17 +622,12 @@ export default {
       }
     },
     setRuntimeError(error){
-      let i=this.project.getClazzIndexByName(error.name);
-      if(i>=0){
-        for(let j=0;j<this.$refs.editor.length;j++){
-          let editor=this.$refs.editor[j];
-          if(editor.clazz.name===error.name){
-            editor.setRuntimeError(error);
-          }
-        }
-        if(this.running){
-          this.activeTab=i;
-        }
+      let editor=this.getEditorByName(error.name);
+      if(!editor) return;
+      editor.setRuntimeError(error);
+      if(this.running){
+        let i=this.project.getClazzIndexByName(error.name);
+        this.activeTab=i;
       }
     },
     getEditorByName(name){
