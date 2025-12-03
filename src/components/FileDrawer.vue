@@ -16,7 +16,7 @@
         style="overflow: auto"
       >
         <template #item="{element,index}">
-          <div class="flex-container" style="align-items: center" :style="{backgroundColor: element===selectedFile? '#333':''}"><div class="flex handle file-name" @click="clickFile(element,index)">{{ element.name }}.{{ element.getFileExtension() }} <span v-if="element.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span></div><div><Button severity="secondary" icon="pi pi-download" @click="downloadClazz(element)"/><Button severity="secondary" icon="pi pi-trash" @click="removeClazz(index,element)"/></div></div>
+          <div class="flex-container" style="align-items: center" :style="{backgroundColor: element===selectedFile? '#333':''}"><div class="handle pi pi-equals"></div><div class="flex file-name" @click="clickFile(element,index)">{{ element.name }}.{{ element.getFileExtension() }} <span v-if="element.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span></div><div><Button severity="secondary" icon="pi pi-download" @click="downloadClazz(element)"/><Button severity="secondary" icon="pi pi-trash" @click="removeClazz(index,element)"/></div></div>
         </template>
       </Sortable>
     </div>
@@ -173,5 +173,9 @@ export default{
 }
 .file-name{
   font-family: monospace, monospace;
+}
+.handle{
+  margin-right: 0.3rem;
+  font-size: small;
 }
 </style>
