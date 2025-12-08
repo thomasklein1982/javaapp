@@ -125,7 +125,7 @@ export class Scope{
 
   getMethodFromStack(){
     if(this.methodStack.length>0){
-      return this.methodStack[0];
+      return this.methodStack[this.methodStack.length-1];
     }else{
       return this.method;
     }

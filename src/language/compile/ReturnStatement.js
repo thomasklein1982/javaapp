@@ -7,7 +7,8 @@ export function ReturnStatement(node,source,scope){
   if(node.name!=="return"){
 
   }
-  if(scope.method && scope.method.isConstructor()){
+  let method=scope.getMethodFromStack();
+  if(method.isConstructor()){
     return {
       code: "return this;",
       type: null
@@ -18,7 +19,7 @@ export function ReturnStatement(node,source,scope){
     throw (source.createError("';' erwartet.",node));
   }
   node=node.nextSibling;
-  let returnType=scope.getMethodFromStack().type;
+  let returnType=method.type;
   if(!node.type.isError && node.name!==";"){
     if(returnType){
       let f=CompileFunctions.get(node,source);
