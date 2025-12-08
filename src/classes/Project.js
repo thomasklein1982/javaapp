@@ -454,6 +454,9 @@ export class Project{
             display: inline-block;
             box-sizing: border-box;
           }
+          .__jpanel{
+            display: block;
+          }
           .__jlabel{
             display: grid;
           }

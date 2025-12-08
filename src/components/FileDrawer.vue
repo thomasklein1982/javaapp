@@ -64,7 +64,7 @@ export default{
         let ext=name.substring(p+1);
         name=name.substring(0,p);
         name=name.replace(/\W/g,"");
-        if(ext!=="html" && ext!=="css" && ext!=="js" && ext!=="java" && ext!=="ui"){
+        if(ext!=="html" && ext!=="css" && ext!=="js" && ext!=="java" && ext!=="ui" && ext!=="txt"){
           errors.push(f);
           continue;
         }

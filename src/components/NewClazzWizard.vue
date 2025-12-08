@@ -25,10 +25,6 @@
     <small v-else-if="nameWarning" class="p-warning">{{nameWarning}}</small>
     <small v-else>Der Name geht in Ordnung.</small>
     <p><Button label="Hinzufügen" :disabled="disableConfirm" icon="pi pi-check" @click="confirm()"/></p>
-    <Divider/>
-    <h2>Dateien hochladen</h2>
-    <p>Wähle bestehende Dateien aus und lade sie hoch.</p>
-    <Button label="Hochladen" icon="pi pi-upload" @click="uploadFile()"/>
   </div>
 </template>
 
@@ -169,7 +165,7 @@ export default {
         let ext=name.substring(p+1);
         name=name.substring(0,p);
         name=name.replace(/\W/g,"");
-        if(ext!=="html" && ext!=="css" && ext!=="js" && ext!=="java" && ext!=="ui"){
+        if(ext!=="html" && ext!=="css" && ext!=="js" && ext!=="java" && ext!=="ui" && ext!=="txt"){
           errors.push(f);
           continue;
         }
