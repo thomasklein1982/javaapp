@@ -407,12 +407,16 @@ window.appJScode=function(){
       var m;
       var line=-1;
       var col=-1;
+      let name=null;
       if(e && e.substring){
         m=e;
       }else{
         m=e.message;
         if(e.line){
           line=e.line;
+        }
+        if(e.name){
+          name=e.name;
         }
       }
       if(e.stack){
@@ -429,7 +433,8 @@ window.appJScode=function(){
         message: m,
         completeMessage: m,
         line: line,
-        col: col
+        col: col,
+        name
       });
     }
     

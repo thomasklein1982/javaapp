@@ -623,11 +623,11 @@ export default {
     },
     setRuntimeError(error){
       let editor=this.getEditorByName(error.name);
-      if(!editor) return;
+      if(!editor) editor=this.currentEditor;
       editor.setRuntimeError(error);
       if(this.running){
         let i=this.project.getClazzIndexByName(error.name);
-        this.activeTab=i;
+        if(i>=0) this.activeTab=i;
       }
     },
     getEditorByName(name){

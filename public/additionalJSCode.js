@@ -285,7 +285,7 @@ function additionalJSCode(){
     if(index>=array.length || index<0){
       var m="Index "+index+" liegt ausserhalb der Array-Grenzen von 0 bis "+(array.length-1);
       console.error(m);
-      throw m;
+      throw $new(Exception,"IndexOfOfBoundsException: "+m);
     }
     return this;
   };
@@ -4238,6 +4238,7 @@ function additionalJSCode(){
     $constructor(message,line){
       this.message=message;
       this.line=line;
+      this.name=$App.debug.lastName;
     }
     toString(){
       return this.message;
