@@ -35,6 +35,7 @@ export class Clazz{
     this.implementedInterfaces=null;
     this.attributeErrors=null;
     this.errors=[];
+    this.constraints=null;
     if(this.isInterface){
       this.src="interface "+this.name+"{\n  \n}";
     }else{
@@ -61,6 +62,20 @@ export class Clazz{
     }else{
       this.typeSnippet=null;
     }
+  }
+  getStatementCount(){
+    let sum=0;
+    for(let a in this.methods){
+      let m=this.methods[a];
+      sum+=m.statementCount;
+    }
+    return sum;
+  }
+  hasTooManyStatements(){
+    if(this.constraints?.maxStatementCount>0){
+      return this.getStatementCount()>this.constraints?.maxStatementCount;
+    }
+    return false;
   }
   getJsName(){
     if(this.jsName) return this.jsName;
@@ -100,6 +115,9 @@ export class Clazz{
     }
     if(obj.hiddenMethods){
       this.hiddenMethods=obj.hiddenMethods;
+    }
+    if(obj.constraints){
+      this.constraints=obj.constraints;
     }
   }
   sortMembers(){

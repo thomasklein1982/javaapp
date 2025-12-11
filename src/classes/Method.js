@@ -26,6 +26,7 @@ export class Method{
     this.bodyNode=null;
     this.block=null;
     this.comment=null;
+    this.statementCount=0;
     this.typeAnnotations={};
     this.jsName=null;
     this.node=null;
@@ -434,6 +435,7 @@ export class Method{
     }
     let scope=new Scope(this.clazz.project,this,undefined,{optimizeCompiler: optimizeCompiler});
     this.block=Block(this.bodyNode,source,scope);
+    this.statementCount=scope.statementCount;
     this.typeAnnotations=scope.typeAnnotations;
     this.bodyErrors=this.block.errors;
     return this.block;

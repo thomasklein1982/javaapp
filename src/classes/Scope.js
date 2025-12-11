@@ -16,6 +16,7 @@ export class Scope{
     this.assignmentTargetObjectStack=[];
     this.addLocalVariablesUpdates=true;
     this.ignoreVisibilityRestrictions=false;
+    this.statementCount=0;
     this.optimizeCompiler=false;
     this.referencedVariables={};
     this.referencedVariablesCount=0;

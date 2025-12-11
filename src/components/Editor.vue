@@ -771,6 +771,14 @@ export default {
       URL.revokeObjectURL(blob);
     },
     runExerciseChecker(){
+      for(let i=0;i<this.project.clazzes.length;i++){
+        let c=this.project.clazzes[i];
+        if(c.hasTooManyStatements()){
+          alert("Zu viele Anweisungen");
+          return;
+        }
+      }
+
       this.stop();
       this.$root.resetCurrent(-1);
       this.clearRuntimeErrors();

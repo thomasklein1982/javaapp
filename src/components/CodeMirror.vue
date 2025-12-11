@@ -1,6 +1,7 @@
 <template>
   <div id="root">
     <Toast/>
+    <div v-if="showStatementCount" style="text-align: right"><span :style="{color: statementCount>maxStatementCount? 'red':'lime'}">{{ statementCount }}</span> / {{ maxStatementCount }} Anweisungen</div>
     <div id="editor" ref="editor" :style="{fontSize: (0.55*fontSize+5)+'px'}"></div>
     <div v-show="disabled" @click="clickDisabled()" style="cursor: not-allowed" :style="disableDivStyle" id="disable-div"></div>
     <Message v-if="displayedRuntimeError" closable severity="error" @close="dismissRuntimeError()">Z{{displayedRuntimeError.line}}: {{displayedRuntimeError.message}}</Message>
@@ -342,6 +343,16 @@ export default {
   computed: {
     isUIClazz(){
       return this.clazz.isUIClazz();
+    },
+    showStatementCount(){
+      return this.clazz.constraints?.maxStatementCount>0;
+    },
+    statementCount(){
+      return this.clazz.getStatementCount();
+    },
+    maxStatementCount(){
+      if(this.showStatementCount) return this.clazz.constraints?.maxStatementCount;
+      return 0;
     }
   },
   data(){
