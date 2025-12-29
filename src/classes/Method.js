@@ -114,6 +114,8 @@ export class Method{
     //code+="$App.debug.decCallDepth();";
     if(this.isConstructor()){
       code+="\nreturn this;\n}";
+    // }else if(this.name==="main" && this.type===null){
+    //   code+="\nreturn $scope;\n}";
     }else{
       code+="return undefined;\n}";
     }

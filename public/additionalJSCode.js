@@ -7215,9 +7215,13 @@ function additionalJSCode(){
     }
     static sendMessage(type, data){
       if(window.parent!==window){
-        console.log("send message zu editor",type, data);
         window.parent.postMessage({type: type, data: data});
       }
+    }
+    static sendMessageToParentsParent(type, data){
+      window.parent.postMessage({type: "pass-to-parent", data: {
+        data, type}
+      });
     }
     static sendFeedback(resArray){
       //console.log("feedback",points,maxPoints);

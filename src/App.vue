@@ -281,12 +281,12 @@ export default{
       this.openProject(p);
       this.exerciseCheckerCode=data.checker;
     },
-    openProjectFromJSON(data){
+    async openProjectFromJSON(data){
       let p=new Project();
       p.fromJSON(data);
-      this.openProject(p);
+      await this.openProject(p);
     },
-    openProjectFromFullAppCode(code){
+    async openProjectFromFullAppCode(code){
       let p=new Project();
       let ok=true;
       try{
@@ -295,7 +295,7 @@ export default{
         ok=false;
       }
       if(ok){
-        this.openProject(p); 
+        await this.openProject(p); 
       }
       if(window.parent){
         window.parent.postMessage({type: "open-project-from-full-app-code-answer",data: ok},"*");
@@ -313,17 +313,14 @@ export default{
     showScreen: function(name){
       this.screen=name;
     },
-    openProject: function(project){
+    async openProject(project){
       //Object.seal(project);
-      this.$refs.editor.openProject(project);
+      await this.$refs.editor.openProject(project);
       this.showScreen("editor");
       setTimeout(()=>{
         this.setLoggingEnabled(false);
       },1000);
       this.emitEvent("project-open");
-    },
-    run: function(){
-
     },
     importProject: function(project){
       this.$refs.editor.importToProject(project);

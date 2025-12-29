@@ -317,7 +317,7 @@ export class Project{
     }
     /* alle Funktionen aus window.$asyncInitFunctions werden aufgerufen:*/
     codeMainCall+="\nfor(let i=0;i<window.$asyncInitFunctions.length;i++){await window.$asyncInitFunctions[i]();}";
-    codeMainCall+="\nif(window.$showPreviewOnly){\nawait "+mainObjectCode+".$appPreviewMethod();"+(afterMainCallCode?afterMainCallCode:"")+"\n}\nelse if("+mainObjectCode+"?.$realMainMethod && !window.isChecking){\nawait "+mainObjectCode+".$realMainMethod();"+(afterMainCallCode?afterMainCallCode:"")+"\n} else if("+mainObjectCode+"?.main && !window.isChecking){\nawait "+mainObjectCode+".main("+JSON.stringify(args)+");"+(afterMainCallCode?afterMainCallCode:"")+"}\n";
+    codeMainCall+="\nif(window.$showPreviewOnly){\nawait "+mainObjectCode+".$appPreviewMethod();"+(afterMainCallCode?afterMainCallCode:"")+"\n}\nelse if("+mainObjectCode+"?.$realMainMethod && !window.isChecking){\nawait "+mainObjectCode+".$realMainMethod();"+(afterMainCallCode?afterMainCallCode:"")+"\n} else if("+mainObjectCode+"?.main && !window.isChecking){\nawait "+mainObjectCode+".main("+JSON.stringify(args)+");\n$Exercise.sendMessage('main-method-terminated');\n"+(afterMainCallCode?afterMainCallCode:"")+"}\n";
     codeMainCall+="\n$App.enableOnNextFrame=true;\nsetTimeout(async ()=>{await window.$exerciseChecker();},100);})();";
     let css=this.prepareCSS(this.css);
     if(!includeSave){
@@ -677,6 +677,13 @@ export class Project{
       return false;
     }
     return true;
+  }
+  containsErrors(){
+    for(let i=0;i<this.clazzes.length;i++){
+      let c=this.clazzes[i];
+      if(c.errors.length>0) return true;
+    }
+    return false;
   }
   getClazzByName(name){
     let i=this.getClazzIndexByName(name);

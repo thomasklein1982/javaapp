@@ -7,7 +7,6 @@ import { Source } from "../../classes/Source";
 import { LocalVariableDeclaration } from "./LocalVariableDeclaration";
 
 export function CatchClause(node,source,scope){
-  console.log(node);
   node=node.firstChild;
   let catchParameter={
     type: null,
@@ -27,14 +26,12 @@ export function CatchClause(node,source,scope){
     throw source.createError("'(' erwartet",node);
   }
   let node1=node.firstChild.nextSibling;
-  console.log(node1);
   if(node1.name!=="CatchType"){
     throw source.createError("catch-Parameter erwartet",node1);
   }
   catchParameter.type=CompileFunctions.get(node1.firstChild,source)(node1.firstChild,source,scope).type;
   node1=node1.nextSibling;
   catchParameter.name=CompileFunctions.get(node1,source)(node1,source,scope).code;
-  console.log(catchParameter);
   scope.pushLocalVariable(catchParameter.name,catchParameter.type);
   node1=node1.nextSibling;
   if(node1.name!==")"){

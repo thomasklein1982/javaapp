@@ -213,6 +213,9 @@ window.onmessage=async function(message){
     data=data.data;
     app.emitEvent("runtime-error",data);
     app.$refs.editor.setRuntimeError(data);
+  }else if(data.type==="pass-to-parent"){
+    console.log("pass to parent");
+    app.sendToParentWindow(data.data.type,data.data.data);
   }else if(data.type==="debug-pause"){
     app.paused=true;
     app.resetCurrent(data.line,data.name);
@@ -249,9 +252,13 @@ window.onmessage=async function(message){
     app.openProjectFromJSON(data.data);
     app.emitEvent(data.type+"-done");
   }else if(data.type==="open-project-and-run"){
-    app.openProjectFromJSON(data.data);
-    let res=await app.run();//TODO!!
-    app.emitEvent(data.type+"-done", {result: res});
+    await app.openProjectFromJSON(data.data);
+    let p=app.getProject();
+    let runnable=!p.containsErrors();
+    if(runnable){
+      await app.run();//TODO!!
+    }
+    app.emitEvent(data.type+"-done",runnable);
   }else if(data.type==="open-project-from-full-app-code"){
     app.openProjectFromFullAppCode(data.data);
     app.emitEvent(data.type+"-done");
