@@ -31,9 +31,9 @@ export function SwitchBlock(node,source,scope,infos){
     }else{
       let func=CompileFunctions.get(node,source);
       let ex=func(node,source,scope);
-      if(!scope.optimizeCompiler && !ex.waitForLineIncluded){
+      if(scope.isDebuggableContext() && !ex.waitForLineIncluded){
         let line=source.getLineNumber(node.from);
-        if(!scope.optimizeCompiler){
+        if(scope.isDebuggableContext()){
           code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",$scope);";
         }else{
           code+="\n";

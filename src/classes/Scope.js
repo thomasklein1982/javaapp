@@ -44,6 +44,15 @@ export class Scope{
   //   c.nodeInfos[node.index]=info;
   // }
 
+  /**
+   * true, wenn die aktuelle Klasse eine eigene, sichtbare Klasse im Editor ist, 
+   * false für versteckte und eingebaute Klassen und wenn der Compiler nicht optimiert ist
+   */
+  isDebuggableContext(){
+    if(this.optimizeCompiler || this.getClazz().isHidden) return false;
+    return true;
+  }
+
   getThisString(){
     if(!this.method) return "this";
     if(this.method.thisString) return this.method.thisString;

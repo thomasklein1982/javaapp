@@ -90,7 +90,7 @@
             <Tabs v-model:value="activeTab" :scrollable="true" class="editor-tabs" >
               <TabList>
                 <template v-for="(c,i) in project.clazzes">
-                  <Tab :value="i" v-if="i>0 || !webMode" v-show="c.isEditorShown">
+                  <Tab :value="i" v-if="i>0 || !webMode" v-show="c.isEditorShown && !c.isHidden">
                     <span v-if="c.isInterface" class="pi pi-info-circle" style="font-size: small; margin-right: 0.2rem"/><span v-if="c.isHidden">(</span>{{i!==activeTab && c?.name?.length>20? c?.name?.substring(0,17)+"...":c?.name}}{{ c.fileType!==undefined? "."+c.fileType:"" }} <span v-if="c.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span><Button v-if="activeTab===i" @click="hideEditor(i)" style="height: auto; padding:0" icon="pi pi-times-circle" rounded text severity="secondary" size="small"/><span v-if="c.isHidden">)</span>
                   </Tab>
                 </template>
@@ -212,6 +212,7 @@
       
       <span v-if="!webMode" style="position: fixed; bottom: 0.5rem; right: 0.5rem; z-index: 101">
         <span  v-if="!running">
+          <Button style="margin-right: 0.2rem" v-if="project.exerciseData?.seed && (!running || paused)" label="Neuer Testfall" @click="createNewDemoCase()" icon="pi pi-refresh" />
           <Button style="margin-right: 0.2rem" v-if="$root.exerciseCheckerCode && (!running || paused)" label="Prüfen" @click="runExerciseChecker()" icon="pi pi-list-check" />
           
         </span>
@@ -272,6 +273,7 @@ import StorageDialog from "./StorageDialog.vue";
 import ExtensionManagerDialog from "./ExtensionManagerDialog.vue";
 import { mimes } from "../consts/mimes.js";
 import FileDrawer from "./FileDrawer.vue";
+import { random, RandomClazz } from "../functions/random.js";
 
 export default {
   components: {
@@ -624,10 +626,17 @@ export default {
     setRuntimeError(error){
       let editor=this.getEditorByName(error.name);
       if(!editor) editor=this.currentEditor;
-      editor.setRuntimeError(error);
+      
       if(this.running){
         let i=this.project.getClazzIndexByName(error.name);
+        if(this.project.clazzes[i].isHidden){
+          editor.setRuntimeError(error);
+          return;
+        }
         if(i>=0) this.activeTab=i;
+        nextTick(()=>{
+          this.currentEditor.setRuntimeError(error);
+        });
       }
     },
     getEditorByName(name){
@@ -653,9 +662,11 @@ export default {
       await p.compile(true);
       //info-trainer-exercises: showAppPreviewWhenNotRunning (bee)
       let mainClazz=p.getClazzByName("Main");
-      if(mainClazz && mainClazz.methods.$appPreviewMethod){
-        this.showAppPreviewWhenNotRunning=true;
-        this.stop();
+      if(p.exerciseData){
+        if(p.exerciseData.showAppPreviewWhenNotRunning){
+          this.showAppPreviewWhenNotRunning=true;
+          this.stop();
+        }
       }
       setTimeout(()=>{
         let sfedits=this.$refs.editor;
@@ -769,6 +780,12 @@ export default {
       );
       window.open(blob);
       URL.revokeObjectURL(blob);
+    },
+    createNewDemoCase(){
+      this.project.exerciseData.seed=random(1000,100000);
+      if(this.showAppPreviewWhenNotRunning){
+        this.$refs.preview.reload(true,null,"window.$showPreviewOnly=true;");
+      }
     },
     runExerciseChecker(){
       for(let i=0;i<this.project.clazzes.length;i++){

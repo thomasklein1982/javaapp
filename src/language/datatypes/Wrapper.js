@@ -31,6 +31,12 @@ export function defineInteger(Clazz,Java){
     ],
     returnType: "int"
   },Clazz,false,false,Java);
+  createMethod({
+    name: 'intValue',
+    args: [
+    ],
+    returnType: "int"
+  },Clazz,false,false);
   
 }
 
@@ -65,6 +71,12 @@ export function defineDouble(Clazz,Java){
     returnType: "double"
   },Clazz,true,false,Java);
   createMethod({
+    name: 'doubleValue',
+    args: [
+    ],
+    returnType: "double"
+  },Clazz,false,false);
+  createMethod({
     name: 'valueOf',
     args: [
       {name: 's', type: ['String','double']}
@@ -88,6 +100,12 @@ export function defineChar(Clazz,Java){
     ],
     returnType: "String"
   },Clazz,true,false);
+  createMethod({
+    name: 'charValue',
+    args: [
+    ],
+    returnType: "char"
+  },Clazz,false,false);
   createMethod({
     name: 'valueOf',
     args: [

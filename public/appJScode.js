@@ -938,7 +938,7 @@ window.appJScode=function(){
           div.appendChild(item);
         }
         if(!this.reading) this.nextLine();
-        console.log(this.output);
+        console.log(this.output[outputIndex]);
         //this.outputDiv.appendChild(div);
       },
       print: function(){

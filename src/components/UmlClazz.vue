@@ -4,12 +4,12 @@
     <div @click="click()" class="clazzname">
       <span :style="clazz.isInterface?'font-style: italic':''">{{clazz.name}}</span><template v-if="clazz.typeParameters">&lt;<span v-for="(t,i) in clazz.typeParameters">{{(i>0? ',':'')+ t.name }}</span>&gt;</template>
     </div>
-    <div class="attributes">
+    <div class="attributes" v-if="clazz.hasAttributes()">
       <template v-for="(a,i) in attributes" :key="'attr'+i">
         <UmlMember v-if="!a.name.startsWith('$')" :member="a" ></UmlMember>
       </template>
     </div>
-    <div class="methods">
+    <div class="methods" v-if="clazz.hasMethods()">
       <template v-for="(m,i) in methods" :key="'ms'+i">
         <UmlMember v-if="!m.hide && !m.name.startsWith('$')" :member="m"></UmlMember>
       </template>
@@ -109,6 +109,6 @@ export default {
     border-bottom: 1pt solid white;
   }
   .attributes,.methods{
-    min-height: 1rem;
+    min-height: 0rem;
   }
 </style>

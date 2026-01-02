@@ -269,9 +269,6 @@ export default{
           delete Java.datatypes[a];
           delete Java.clazzes[a];
         }
-        if(constraints.java.maxStatements){
-          
-        }
       }
       let p=new Project();
       p.fromJSON(data.project);

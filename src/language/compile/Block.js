@@ -6,7 +6,7 @@ import { CompileFunctions } from "../CompileFunctions";
 
 function createUpdateLocalVariablesCode(scope){
   return "";
-  if(scope.optimizeCompiler) return "";
+  if(scope.isUndebuggableContext()) return "";
   let locals=scope.getLocalVariableNames();
   return "var $locals="+JSON.stringify(locals)+";for(var $a in $locals){eval('$locals[$a]='+$a)};$App.console.updateLocalVariables($locals);";
 }
@@ -30,7 +30,7 @@ export function Block(node,source,scope){
       code,errors
     }
   }
-  if(!scope.optimizeCompiler){
+  if(scope.isDebuggableContext()){
     code+=createUpdateLocalVariablesCode(scope);
   }
   scope.pushLayer();
@@ -58,9 +58,9 @@ export function Block(node,source,scope){
         if(res.errors){
           concatArrays(errors,res.errors);
         }
-        if(!scope.optimizeCompiler && !res.waitForLineIncluded){
+        if(scope.isDebuggableContext() && !res.waitForLineIncluded){
           let line=source.getLineNumber(node.from);
-          if(!scope.optimizeCompiler){
+          if(scope.isDebuggableContext()){
             code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",$scope);";
           }else{
             code+="\n";
@@ -78,7 +78,7 @@ export function Block(node,source,scope){
     errors.push(source.createError("'}' erwartet.",node));
   }
   //let line=source.state.doc.lineAt(blockNode.to).number;
-  if(!scope.optimizeCompiler){
+  if(scope.isDebuggableContext()){
     try{
       let line=source.getLineNumber(blockNode.to-1);
       code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.getClazz().name)+",$scope);";
@@ -88,7 +88,7 @@ export function Block(node,source,scope){
   }
   scope.popLayer();
   code+="\n$scope.popLayer();"
-  if(!scope.optimizeCompiler){
+  if(scope.isDebuggableContext()){
     code+=createUpdateLocalVariablesCode(scope);
   }
   return {

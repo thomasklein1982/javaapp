@@ -115,6 +115,12 @@ function defineJComponent(Clazz,Java){
     info: "Legt die CSS-Klassen der Komponente fest."
   },Clazz,false,false);
   createMethod({
+    name: 'scrollIntoView',
+    args: [
+    ],
+    info: "Sorgt dafür, dass die Eltern-Container dieser Komponente so scrollen, dass diese Komponente sichtbar wird."
+  },Clazz,false,false);
+  createMethod({
     name: 'hasCSSClass',
     args: [
       {name: 'className', type: 'String'}

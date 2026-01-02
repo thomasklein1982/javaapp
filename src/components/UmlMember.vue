@@ -1,5 +1,5 @@
 <template>
-  <div class="umlmember" @click="click()">
+  <div class="umlmember" @click="click()" v-if="!isHidden">
     <span class="umlmember-modifiers"><span v-html="visibility"></span><sup class="static" v-if="member.isStatic()">S</sup></span><span class="umlmember-signature">{{member.getSignatureString()}}</span>
   </div>
 </template>
@@ -16,6 +16,9 @@ export default {
       if(v==="private") return "&minus;";
       if(v==="protected") return "#";
       return "+";
+    },
+    isHidden(){
+      return (this.member.clazz.isHidden && this.visibility==="&minus;");
     }
   },
   methods: {

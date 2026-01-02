@@ -25,6 +25,7 @@ export class Clazz{
     this.isAbstract=false;
     this.isHidden=false;
     this.visibility="tab code uml";
+    this.uml=true;
     this.isEditorShown=true; //ob die Datei im Editor geöffnet ist oder nicht
     this.isInterface=isInterface===true;
     this.wrappedPrimitiveType=null;
@@ -63,6 +64,18 @@ export class Clazz{
       this.typeSnippet=null;
     }
   }
+  hasAttributes(){
+    for(let a in this.attributes){
+      return true;
+    }
+    return false;
+  }
+  hasMethods(){
+    for(let a in this.methods){
+      return true;
+    }
+    return false;
+  }
   getStatementCount(){
     let sum=0;
     for(let a in this.methods){
@@ -87,6 +100,7 @@ export class Clazz{
     o.src=this.src;
     o.isHidden=this.isHidden;
     o.isEditorShown=this.isEditorShown;
+    o.uml=this.uml;
     return o;
   }
 
@@ -105,6 +119,7 @@ export class Clazz{
     if(obj.isHidden){
       this.isHidden=true;
     }
+    if(obj.uml===false) this.uml=false;
     this.isEditorShown=true;
     if(obj.isEditorShown===false) this.isEditorShown=false;
     if(obj.visibility){

@@ -32,7 +32,7 @@ export function ForStatement(node,source,scope){
     return block;
   }
   code+="{";
-  if(!scope.optimizeCompiler){
+  if(scope.isDebuggableContext()){
     code+="\nawait $App.debug.line("+lineNumber+","+JSON.stringify(scope.method.clazz.name)+",$scope);";
   }
   code+=block.code+"}";

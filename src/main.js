@@ -256,7 +256,7 @@ window.onmessage=async function(message){
     let p=app.getProject();
     let runnable=!p.containsErrors();
     if(runnable){
-      await app.run();//TODO!!
+      await app.run();
     }
     app.emitEvent(data.type+"-done",runnable);
   }else if(data.type==="open-project-from-full-app-code"){

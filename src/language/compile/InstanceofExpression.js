@@ -18,12 +18,16 @@ export function InstanceofExpression(node,source,scope){
   // if(type.type.baseType.isPrimitive()){
   //   throw source.createError("In 'instanceof' kannst du nur Klassen prüfen, nicht aber primitive Datentypen wie '"+type.type.baseType.name+"'.",node);
   // }
+  let code=obj.code;
+  if(type.name==="String"){
+    code="Object("+code+")";
+  }
   if(!type.type.baseType.isSubtypeOf(obj.type.baseType) && !obj.type.baseType.isSubtypeOf(type.type.baseType)){
     let text=source.getText(objNode);
     throw source.createError("'"+text+"' hat den Typ '"+obj.type.baseType.name+"' und kann daher keine Instanz der Klasse '"+type.type.baseType.name+"' sein.",node);
   }
   return {
-    code: obj.code+" instanceof "+type.code,
+    code: code+" instanceof "+type.code,
     type: new Type(Java.datatypes.boolean,0)
   };
 }

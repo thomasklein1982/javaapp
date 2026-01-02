@@ -49,7 +49,7 @@ export class Method{
     return this.name===this.clazz.name;
   }
   isBuiltIn(){
-    return this.bodyNode===null;
+    return this.bodyNode===null || this.clazz.isHidden;
   }
   createParamsString(){
     

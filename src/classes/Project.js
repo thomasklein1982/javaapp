@@ -59,6 +59,13 @@ export class Project{
     this.background_color="black";
     this.icon=null;
     this.urls=["./"];
+    /**
+     * enthaehlt Daten fuer Aufgaben vom Info-Trainer
+     * showAppPreviewWhenNotRunning (boolean): falls true: der app-preview wird mit der Methode $appPreviewMethod(exerciseData) gestartet, auch wenn aktuell nichts ausgeführt wird
+     * seed (int): seed, der als Grundlage für den aktuellen DemoCase dient; wenn vorhanden, wird ein entsprechender Button "Neuer Testfall" neben "Prüfen" angezeigt
+    */
+    this.exerciseData=null;
+    this.createNewDemoCaseFunction=null;
   }
   getUiClazzCount(){
     let count=0;
@@ -317,7 +324,7 @@ export class Project{
     }
     /* alle Funktionen aus window.$asyncInitFunctions werden aufgerufen:*/
     codeMainCall+="\nfor(let i=0;i<window.$asyncInitFunctions.length;i++){await window.$asyncInitFunctions[i]();}";
-    codeMainCall+="\nif(window.$showPreviewOnly){\nawait "+mainObjectCode+".$appPreviewMethod();"+(afterMainCallCode?afterMainCallCode:"")+"\n}\nelse if("+mainObjectCode+"?.$realMainMethod && !window.isChecking){\nawait "+mainObjectCode+".$realMainMethod();"+(afterMainCallCode?afterMainCallCode:"")+"\n} else if("+mainObjectCode+"?.main && !window.isChecking){\nawait "+mainObjectCode+".main("+JSON.stringify(args)+");\n$Exercise.sendMessage('main-method-terminated');\n"+(afterMainCallCode?afterMainCallCode:"")+"}\n";
+    codeMainCall+="\nif(window.$showPreviewOnly){\nawait "+mainObjectCode+".$appPreviewMethod("+JSON.stringify(this.exerciseData)+");"+(afterMainCallCode?afterMainCallCode:"")+"\n}\nelse if("+mainObjectCode+"?.$realMainMethod && !window.isChecking){\nawait "+mainObjectCode+".$realMainMethod("+JSON.stringify(this.exerciseData)+");"+(afterMainCallCode?afterMainCallCode:"")+"\n} else if("+mainObjectCode+"?.main && !window.isChecking){\nawait "+mainObjectCode+".main("+JSON.stringify(args)+");\n$Exercise.sendMessage('main-method-terminated');\n"+(afterMainCallCode?afterMainCallCode:"")+"}\n";
     codeMainCall+="\n$App.enableOnNextFrame=true;\nsetTimeout(async ()=>{await window.$exerciseChecker();},100);})();";
     let css=this.prepareCSS(this.css);
     if(!includeSave){
@@ -878,7 +885,8 @@ export class Project{
       icon: this.icon,
       urls: JSON.parse(JSON.stringify(this.urls)),
       date: new Date(),
-      javaappVersion: app.version
+      javaappVersion: app.version,
+      exerciseData: JSON.parse(JSON.stringify(this.exerciseData))
     };
   }
   toSaveString(excludeAssets){
@@ -941,6 +949,11 @@ export class Project{
       this.javaappVersion=o.javaappVersion;
     }else{
       this.javaappVersion=null;
+    }
+    if(o.exerciseData){
+      this.exerciseData=o.exerciseData;
+    }else{
+      this.exerciseData=null;
     }
     this.deleteClazzes();
     let clazzes=o.clazzesSourceCode||o.clazzes;

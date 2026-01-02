@@ -251,7 +251,7 @@ function additionalJSCode(){
               return;
             }
           }
-          panel=panel.getPanel();
+          if(panel.getPanel) panel=panel.getPanel(); else break;
         }
         if($main && $main["on"+eventname]){
           $main["on"+eventname].apply($main,args);
@@ -1171,6 +1171,9 @@ function additionalJSCode(){
         throw $new(Exception,"Dieser String kodiert keine ganze Zahl:\n"+s);
       }
     }
+    intValue(){
+      return this.value;
+    }
     static valueOf(v){
       return new Integer(v);
     }
@@ -1183,6 +1186,9 @@ function additionalJSCode(){
   class Double{
     constructor(v){
       this.value=v;
+    }
+    doubleValue(){
+      return this.value;
     }
     static parseDouble(s){
       let v=s*1;
@@ -1232,6 +1238,9 @@ function additionalJSCode(){
   class Character{
     constructor(v){
       this.value=v;
+    }
+    charValue(){
+      return this.value;
     }
     static toString(codePoint){
       return String.fromCodePoint(codePoint);
@@ -1576,6 +1585,9 @@ function additionalJSCode(){
     }
     getElementById(id){
       return this.querySelector("[id='"+id+"']");
+    }
+    scrollIntoView(){
+      this.$el.scrollIntoView();
     }
     getScrollPosition(){
       return this.$el.scrollTop;

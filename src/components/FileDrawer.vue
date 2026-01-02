@@ -110,7 +110,9 @@ export default{
       this.files=[];
       let start=this.$root.webMode? 1: 0;
       for(let i=start;i<this.project.clazzes.length;i++){
-        this.files.push(this.project.clazzes[i]);
+        let c=this.project.clazzes[i];
+        if(c.isHidden) continue;
+        this.files.push(c);
       }
     },
     close(){
@@ -145,7 +147,8 @@ export default{
       if(!a) return;
       this.files.splice(index,1);
       if(this.$root.webMode) index++;
-      this.project.clazzes.splice(index,1);
+      let index2=this.project.getClazzIndexByName(clazz.name);
+      this.project.clazzes.splice(index2,1);
       if(this.activeTabInEditor>=index) this.activeTabInEditor--;
       this.project.compile();
     },

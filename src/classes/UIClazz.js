@@ -91,6 +91,7 @@ export class UIClazz extends Clazz{
     this.cssClass="";
     this.template="1";
     this.forceAbsolute=false;
+    this.uml=false;
     this.x=5;
     this.y=5;
     this.width=1;

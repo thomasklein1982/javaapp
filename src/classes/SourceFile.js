@@ -15,6 +15,7 @@ export class SourceFile{
     this.errors=[];
     this.isHidden=false;
     this.isEditorShown=true;
+    this.uml=false;
     this.superClazz=Java.clazzes.HtmlPage;
     /**der erste Kindknoten des ClassBody: */
     this.src="";

@@ -1,7 +1,7 @@
 <template>
   <div id="root">
-    <template v-for="(c,i) in clazzes">
-      <UmlClazz  v-if="!c.isHidden" :key="'clazz'+i" :clazz="c"></UmlClazz>
+    <template v-for="(c,i) in clazzes" :key="'clazz'+i">
+      <UmlClazz :clazz="c"></UmlClazz>
     </template>
   </div>
 </template>
@@ -17,7 +17,7 @@ export default {
   },
   computed: {
     clazzes(){
-      return this.project.clazzes.filter(c=>!(c instanceof UIClazz || c instanceof SourceFile));
+      return this.project.clazzes.filter(c=>c.uml!==false);
     }
   },
   data(){
