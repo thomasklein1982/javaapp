@@ -1676,6 +1676,9 @@ function additionalJSCode(){
       if(a<0) a+=360;
       this.setDirection(a);
     }
+    getRotation(){
+      return this.transform.rotation;
+    }
     setRotation(angle){
       this.transform.rotation=angle;
       this.updateTransform();
@@ -2982,9 +2985,6 @@ function additionalJSCode(){
 
     setMirrored(m){
       this.$el.canvas.setMirrored(m);
-    }
-    setRotation(angle){
-      this.$el.canvas.setRotation(angle);
     }
     setOpacity(o){
       this.$el.canvas.setOpacity(o);
@@ -7053,14 +7053,13 @@ function additionalJSCode(){
             }else{
               data=tc.data;
             }
-            data.$run={
-              index: j,
-              count: count
-            };
           }else{
-            data=null;
+            data={};
           }
-          
+          data.$run={
+            index: j,
+            count: count
+          };
           try{
             $Exercise.clearConsole();
             res=await applyTestFunc(data,initData);

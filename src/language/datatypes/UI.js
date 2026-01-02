@@ -318,6 +318,12 @@ function defineJComponent(Clazz,Java){
     ]
   },Clazz,false,false,Java);
   createMethod({
+    name: 'getRotation',
+    args: [
+    ],
+    returnType: "double"
+  },Clazz,false,false,Java);
+  createMethod({
     name: 'setDirection',
     args: [
       {name: 'angle', type: 'double'}
