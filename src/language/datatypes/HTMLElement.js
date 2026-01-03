@@ -14,6 +14,20 @@ export function defineHTMLElement(clazz){
     ]
   }, clazz);
   createMethod({
+    name: 'setStyle',
+    args: [
+      {name: 'key', type: 'String'},
+      {name: 'value', type: 'String'}
+    ]
+  },clazz,false,false);
+  createMethod({
+    name: 'getStyle',
+    returnType: 'String',
+    args: [
+      {name: 'key', type: 'String'}
+    ]
+  },clazz,false,false);
+  createMethod({
     name: 'add',
     args: [
       {name: 'element', type: 'HTMElement', info: 'Die Komponente, die hinzugefügt werden soll.'}

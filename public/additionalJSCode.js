@@ -2582,6 +2582,12 @@ function additionalJSCode(){
     isVisible(){
       return this.$el.style.display!=="none";
     }
+    getStyle(name){
+      return this.$el.style[name];
+    }
+    setStyle(name, value){
+      this.$el.style[name]=value;
+    }
   }
 
   class Circle extends JComponent{
