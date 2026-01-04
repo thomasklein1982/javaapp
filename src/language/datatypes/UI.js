@@ -90,23 +90,9 @@ function defineJComponent(Clazz,Java){
     args: [
       {name: 'id', type: 'String'}
     ],
-    returnType: "HTMLElement",
-    info: "Liefert das HTMLElement mit der angegebenen ID zurück."
+    returnType: "HtmlElement",
+    info: "Liefert das HtmlElement mit der angegebenen ID zurück."
   },Clazz,false,false);
-  // createMethod({
-  //   name: 'getParentHTMLElement',
-  //   args: [
-  //   ],
-  //   returnType: "HTMLElement",
-  //   info: "Liefert das Eltern-HTMLElement dieser Komponente zurück."
-  // },Clazz,false,false);
-  // createMethod({
-  //   name: 'setOnAction',
-  //   args: [
-  //     {name: 'handler', type: 'ActionListener'}
-  //   ],
-  //   info: "Legt fest, welches Objekt bei einer Aktion die onAction-Methode ausführen soll."
-  // },Clazz,false,false);
   createMethod({
     name: 'setCSSClass',
     args: [
@@ -894,7 +880,7 @@ function defineHtmlPage(Clazz,JPanel){
         name: "selector", type: "String", info: "gültiger CSS-Selektor"
       }
     ],
-    returnType: "HTMLElement",
+    returnType: "HtmlElement",
     info: "Liefert das erste Kind-Element in dieser Html-Seite, das den CSS-Selektor erfüllt."
   },Clazz,true,false);
   createMethod({
@@ -904,7 +890,7 @@ function defineHtmlPage(Clazz,JPanel){
         name: "selector", type: "String", info: "gültiger CSS-Selektor"
       }
     ],
-    returnType: {baseType: "HTMLElement", dimension: 1},
+    returnType: {baseType: "HtmlElement", dimension: 1},
     info: "Liefert ein Array aller Kind-Elemente in dieser Html-Seite, die den CSS-Selektor erfüllen."
   },Clazz,true,false);
   createMethod({
@@ -1072,7 +1058,7 @@ function defineCanvas(Clazz,Java){
     name: 'getWrapperElement',
     args: [
     ],
-    returnType: "HTMLElement",
+    returnType: "HtmlElement",
     info: ""
   },Clazz,false,false);
   createMethod({

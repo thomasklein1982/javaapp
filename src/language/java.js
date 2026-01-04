@@ -120,7 +120,7 @@ let ArrayList=new Clazz("ArrayList");
 let Queue=new Clazz("Queue");
 let Stack=new Clazz("Stack");
 let HashMap=new Clazz("HashMap");
-let HTMLElement=new Clazz("HTMLElement");
+let HtmlElement=new Clazz("HtmlElement");
 
 let Sound=new Clazz("Sound");
 
@@ -142,7 +142,7 @@ let Voice=new Clazz("Voice");
 let Thread=new Clazz("Thread");
 
 let datatypes={
-  ActionEvent,ActionListener,ArrayList,Boolean,Canvas,Character,Circle,Class,Comparable,Comparator,Console,DataTable,Database,Double,Exception,Field,File, Gamepad,HashMap,HTMLElement,HtmlPage,InputStream,Integer,JButton,JCheckBox,JComboBox,JComponent,JFrame,JImage,JLabel,JPanel,JSON,JTextArea,JTextComponent,JTextField,JavaApp,Matcher,Math,Matrix,MessageEvent, MessageListener, Method,NetworkSession,Object,Path,Pattern,PrintStream,Queue,Random, RealFunction,Runnable,Sound,Stack,Storage,String,System,Thread,Time,Timer,UIClass,Vector,Voice,boolean,char,double,int,nullType
+  ActionEvent,ActionListener,ArrayList,Boolean,Canvas,Character,Circle,Class,Comparable,Comparator,Console,DataTable,Database,Double,Exception,Field,File, Gamepad,HashMap,HtmlElement,HtmlPage,InputStream,Integer,JButton,JCheckBox,JComboBox,JComponent,JFrame,JImage,JLabel,JPanel,JSON,JTextArea,JTextComponent,JTextField,JavaApp,Matcher,Math,Matrix,MessageEvent, MessageListener, Method,NetworkSession,Object,Path,Pattern,PrintStream,Queue,Random, RealFunction,Runnable,Sound,Stack,Storage,String,System,Thread,Time,Timer,UIClass,Vector,Voice,boolean,char,double,int,nullType
 };
 
 //sortieren der Datentypen:
@@ -154,7 +154,7 @@ let datatypes={
 // console.log(array.toString());
 
 let clazzes={
-  nullType,Object, String, Math, Gamepad, Time, Console, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Pattern, Matcher, File, Storage, NetworkSession, Matrix, Vector, System, PrintStream, ArrayList, HTMLElement, HtmlPage, Sound, Exception, Integer, Double, Character, Boolean, JFrame, JavaApp, InputStream, Comparable, Comparator, ActionEvent, Timer, JSON, Random, UIClass, Class, Field, Method, Voice, Thread, Queue, Stack, HashMap, Circle, Runnable, RealFunction, MessageEvent, MessageListener
+  nullType,Object, String, Math, Gamepad, Time, Console, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Pattern, Matcher, File, Storage, NetworkSession, Matrix, Vector, System, PrintStream, ArrayList, HtmlElement, HtmlPage, Sound, Exception, Integer, Double, Character, Boolean, JFrame, JavaApp, InputStream, Comparable, Comparator, ActionEvent, Timer, JSON, Random, UIClass, Class, Field, Method, Voice, Thread, Queue, Stack, HashMap, Circle, Runnable, RealFunction, MessageEvent, MessageListener
 }
 
 let interfaces={
@@ -209,7 +209,7 @@ defineArrayList(ArrayList);
 defineQueue(Queue);
 defineStack(Stack);
 defineHashMap(HashMap);
-defineHTMLElement(HTMLElement);
+defineHTMLElement(HtmlElement);
 defineSound(Sound,Java);
 defineTimer(Timer);
 defineJSON(JSON);

@@ -196,7 +196,7 @@ export class SourceFile{
           let id=src.substring(value.from+1,value.to-1);
           this.attributes[id]=createAttribute({
             name: id,
-            type: "HTMLElement"
+            type: "HtmlElement"
           },this,true,"public");
         }
       }

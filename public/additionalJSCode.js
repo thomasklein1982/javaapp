@@ -363,10 +363,9 @@ function additionalJSCode(){
   };
 
   function $getElementById(uiclazz, id){
-    //return new HTMLElement(document.getElementById(uiclazz.constructor.name+"-"+id));
     let e=document.getElementById(id);
     if(!e) return null;
-    return $new(HTMLElement,e);
+    return $new(HtmlElement,e);
   }
 
   function $getFromArray(array,index){
@@ -1523,10 +1522,10 @@ function additionalJSCode(){
       this.setDirection(0);
 
     }
-    getParentHTMLElement(){
+    getParentHtmlElement(){
       if(!this.$el) return null;
       let e=this.$el.parentElement;
-      if(!e.component) e.component=$new(HTMLElement,e);
+      if(!e.component) e.component=$new(HtmlElement,e);
       return e.component;
     }
     flip(){
@@ -1562,7 +1561,7 @@ function additionalJSCode(){
       try{
         let e=this.$el.querySelector(selector);
         if(!e) return null;
-        if(!e.component) e.component=$new(HTMLElement,e);
+        if(!e.component) e.component=$new(HtmlElement,e);
         return e.component;
       }catch(e){
         throw $new(Exception,"Fehlerhafter Selektor\n"+e);
@@ -1575,10 +1574,10 @@ function additionalJSCode(){
         let comps=[];
         for(let i=0;i<es.length;i++){
           let e=es[i];
-          if(!e.component) e.component=$new(HTMLElement,e)
+          if(!e.component) e.component=$new(HtmlElement,e)
           comps.push(e.component);
         }
-        return $createArray("HTMLElement",1,comps);
+        return $createArray("HtmlElement",1,comps);
       }catch(e){
         throw $new(Exception,"Fehlerhafter Selektor\n"+e);
       }
@@ -2424,7 +2423,7 @@ function additionalJSCode(){
       try{
         let e = this.$self.$el.contentWindow.document.querySelector(selector);
         if(!e) return null;
-        if(!e.component) e.component=$new(HTMLElement,e);
+        if(!e.component) e.component=$new(HtmlElement,e);
         return e.component;
       }catch(e){
         throw $new(Exception,"Fehlerhafter Selektor\n"+e);
@@ -2437,10 +2436,10 @@ function additionalJSCode(){
         let array=[];
         for(let i=0;i<es.length;i++){
           let e=es[i];
-          if(!e.component) e.component=$new(HTMLElement,e)
+          if(!e.component) e.component=$new(HtmlElement,e)
           array[i]=e.component;
         }
-        return $createArray("HTMLElement",1,array);
+        return $createArray("HtmlElement",1,array);
       }catch(e){
         throw $new(Exception,"Fehlerhafter Selektor\n"+e);
       }
@@ -2477,7 +2476,7 @@ function additionalJSCode(){
     }
   }
 
-  class HTMLElement{
+  class HtmlElement{
     $constructor(tag){
       //super.$constructor(0,0,0,0);
       if(tag && tag.substring){
@@ -2499,10 +2498,10 @@ function additionalJSCode(){
     getChildElements(){
 
     }
-    getParentHTMLElement(){
+    getParentHtmlElement(){
       if(!this.$el) return null;
       let e=this.$el.parentElement;
-      if(!e.component) e.component=$new(HTMLElement,e);
+      if(!e.component) e.component=$new(HtmlElement,e);
       return e.component;
     }
     add(comp,index){
@@ -2795,15 +2794,27 @@ function additionalJSCode(){
         img.src = snapshot;
       })()
 
-      for(let i=0;i<this.$el.childNodes.length;i++){
-        let c=this.$el.childNodes[i];
+      for(let i=0;i<this.$el.children.length;i++){
+        let c=this.$el.children[i];
         if(!c || !c.component) continue;
-        c.component.sizeChanged=true;
-        c.component.updateTransform();
+        let comp=c.component;
+        if(comp instanceof HtmlElement){ //Canvas-Wrapper
+          if(c.className && c.className.indexOf && c.className.indexOf("__canvas-wrapper")>=0){
+            comp=c.children[1].component;
+          }else{
+            continue;
+          }
+        }
+        comp.sizeChanged=true;
+        if(comp.updateTransform){
+          comp.updateTransform();
+        }else{
+          console.log("error: no updateTransform",c.component,c,comp);
+        }
       }
     }
     getWrapperElement(){
-      if(!this.wrapperComponent) this.wrapperComponent=$new(HTMLElement,this.wrapper);
+      if(!this.wrapperComponent) this.wrapperComponent=$new(HtmlElement,this.wrapper);
       return this.wrapperComponent;
     }
     getDimensions(w,h){

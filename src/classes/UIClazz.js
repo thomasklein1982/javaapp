@@ -72,7 +72,7 @@ export class UIClazz extends Clazz{
         sizePolicy: "Anpassung"
       }
     },
-    HTMLElement: {
+    HtmlElement: {
       params: ["tag","x","y","width","height"],
       labels: {
         tag: "HTML-Tag",

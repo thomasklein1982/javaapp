@@ -65,7 +65,7 @@
         </template>
         <div v-else class="jpanel-color" :style="{display: 'flex'}">
           <button @click="toggleHideContent()">{{hideContent? '+':'-'}}</button>
-          <div v-if="type==='JPanel' || type==='Canvas' || type==='UIClazz'|| type==='HTMLElement'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">{{containerDisplayType}}
+          <div v-if="type==='JPanel' || type==='Canvas' || type==='UIClazz'|| type==='HtmlElement'" :style="{flex: 1}" style="position: relative" @click="handleClick" class="jpanel-top">{{containerDisplayType}}
             <Badge v-if="showActionCommand" :value="'\u00BB'+component.actionCommand+'\u00AB'" severity="warning" ></Badge>
             <span style="position: absolute; top: 0; right: 0">
               <Badge v-if="showName" :value="component.name" severity="info" ></Badge>
@@ -169,7 +169,7 @@ import { download } from "../functions/helper";
         if(this.type==="UIClazz"){
           return this.customComponentName;
         }else{
-          if(this.type==="HTMLElement" && this.isEditable){
+          if(this.type==="HtmlElement" && this.isEditable){
             return this.component.tag;
           }
           return this.type;
@@ -236,7 +236,7 @@ import { download } from "../functions/helper";
         return this.component.type;
       },
       isContainer(){
-        return this.type==="HTMLElement" || this.type==="Canvas" || this.type==="JPanel" || this.type==="UIClazz" || this.component instanceof UIClazz || this.component.controlComponent;
+        return this.type==="HtmlElement" || this.type==="Canvas" || this.type==="JPanel" || this.type==="UIClazz" || this.component instanceof UIClazz || this.component.controlComponent;
       },
       label(){
         if(this.isEditable && this.component.name){
