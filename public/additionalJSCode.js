@@ -5014,45 +5014,46 @@ function additionalJSCode(){
   }
 
   class HashMap{
-    $constructor(){
-      this.data={};
-      this.$count=0;
+    $constructor(typeVars){
+      this.data=new Map();
+      this.keyType=typeVars.K;
+      this.valueType=typeVars.E;
     }
     put(k,v){
-      if(!(k in this.data)) this.$count++;
-      this.data[k]=v;
+      this.data.set(k,v);
     }
     get(k){
-      if(!(k in this.data)) return null;
-      return this.data[k];
+      let v=this.data.get(k);
+      if(v===undefined) return null;
+      return v;
     }
     remove(k){
-      if(!(k in this.data)) return;
-      this.$count--;
-      delete this.data[k];
+      this.data.delete(k);
     }
     containsKey(k){
-      return (k in this.data);
+      return (this.data.has(k));
     }
     isEmpty(){
-      return this.$count===0;
+      return this.data.size===0;
     }
     size(){
-      return this.$count;
+      return this.data.size;
     }
     keys(){
-      let k=[];
-      for(let a in this.data){
-        k.push(a);
-      }
-      return k;
+      let keys=[];
+      this.data.forEach((v,k)=>{
+        keys.push(k);
+      });
+      let res=$createArray(this.keyType,1,keys);
+      return res;
     }
     values(){
-      let k=[];
-      for(let a in this.data){
-        k.push(this.data[a]);
-      }
-      return k;
+      let values=[];
+      this.data.forEach((v,k)=>{
+        values.push(v);
+      });
+      let res=$createArray(this.valueType,1,values);
+      return res;
     }
   }
 
