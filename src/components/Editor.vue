@@ -788,17 +788,17 @@ export default {
       }
     },
     runExerciseChecker(){
+      this.stop();
+      this.$root.resetCurrent(-1);
+      this.clearRuntimeErrors();
       for(let i=0;i<this.project.clazzes.length;i++){
         let c=this.project.clazzes[i];
         if(c.hasTooManyStatements()){
           alert("Zu viele Anweisungen");
+          this.$root.handleExerciseTest({resArray: []});
           return;
         }
       }
-
-      this.stop();
-      this.$root.resetCurrent(-1);
-      this.clearRuntimeErrors();
       this.running=true;
       this.$refs.preview.reload(false,null,`window.isChecking=true;window.$exerciseChecker=async ()=>{${this.$root.exerciseCheckerCode}};`);
     },
