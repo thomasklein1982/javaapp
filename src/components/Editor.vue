@@ -782,7 +782,11 @@ export default {
       URL.revokeObjectURL(blob);
     },
     createNewDemoCase(){
-      this.project.exerciseData.seed=random(1000,100000);
+      if(this.project.exerciseData.seedChange){
+        this.project.exerciseData.seed+=this.project.exerciseData.seedChange;
+      }else{
+        this.project.exerciseData.seed=random(1000,100000);
+      }
       if(this.showAppPreviewWhenNotRunning){
         this.$refs.preview.reload(true,null,"window.$showPreviewOnly=true;");
       }

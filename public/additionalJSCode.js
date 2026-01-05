@@ -7033,6 +7033,10 @@ function additionalJSCode(){
         delete $Exercise.blocker;
       }
     }
+    static replaceInString(string, index, replacement){
+      let n=replacement.length;
+      return string.substring(0,index)+replacement+string.substring(index+n);
+    }
     static getCopy(array){
       return JSON.parse(JSON.stringify(array));
     }
