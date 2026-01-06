@@ -231,6 +231,7 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
         });
       }
       let allAttributeNames={};
+      let boost=100;
       while(clazz){
         //if(clazz.name==="nullType") continue;
         let attributeNames=clazz.getAllAttributeNames();
@@ -244,11 +245,12 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
               label: name,
               type: "variable",
               info: a.comment,
-              boost: 10
+              boost: boost
             });
           }
         }
         clazz=clazz.getRealSuperClazz();
+        boost--;
       }
       clazz=type.baseType;
       let methodNames={};
@@ -265,6 +267,7 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
             options.push(autocomplete.snippetCompletion(m.name+createParamsString(m,true)+suffix,{
               label: m.name+"(...)",
               type: "function",
+              boost: boost,
               info: (completion)=>{
                 let node=document.createElement("div");
                 let sign=document.createElement("div");
@@ -287,6 +290,7 @@ function completeProperties(from, type, isStatic, isTopLevel, method, scope, cur
           }
         }
         clazz=clazz.getRealSuperClazz();
+        boost--;
       }
     }
     if(isTopLevel){
