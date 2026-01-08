@@ -732,6 +732,10 @@ export default {
     setRuntimeError(error){
       //this.runtimeError.pop();
       if(error){
+        if(this.runtimeErrors.length>0){
+          let lastError=this.runtimeErrors[this.runtimeErrors.length-1];
+          if(lastError.name===error.name && lastError.line===error.line && lastError.message===error.message) return;
+        }
         this.errorID++;
         this.runtimeErrors.push(error);
         if(this.runtimeErrors.length===1){
