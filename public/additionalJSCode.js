@@ -5561,6 +5561,7 @@ function additionalJSCode(){
       }else{
         this.settingsButton.style.display="none";
       }
+      if(!gamepad) return;
       if($App.gamepadSettingsDialog.allMappings){
         let map=$App.gamepadSettingsDialog.allMappings[gamepad.id];
         if(map && map.action){

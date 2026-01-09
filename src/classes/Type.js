@@ -23,18 +23,14 @@ export class Type{
   }
   toString(){
     let t=this.baseType? this.baseType.name:"Unbekannter Datentyp";
-    // if(this.typeArguments){
-    //   for(let i=0;i<typeArguments.length;i++){
-    //     let a=typeArguments[i];
-    //     if(a.param.name===this.type.baseType.name){
-    //       let t=new Type(a.baseType,this.type.dimension);
-    //       console.log(a.baseType);
-    //       t.typeArguments=a.typeArguments;
-    //       t.replaceTypeParameters(a.typeArguments);
-    //       return t;
-    //     }
-    //   } 
-    // }
+    if(this.typeArguments){
+      let typeArgs=[];
+      for(let i=0;i<this.typeArguments.length;i++){
+        let a=this.typeArguments[i];
+        typeArgs.push(a.toString());
+      }
+      t+="<"+typeArgs.join(",")+">";
+    }
     let d=this.dimension;
     while(d>0){
       t+="[]";
