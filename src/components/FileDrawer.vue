@@ -16,7 +16,7 @@
         style="overflow: auto"
       >
         <template #item="{element,index}">
-          <div class="flex-container" style="align-items: center" :style="{backgroundColor: element===selectedFile? '#333':''}"><div class="handle pi pi-equals"></div><div class="flex file-name" @click="clickFile(element,index)">{{ element.name }}.{{ element.getFileExtension() }} <span v-if="element.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span></div><div><Button severity="secondary" icon="pi pi-download" @click="downloadClazz(element)"/><Button severity="secondary" icon="pi pi-trash" @click="removeClazz(index,element)"/></div></div>
+          <div class="flex-container" style="align-items: center" :style="{backgroundColor: element===selectedFile? '#333':''}"><div class="handle pi pi-equals"></div><div class="flex file-name" @click="clickFile(element,index)">{{ element.name }}.{{ element.getFileExtension() }} <span v-if="element.errors.length===0" style="font-size: small; color: lime" class="pi pi-check-circle"/><span v-else style="font-size: small; color: red" class="pi pi-exclamation-circle"></span></div><div><Button severity="secondary" icon="pi pi-download" @click="downloadClazz(element)"/><Button :disabled="element.isFirstClazz" severity="secondary" icon="pi pi-trash" @click="removeClazz(index,element)"/></div></div>
         </template>
       </Sortable>
     </div>

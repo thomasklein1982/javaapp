@@ -630,11 +630,14 @@ export class Clazz{
     }
 
     let node=tree.topNode.firstChild;
-    while(node && node.type.name!=="ClassDeclaration"){
-      node=node.nextSibling;
-    }
-    if(!node){
-      this.errors.push(this.source.createError("Klassendeklaration erwartet",tree.topNode));
+    if(this.hasClazzDeclaration){
+      while(node && node.type.name!=="ClassDeclaration"){
+        node=node.nextSibling;
+      }
+      if(!node){
+        this.errors.push(this.source.createError("Klassendeklaration erwartet",tree.topNode));
+        return;
+      }
     }
     if(node.type.name==="ClassDeclaration"){
       node=node.firstChild;
