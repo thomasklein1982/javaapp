@@ -3,6 +3,7 @@
     <div>
       <Button @click="clickAddNewFile()" icon="pi pi-plus" label="Neu"/>
       <Button label="Hochladen" icon="pi pi-upload" @click="uploadFile()"/>
+      <Button label="ZIP" icon="pi pi-download" @click="downloadAllFiles()"/>
       <Sortable
         :list="files"
         item-key="id"
@@ -31,6 +32,7 @@ import { mimes } from '../consts/mimes';
 import { SourceFile } from '../classes/SourceFile';
 import { Clazz } from '../classes/Clazz';
 import { UIClazz } from '../classes/UIClazz';
+import { downloadFilesAsZip } from '../functions/downloadFilesAsZip';
 
 export default{
   components: {
@@ -122,6 +124,17 @@ export default{
       let c=clazz;
       if(!c) return;
       download(c.src,c.getFileName(),mimes[c.getFileExtension()]);
+    },
+    async downloadAllFiles(){
+      let files=[];
+      for(let i=0;i<this.files.length;i++){
+        let f=this.files[i];
+        files.push({
+          name: f.getFileName(),
+          input: f.src
+        });
+      }
+      downloadFilesAsZip(this.project.name+".zip",files);
     },
     toggle(){
       this.show=!this.show;

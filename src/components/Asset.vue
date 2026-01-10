@@ -1,6 +1,11 @@
 <template>
+  <ConfirmPopup v-if="editable"/>
   <Card class="asset" style="width: auto; display: inline-block" >
-    <template #title>{{ name }} <Button v-if="editable" size="small" @click="$emit('edit')" icon="pi pi-pencil"/></template>
+    <template #title>{{ name }} 
+      <Button v-if="editable" size="small" @click="$emit('edit')" icon="pi pi-pencil"/> 
+      <Button @click="trash($event)" size="small" icon="pi pi-trash" style="padding-left: 0.2rem; padding-right: 0.2rem"/>
+      <Button @click="download" size="small" icon="pi pi-download" style="padding-left: 0.2rem; padding-right: 0.2rem"/>
+    </template>
     <template #content>
       <template v-if="file.mime.indexOf('image')>=0">
         <img width="100" style="max-height: 200px; max-width: 200px" :src="file.code"/>
@@ -22,7 +27,7 @@
 
 <script>
 import Card from "primevue/card";
-
+import { download } from "../functions/helper";
 
 export default {
   props: {
@@ -69,13 +74,31 @@ export default {
     };
   },
   methods: {
+    download(){
+      let data=this.asset.file.code;
+      var mime = data.split(',')[0].split(':')[1].split(';')[0];
+      download(data,this.asset.name,mime);
+    },
+    trash(event) {
+      this.$confirm.require({
+        target: event.currentTarget,
+        message: 'Willst du dieses Asset wirklich löschen?',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          this.$emit("delete");
+        },
+        reject: () => {
+            
+        }
+      });
+    },
     click(){
       if(!this.editable && this.isImage){
         this.$emit("open-image-editor",this.asset);
       }
     }
   },
-  emits: ["edit","open-image-editor"],
+  emits: ["edit","open-image-editor","delete"],
   components: {
     Card
   }

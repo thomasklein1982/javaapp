@@ -1,5 +1,6 @@
 
-export function download(data,filename,mime,noDownload){
+
+export function download(data,filename,mime,noDownload,dontAddExtensionToFilename){
   window.URL =  window.URL || window.webkitURL;
   if(!filename) filename="Download.txt";
   if(!mime || !mime.substring){
@@ -10,7 +11,7 @@ export function download(data,filename,mime,noDownload){
     }else{
       var extension="txt";
       mime="text";
-      filename+=extension;
+      if(!dontAddExtensionToFilename) filename+=extension;
     }
   }else{
     if(mime!=="application/json" && mime.substring(0,4).toLowerCase()!="text"){
@@ -39,6 +40,8 @@ export function download(data,filename,mime,noDownload){
   },200);
   document.body.removeChild(downloadAnchor);
 }
+
+
 
 function uploadCallback(callback,options){
   //alert("upload callback");

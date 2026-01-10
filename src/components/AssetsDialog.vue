@@ -14,20 +14,26 @@
       @delete="deleteAsset"
       @open-image-editor="asset=>$emit('open-image-editor',asset)"
     />
-    Assets sind statische Ressourcen wie Bilder oder Sounds. Dieses Projekt verwendet <strong style="white-space: nowrap;">{{ assets.length }} Asset{{assets.length!==1? 's':''}}</strong> mit einer Gesamtgröße von <span style="white-space: nowrap; font-weight: bold" :style="{color: farbeGroesse}">{{ gesamtGroesseString }}</span>.
+    <p>Assets sind statische Ressourcen wie Bilder oder Sounds. Dieses Projekt verwendet <strong style="white-space: nowrap;">{{ assets.length }} Asset{{assets.length!==1? 's':''}}</strong> mit einer Gesamtgröße von <span style="white-space: nowrap; font-weight: bold" :style="{color: farbeGroesse}">{{ gesamtGroesseString }}</span>.</p>
     <Paginator v-model:rows="rows" v-model:first="first" :totalRecords="assets.length" :rowsPerPageOptions="[10, 20, 30]">
       <template #end>
         <Button type="button" icon="pi pi-sort" />
       </template>
     </Paginator>
     <template v-for="i in maxAssets">
-      <Asset :asset="assets[first+i-1]" editable @edit="editAssetAt(first+i-1)">
+      <Asset 
+        :asset="assets[first+i-1]" 
+        editable 
+        @edit="editAssetAt(first+i-1)"
+        @delete="deleteAsset(first+i-1)"
+      >
       </Asset>
     </template>
     
     <template #footer>
       <Button @click="$refs.importAssetDialog.setVisible(true)" icon="pi pi-plus" label="Importieren"/>
       <Button @click="$refs.newAssetDialog.setVisible(true)" icon="pi pi-plus" label="Hochladen"/>
+      <Button @click="downloadAllAssetsAsZip()" label="ZIP" icon="pi pi-download"/>
     </template>
   </Dialog>
 </template>
@@ -38,6 +44,7 @@
   import Asset from './Asset.vue';
   import EditAssetDialog from './EditAssetDialog.vue';
   import ImportAssetDialog from './ImportAssetDialog.vue';
+import { downloadFilesAsZip } from '../functions/downloadFilesAsZip';
 
   export default{
     props: {
@@ -98,6 +105,27 @@
       }
     },
     methods: {
+      downloadAllAssetsAsZip(){
+        let files=[];
+        for(let i=0;i<this.assets.length;i++){
+          let a=this.assets[i];
+          let data=a.file.code;
+          let mime = data.split(',')[0].split(':')[1].split(';')[0];
+          if(mime!=="application/json" && mime.substring(0,4).toLowerCase()!="text"){
+            /*dataurl*/
+            let bin = window.atob(data.split(',')[1]);
+            let arrayBuffer=new ArrayBuffer(bin.length);
+            data=new Uint8Array(arrayBuffer);
+            for(let i=0;i<bin.length;i++) data[i]=bin.charCodeAt(i);
+          }
+          let f={
+            name: a.name,
+            input: data
+          };
+          files.push(f);
+        }
+        downloadFilesAsZip(this.project.name+"-Assets.zip",files);
+      },
       setVisible(v){
         this.show=v;
       },
@@ -113,8 +141,8 @@
         a.file=asset.file;
         a.name=asset.name;
       },
-      deleteAsset(){
-        this.project.deleteAssetAt(this.editAssetIndex);
+      deleteAsset(index){
+        this.project.deleteAssetAt(index);
       }
     },
     components: {

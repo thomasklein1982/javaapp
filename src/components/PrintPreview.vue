@@ -1,24 +1,37 @@
 <template>
   <div v-if="$root.printMode" @click="close()" style="background-color: white; color: black; width: 100%; min-height: 100%; overflow-x: hidden; overflow-y: visible;">
-    <h1>Klassen</h1>
+    <h1>Projekt {{ project.name }}</h1>
     <div v-for="(c,i) in project.clazzes">
-      <template v-if="c.isUIClazz()">
-        <h2>UI-Klasse {{c.name}}</h2>
-        <UIComponent :component="c"/>
-        <CodeDisplay
-          :code="c.src"
-        />
-      </template>
-      <template v-else>
-        <h2>Klasse {{c.name}}</h2>
-        <div v-if="c.errors.length>0" style="font-size: small; font-family: monospace; color: red; margin-bottom: 1rem;">
-          <div v-for="(e,j) in c.errors">
-            [{{e.line.number}}:{{e.col}}]: {{e.message}} 
+      <template v-if="!$root.webMode || i>0">
+        <template v-if="c.isUIClazz()">
+          <h2>UI-Klasse {{c.getFileName()}}</h2>
+          <UIComponent :component="c"/>
+          <CodeDisplay
+            :code="c.src"
+          />
+        </template>
+        <template v-else-if="isSourceFile(c)">
+          <h2>{{c.getFileName()}}</h2>
+          <div v-if="c.errors.length>0" style="font-size: small; font-family: monospace; color: red; margin-bottom: 1rem;">
+            <div v-for="(e,j) in c.errors">
+              [{{e.line.number}}:{{e.col}}]: {{e.message}} 
+            </div>
           </div>
-        </div>
-        <CodeDisplay
-          :code="c.src"
-        />
+          <CodeDisplay
+            :code="c.src"
+          />
+        </template>
+        <template v-else>
+          <h2>Klasse {{c.getFileName()}}</h2>
+          <div v-if="c.errors.length>0" style="font-size: small; font-family: monospace; color: red; margin-bottom: 1rem;">
+            <div v-for="(e,j) in c.errors">
+              [{{e.line.number}}:{{e.col}}]: {{e.message}} 
+            </div>
+          </div>
+          <CodeDisplay
+            :code="c.src"
+          />
+        </template>
       </template>
     </div>
     <template v-if="project.css.trim().length>0">  
@@ -51,6 +64,7 @@
 <script>
 import UIComponent from './UIComponent.vue';
 import CodeDisplay from './CodeDisplay.vue';
+import { SourceFile } from '../classes/SourceFile';
 
 export default {
   props: {
@@ -67,7 +81,9 @@ export default {
     }
   },
   methods: {
-    
+    isSourceFile(c){
+      return (c instanceof SourceFile);
+    },
     open(){
       this.$root.printMode=true;
     }, 
