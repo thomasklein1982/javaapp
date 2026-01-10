@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from "vite-plugin-pwa";
+import prism from 'vite-plugin-prismjs';
 
 export default defineConfig(({mode})=>{
   let manifest;
@@ -57,6 +58,12 @@ export default defineConfig(({mode})=>{
         includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png', 'icon-transparent.png','Logo.png', 'additionalJSCode.js','icon-transparent.png','assets/primeicons.c9eaf535.eot','assets/*.ttf'],  
         //assetsInclude: ["assets/*.ttf"],
         manifest: manifest 
+      }),
+      prism({
+        languages: ['javascript', 'css', 'html', 'java'],
+        plugins: ['line-numbers','normalize-whitespace'],
+        theme: 'coy',
+        css: true,
       })
     ],
     base: "./"

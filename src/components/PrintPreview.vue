@@ -1,14 +1,11 @@
 <template>
   <div v-if="$root.printMode" @click="close()" style="background-color: white; color: black; width: 100%; min-height: 100%; overflow-x: hidden; overflow-y: visible;">
     <h1>Projekt {{ project.name }}</h1>
-    <div v-for="(c,i) in project.clazzes">
+    <div v-for="(c,i) in project.clazzes" style="break-after: page;">
       <template v-if="!$root.webMode || i>0">
         <template v-if="c.isUIClazz()">
           <h2>UI-Klasse {{c.getFileName()}}</h2>
           <UIComponent :component="c"/>
-          <CodeDisplay
-            :code="c.src"
-          />
         </template>
         <template v-else-if="isSourceFile(c)">
           <h2>{{c.getFileName()}}</h2>
@@ -19,6 +16,7 @@
           </div>
           <CodeDisplay
             :code="c.src"
+            :file-type="c.fileType"
           />
         </template>
         <template v-else>
@@ -38,6 +36,7 @@
       <h1>Globales CSS</h1>
       <CodeDisplay
         :code="project.css"
+        file-type="css"
       />
     </template>
     <template v-if="!project.database.isEmpty()">

@@ -58,6 +58,7 @@ import Extension from './classes/Extension.js';
 "use strict";
 
 
+
 (function(){
   let hash=location.hash;
   let pos=hash.indexOf("id=");
