@@ -52,6 +52,7 @@ import { SwitchStatement } from "./compile/SwitchStatement.js";
 import { TextBlock } from "./compile/TextBlock.js";
 import { Super } from "./compile/Super.js";
 import { TernaryExpression } from "./compile/TernaryExpression.js";
+import { Var } from "./compile/var.js";
 
 
 function doNothing(){}
@@ -64,7 +65,7 @@ export const CompileFunctions={
     if(node.type.isError){
       throw source.createError("Syntax-Fehler", node);
     }
-    let name=node.name==="null"? "Null" : (node.name==="this"? "ThisExpression" : node.name);
+    let name=node.name==="null"? "Null" : (node.name==="this"? "ThisExpression" : (node.name==="var"? "Var": node.name));
     let compile=this.functions[name];
     if(!compile){
       throw source.createError("Unbekanntes Sprachkonstrukt. Sorry, ich verstehe das (noch) nicht :( ["+node.name+"]", node);
@@ -72,6 +73,6 @@ export const CompileFunctions={
     return compile;
   },
   functions: {
-    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral,FloatingPointLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression, ArrayCreationExpression, Dimension, ArrayAccess, IfStatement, ArrayType, ForStatement, LineComment, ThisExpression, ReturnStatement, UpdateExpression, Null, WhileStatement, ArrayInitializer, UnaryExpression, Block, ScopedTypeName, ExplicitConstructorInvocation, CastExpression, BreakStatement, ContinueStatement, BlockComment, GenericType, LambdaExpression, FormalParameters, InstanceofExpression, MethodReference, TryStatement, Definition, CatchType, ThrowStatement, CharacterLiteral, InferredParameters, DoStatement, SwitchStatement, TextBlock, "super": Super, TernaryExpression
+    MethodInvocation,ExpressionStatement,StringLiteral,ArgumentList,Identifier,FieldAccess,IntegerLiteral,FloatingPointLiteral, BooleanLiteral, ObjectCreationExpression, TypeName, LocalVariableDeclaration, PrimitiveType, AssignmentExpression, IntegerLiteral, VariableDeclarator, BinaryExpression, ParenthesizedExpression, ArrayCreationExpression, Dimension, ArrayAccess, IfStatement, ArrayType, ForStatement, LineComment, ThisExpression, ReturnStatement, UpdateExpression, Null, WhileStatement, ArrayInitializer, UnaryExpression, Block, ScopedTypeName, ExplicitConstructorInvocation, CastExpression, BreakStatement, ContinueStatement, BlockComment, GenericType, LambdaExpression, FormalParameters, InstanceofExpression, MethodReference, TryStatement, Definition, CatchType, ThrowStatement, CharacterLiteral, InferredParameters, DoStatement, SwitchStatement, TextBlock, "super": Super, TernaryExpression, Var
   }
 }

@@ -21,15 +21,22 @@ export function VariableDeclarator(node,source,scope,vType){
     if(!val.type){
       throw source.createError("Dieser Ausdruck hat keinen Wert, der zugewiesen werden könnte.",node);
     }
-    vType.applyAutoboxing(val);
-    vType.autoCastValue(val);
-    if(!val.type.isSubtypeOf(vType)){
-      throw source.createError("Einer Variablen vom Typ '"+vType+"' kann kein Wert vom Typ '"+val.type+"' zugewiesen werden.",node);
+    if(vType.baseType==="var"){
+      vType.baseType=val.type.baseType;
+    }else{
+      vType.applyAutoboxing(val);
+      vType.autoCastValue(val);
+      if(!val.type.isSubtypeOf(vType)){
+        throw source.createError("Einer Variablen vom Typ '"+vType+"' kann kein Wert vom Typ '"+val.type+"' zugewiesen werden.",node);
+      }
     }
     code=name+"="+val.code;
     type=val.type;
     initialValue=val.code;
   }else{
+    if(vType.baseType==="var"){
+      throw source.createError("'var' ist nur erlaubt, wenn du direkt einen Wert zuweist.\nErlaubt: var x = 5;\nNicht erlaubt: var x;",node);
+    }
     code=name;
   }
   return {
