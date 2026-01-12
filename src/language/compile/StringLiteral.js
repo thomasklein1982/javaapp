@@ -12,7 +12,13 @@ export function StringLiteral(node,source,scope){
   try{
     JSON.parse(code);
   }catch(e){
-    throw source.createError("Der String enthält mindestens ein ungültiges Zeichen.\n"+e.message, node);
+    let test=code;
+    test=test.replace(/\\[0-9]+/g,"");
+    try{
+      JSON.parse(test);
+    }catch(e1){
+      throw source.createError("Der String enthält mindestens ein ungültiges Zeichen.\n("+e.message+")\n"+e1.message, node);
+    }
   }
   return {
     code: code,
