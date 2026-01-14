@@ -798,7 +798,7 @@ export default {
       for(let i=0;i<this.project.clazzes.length;i++){
         let c=this.project.clazzes[i];
         if(c.hasTooManyStatements()){
-          alert("Zu viele Anweisungen");
+          alert("Zu viele Befehle (Methodenaufrufe)");
           this.$root.handleExerciseTest({resArray: []});
           return;
         }

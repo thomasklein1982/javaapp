@@ -2,7 +2,7 @@ import { CompileFunctions } from "../CompileFunctions";
 
 export function ExpressionStatement(node,source,scope){
   node=node.firstChild;
-  scope.statementCount++;
+  
   let f=CompileFunctions.get(node,source);
   let a;
   //try{

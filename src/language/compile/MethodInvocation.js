@@ -19,6 +19,7 @@ import { ThisExpression } from "./ThisExpression";
  */
 export function MethodInvocation(node,source,scope){
   let rootNode=node;
+  scope.statementCount++;
   node=node.firstChild;
   
   let mn,al,methods;
