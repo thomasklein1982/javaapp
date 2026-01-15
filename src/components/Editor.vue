@@ -134,6 +134,7 @@
                             :settings="settings"
                             :font-size="fontSize"
                             @recompilepreview="compileProjectAndUpdateUIPreview()"
+                            @showCommandCountDialog="showCommandCountDialog()"
                             :current="paused && i===activeTab ? current : null"
                             @caretupdate="updateCaretPosition"
                             ref="editor"
@@ -213,6 +214,7 @@
       <span v-if="!webMode" style="position: fixed; bottom: 0.5rem; right: 0.5rem; z-index: 101">
         <span  v-if="!running">
           <Button style="margin-right: 0.2rem" v-if="project.exerciseData?.seed && (!running || paused)" label="Neuer Testfall" @click="createNewDemoCase()" icon="pi pi-refresh" />
+          <Button style="margin-right: 0.2rem" v-if="$root.exerciseCheckerCode && (!running || paused)" label="Testen" @click="resume()" icon="pi pi-play" />
           <Button style="margin-right: 0.2rem" v-if="$root.exerciseCheckerCode && (!running || paused)" label="Prüfen" @click="runExerciseChecker()" icon="pi pi-list-check" />
           
         </span>
@@ -227,6 +229,13 @@
     />
     <Dialog header="Neue Datei" v-model:visible="showNewClazzDialog">
       <NewClazzWizard :project="project" @confirm="addNewClazz"/>
+    </Dialog>
+    <Dialog :header="dialog.header" v-model:visible="dialog.show">{{ dialog.content }}</Dialog>
+    <Dialog header="Was sind Befehle?" v-model:visible="showCommandHelpDialog">
+      Bei manchen Aufgaben darfst du nur eine gewisse Anzahl von <em>Befehlen</em> verwenden. Was aber ist ein Befehl?
+      <p>Mit <em>Befehl</em> ist hier der Aufruf einer Methode gemeint.</p>
+      <p>Zum Beispiel ist <code class="code">System.out.println( "Hallo" );</code> ein Befehl, weil die Methode <code class="code">println</code> des Objekts <code class="code">System.out</code> aufgerufen wird.</p>
+      <p>Im Gegensatz dazu ist <code class="code">int x = 5;</code> <em>kein</em> Befehl.</p>
     </Dialog>
   </div>
 </template>
@@ -343,7 +352,12 @@ export default {
       showMenubar: true,
       showRunButton: true,
       closeRightAfterStopping: false,
-      selectedUIComponent: null
+      selectedUIComponent: null,
+      dialog: {
+        header: "",
+        content: ""
+      },
+      showCommandHelpDialog: false
     };
   },
   watch: {
@@ -424,6 +438,14 @@ export default {
     },1000);
   },
   methods: {
+    openDialog(header,content){
+      this.dialog.header=header;
+      this.dialog.content=content;
+      this.dialog.show=true;
+    },
+    showCommandCountDialog(){
+      this.showCommandHelpDialog=true;
+    },
     hideEditor(index){
       let c=this.project.clazzes[index];
       c.isEditorShown=false;
@@ -902,5 +924,11 @@ export default {
 }
 #actionButtons{
   background-color: rgb(36, 36, 52);
+}
+.code{
+  border: 1pt solid orange;
+  font-family: monospace monospace;
+  background-color: white;
+  color: darkblue;
 }
 </style>

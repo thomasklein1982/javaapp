@@ -23,6 +23,8 @@ export function VariableDeclarator(node,source,scope,vType){
     }
     if(vType.baseType==="var"){
       vType.baseType=val.type.baseType;
+      vType.typeArguments=val.type.typeArguments;
+      vType.dimension=val.type.dimension;
     }else{
       vType.applyAutoboxing(val);
       vType.autoCastValue(val);
