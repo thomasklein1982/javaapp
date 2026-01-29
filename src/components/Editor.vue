@@ -135,7 +135,7 @@
                             :font-size="fontSize"
                             @recompilepreview="compileProjectAndUpdateUIPreview()"
                             @showCommandCountDialog="showCommandCountDialog()"
-                            :current="paused && i===activeTab ? current : null"
+                            :current="i===activeTab ? current : null"
                             @caretupdate="updateCaretPosition"
                             ref="editor"
                           />
@@ -175,6 +175,7 @@
               <SplitterPanel v-if="!$root.webMode" style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
                 <Insights 
                   v-if="running"
+                  ref="insights"
                   :project="project"
                   :line="current.line"
                   :step="current.step"
@@ -438,6 +439,10 @@ export default {
     },1000);
   },
   methods: {
+    triggerInsightsUpdateScope(){
+      if(!this.$refs.insights) return;
+      this.$refs.insights.updateScope();
+    },
     openDialog(header,content){
       this.dialog.header=header;
       this.dialog.content=content;

@@ -134,6 +134,7 @@ window.appJScode=function(){
       },
       debug: {
         lastLine: -1,
+        slowMode: 0,
         lastName: true,
         object: null,
         $scope: null,
@@ -188,6 +189,16 @@ window.appJScode=function(){
             });
             var q=await p;
             return q;
+          }else if(this.slowMode>0){
+            
+            console.log("send line",line)
+            window.parent.postMessage({
+              type: "slow-mode-sleep",
+              line: line,
+              name: name
+            });
+            await $Exercise.sleep(this.slowMode);
+            console.log("go on")
           }
         },
         setBreakpoints: function(bp){
@@ -218,6 +229,7 @@ window.appJScode=function(){
           }else if(data.type==="debug-resume"){
             this.paused=false;
             this.stepAbove=false;
+            $App.debug.slowMode=data.slowMode;
             this.resolve();
           }else if(data.type==="debug-step"){
             this.stepAbove=false;

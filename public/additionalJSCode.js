@@ -7062,6 +7062,7 @@ function additionalJSCode(){
     }
     static async checkTestCases(initData,testcases,applyTestFunc){
       let resArray=[];
+      $App.debug.slowMode=0;
       $Exercise.setUIBlocked(true);
       for(let i=0;i<testcases.length;i++){
         let tc=testcases[i];

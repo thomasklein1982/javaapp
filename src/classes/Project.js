@@ -886,6 +886,7 @@ export class Project{
       urls: JSON.parse(JSON.stringify(this.urls)),
       date: new Date(),
       javaappVersion: app.version,
+      slowMode: app.slowMode,
       exerciseData: JSON.parse(JSON.stringify(this.exerciseData))
     };
   }
@@ -954,6 +955,9 @@ export class Project{
       this.exerciseData=o.exerciseData;
     }else{
       this.exerciseData=null;
+    }
+    if(o.slowMode!==undefined){
+      app.slowMode=o.slowMode;
     }
     this.deleteClazzes();
     let clazzes=o.clazzesSourceCode||o.clazzes;

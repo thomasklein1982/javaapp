@@ -30,6 +30,7 @@
     <template #end>
       <template v-if="currentClazz && !currentClazz.isUIClazz()">
         <badge style="margin-right: 0.5rem" v-if="caretPosition>=0">Pos: {{ caretPosition }}</badge>
+        <Button :severity="$root.slowMode? 'primary':'secondary'" rounded size="small" style="margin-right: 0.5rem" label="" icon="pi pi-clock" @click="$root.slowMode=!$root.slowMode"/>
         <Button severity="secondary" rounded size="small" style="margin-right: 0.5rem" label="" icon="pi pi-undo" @click="$emit('undo')"/>
         <Button severity="secondary" rounded size="small" style="margin-right: 0.5rem" label="" icon="pi pi-refresh" @click="$emit('redo')"/>
       </template>

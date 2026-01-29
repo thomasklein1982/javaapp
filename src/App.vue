@@ -52,6 +52,7 @@ export default{
       version: version,
       paused: false,
       printMode: false,
+      slowMode: false,
       current: {line: -1, step: 0, name: null, $scope: {local: null, main: null, that: null}},
       difficulty: options.difficulty(),
       webMode: import.meta.env.MODE==="web",
@@ -95,6 +96,9 @@ export default{
     this.emitEvent("ready");
   },
   methods: {
+    getSlowModeDelay(){
+      return this.slowMode? 500 : 0;
+    },
     showHelp(){
       this.$refs.dialogHelp.setVisible(true);
     },

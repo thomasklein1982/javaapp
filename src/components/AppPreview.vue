@@ -64,7 +64,8 @@ import { options } from '../classes/Options';
       resume(args){
         if(this.frame){
           this.frame.contentWindow.postMessage({
-            type: "debug-resume"
+            type: "debug-resume",
+            slowMode: this.$root.getSlowModeDelay()
           });
         }
         this.focus();
@@ -102,6 +103,7 @@ import { options } from '../classes/Options';
         }else{
           prefix=noDebugging?"$App.console.hide();":"$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");";
         }
+        prefix+="$App.debug.slowMode="+(this.$root.getSlowModeDelay())+";\n";
         prefix+=additionalCode;
         let code=this.project.getFullAppCode(prefix,false,false,args);
 

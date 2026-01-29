@@ -21,7 +21,7 @@
       </template>
       <template v-else>
       </template>
-      <div style="font-family: monospace" v-if="scope && paused">
+      <div style="font-family: monospace" v-if="showLocals">
         <template v-if="scope && scope.that">
           <VariableWatcher
             :variable="scope.that"
@@ -92,6 +92,9 @@ export default{
     },
   },
   computed: {
+    showLocals(){
+      return this.scope && (this.paused || this.$root.slowMode);
+    },
     mainClazz(){
       return this.project.getMainClazz();
     },

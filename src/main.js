@@ -220,6 +220,9 @@ window.onmessage=async function(message){
   }else if(data.type==="debug-pause"){
     app.paused=true;
     app.resetCurrent(data.line,data.name);
+  }else if(data.type==="slow-mode-sleep"){
+    app.resetCurrent(data.line,data.name);
+    app.$refs.editor.triggerInsightsUpdateScope();
   }else if(data.type==="getScope"){
     app.current.$scope.local=data.data.local;
     app.current.$scope.that=data.data.that;

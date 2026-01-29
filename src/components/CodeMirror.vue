@@ -36,6 +36,28 @@ import {hoverTooltip} from "@codemirror/view";
 import prettier from "prettier";
 import javaPlugin from "prettier-plugin-java";
 
+const addLineHighlight = StateEffect.define();
+
+const lineHighlightField = StateField.define({
+  create() {
+    return Decoration.none;
+  },
+  update(lines, tr) {
+    lines = lines.map(tr.changes);
+    for (let e of tr.effects) {
+      if (e.is(addLineHighlight)) {
+        lines = Decoration.none;
+        lines = lines.update({add: [lineHighlightMark.range(e.value)]});
+      }
+    }
+    return lines;
+  },
+  provide: (f) => EditorView.decorations.from(f),
+});
+
+const lineHighlightMark = Decoration.line({
+  attributes: {style: 'background-color: darkslategray'},
+});
 
 // const addMethodMark = StateEffect.define({
 //   map: ({from, to}, change) => ({from: change.mapPos(from), to: change.mapPos(to)})
@@ -316,9 +338,12 @@ export default {
       if(nv.name!==this.clazz.name) return;
       if(nv===null && ov!==null){
         this.setCursorToLine(ov.line);
+        this.unhighlightLines();
       }else if(nv.line<1){
         this.setCursorToLine(ov.line);
+        this.unhighlightLines();
       }else{
+        this.highlightLine(nv.line);
         let line=this.getLineByNumber(nv.line);
         try{
           this.setSelection(line.from,line.to);
@@ -422,6 +447,7 @@ export default {
           autocompletion({override: [createAutocompletion()]}),
           keymap.of([indentWithTab]),
           //methodMarkField,
+          lineHighlightField,
           EditorView.updateListener.of((v) => {
             this.$emit("caretupdate",v.state.selection.main.head);
             if(!v.docChanged) return;
@@ -524,6 +550,14 @@ export default {
     this.setCode(this.clazz.src);
   },
   methods: {
+    unhighlightLines(){
+      this.editor.dispatch({effects: addLineHighlight.of(-1)});
+    },
+    highlightLine(lineNo) {
+      if (lineNo <= 0) return;
+      const docPosition = this.editor.state.doc.line(lineNo).from;
+      this.editor.dispatch({effects: addLineHighlight.of(docPosition)});
+    },
     removeAllBreakpoints(){
       removeAllBreakpoints(this.clazz,this.editor);
     },
