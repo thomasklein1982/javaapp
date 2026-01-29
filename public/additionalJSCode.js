@@ -7262,7 +7262,10 @@ function additionalJSCode(){
       //console.log("feedback",points,maxPoints);
       $Exercise.sendMessage("exercise-tested",{resArray});
     }
-    static random(min,max){
+    static random(min,max, randomObject){
+      if(randomObject){
+        return randomObject.nextInt(max-min+1)+min;
+      }
       return Math.floor(Math.random()*(max-min+1))+min;
     }
     static swap(array, i1,i2){
@@ -7270,30 +7273,30 @@ function additionalJSCode(){
       array[i1]=array[i2];
       array[i2]=c;
     }
-    static randomize(array){
+    static randomize(array, randomObject){
       for(let i=0;i<array.length;i++){
-        let index=$Exercise.random(0,array.length-1);
+        let index=$Exercise.random(0,array.length-1, randomObject);
         $Exercise.swap(array,i,index);
       }
     }
-    static getRandomizedCopy(array){
+    static getRandomizedCopy(array, randomObject){
       let copy=JSON.parse(JSON.stringify(array));
-      $Exercise.randomize(copy);
+      $Exercise.randomize(copy,randomObject);
       return copy;
     }
     static getRange(min,max,step){
       if(!step) step=1;
       let array=[];
       let i=min;
-      while(i<max){
+      while(i<=max){
         array.push(i);
         i+=step;
       }
       return array;
     }
-    static randomFrom(array,k){
+    static randomFrom(array,k,randomObject){
       if(k===undefined) k=1;
-      let r=$Exercise.getRandomizedCopy(array);
+      let r=$Exercise.getRandomizedCopy(array, randomObject);
       let drawn=[];
       for(let i=0;i<k;i++){
         drawn.push(r[i]);
