@@ -190,15 +190,12 @@ window.appJScode=function(){
             var q=await p;
             return q;
           }else if(this.slowMode>0){
-            
-            console.log("send line",line)
             window.parent.postMessage({
               type: "slow-mode-sleep",
               line: line,
               name: name
             });
             await $Exercise.sleep(this.slowMode);
-            console.log("go on")
           }
         },
         setBreakpoints: function(bp){

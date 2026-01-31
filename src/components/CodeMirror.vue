@@ -33,8 +33,9 @@ import {createAutocompletion } from '../functions/cm/autocompletion';
 import { options } from "../classes/Options";
 
 import {hoverTooltip} from "@codemirror/view";
-import prettier from "prettier";
-import javaPlugin from "prettier-plugin-java";
+// import prettier from "prettier";
+// import javaPlugin from "prettier-plugin-java";
+import readOnlyRangesExtension from "codemirror-readonly-ranges";
 
 const addLineHighlight = StateEffect.define();
 
@@ -293,6 +294,27 @@ const languageConf=new Compartment();
 const javaWithClazz=java();
 const javaWithoutClazz=new LanguageSupport(javaLanguage.configure({top: "ClassContent"}));
 
+const _readOnlyLineNumbers=[];
+
+const readOnlyConf=new Compartment();
+
+const getReadOnlyRanges = (targetState)=> {
+  let ranges=[];
+  for(let i=0;i<_readOnlyLineNumbers.length;i++){
+    let ln=_readOnlyLineNumbers[i];
+    if(ln>0){
+    }else if(ln<0){
+      ln=targetState.doc.lines+ln+1;
+    }
+    let line=targetState.doc.line(ln);
+    ranges.push({
+      from: line.from,
+      to: line.to,
+    });
+  }
+  return ranges;
+}
+
 const additionalCompletions=[];
 
 let lint;
@@ -444,6 +466,7 @@ export default {
           //wordHover,
           indentUnit.of("  "),
           languageConf.of(language),
+          readOnlyConf.of(readOnlyRangesExtension(getReadOnlyRanges)),
           autocompletion({override: [createAutocompletion()]}),
           keymap.of([indentWithTab]),
           //methodMarkField,
@@ -566,6 +589,18 @@ export default {
         effects: languageConf.reconfigure(language)
       });
     },
+    setReadOnlyLines(lineNumberArray){
+      while(_readOnlyLineNumbers.length>0) _readOnlyLineNumbers.pop();
+      if(lineNumberArray){
+        for(let i=0;i<lineNumberArray.length;i++){
+          let l=lineNumberArray[i];
+          _readOnlyLineNumbers.push(l);
+        }
+      }
+      this.editor.dispatch({
+        effects: readOnlyConf.reconfigure()
+      });
+    },
     setClazzDeclarationMandatory(){
       this.setLanguage(javaWithClazz);
     },
@@ -642,6 +677,7 @@ export default {
     // },
     setCode(code){
       this.$root.log("set Code for editor "+this.clazz.name);
+      this.setReadOnlyLines([]);
       this.triggerRecompilation=false;
       this.size=code.length;
       var old=this.editor.state.doc.toString();
@@ -651,6 +687,7 @@ export default {
       setTimeout(()=>{
         this.updateMethodMarks();
       },1000);
+      this.setReadOnlyLines(this.clazz.readOnlyLines);
     },
     updateMethodMarks(){
       // let effects = [clearMethodMarks.of()];
@@ -708,7 +745,7 @@ export default {
       return this.state.doc.lineAt(pos);
     },
     async prettifyCode(){
-
+      return;
       let code=this.getCode();
       code=await prettier.format(code, {
         parser: "java",

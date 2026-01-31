@@ -54,6 +54,7 @@ export class Clazz{
     this.node=null;
     this.references=[];
     this.isFirstClazz=false;
+    this.readOnlyLines=undefined; //kann ein Array mit Zeilennummern sein, die nicht geaendert werden koennen, z. B. [1,-1] für die erste und die letzte Zeile
     this._isBuiltIn=project===undefined;
     if(this.name){
       this.typeSnippet=autocomplete.snippetCompletion(this.name, {
@@ -101,6 +102,12 @@ export class Clazz{
     o.isHidden=this.isHidden;
     o.isEditorShown=this.isEditorShown;
     o.uml=this.uml;
+    if(this.readOnlyLines){
+      o.readOnlyLines=[];
+      for(let i=0;i<this.readOnlyLines.length;i++){
+        o.readOnlyLines.push(this.readOnlyLines[i]);
+      }
+    }
     return o;
   }
 
@@ -109,6 +116,11 @@ export class Clazz{
       this.name=obj.name;
     }else{
       this.name=null;
+    }
+    if(obj.readOnlyLines){
+      this.readOnlyLines=obj.readOnlyLines;
+    }else{
+      this.readOnlyLines=undefined;
     }
     if(obj.src){
       this.src=obj.src;

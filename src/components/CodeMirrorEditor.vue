@@ -20,11 +20,12 @@ import {openSearchPanel,closeSearchPanel} from '@codemirror/search';
 import {Compartment,EditorState} from '@codemirror/state';
 import {autocompletion} from "@codemirror/autocomplete";
 import { oneDark } from '@codemirror/theme-one-dark';
-import prettier from "prettier";
-import esTreePlugin from "prettier/plugins/estree";
-import acorn from "prettier/plugins/acorn";
-import htmlPlugin from "prettier/plugins/html";
-import cssPlugin from "prettier/plugins/postcss";
+// import prettier from "prettier";
+//import esTreePlugin from "prettier/plugins/estree";
+//import acorn from "prettier/plugins/acorn";
+//import {Parser as acorn} from "acorn";
+// import htmlPlugin from "prettier/plugins/html";
+// import cssPlugin from "prettier/plugins/postcss";
 
 
 export default {
@@ -134,18 +135,18 @@ export default {
       let options={tabWidth: 2};
       if(this.language==="html"){
         options.parser="html";
-        options.plugins=[htmlPlugin];
+        //options.plugins=[htmlPlugin];
       }else if(this.language==="css"){
         options.parser="css";
-        options.plugins=[cssPlugin];
+        //options.plugins=[cssPlugin];
       }else if(this.language==="js"){
         options.parser="acorn";
-        options.plugins=[esTreePlugin,acorn];
+        //options.plugins=[acorn];
       }
-      code=await prettier.format(code, options);
-      this.editor.dispatch({
-        changes: {from: 0, to: size, insert: code}
-      });
+      // code=await prettier.format(code, options);
+      // this.editor.dispatch({
+      //   changes: {from: 0, to: size, insert: code}
+      // });
     },
     clearRuntimeErrors(){
       this.runtimeError=null;
