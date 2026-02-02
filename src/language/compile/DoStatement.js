@@ -20,7 +20,7 @@ export function DoStatement(node,source,scope){
     throw thenBlock.errors[0];
   }
   code+="{";
-  if(scope.isUndebuggableContext() ){
+  if(scope.isDebuggableContext() ){
     code+="\nawait $App.debug.line("+lineNumber+","+JSON.stringify(scope.method.clazz.name)+",$scope);";
   }
   code+=thenBlock.code+"}";
