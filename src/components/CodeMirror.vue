@@ -888,14 +888,14 @@ export default {
 <style scoped>
   #root{
     flex: 10;
-    overflow-y: hidden;
+    overflow-ys: hidden;
     display: flex;
     flex-direction: column;
     position: relative;
   }
   #editor{
     flex: 1;
-    overflow-y:auto;
+    overflow-ys:auto;
     display: flex;
     flex-direction: column;
   }
