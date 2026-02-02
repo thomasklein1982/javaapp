@@ -22,14 +22,11 @@ export function CastExpression(node,source,scope){
   if(baseType.isGeneric){
     baseType=Java.datatypes.Object;
   }
-  let type={
-    baseType,
-    dimension: value.type.dimension
-  }
+  let type=new Type(baseType, value.type.dimension);
   if(baseType.name===Java.clazzes.Object.name && value.type.dimension===0){
     /**wenn der Wert ein Object ist, muss geschaut werden, ob es ein */
   }
-  if(!destType.isSubtypeOf(type)){
+  if(!destType.isSubtypeOf(type) && !type.isSubtypeOf(destType)){
     throw source.createError("Ein Wert des Typs '"+value.type.toString()+"' kann nicht zu '"+destType.toString()+"' gecastet werden.",node);
   }
   let code;

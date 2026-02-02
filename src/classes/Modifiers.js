@@ -25,11 +25,7 @@ export class Modifiers{
           errors.push(source.createError("Doppeltes Schlüsselwert 'static'.",node));
         }else{
           this.isStatic=true;
-        }
-        
-      }else{
-        console.log("modifier");
-        console.log(node);
+        } 
       }
       node=node.nextSibling;
     }

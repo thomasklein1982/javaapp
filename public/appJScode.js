@@ -934,6 +934,9 @@ window.appJScode=function(){
           let obj=arguments[i];
           if(obj===undefined) obj="";
           let item;
+          if(obj instanceof $Char){
+            obj=obj.char;
+          }
           if(typeof obj==="object"){
             item=$App.console.createConsoleItem(null,false,true);
             item.update(obj);
@@ -965,6 +968,9 @@ window.appJScode=function(){
           let obj=arguments[i];
           if(obj===undefined) obj="";
           let item;
+          if(obj instanceof $Char){
+            obj=obj.char;
+          }
           if(typeof obj==="object"){
             item=$App.console.createConsoleItem(null,false,true);
             item.update(obj);
@@ -1129,7 +1135,7 @@ window.appJScode=function(){
           }else if(obj===null){
             v="null";
           }else if(obj instanceof $Char){
-            v="'"+obj.char+"' ["+obj.int+"]";
+            v=obj.char;
           }else if(typeof obj==="object"){
             this.button.style.backgroundColor="gray";
             this.button.textContent=this.expanded? "-": "+";

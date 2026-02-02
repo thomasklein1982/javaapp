@@ -398,7 +398,6 @@ export class Method{
       }
     }else{
       if(!node || node.name!=="Block" && node.name!=="ConstructorBody"){
-        console.log("abstract?",this.clazz,node);
         if(this.clazz.isAbstract && node.name===";"){
           this.bodyNode=null;
         }else{

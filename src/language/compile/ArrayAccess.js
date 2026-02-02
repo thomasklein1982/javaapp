@@ -51,6 +51,6 @@ export function ArrayAccess(node,source,scope){
   }
   scope.addTypeAnnotation(node,type,false);
   return {
-    code, codeSet,codeUpdate, type: type, codeUpdateAfter: ")"
+    code, codeSet,codeUpdate, type: type, codeUpdateAfter: ")", object: {name: null, type: type}
   }
 }

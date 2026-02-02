@@ -1,4 +1,5 @@
 import { Scope } from "../../classes/Scope";
+import { Type } from "../../classes/Type";
 import { CompileFunctions } from "../CompileFunctions";
 
 export function LambdaExpression(node,source,scope,infos){
@@ -6,7 +7,10 @@ export function LambdaExpression(node,source,scope,infos){
     throw source.createError("Unvorhergesehener Lamdba-Ausdruck.\nWahrscheinlich verursacht durch einen anderen Fehler.",node);
   }
   let inter,typeArguments;
-  if(infos.parameter && infos.parameter.type && infos.owner){
+  if(infos instanceof Type){
+    inter=infos;
+    typeArguments=null;
+  }else if(infos.parameter && infos.parameter.type && infos.owner){
     inter=infos.parameter.type;
     typeArguments=infos.owner.typeArguments;
   }else if(infos.assignTarget){
@@ -29,9 +33,18 @@ export function LambdaExpression(node,source,scope,infos){
     throw source.createError("Das Interface "+inter.toString()+" ist nicht funktional, d.h., es hat mehr als eine Methode. Daher kannst du an dieser Stelle keinen Lambda-Ausdruck verwenden.",node);
   }
   node=node.firstChild;
-  let params=CompileFunctions.get(node,source);
-  params=params(node,source,scope);
-  
+  let params;
+  if(node.name==="Definition"){
+    let cf=CompileFunctions.get(node,source);
+    let def=cf(node,source,scope);
+    params={
+      code: def.code,
+      params: [def.code]
+    };
+  }else{
+    params=CompileFunctions.get(node,source);
+    params=params(node,source,scope);
+  }
   let plist;
   try{
     plist=method.getRenamedParameterList(typeArguments,params.params);
@@ -46,6 +59,7 @@ export function LambdaExpression(node,source,scope,infos){
     throw source.createError(e,node);
   }
   node=node.nextSibling;
+  let isBlock=node.name==="Block";
   let block=CompileFunctions.get(node,source);
   scope.pushMethod(method);
   block=block(node,source,scope);
@@ -54,10 +68,10 @@ export function LambdaExpression(node,source,scope,infos){
   }
   scope.popLayer();
   scope.popMethod();
-  if(block.errors.length>0){
+  if(block.errors?.length>0){
     throw block.errors[0];
   }
-  let code="async "+params.code+"=>{"+block.code+"}";
+  let code=isBlock? "async "+params.code+"=>{"+block.code+"}": "async "+params.code+"=>"+block.code+"";
   
   code="$createInterfaceInstance("+JSON.stringify(inter.baseType.name)+","+JSON.stringify(method.name)+","+code+")";
   return {

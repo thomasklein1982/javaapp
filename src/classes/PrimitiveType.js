@@ -41,6 +41,7 @@ export class PrimitiveType{
       if(this.name===type.name){
         return true;
       }
+      //if(this.name==="int" && type.name==="char") return true;
       return (this.supertype && this.supertype.isSubtypeOf(type));
     }
     if(this===Java.datatypes.nullType) return true;

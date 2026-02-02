@@ -61,7 +61,7 @@ export function Block(node,source,scope){
         if(scope.isDebuggableContext() && !res.waitForLineIncluded){
           let line=source.getLineNumber(node.from);
           if(scope.isDebuggableContext()){
-            code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",$scope);";
+            code+="\nawait $App.debug.line("+line+","+JSON.stringify(scope.getClazz().name)+",$scope);";
           }else{
             code+="\n";
           }
