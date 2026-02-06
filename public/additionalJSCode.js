@@ -2838,6 +2838,18 @@ function additionalJSCode(){
       let y=(ry/this.fit.sy+this.axes.y.min);
       return {x, y};
     }
+    getMinX(){
+      return this.axes.x.min;
+    }
+    getMaxX(){
+      return this.axes.x.max;
+    }
+    getMinY(){
+      return this.axes.y.min;
+    }
+    getMaxY(){
+      return this.axes.y.max;
+    }
     getXInPixels(x){
       let dpr=window.devicePixelRatio||1;
       return (x-this.axes.x.min)*this.fit.sx*dpr;

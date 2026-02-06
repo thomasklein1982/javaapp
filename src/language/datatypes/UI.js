@@ -1062,6 +1062,30 @@ function defineCanvas(Clazz,Java){
     info: ""
   },Clazz,false,false);
   createMethod({
+    name: 'getMinX',
+    args: [],
+    returnType: "double",
+    info: "Liefert den kleinsten sichtbaren x-Wert zurück."
+  },Clazz,false,false);
+  createMethod({
+    name: 'getMaxX',
+    args: [],
+    returnType: "double",
+    info: "Liefert den größten sichtbaren x-Wert zurück."
+  },Clazz,false,false);
+  createMethod({
+    name: 'getMinY',
+    args: [],
+    returnType: "double",
+    info: "Liefert den kleinsten sichtbaren y-Wert zurück."
+  },Clazz,false,false);
+  createMethod({
+    name: 'getMaxY',
+    args: [],
+    returnType: "double",
+    info: "Liefert den größten sichtbaren y-Wert zurück."
+  },Clazz,false,false);
+  createMethod({
     name: 'reset',
     args: [
     ],
