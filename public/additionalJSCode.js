@@ -2844,7 +2844,7 @@ function additionalJSCode(){
     }
     getYInPixels(y){
       let dpr=window.devicePixelRatio||1;
-      return (this.axes.y.max-y-this.axes.y.min)*this.fit.sy*dpr;
+      return (this.axes.y.max-y)*this.fit.sy*dpr;
     }
     getWidthInPixels(w){
       let dpr=window.devicePixelRatio||1;
