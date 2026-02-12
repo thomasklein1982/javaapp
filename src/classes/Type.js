@@ -164,7 +164,7 @@ export class Type{
       value.code="$i("+value.code+")";
     }else if(value.type.isInt()){
       value.code="$i("+value.code+")";
-    }else if(value.type.isChar() && (this.isInt()||this.isDouble)){
+    }else if(value.type.isChar() && (this.isInt()||this.isDouble())){
       value.type=this;
       value.code="$i("+value.code+".int)";
     }
