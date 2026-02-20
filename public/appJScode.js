@@ -610,7 +610,7 @@ window.appJScode=function(){
       if(kb.lastKeycodeDown!==k){
         kb.lastKeycodeDown=k;
         if($App.debug.paused) return;
-        if(window.$main.onKeyDown){
+        if(window.$main?.onKeyDown){
           try{
             $main.onKeyDown(k);
           }catch(e){
@@ -625,7 +625,7 @@ window.appJScode=function(){
       delete kb.down[k];
       kb.lastKeycodeDown=-1;
       if($App.debug.paused) return;
-      if(window.$main.onKeyUp){
+      if(window.$main?.onKeyUp){
         try{
           $main.onKeyUp(k);
         }catch(e){

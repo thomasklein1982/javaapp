@@ -3277,6 +3277,23 @@ function additionalJSCode(){
     }
   }
 
+  // class TextArea2 extends JTextComponent{
+  //   $constructor(placeholder){
+  //     super.$constructor();
+  //     this.$standardCSSClasses+=" __jtextarea";
+  //     this.$el=document.createElement("textarea");//ui.textarea(placeholder,x,y,width,height);
+  //     this.$el.placeholder=placeholder;
+  //     this.setAlignment("top left");
+  //     this.$el.spellCheck=false;
+  //     this.$el.component=this;
+  //     this.$el.onchange = $handleOnAction;
+  //     this.setCSSClass("");
+  //   }
+  //   append(s){
+  //     this.setValue(this.getValue()+s);
+  //   }
+  // }
+
   class DataTable extends JComponent{
     $constructor(){
       super.$constructor();

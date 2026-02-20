@@ -329,9 +329,14 @@ document.addEventListener("keydown", function(e) {
   if(!platform) platform="";
 
   let key=e.code||e.keyCode;
-  if ((platform.match("Mac") ? e.metaKey : e.ctrlKey)  && (key === 83 || key==="KeyS")) {
+  let ctrlKey=platform.match("Mac") ? e.metaKey : e.ctrlKey;
+  if ( ctrlKey && (key === 83 || key==="KeyS")) {
     e.preventDefault();
     window.app.$refs.editor.downloadProject();
+  }
+  if ( key === 113 || key==="F2") {
+    e.preventDefault();
+    window.app.$refs.editor.toggleRun();
   }
 }, false);
 

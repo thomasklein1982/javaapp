@@ -7,6 +7,9 @@ export function VariableDeclarator(node,source,scope,vType){
   let name = getVariableName(node,source);
   node=node.firstChild;
   let val;
+  if(!vType){
+    throw source.createError("Fehler beim Datentyp",node);
+  }
   if(node.nextSibling){
     node=node.nextSibling;
     if(node.type.isError){

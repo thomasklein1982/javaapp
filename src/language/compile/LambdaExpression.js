@@ -19,6 +19,9 @@ export function LambdaExpression(node,source,scope,infos){
   }else{
     throw source.createError("An dieser Stelle kann kein Lambda-Ausdruck übergeben werden.",node);
   }
+  if(!inter || !inter.baseType){
+    throw source.createError("Syntax-Fehler",node);
+  }
   if(inter.dimension>0 || !inter.baseType.isInterface){
     throw source.createError("An dieser Stelle kann kein Lambda-Ausdruck übergeben werden.",node);
   }

@@ -73,8 +73,8 @@
         <div id="actionButtons" style="overflow: auto">
           <div><Button title="Dateimanager" :label="showActionButtonLabels?'Dateimanager':''" icon="pi pi-copy" @click="openFileDrawer()" text size="large"/></div>
           <div v-if="!webMode">
-            <Button v-if="!running||paused" title="Ausführen" :label="showActionButtonLabels?'Ausführen':''" :disabled="!showRunButton" @click="resume()" icon="pi pi-play" size="large" text />
-            <Button v-else title="Anhalten" :label="showActionButtonLabels?'Anhalten':''" :disabled="!showRunButton" @click="stop()" icon="pi pi-times" size="large" text />
+            <Button v-if="!running||paused" title="Ausführen (F2)" :label="showActionButtonLabels?'Ausführen (F2)':''" :disabled="!showRunButton" @click="resume()" icon="pi pi-play" size="large" text />
+            <Button v-else title="Anhalten (F2)" :label="showActionButtonLabels?'Anhalten (F2)':''" :disabled="!showRunButton" @click="stop()" icon="pi pi-times" size="large" text />
           </div>
           <div><Button title="Formatieren" :label="showActionButtonLabels?'Code Formatieren':''" :disabled="!((!running || paused))" @click="prettifyCode()" icon="pi pi-align-left" size="large" text /></div>
           <div><Button title="Kommentar umschalten" @click="toggleComment()" size="large" text>
@@ -836,6 +836,13 @@ export default {
     stopAndPlay(infos){
       this.stop();
       this.resume(infos.args);
+    },
+    toggleRun(){
+      if(this.running){
+        this.stop();
+      }else{
+        this.resume();
+      }
     },
     resume(args){
       if(this.rightClosed){
