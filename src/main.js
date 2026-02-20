@@ -315,6 +315,9 @@ window.onmessage=async function(message){
       };
     }
     app.sendToParentWindow(data.type+'-answer',answer);
+  }else if(data.type==="keydown"){
+    if(!app.$refs.editor) return;
+    if(data.data.key==="F2") app.$refs.editor.toggleRun();
   }
 }
 

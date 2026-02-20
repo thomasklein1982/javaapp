@@ -101,7 +101,7 @@ import { options } from '../classes/Options';
         if(this.$root.webMode){
           prefix="$App.console.hide();";
         }else{
-          prefix=noDebugging?"$App.console.hide();":"$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+");";
+          prefix=noDebugging?"$App.console.hide();":"$App.debug.setBreakpoints("+JSON.stringify(this.breakpoints)+"); window.addEventListener('keydown',(e)=>{console.log(e); let key=e.code||e.keyCode; if ( key === 113 || key==='F2') {e.preventDefault();$Exercise.sendMessage('keydown',{key: 'F2'});}},true);";
         }
         prefix+="$App.debug.slowMode="+(this.$root.getSlowModeDelay())+";\n";
         prefix+=additionalCode;
