@@ -335,6 +335,7 @@ export default {
       useBlockEditor: false,
       showActionButtonLabels: false,
       activeTab: this.$root.webMode? 1: 0,
+      currentEditor: null,
       showNewClazzDialog: false,
       webMode: this.$root.webMode,
       running: false,
@@ -365,6 +366,8 @@ export default {
     activeTab(nv,ov){
       this.$root.emitEvent("tab-change",{index: nv});
       let c=this.project.clazzes[nv];
+      let index=nv-(this.webMode? 1:0);
+      this.currentEditor=this.$refs.editor[index];
       if(c) c.isEditorShown=true;
       if(this.$refs.editor && nv<this.$refs.editor.length){
         
@@ -389,10 +392,10 @@ export default {
 
   },
   computed: {
-    currentEditor(){
-      let index=this.activeTab-(this.webMode? 1:0);
-      return this.$refs.editor[index];
-    },
+    // currentEditor(){
+    //   let index=this.activeTab-(this.webMode? 1:0);
+    //   return this.$refs.editor[index];
+    // },
     splitterSize(){
       if(this.rightClosed) return 0;
       return 8;

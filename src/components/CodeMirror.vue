@@ -36,6 +36,7 @@ import {hoverTooltip} from "@codemirror/view";
 // import prettier from "prettier";
 // import javaPlugin from "prettier-plugin-java";
 import readOnlyRangesExtension from "codemirror-readonly-ranges";
+import { prettify } from "../functions/prettify";
 
 const addLineHighlight = StateEffect.define();
 
@@ -745,14 +746,8 @@ export default {
       return this.state.doc.lineAt(pos);
     },
     async prettifyCode(){
-      return;
       let code=this.getCode();
-      code=await prettier.format(code, {
-        parser: "java",
-        tabWidth: 2,
-        arrowParens: "always",
-        plugins: [javaPlugin],
-      });
+      let newCode=prettify(code);
       // code=js_beautify(code,{
       //   "indent_size": 2,
       //   "max_preserve_newlines": 2,
@@ -763,7 +758,7 @@ export default {
       // });
       // code=code.replace(/\) - > \{/g,") -> {");
       this.editor.dispatch({
-        changes: {from: 0, to: this.size, insert: code}
+        changes: {from: 0, to: this.size, insert: newCode}
       });
     },
     slice(from,to){
