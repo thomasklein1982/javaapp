@@ -891,11 +891,13 @@ export default {
     display: flex;
     flex-direction: column;
     position: relative;
+    overflow: hidden;
   }
   #editor{
     flex: 1;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
   #errors{
     color: red;
@@ -908,6 +910,7 @@ export default {
 <style>
   .cm-editor{
     flex: 1;
+    overflow: auto;
   }
   #errors{
     font-family: monospace;
