@@ -363,7 +363,9 @@ export default {
         this.setCursorToLine(ov.line);
         this.unhighlightLines();
       }else if(nv.line<1){
-        this.setCursorToLine(ov.line);
+        if(ov){
+          this.setCursorToLine(ov.line);
+        }
         this.unhighlightLines();
       }else{
         this.highlightLine(nv.line);
