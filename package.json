@@ -1,6 +1,6 @@
 {
   "name": "java-app",
-  "version": "13.3.4",
+  "version": "13.3.5",
   "scripts": {
     "dev": "vite",
     "dev-web": "vite --mode web",

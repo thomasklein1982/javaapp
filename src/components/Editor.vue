@@ -364,18 +364,8 @@ export default {
   },
   watch: {
     activeTab(nv,ov){
-      this.$root.emitEvent("tab-change",{index: nv});
-      let c=this.project.clazzes[nv];
-      let index=nv-(this.webMode? 1:0);
-      this.currentEditor=this.$refs.editor[index];
-      if(c) c.isEditorShown=true;
-      if(this.$refs.editor && nv<this.$refs.editor.length){
-        
-        let ed=this.$refs.editor[nv];
-        if(!ed.updateLinter) return;
-        ed.updateLinter();
-      }
-      this.selectedUIComponent=null;
+      this.handleTabChange(nv);
+      
     },
     current(nv,ov){
       if(nv!==null){
@@ -427,6 +417,7 @@ export default {
     }
   },
   mounted(){
+    
     if(location.hash.indexOf("tryit")>=0){
       setTimeout(()=>{
         this.$refs.tryItDialog.setVisible(true);
@@ -442,6 +433,19 @@ export default {
     },1000);
   },
   methods: {
+    handleTabChange(nv){
+      this.$root.emitEvent("tab-change",{index: nv});
+      let c=this.project.clazzes[nv];
+      let index=nv-(this.webMode? 1:0);
+      this.currentEditor=this.$refs.editor[index];
+      if(c) c.isEditorShown=true;
+      if(this.$refs.editor && nv<this.$refs.editor.length){
+        let ed=this.$refs.editor[nv];
+        if(!ed.updateLinter) return;
+        ed.updateLinter();
+      }
+      this.selectedUIComponent=null;
+    },
     triggerInsightsUpdateScope(){
       if(!this.$refs.insights) return;
       this.$refs.insights.updateScope();
@@ -473,12 +477,14 @@ export default {
         let c=this.project.clazzes[i];
         if(c.isEditorShown) {
           this.activeTab=i;
+          this.handleTabChange(this.activeTab);
           return;
         }
       }
       this.activeTab=start;
       let c=this.project.clazzes[this.activeTab];
       if(c) c.isEditorShown=true;
+      this.handleTabChange(this.activeTab);
     },
     updateActiveTab(startTab){
       if(startTab===undefined) return;
@@ -779,7 +785,7 @@ export default {
       }
     },
     prettifyCode(){
-      if(this.currentEditor){
+      if(this.currentEditor && this.currentEditor.prettifyCode){
         this.currentEditor.prettifyCode();
       }
     },
