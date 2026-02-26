@@ -592,14 +592,23 @@ function defineJImage(Clazz,Java){
   createMethod({
     name: 'getPixelData',
     args: [
-      {name: 'left',  type: 'int', info: 'Abstand von links.'},
-      {name: 'top',  type: 'int', info: 'Abstand von oben.'},
+      {name: 'x',  type: 'int', info: 'Abstand von links.'},
+      {name: 'y',  type: 'int', info: 'Abstand von oben.'},
     ],
     returnType: {
       baseType: "int",
       dimension: 1
     },
     info: 'Liefert ein Array mit den RGBA-Werten an der gegebenen Stelle zurück.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getPixelColor',
+    args: [
+      {name: 'x',  type: 'int', info: 'Abstand von links.'},
+      {name: 'y',  type: 'int', info: 'Abstand von oben.'},
+    ],
+    returnType: "String",
+    info: 'Liefert die Farbe des Pixels in der Form #rrggbb zurück.'
   },Clazz,false,false,Java);
   createMethod({
     name: 'getPixelWidth',

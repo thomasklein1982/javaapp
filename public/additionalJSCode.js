@@ -2040,6 +2040,17 @@ function additionalJSCode(){
     getPixelHeight(){
       return this.$img.naturalHeight;
     }
+    getPixelColor(x,y){
+      let c=this.getPixelData(x,y);
+      if(!c) return null;
+      let r=c[0].toString(16);
+      if(r.length==1) r="0"+r;
+      let g=c[1].toString(16);
+      if(g.length==1) g="0"+g;
+      let b=c[2].toString(16);
+      if(b.length==1) b="0"+b;
+      return "#"+r+g+b;
+    }
     getPixelData(x,y){
       let w=this.getWidth();
       let h=this.getHeight();
