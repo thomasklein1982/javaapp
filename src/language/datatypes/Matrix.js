@@ -223,6 +223,14 @@ export function defineVector(clazz){
     returnType: "Vector"
   },clazz,false,false);
   createMethod({
+    name: "fromArray",
+    args: [{
+      name: "array", type: {baseType: "double", dimension: 1}, info: "Das Array, das die Einträge enthält."
+    }],
+    info: "Erzeugt einen neuen Vektor mit den Einträgen des Arrays.",
+    returnType: "Vector"
+  },clazz,true,false);
+  createMethod({
     name: "setFromVector",
     args: [{
       name: "v", type: "Vector", info: "Ein Vector, dessen Werte übernommen werden sollen."

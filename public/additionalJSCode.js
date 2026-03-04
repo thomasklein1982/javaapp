@@ -3676,6 +3676,12 @@ function additionalJSCode(){
       }
       return this.components[pos-1];
     }
+    static fromArray(array){
+      let v=new Vector();
+      v.$constructor(array.length);
+      v.setFromArray(array);
+      return v;
+    }
     setFromVector(vector){
       if(vector.getSize()!==this.size){
         throw $new(Exception,"Die beiden Vektoren haben unterschiedliche Länge.");
