@@ -47,6 +47,7 @@ window.appJScode=function(){
       $iframes: [],
       resizeObserver: null,
       watchedObject: null,
+      blocked: false, //no handlers are called, app "freezes"
       dialog: {
         root: null,
         backdrop: null,
@@ -113,7 +114,7 @@ window.appJScode=function(){
           let dt=now-this.startTime;
           if(dt*this.FPS>900){
             this.startTime=now;
-            if((window.onNextFrame||this.customHandler) && !$App.debug.paused && $App.enableOnNextFrame){
+            if((window.onNextFrame||this.customHandler) && !$App.debug.paused && !$App.blocked && $App.enableOnNextFrame){
               if(this.customHandler){
                 try{
                   await this.customHandler.run();
@@ -350,7 +351,7 @@ window.appJScode=function(){
               return;
             }
           }
-          if($App.debug.paused) return;
+          if($App.debug.paused || $App.blocked) return;
           if(eventName==='down' && window.onMouseDown){
             try{
               window.onMouseDown();
@@ -533,7 +534,7 @@ window.appJScode=function(){
         }
         if(window.onStart){
           var startFunc=async ()=>{
-            if(!$App.debug.paused){  
+            if(!$App.debug.paused && !$App.blocked){  
               try{
                 await window.onStart();
               }catch(e){
@@ -609,7 +610,7 @@ window.appJScode=function(){
       kb.down[k]=true;
       if(kb.lastKeycodeDown!==k){
         kb.lastKeycodeDown=k;
-        if($App.debug.paused) return;
+        if($App.debug.paused || $App.blocked) return;
         if(window.$main?.onKeyDown){
           try{
             $main.onKeyDown(k);
@@ -624,7 +625,7 @@ window.appJScode=function(){
       var kb=$App.keyboard;
       delete kb.down[k];
       kb.lastKeycodeDown=-1;
-      if($App.debug.paused) return;
+      if($App.debug.paused || $App.blocked) return;
       if(window.$main?.onKeyUp){
         try{
           $main.onKeyUp(k);
@@ -1580,18 +1581,22 @@ window.appJScode=function(){
     $App.prompt=window.prompt;
   
     $App.handleModalDialog=function(){
+      $App.blocked=true;
       $App.mouse.down=false;
       $App.keyboard.reset();
     };
-  
+    
     $App.addFunction(function alert(text){
       $App.handleModalDialog();
       $App.alert.call(window,text);
+      $App.blocked=false;
     },null,'Zeigt eine Messagebox mit einer Nachricht.',[{name: 'text', type: 'String', info: 'Der Text, der angezeigt werden soll.'}],'',"everywhere");
     
     $App.addFunction(function prompt(text,defaultValue){
       $App.handleModalDialog();
-      return $App.prompt.call(window,text,defaultValue);
+      let a=$App.prompt.call(window,text,defaultValue);
+      $App.blocked=false;
+      return a;
     },'String','Zeigt eine Messagebox mit einer Nachricht und  einem Eingabefeld. Liefert den eingegebenen Text zurueck.',[{name: 'text', type: 'String',info: 'Der Text, der angezeigt werden soll.'}, {name: 'defaultValue', type: 'String',info: 'Vorgegebener Eingabetext.', optional: true}],'',"everywhere");
     
     $App.addFunction(function promptNumber(text,defaultValue){
@@ -1602,14 +1607,17 @@ window.appJScode=function(){
         a=prompt(text+zusatz,defaultValue)*1;
         zusatz="\n\nBitte eine Zahl eingeben.";
       }while(isNaN(a));
+      $App.blocked=false;
       return a;
     },'double','Zeigt eine Messagebox mit einer Nachricht und einem Eingabefeld. Liefert die eingegebene Zahl zurueck.',[{name: 'text', type: 'String', info: 'Der Text, der angezeigt werden soll.'}, {name: 'defaultValue', type: 'String',info: 'Vorgegebener Eingabetext.', optional: true}],'',"everywhere");
     
     $App.addFunction(function confirm(text){
       $App.handleModalDialog();
-      return $App.confirm.call(window,text);
+      let a=$App.confirm.call(window,text);
+      $App.blocked=false;
+      return a;
     },'boolean','Zeigt eine Messagebox mit einer Nachricht. Der Benutzer muss zwischen OK und Abbrechen waehlen. Die Auswahl wird als <code>true</code> oder <code>false</code> zurueckgegeben.',[{name: 'text', type: 'String', info: 'Der Text, der angezeigt werden soll.'}],'',"everywhere");
-    
+
     $App.addFunction(function toast(text,position,duration){
       $App.toast.show(text,position,duration);
     },null,'Zeigt eine Nachricht fuer einen gewissen Zeitraum an.',[{name: 'text', type: 'String', info: 'Der Text, der angezeigt werden soll.'}, {name: 'position', type: 'String', info: 'Optional: Eine Angabe aus bis zu 2 Woertern, die bestimmen, wo der Text erscheinen soll. Moegliche Woerter: <code>"left"</code>, <code>"center"</code>, <code>"right"</code> und <code>"top"</code>, <code>"middle"</code>, <code>"bottom"</code>.'}, {name: 'duration', type: 'int', info: 'Optional: Die Dauer der Anzeige in Millisekunden.'}],'');
@@ -2092,7 +2100,7 @@ window.appJScode=function(){
         }
         
         let id=setTimeout(()=>{
-          if(!$App.debug.paused && window.onTimeout){
+          if(!$App.debug.paused && !$App.blocked && window.onTimeout){
             for(let i=0;i<$App.timer.length;i++){
               let t=$App.timer[i];
               if(t.name===name){

@@ -894,6 +894,7 @@ function additionalJSCode(){
     $App.customDialog.frame.style.opacity=0;
     await $Exercise.sleep(200);
     $App.customDialog.backdrop.style.display="none";
+    $App.blocked=false;
   };
 
   App.prompt=async function(message,defaultValue){
@@ -912,6 +913,7 @@ function additionalJSCode(){
     $App.customDialog.frame.style.opacity=0;
     await $Exercise.sleep(200);
     $App.customDialog.backdrop.style.display="none";
+    $App.blocked=false;
     return q;
   };
 
@@ -930,6 +932,7 @@ function additionalJSCode(){
     $App.customDialog.frame.style.opacity=0;
     await $Exercise.sleep(200);
     $App.customDialog.backdrop.style.display="none";
+    $App.blocked=false;
     return q;
   };
 
@@ -946,6 +949,7 @@ function additionalJSCode(){
     $App.customDialog.frame.style.opacity=0;
     await $Exercise.sleep(200);
     $App.customDialog.backdrop.style.display="none";
+    $App.blocked=false;
     return q;
   };
 
