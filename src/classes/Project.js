@@ -274,17 +274,17 @@ export class Project{
         } 
         return null;
       };`;
-      let dbcreate="\nwindow.$dbCreate=function(){\n";
-      dbcreate+="$clearAlaSQL();\ntry{";
+      let dbcreate="\nwindow.$dbCreate=function(db){\n";
+      dbcreate+="db.clear();\ntry{";
       let cmds=this.database.createInMemory(true);
       
       if(cmds && cmds.length>0){
         for(var i=0;i<cmds.length;i++){
-          dbcreate+="alasql("+JSON.stringify(cmds[i])+");\n";
+          dbcreate+="db.sql("+JSON.stringify(cmds[i])+");\n";
         }
       }
       dbcreate+="}catch(e){\nconsole.log('** Datenbank-Fehler: **');\nconsole.log(e);\nconsole.log('**************')}\n}\n";
-      databaseCode+=dbcreate+"\nwindow.$dbCreate();";
+      databaseCode+=dbcreate;//+"\nwindow.$dbCreate();";
     }
     let assetsCode="/****** ASSETS START ******/";
     for(let i=0;i<this.assets.length;i++){

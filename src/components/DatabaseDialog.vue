@@ -6,7 +6,7 @@
     />
     <Splitter :style="{flex: 1}" style="overflow: hidden;width: 100%;height: 100%;">
       <SplitterPanel style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
-        <div style="overflow:auto;" :style="{flex: 1}">
+        <div style="overflow:auto;" :style="{flex: 1, display: 'flex', 'flex-direction': 'column'}">
           <template v-if="mode=='ui'">
             <DatabaseRelation 
               :key="i" 
@@ -21,7 +21,7 @@
         </div>
         <div style="text-align: right">
           <Button @click="mode=mode==='ui'? 'code':'ui'" icon="pi pi-arrow-right-arrow-left"/>
-          <Button @click="$refs.dialogNewRelation.setVisible(true)" icon="pi pi-plus" label="Neue Relation"/>
+          <Button v-if="mode==='ui'" @click="$refs.dialogNewRelation.setVisible(true)" icon="pi pi-plus" label="Neue Relation"/>
         </div>
       </SplitterPanel>
       <SplitterPanel style="overflow: auto;" :style="{display: 'flex', flexDirection: 'column'}">

@@ -1020,7 +1020,6 @@ function additionalJSCode(){
       var r=new RegExp(regexp,flags);
     }catch(e){
       throw $new(Exception,"Dieser reguläre Ausdruck ist syntaktisch nicht korrekt: \n"+e);
-      throw new Exception("Dieser reguläre Ausdruck ist syntaktisch nicht korrekt: \n"+e);
     }
     var res=r.exec(string);
     if(res){
@@ -3971,10 +3970,21 @@ function additionalJSCode(){
       
     }
     clear(){
-      $clearAlaSQL();
+      var tables=Object.keys(this.$db.tables);
+      if(tables){
+        for(var i=0;i<tables.length;i++){
+          var c="drop table "+tables[i];
+          try{
+            this.$db.exec(c);
+          }catch(e){
+            console.log(e);
+          }
+        }
+      }
     }
     reset(){
-      window.$dbCreate();
+      this.clear();
+      window.$dbCreate(this);
     }
     static async create(name){
       let db=new Database();
@@ -3986,6 +3996,7 @@ function additionalJSCode(){
         db.$db=alasql;
       }
       db.version=1;
+      db.reset();
       return db;
     }
     setVersion(v){
@@ -4215,7 +4226,7 @@ function additionalJSCode(){
         var a=$createArray("JSON",records.length,records);
         return a;
       }catch(e){
-        return null;
+        throw $new(Exception,e);
       }
     }
     sqlError(cmd){
