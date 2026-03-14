@@ -4269,10 +4269,11 @@ function additionalJSCode(){
     }
     areResultsEqual(array1,array2){
       if(!array1 || !array2) return false;
-      if(array1.length!==array2.length){
+      let n=array1.length;
+      if(n!==array2.length){
         return false;
       }
-      if(array1.length===0){
+      if(n===0){
         return true;
       }
       var n1=0;
@@ -4286,7 +4287,7 @@ function additionalJSCode(){
         n2++;
       }
       if(n1!==n2) return false;
-      for(var i=0;i<n1;i++){
+      for(var i=0;i<n;i++){
         var r1=array1[i];
         var s1=0;
         for(var a in r1){
