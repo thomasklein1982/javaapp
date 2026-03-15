@@ -14,11 +14,11 @@ import { javascript } from "@codemirror/lang-javascript";
 import { sql } from "@codemirror/lang-sql";
 import { lintGutter, openLintPanel, closeLintPanel } from "@codemirror/lint";
 import {keymap} from "@codemirror/view";
-import {indentWithTab,redo,toggleComment,undo} from "@codemirror/commands";
+import {indentLess, indentMore, indentWithTab,redo,toggleComment,undo} from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
 import {openSearchPanel,closeSearchPanel} from '@codemirror/search';
 import {Compartment,EditorState} from '@codemirror/state';
-import {autocompletion} from "@codemirror/autocomplete";
+import {acceptCompletion, autocompletion, completionStatus} from "@codemirror/autocomplete";
 import { oneDark } from '@codemirror/theme-one-dark';
 // import prettier from "prettier";
 //import esTreePlugin from "prettier/plugins/estree";
@@ -87,7 +87,17 @@ export default {
       lintGutter(),
       editorTheme.of(oneDark),
       indentUnit.of("  "),
-      keymap.of([indentWithTab]),
+      keymap.of([
+        {
+          key: 'Tab',
+          preventDefault: true,
+          shift: indentLess,
+          run: e => {
+            if (!completionStatus(e.state)) return indentMore(e);
+            return acceptCompletion(e);
+          },
+        },
+      ]),
       EditorView.updateListener.of((v) => {
         if(timer!==null) clearTimeout(timer);
         timer=setTimeout(()=>{

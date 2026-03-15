@@ -16,10 +16,10 @@ import { java, javaLanguage } from "@codemirror/lang-java";
 import {LanguageSupport} from "@codemirror/language";
 import { lintGutter, linter, openLintPanel, closeLintPanel } from "@codemirror/lint";
 import {keymap} from "@codemirror/view";
-import {indentWithTab,undo,redo,toggleComment} from "@codemirror/commands";
+import {indentWithTab,undo,redo,toggleComment, indentLess, indentMore} from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
 import {openSearchPanel,closeSearchPanel} from '@codemirror/search';
-import {autocompletion} from "@codemirror/autocomplete";
+import {acceptCompletion, autocompletion, completionStatus} from "@codemirror/autocomplete";
 import {Compartment,StateField, StateEffect, EditorSelection,RangeSet,EditorState} from "@codemirror/state"
 import {gutter, GutterMarker} from "@codemirror/view"
 import {Decoration,ViewPlugin} from "@codemirror/view"
@@ -471,7 +471,18 @@ export default {
           languageConf.of(language),
           readOnlyConf.of(readOnlyRangesExtension(getReadOnlyRanges)),
           autocompletion({override: [createAutocompletion()]}),
-          keymap.of([indentWithTab]),
+          keymap.of([
+            {
+              key: 'Tab',
+              preventDefault: true,
+              shift: indentLess,
+              run: e => {
+                if (!completionStatus(e.state)) return indentMore(e);
+                return acceptCompletion(e);
+              },
+            },
+          ]),
+          //keymap.of([indentWithTab]),
           //methodMarkField,
           lineHighlightField,
           EditorView.updateListener.of((v) => {

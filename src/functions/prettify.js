@@ -13,6 +13,7 @@ export function prettify(code, options){
   }
   code=code.replace(/\r|\n/g,"\n");
   let lastIsWhitespace=false;
+  let inBrackets=false;
   let inString=null;
   let inComment=false;
   let startNewLine=false;
@@ -42,6 +43,32 @@ export function prettify(code, options){
       if(comment===inComment){
         inString=null;
       }
+      lastChar=c;
+      continue;
+    }
+    if(c===" " || c==="\t"){
+      lastChar=c;
+      if(lastIsWhitespace){
+        continue;
+      }
+      lastIsWhitespace=true;
+      newCode+=" ";
+      continue;
+    }
+    if(inBrackets){
+      lastChar=c;
+      if(c===")"){
+        if(!lastIsWhitespace) newCode+=" ";
+        inBrackets=false;
+      }
+      lastIsWhitespace=false;
+      newCode+=c;
+      continue;
+    }
+    if(c==="("){
+      inBrackets=true;
+      newCode+=c+" ";
+      lastIsWhitespace=true;
       lastChar=c;
       continue;
     }
@@ -91,15 +118,7 @@ export function prettify(code, options){
       continue;
     }
     
-    if(c===" " || c==="\t"){
-      lastChar=c;
-      if(lastIsWhitespace){
-        continue;
-      }
-      lastIsWhitespace=true;
-      newCode+=" ";
-      continue;
-    }
+    
     if(c==="\n"){
       lastChar=c;
       lastIsWhitespace=true;
