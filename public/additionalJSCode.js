@@ -4008,10 +4008,11 @@ function additionalJSCode(){
     saveTable(tablename,table){
       this.$indexedDB.setItem(tablename,{cols: table.columns, data: table.data});
     }
-    save(){
+    async save(){
       if(!this.$indexedDB) return;
       this.$indexedDB.setItem("$version$",this.version);
       let tables=this.$db.tables;
+      await this.$indexedDB.clear();
       for(let a in tables){
         this.saveTable(a,tables[a]);
       }
@@ -4085,6 +4086,7 @@ function additionalJSCode(){
       return t;
     }
     loadFromObject(tables){
+      this.reset();
       console.log("load",tables);
       if(!tables) return false;
       //let tables=this.$db.tables;
@@ -4132,81 +4134,25 @@ function additionalJSCode(){
     }
     prepareStatement(sqlSource){
       return sqlSource;
-      //dieses Vorgehen ist zu riskant. Problem: Doppelte Spalten kollabieren zu einer, müssen also manuell umbenannt werden. Beim Programmieren sollte das aber ein untergeordnetes Problem sein.
-      /**muss kopiert werden in additionalJScode! */
-      let ast=alasql.parse(sqlSource);
-      /**untersucht die statements darauf, ob mehr als eine Tabelle abgefragt wird
-       * falls ja, werden alle mehrfach vorkommenden Spaltennamen per 'as' in 'Tabelle.Spalte' umbenannt
-       * Sinn: doppelt vorkommende Spaltennamen kollabieren ansonsten
-       * damit StringValue erzeugt werden kann, musste in alasql.min.ja folgender Code eingefügt werden:
-       * window.alasqlX=X;
-       * an der Stelle:
-       * X=(T.Recordset=function(e){q(this,e)},y.yy=T.yy={});window.alasqlX=X;X.extend=
-       */
-      let sql="";
-      for(let i=0;i<ast.statements.length;i++){
-        let s=ast.statements[i];
-        if(!(s instanceof alasqlX.Select)){
-          continue;
-        }
-        if(!s || !s.columns || !s.from || s.from.length===0) continue;
-        let tables={};
-        for(let j=0;j<s.from.length;j++){
-          let t=s.from[j];
-          let label=t.as? t.as:t.tableid;
-          tables[label]=t.tableid;
-        }
-        /**spezialfall 'select *': * durch alle Spalten ersetzen: */
-        if(s.columns.length===1 && s.columns[0].columnid==='*'){
-          let spalten=[];
-          for(let j=0;j<s.from.length;j++){
-            let t=s.from[j];
-            let label=t.as? t.as:t.tableid;
-            let table=this.$db.tables[t.tableid];
-            if(!table) continue;
-            for(let k=0;k<table.columns.length;k++){
-              let c=table.columns[k];
-              let spalte=label+"."+c.columnid;
-              spalten.push({
-                spalte, columnid: c.columnid, tableid: label
-              });
-            }
-          }
-          for(let j=0;j<spalten.length;j++){
-            let spalte=spalten[j];
-            s.columns[j]=new alasqlX.Column({columnid: spalte.columnid, tableid: spalte.tableid});
-          }
-        }
-        /**finde doppelte spalten: */
-        for(let j=0;j<s.columns.length;j++){
-          let c=s.columns[j];
-          if(c.as) continue;
-          let changeC=false;
-          for(let k=j+1;k<s.columns.length;k++){
-            let c2=s.columns[k];
-            if(c2.as) continue;
-            if(c2.columnid===c.columnid){
-              changeC=true;
-              let tableid=tables[c2.tableid];
-              c2.as=new window.alasqlX.StringValue({value: tableid+"."+c2.columnid});
-            }
-          }
-          if(changeC){
-            let tableid=tables[c.tableid];
-            c.as=new window.alasqlX.StringValue({value: tableid+"."+c.columnid});
-          }
-        }
-      }
-      return ast;
     }
     query(sqlSource){
       try{
         let prep;
         prep=this.prepareStatement(sqlSource);
-        var r=this.$db.exec(prep.toString());
+        let r=this.$db.exec(prep.toString());
         // if(this.$indexedDB){
         //   this.$indexedDB.reflectSQL(prep);
         // }
+        //check if multiple results from multiple statements:
+        if(!r) return null;
+        if(!Array.isArray(r)) return null;
+        if(r.length===0) return r;
+        let dontReturnR=false;
+        for(let i=r.length-1;i>=0;i--){
+          if(Array.isArray(r[i])) return r[i];
+          if(typeof r[i]==="number") dontReturnR=true;
+        }
+        if(dontReturnR) return null;
         return r;
       }catch(e){
         console.log(e.message);
