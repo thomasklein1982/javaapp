@@ -101,7 +101,7 @@ export class Database{
     }
     var s=[];
     if(commandsOnly){
-      s.push(this.sqlInitCode+";\n");
+      if(this.sqlInitCode.trim().length>0) s.push(this.sqlInitCode+";\n");
     }else{
       this.query(this.sqlInitCode)
     }
