@@ -592,8 +592,8 @@ function defineJImage(Clazz,Java){
   createMethod({
     name: 'getPixelData',
     args: [
-      {name: 'x',  type: 'int', info: 'Abstand von links.'},
-      {name: 'y',  type: 'int', info: 'Abstand von oben.'},
+      {name: 'x',  type: 'double', info: 'Abstand von links.'},
+      {name: 'y',  type: 'double', info: 'Abstand von unten.'},
     ],
     returnType: {
       baseType: "int",
@@ -604,8 +604,8 @@ function defineJImage(Clazz,Java){
   createMethod({
     name: 'getPixelColor',
     args: [
-      {name: 'x',  type: 'int', info: 'Abstand von links.'},
-      {name: 'y',  type: 'int', info: 'Abstand von oben.'},
+      {name: 'x',  type: 'double', info: 'Abstand von links.'},
+      {name: 'y',  type: 'double', info: 'Abstand von unten.'},
     ],
     returnType: "String",
     info: 'Liefert die Farbe des Pixels in der Form #rrggbb zurück.'
