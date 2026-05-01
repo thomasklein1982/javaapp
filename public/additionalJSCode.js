@@ -6844,6 +6844,17 @@ function additionalJSCode(){
   }
 
   class $Exercise{
+    static async readFile(f){
+      const reader = new FileReader();
+      let p=new Promise((resolve,reject)=>{
+          reader.addEventListener("load", () => {
+          resolve(reader.result);
+        });
+        reader.readAsText(f);
+      });
+      let content=await p;
+      return content;
+    }
     static setDebugEnabled(e){
       if(e){
         if($App.debug.lineBackup){
