@@ -21,6 +21,28 @@ alasql.fn.datepart=function(date_part,date){
   } 
   return null;
 };
+alasql.fn.tomillis=function(date){
+  if(/^\d\d:\d\d:\d\d$/.test(date)){
+    let s=date.split(":");
+    date=(s[0]*3600+s[1]*60+s[2]*1)*1000;
+  }
+  return (new Date(date))*1;
+};
+alasql.fn.todate=function(number){
+  let d=new Date(number);
+  let fillZero=function(s){if(s<10) return "0"+s; else return ""+s;}
+  return d.getFullYear()+"-"+fillZero(d.getMonth()+1)+"-"+fillZero(d.getDate());
+};
+alasql.fn.todatetime=function(number){
+  let d=new Date(number);
+  let fillZero=function(s){if(s<10) return "0"+s; else return ""+s;}
+  return d.getFullYear()+"-"+fillZero(d.getMonth()+1)+"-"+fillZero(d.getDate())+" "+fillZero(d.getUTCHours())+":"+fillZero(d.getUTCMinutes())+":"+fillZero(d.getUTCSeconds());
+};
+alasql.fn.totime=function(number){
+  let d=new Date(number);
+  let fillZero=function(s){if(s<10) return "0"+s; else return ""+s;}
+  return fillZero(d.getUTCHours())+":"+fillZero(d.getUTCMinutes())+":"+fillZero(d.getUTCSeconds());
+};
 alasql.options.casesensitive=false;
 
 export const SQL_KEYWORDS=['alter','create','table','add','constraint','all','column','and','any','as','asc','backup','database','between','case','check','create','index','replace','default','delete','desc','distinct','drop','view','exec','exists','foreign','key','from','full','outer','join','group','by','having','in','inner','insert','into','select','null','not','left','right','like','limit','or','order','primary','procedure','rownum','top','set','truncate','union','all','unique','update','values','where'];
