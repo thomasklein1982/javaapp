@@ -26,9 +26,9 @@
       </SplitterPanel>
       <SplitterPanel style="overflow: auto;" :style="{display: 'flex', flexDirection: 'column'}">
         <div style="overflow:auto;" :style="{flex: 1}">
-          <div v-if="sqlExecution.result||sqlExecution.error">
+          <div v-if="sqlExecution.result!==null||sqlExecution.error">
             Die Anfrage
-            <div style="font-family: monospace">
+            <div style="font-family: monospace; white-space: pre-wrap">
               {{sqlExecution.command}}
             </div>
             ergab:
