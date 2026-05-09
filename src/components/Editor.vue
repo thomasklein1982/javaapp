@@ -125,6 +125,20 @@
                             @content-changed="updateUIPreview()"
                           />
                         </template>
+                        <template v-else-if="isPeggyParser(c)">
+                          <CodeMirrorEditor
+                            :clazz="c"
+                            v-model="c.src"
+                            :tab-index="i"
+                            :disabled="paused"
+                            :project="project"
+                            :settings="settings"
+                            :font-size="fontSize"
+                            :current="i===activeTab ? current : null"
+                            @caretupdate="updateCaretPosition"
+                            ref="editor"
+                          />
+                        </template>
                         <template v-else-if="isJava(c)">
                           <CodeMirror
                             :clazz="c"
@@ -284,6 +298,7 @@ import ExtensionManagerDialog from "./ExtensionManagerDialog.vue";
 import { mimes } from "../consts/mimes.js";
 import FileDrawer from "./FileDrawer.vue";
 import { random, RandomClazz } from "../functions/random.js";
+import { PeggyParser } from "../classes/PeggyParser.js";
 
 export default {
   components: {
@@ -906,6 +921,8 @@ export default {
         c=new Clazz(clazzData.name,this.project,false);
       }else if(clazzData.type==='html'||clazzData.type==="css"||clazzData.type==="js"||clazzData.type==="txt"){
         c=new SourceFile(clazzData.name,clazzData.type,this.project);
+      }else if(clazzData.type==='peg'){
+        c=new PeggyParser(clazzData.name,this.project);
       }else{
         alert("Dieses Feature ist noch in Entwicklung");
         return;
@@ -931,6 +948,9 @@ export default {
     },
     isSourceFile(c){
       return (c instanceof SourceFile);
+    },
+    isPeggyParser(c){
+      return (c instanceof PeggyParser);
     },
     isJava(c){
       return (c instanceof Clazz);

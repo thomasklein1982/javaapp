@@ -6843,6 +6843,31 @@ function additionalJSCode(){
     }
   }
 
+  function $AST_getChild(ast,index){
+    if(ast.children) return ast.children[index];
+    return ast[index];
+  }
+
+  function $AST_getName(ast){
+    if(Array.isArray(ast)) return "group";
+    return ast.name;
+  }
+
+  function $AST_getLine(ast){
+    if(Array.isArray(ast)) return $AST_getLine(ast[0]);
+    return ast.line;
+  }
+
+  function $AST_getStart(ast){
+    if(Array.isArray(ast)) return $AST_getStart(ast[0]);
+    return ast.start;
+  }
+
+  function $AST_getEnd(ast){
+    if(Array.isArray(ast)) return $AST_getStart(ast[ast.length-1]);
+    return ast.end;
+  }
+
   class $Exercise{
     static async readFile(f){
       const reader = new FileReader();

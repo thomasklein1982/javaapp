@@ -8,6 +8,7 @@ import { Database } from "./Database.js";
 import { SourceFile } from "./SourceFile.js";
 import { mimes } from "../consts/mimes";
 import { urlToDataURL } from "../functions/urlToDataURL.js";
+import { PeggyParser } from "./PeggyParser.js";
 
 let start, stop;
 if(import.meta.env.MODE==="web"){
@@ -988,6 +989,9 @@ alasql.fn.totime=function(number){
       if(!src) continue;
       if(src.components){
         var c=new UIClazz(null,this);
+        c.restoreFromSaveObject(src);
+      }else if(src.isPeggyParser){
+        var c=new PeggyParser(null,this);
         c.restoreFromSaveObject(src);
       }else if(src.fileType){
         var c=new SourceFile(null,src.fileType,this);

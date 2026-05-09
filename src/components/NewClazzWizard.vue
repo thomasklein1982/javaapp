@@ -11,6 +11,7 @@
       <Button :severity="type==='css'?'primary':'secondary'" label="CSS" @click="type='css'"/>
       <Button :severity="type==='js'?'primary':'secondary'" label="JavaScript" @click="type='js'"/>
       <Button :severity="type==='txt'?'primary':'secondary'" label="Text" @click="type='txt'"/>
+      <Button :severity="type==='peg'?'primary':'secondary'" label="Peggy-Parser" @click="type='peg'"/>
     </div>
     
     <div style="margin-top: 0.5rem; margin-bottom: 0.5rem;" :style="{display: 'flex', 'place-items':'baseline'}">
@@ -34,6 +35,7 @@ import { Clazz } from '../classes/Clazz';
 import { SourceFile } from '../classes/SourceFile';
 import { UIClazz } from '../classes/UIClazz';
 import { upload } from '../functions/helper';
+import { PeggyParser } from '../classes/PeggyParser';
 
 
 export default {
@@ -61,7 +63,8 @@ export default {
         'html': "Neue HTML-Datei hinzufügen",
         'css': "Neue CSS-Datei hinzufügen",
         'js': "Neue JavaScript-Datei hinzufügen",
-        'txt': "Neue Text-Datei hinzufügen"
+        'txt': "Neue Text-Datei hinzufügen",
+        'peg': "Neue Peggy-Parser-Datei hinzufügen"
       }[this.type];
     },
     labelName(){
@@ -72,7 +75,8 @@ export default {
         'html': "Name der neuen HTML-Datei",
         'css': "Name der neuen CSS-Datei",
         'js': "Name der neuen JavaScript-Datei",
-        'txt': "Name der neuen Text-Datei"
+        'txt': "Name der neuen Text-Datei",
+        'peg': "Name der neuen Peggy-Datei"
       }[this.type];
     },
     extension(){
@@ -83,7 +87,8 @@ export default {
         'html': "html",
         'css': "css",
         'js': "js",
-        'txt': 'txt'
+        'txt': 'txt',
+        'peg': 'peg'
       }[this.type];
     },
     typeName(){
@@ -129,10 +134,12 @@ export default {
           'html': "html",
           'css': "css",
           'js': "js",
-          'txt': "txt"
+          'txt': "txt",
+          'peg': 'peg'
         }[this.type];
         if(c instanceof Clazz || c instanceof UIClazz) ext="java";
         else if(c instanceof SourceFile) ext=c.fileType;
+        else if(c instanceof PeggyParser) ext="peg";
         if(ext===ext2 || ext==="html" && ext2==="java" || ext==="java" && ext2==="html"){
           if(c.isNative()){
             return "Es gibt bereits eine eingebaute Klasse mit diesem Namen.";
@@ -189,6 +196,9 @@ export default {
           }catch(e){
 
           }
+        }else if(ext==="'peg'"){
+          c=new PeggyParser(name,this.project);
+          c.src=code;
         }else{
           c=new SourceFile(name,ext,this.project);
           c.src=code;

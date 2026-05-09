@@ -37,6 +37,7 @@ import { defineNetworkSession } from "./datatypes/NetworkSession.js";
 import { defineMessageEvent } from "./datatypes/MessageEvent.js";
 import { Project } from "../classes/Project.js";
 import { defineConsole } from "./datatypes/Console.js";
+import { defineAST } from "./datatypes/ast.js";
 
 let nullType=new PrimitiveType("null", null, null, "null ist das nicht vorhandene Objekt.");
 let boolean=new PrimitiveType("boolean",null,false,"Ein 'boolean' (dt: 'Wahrheitswert') kann nur true oder false sein.",true);
@@ -141,8 +142,10 @@ let Voice=new Clazz("Voice");
 
 let Thread=new Clazz("Thread");
 
+let AST = new Clazz("AST");
+
 let datatypes={
-  ActionEvent,ActionListener,ArrayList,Boolean,Canvas,Character,Circle,Class,Comparable,Comparator,Console,DataTable,Database,Double,Exception,Field,File, Gamepad,HashMap,HtmlElement,HtmlPage,InputStream,Integer,JButton,JCheckBox,JComboBox,JComponent,JFrame,JImage,JLabel,JPanel,JSON,JTextArea,JTextComponent,JTextField,JavaApp,Matcher,Math,Matrix,MessageEvent, MessageListener, Method,NetworkSession,Object,Path,Pattern,PrintStream,Queue,Random, RealFunction,Runnable,Sound,Stack,Storage,String,System,Thread,Time,Timer,UIClass,Vector,Voice,boolean,char,double,int,nullType
+  ActionEvent,ActionListener,ArrayList,AST,Boolean,Canvas,Character,Circle,Class,Comparable,Comparator,Console,DataTable,Database,Double,Exception,Field,File, Gamepad,HashMap,HtmlElement,HtmlPage,InputStream,Integer,JButton,JCheckBox,JComboBox,JComponent,JFrame,JImage,JLabel,JPanel,JSON,JTextArea,JTextComponent,JTextField,JavaApp,Matcher,Math,Matrix,MessageEvent, MessageListener, Method,NetworkSession,Object,Path,Pattern,PrintStream,Queue,Random, RealFunction,Runnable,Sound,Stack,Storage,String,System,Thread,Time,Timer,UIClass,Vector,Voice,boolean,char,double,int,nullType
 };
 
 //sortieren der Datentypen:
@@ -154,7 +157,7 @@ let datatypes={
 // console.log(array.toString());
 
 let clazzes={
-  nullType,Object, String, Math, Gamepad, Time, Console, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Pattern, Matcher, File, Storage, NetworkSession, Matrix, Vector, System, PrintStream, ArrayList, HtmlElement, HtmlPage, Sound, Exception, Integer, Double, Character, Boolean, JFrame, JavaApp, InputStream, Comparable, Comparator, ActionEvent, Timer, JSON, Random, UIClass, Class, Field, Method, Voice, Thread, Queue, Stack, HashMap, Circle, Runnable, RealFunction, MessageEvent, MessageListener
+  nullType,Object, String, Math, Gamepad, Time, Console, Path, JComponent,JButton, JPanel, JLabel, JTextComponent,JTextArea, JTextField,JComboBox, JCheckBox, JImage, Canvas, DataTable, Database, Pattern, Matcher, File, Storage, NetworkSession, Matrix, Vector, System, PrintStream, ArrayList, HtmlElement, HtmlPage, Sound, Exception, Integer, Double, Character, Boolean, JFrame, JavaApp, InputStream, Comparable, Comparator, ActionEvent, Timer, JSON, Random, UIClass, Class, Field, Method, Voice, Thread, Queue, Stack, HashMap, Circle, Runnable, RealFunction, MessageEvent, MessageListener, AST
 }
 
 let interfaces={
@@ -219,6 +222,7 @@ defineReflectionAPI();
 defineVoice(Voice);
 defineThread(Thread);
 defineNetworkSession(NetworkSession);
+defineAST(AST);
 
 for(let v in clazzes){
   let c=clazzes[v];
