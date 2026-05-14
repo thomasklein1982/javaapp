@@ -61,7 +61,7 @@ export default {
             'void main( ) {\n  \n}\n\n$onAction',
             {
               type: "UI",
-              code: '{"name":"Screen","components":[{"type":"JButton","value":"Klicken","x":50,"y":50,"width":100,"height":100,"name":""}]}'
+              code: '{"name":"UI","components":[{"type":"JButton","value":"Klicken","x":50,"y":50,"width":100,"height":100,"name":""}]}'
             }
           ]
         },
@@ -212,6 +212,18 @@ void main( ) {
     session.sendToOthers(m);
   }
 }`,
+          ]
+        },
+        {
+          name: "App mit Parser",
+          description: "Ein Beispiel für die Verwendung eines Parsers für eine Grammatik.",
+          code: [
+            'void main( ) {\n  \n}\n\nvoid onAction(JComponent trigger){\n  String t = UI.code.getValue( );\n  try{\n    AST a = Sprache.parse( t );\n    System.out.println( a );\n  }catch( Exception e ){\n    System.out.println( "Fehler beim Parsen:" );\n    System.out.println( e );\n  }\n}',
+            {type: "PEG", "name":"Sprache","src":"Programm = (Rechnung BR)*\n\nRechnung = Zahl _* Op _* Zahl\n\nZahl = [0-9]+ \n\nOp = \"+\" / \"-\"\n\nBR = \"\\n\"\n\n_ = \" \" / \"\\t\""},
+            {
+              type: "UI",
+              code: '{"name":"UI","components":[{"type":"JTextArea","value":"45-4\\n30+206\\n","placeholder":"Rechnungen eingeben","valueType":"text","disabled":false,"x":5,"y":5,"width":1,"height":1,"cssClass":"jtextarea","cssCode":"","invisible":false, "name": "code"},{"type":"JButton","value":"Parsen","x":5,"y":5,"width":10,"height":10,"name":""}]}'
+            }
           ]
         },
       ]

@@ -25,6 +25,7 @@
     <small v-if="nameError" class="p-error">{{nameError}}</small>
     <small v-else-if="nameWarning" class="p-warning">{{nameWarning}}</small>
     <small v-else>Der Name geht in Ordnung.</small>
+    <p v-html="description[type]"></p>
     <p><Button label="Hinzufügen" :disabled="disableConfirm" icon="pi pi-check" @click="confirm()"/></p>
   </div>
 </template>
@@ -51,7 +52,17 @@ export default {
   data: function(){
     return {
       name: '',
-      type: this.$root.webMode? "html":"class"
+      type: this.$root.webMode? "html":"class",
+      description: {
+        class: "Eine <em>Klasse</em> ist ein Bauplan für eine Menge gleichartiger <em>Objekte</em>.",
+        interface: "Ein <em>Interface</em> definiert Methoden, die alle Klassen implementieren müssen, die dieses Interface implementieren.",
+        uiclass: "Eine UI-Klasse ist ein <em>JFrame</em>, das man per Drag and Drop mit UI-Komponenten wie Buttons und Labels gestalten kann.",
+        html: "Eine HTML-Datei enthält den Inhalt und die Struktur einer Webseite.",
+        css: "Ein CSS-Stylesheet enthält Regeln für das Layout und das Aussehen der HTML-Elemente.",
+        js: "Eine JavaScript-Datei enthält JavaScript-Code, der das Verhalten der Webseite steuert.",
+        txt: 'Eine Text-Datei enthält einfachen Text. Dieser Text kann per <code style="display: block">File f=new File("Name_der_Textdatei.txt");</code> geladen werden.',
+        peg: "Hiermit kannst du mit Hilfe einer Grammatik einen Parser definieren. Mehr dazu in der Hilfe."
+      }
     };
   },
   computed: {

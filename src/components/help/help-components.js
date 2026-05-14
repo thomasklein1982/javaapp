@@ -54,6 +54,7 @@ import about_whatis from "./about/what-is.vue";
   import about_faq from "./about/faq.vue";
   import advanced_javascript from "./advanced/javascript.vue";
   import advanced_save from "./advanced/save.vue";
+import Peggy from "./advanced/peggy.vue";
 
   let components={
     about: {
@@ -117,6 +118,10 @@ import about_whatis from "./about/what-is.vue";
           label: "Per iFrame einbinden",
           comp: iframe
         },
+        peggy: {
+          label: "Peggy-Parser",
+          comp: Peggy
+        }
       }
     },
     datatypes: {

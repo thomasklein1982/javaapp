@@ -6,6 +6,7 @@ export class PeggyParser extends Clazz{
   constructor(name,project){
     super(name,project,false);
     this.src="";
+    this.isPeggyParser=true;
   }
   restoreFromSaveObject(obj){
     let props=["name","src"];
@@ -26,9 +27,11 @@ export class PeggyParser extends Clazz{
   compile(fromSource,optimizeCompiler){
     
   }
-  getJavaScriptCode(){
+  getParseFunctionName(){
+    return this.name+"peg$parse";
+  }
+  getParseFunctionCode(){
     let src=this.prepareGrammar(this.src);
-    console.log(src);
     let code=peggy.generate(src, {
       format: "commonjs",
       output: "source"
@@ -38,11 +41,23 @@ export class PeggyParser extends Clazz{
     let codeSyntax=code.substring(0,pos).trim();
     let codeParse=code.substring(pos);
     pos=codeParse.indexOf("module.exports");
-    codeParse="function "+this.name+codeParse.substring(9,pos).trim();
-    code=codeSyntax+"\n"+codeParse+"\n";
+    codeParse="function "+this.getParseFunctionName()+codeParse.substring(18,pos).trim();
+    let pos1=codeParse.indexOf("function peg$buildSimpleError");
+    let pos2=codeParse.indexOf("function peg$buildStructuredError",pos1);
+    pos2=codeParse.indexOf("}",pos2);
+    codeParse=codeParse.substring(0,pos1)+`function peg$buildSimpleError(message, location){ 
+      return { message, location };
+  }
+  function peg$buildStructuredError(expected, found, location) {
+      return {expected, found, location};
+  }`+codeParse.substring(pos2+1);
+    return codeParse;
+  }
+  getJavaScriptCode(){
+    let code=this.getParseFunctionCode()+"\n";
     code+="class "+this.name+"{";
     code+="\nstatic parse(input){";
-    code+="\n  return "+this.name+"peg$parse(input);";
+    code+="\n  return "+this.getParseFunctionName()+"(input);";
     code+="\n}";
     code+="\n}";
     return code;

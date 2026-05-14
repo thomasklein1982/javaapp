@@ -42,6 +42,9 @@ export class Project{
           let obj=JSON.parse(code[i].code);
           console.log("restore",obj);
           c.restoreFromSaveObject(obj);
+        }else if(code[i].type==="PEG"){
+          c=new PeggyParser("T",this);
+          c.restoreFromSaveObject(code[i]);
         }else{
           c=new Clazz("T",this);
           c.src=code[i];

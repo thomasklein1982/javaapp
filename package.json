@@ -1,6 +1,6 @@
 {
   "name": "java-app",
-  "version": "13.7.1",
+  "version": "13.8.0",
   "scripts": {
     "dev": "vite",
     "dev-web": "vite --mode web",
@@ -25,6 +25,7 @@
     "prism": "^1.0.0",
     "sortablejs": "^1.15.0",
     "sortablejs-vue3": "^1.2.10",
+    "sql.js": "^1.14.1",
     "vite-plugin-prismjs": "^0.0.11",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5",

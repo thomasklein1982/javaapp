@@ -178,6 +178,9 @@
                   :selected-component="selectedUIComponent"
                   :project="project"
                 />
+                <div v-if="!running && currentClazz?.isPeggyParser" style="white-space: pre-wrap; width: 100%; height: 100%; overflow: auto;">
+                  {{ peggy.message }}
+                </div>
                 <AppPreview 
                   v-show="showAppPreviewWhenNotRunning || running || isJava(currentClazz)" 
                   :paused="paused" 
@@ -187,39 +190,47 @@
                 />
               </SplitterPanel>
               <SplitterPanel v-if="!$root.webMode" style="overflow: hidden;" :style="{display: 'flex', flexDirection: 'column'}">
-                <Insights 
-                  v-if="running"
-                  ref="insights"
-                  :project="project"
-                  :line="current.line"
-                  :step="current.step"
-                  :clazz-name="current.name"
-                  :scope="current.$scope"
-                  :paused="paused"
-                  @update-scope="$refs.preview?.askForScope"
-                  @resume="resume()"
-                  @stop="stop()"
-                  @step="step()"
-                  @step-above="stepAbove()"
-                  @remove-breakpoints="removeAllBreakpoints()"
-                  @send-console-prompt="sendConsolePrompt"
-                />
-                <UIComponentEditor 
-                  v-if="!running && showUIEditor && selectedUIComponent" 
-                  :component="selectedUIComponent"
-                  :project="project"
-                  :maximized="false"
-                  :settings="settings"
-                  @recompile="compileProjectAndUpdateUIPreview()"
-                  @isolatedupdate="compileUIClazzAndUpdatePreview()"
-                />
-                <Outline
-                  v-else-if="!running"
-                  @click="outlineClick"
-                  :style="{flex: 1}" 
-                  ref="outline"
-                  :project="project"
-                />
+                <template v-if="currentClazz.isPeggyParser &&!running">
+                  <CodeMirrorEditor
+                    v-model="peggy.testString"
+                  />
+                  <Button @click="testPeggyString()" label="Parsen"/>
+                </template>
+                <template v-else>
+                  <Insights 
+                    v-if="running"
+                    ref="insights"
+                    :project="project"
+                    :line="current.line"
+                    :step="current.step"
+                    :clazz-name="current.name"
+                    :scope="current.$scope"
+                    :paused="paused"
+                    @update-scope="$refs.preview?.askForScope"
+                    @resume="resume()"
+                    @stop="stop()"
+                    @step="step()"
+                    @step-above="stepAbove()"
+                    @remove-breakpoints="removeAllBreakpoints()"
+                    @send-console-prompt="sendConsolePrompt"
+                  />
+                  <UIComponentEditor 
+                    v-if="!running && showUIEditor && selectedUIComponent" 
+                    :component="selectedUIComponent"
+                    :project="project"
+                    :maximized="false"
+                    :settings="settings"
+                    @recompile="compileProjectAndUpdateUIPreview()"
+                    @isolatedupdate="compileUIClazzAndUpdatePreview()"
+                  />
+                  <Outline
+                    v-else-if="!running"
+                    @click="outlineClick"
+                    :style="{flex: 1}" 
+                    ref="outline"
+                    :project="project"
+                  />
+                </template>
               </SplitterPanel>
             </Splitter>
           </SplitterPanel>
@@ -347,6 +358,10 @@ export default {
   },
   data(){
     return {
+      peggy: {
+        message: "",
+        testString: "",
+      },
       useBlockEditor: false,
       showActionButtonLabels: false,
       activeTab: this.$root.webMode? 1: 0,
@@ -448,6 +463,44 @@ export default {
     },1000);
   },
   methods: {
+    testPeggyString(){
+      let c=this.checkPeggyGrammar();
+      if(c===null) return;
+      let funcName=this.currentClazz.getParseFunctionName();
+      let pos=c.indexOf("function "+funcName);
+      c=c.substring(pos);
+      let f=new Function("return "+c+";");
+      f=f();
+      this.peggy.message="Grammatik ist in Ordnung\n";
+      try{
+        let res=f(this.peggy.testString);
+        console.log(res);
+        window.testString=this.peggy.testString;
+        function rep(key,value){
+          console.log(this,key,value);
+          if(Array.isArray(value)) return value;
+          if(value.name!==undefined) return {
+            i: "L"+value.line+": "+value.name+" ["+value.start+":"+value.end+"]",
+            t: window.testString.substring(value.start,value.end),
+            c: value.children
+          };
+          return value;
+        }
+        this.peggy.message+=JSON.stringify(res,rep, "  ");
+      }catch(e){
+        this.peggy.message+="Fehler beim Parsen des Test-Strings:\n"+JSON.stringify(e,null," ");
+      }
+    },
+    checkPeggyGrammar(){
+      try{
+        let c=this.currentClazz.getParseFunctionCode();
+        this.peggy.message="Keine Fehler";
+        return c;
+      }catch(e){
+        this.peggy.message=e;
+        return null;
+      }
+    },
     handleTabChange(nv){
       this.$root.emitEvent("tab-change",{index: nv});
       let c=this.project.clazzes[nv];
