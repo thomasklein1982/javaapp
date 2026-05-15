@@ -1322,33 +1322,37 @@ function additionalJSCode(){
     }
     static async create(name){
       if(!window.indexedDB) return;
-      let openRequest= window.indexedDB.open(name, 1);
-      // Register two event handlers to act on the database being opened successfully, or not
-      let p=new Promise((fulfill,reject)=>{
-        
-        openRequest.onerror = (event) => {
-          throw $new(Exception,"Datenbank konnte nicht geladen werden");
-        };
-
-        openRequest.onsuccess = (ev) => {
-          let db = ev.target.result;
-          fulfill(db);
-        };
-
-        // This event handles the event whereby a new version of the database needs to be created
-        // Either one has not been created before, or a new version number has been submitted via the
-        // window.indexedDB.open line above
-        //it is only implemented in recent browsers
-        openRequest.onupgradeneeded = (event) => {
-          let db = event.target.result;
-          db.onerror = (event) => {
+      try{
+        let openRequest= window.indexedDB.open(name, 1);
+        // Register two event handlers to act on the database being opened successfully, or not
+        let p=new Promise((fulfill,reject)=>{
+          
+          openRequest.onerror = (event) => {
             throw $new(Exception,"Datenbank konnte nicht geladen werden");
           };
-          let objectStore=db.createObjectStore('items', { keyPath: null });
-        }; 
-      });
-      let db=await p;
-      return new Storage(name,db);
+
+          openRequest.onsuccess = (ev) => {
+            let db = ev.target.result;
+            fulfill(db);
+          };
+
+          // This event handles the event whereby a new version of the database needs to be created
+          // Either one has not been created before, or a new version number has been submitted via the
+          // window.indexedDB.open line above
+          //it is only implemented in recent browsers
+          openRequest.onupgradeneeded = (event) => {
+            let db = event.target.result;
+            db.onerror = (event) => {
+              throw $new(Exception,"Datenbank konnte nicht geladen werden");
+            };
+            let objectStore=db.createObjectStore('items', { keyPath: null });
+          }; 
+        });
+        let db=await p;
+        return new Storage(name,db);
+      }catch(e){
+        return null;
+      }
     }
     async hasKey(key){
       let keys=await this.getKeys();
@@ -7107,6 +7111,7 @@ function additionalJSCode(){
       }
     }
     static async checkTestCases(initData,testcases,applyTestFunc){
+      console.log("checkTestCases");
       let resArray=[];
       $App.debug.slowMode=0;
       $Exercise.setUIBlocked(true);
@@ -7295,7 +7300,9 @@ function additionalJSCode(){
       //return $App.canvas.container;
     }
     static sendMessage(type, data){
+      console.log("sendMessage 1",type);
       if(window.parent!==window){
+        console.log("sendMessage 2",type);
         window.parent.postMessage({type: type, data: data});
       }
     }

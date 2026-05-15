@@ -72,7 +72,9 @@ import Extension from './classes/Extension.js';
 const updateSW=registerSW({
   onNeedRefresh(){
     window.app.emitEvent("update-available");
-    let a=confirm("Eine neue Version ist verfügbar. Willst du aktualisieren (empfohlen!)?");
+    let a;
+    if(window.parent) a=true;
+    else a=confirm("Eine neue Version ist verfügbar. Willst du aktualisieren (empfohlen!)?");
     if(a){
       updateSW();
     }

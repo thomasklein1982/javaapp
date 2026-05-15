@@ -306,7 +306,7 @@ window.SQLite = SQLite;
       uiclazzesString+=c.name+",";
     }
     uiclazzesString+="]";
-    let codeMainCall="(async function(){await $App.setup();await $initSQL();\nawait $createAllUIClazzes("+uiclazzesString+");";
+    let codeMainCall="(async function(){await $App.setup();if(window.$initSQL) await $initSQL();\nawait $createAllUIClazzes("+uiclazzesString+");";
     let mainObjectCode; /**der Name der Klasse oder des Objekts, das die Main-Methode enthält */
     if(mainClazz){
       if(mainClazz.hasStaticMainMethod()){
