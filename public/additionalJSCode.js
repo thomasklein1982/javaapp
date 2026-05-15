@@ -3970,12 +3970,12 @@ function additionalJSCode(){
       
     }
     clear(){
-      var tables=Object.keys(this.$db.tables);
-      if(tables){
-        for(var i=0;i<tables.length;i++){
-          var c="drop table "+tables[i];
+      let tables=this.$db.exec("select name from sqlite_master where type='table'");
+      if(tables && tables[0]){
+        for(let i=0;i<tables[0].values.length;i++){
+          let c="drop table if exists "+tables[0].values[i];
           try{
-            this.$db.exec(c);
+            this.$db.run(c);
           }catch(e){
             console.log(e);
           }
@@ -3988,12 +3988,11 @@ function additionalJSCode(){
     }
     static async create(name){
       let db=new Database();
+      db.$db=new SQLite.Database();
       if(name){
-        db.$db=new alasql.Database(name);
+        db.$db.name=name;
         db.$indexedDB=await $IndexedDB.create(name,1);
         //await db.load();
-      }else{
-        db.$db=alasql;
       }
       db.version=1;
       db.reset();
@@ -4135,11 +4134,10 @@ function additionalJSCode(){
     prepareStatement(sqlSource){
       return sqlSource;
     }
-    query(sqlSource){
+    query(cmd){
       try{
-        let prep;
-        prep=this.prepareStatement(sqlSource);
-        let r=this.$db.exec(prep.toString());
+        if(!cmd || cmd.length===0) return null;
+        let r=this.$db.exec(cmd);
         // if(this.$indexedDB){
         //   this.$indexedDB.reflectSQL(prep);
         // }
@@ -4147,13 +4145,13 @@ function additionalJSCode(){
         if(!r) return null;
         if(!Array.isArray(r)) return null;
         if(r.length===0) return r;
-        let dontReturnR=false;
-        for(let i=r.length-1;i>=0;i--){
-          if(Array.isArray(r[i])) return r[i];
-          if(typeof r[i]==="number") dontReturnR=true;
-        }
-        if(dontReturnR) return null;
-        return r;
+        // let dontReturnR=false;
+        // for(let i=r.length-1;i>=0;i--){
+        //   if(Array.isArray(r[i])) return r[i];
+        //   if(typeof r[i]==="number") dontReturnR=true;
+        // }
+        // if(dontReturnR) return null;
+        return r[0];
       }catch(e){
         console.log(e.message);
         throw e;
@@ -4164,9 +4162,13 @@ function additionalJSCode(){
         var result=this.query(cmd);
         var records=[];
         if(result){
-          for(var i=0;i<result.length;i++){
-            var r=result[i];
-            records.push(r);
+          for(var i=0;i<result.values.length;i++){
+            var r=result.values[i];
+            let rec={};
+            for(let j=0;j<result.columns.length;j++){
+              rec[result.columns[j]]=r[j];
+            }
+            records.push(rec);
           }
         }
         var a=$createArray("JSON",records.length,records);

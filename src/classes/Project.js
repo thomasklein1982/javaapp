@@ -256,50 +256,22 @@ export class Project{
     }
     let databaseCode="";
     if(this.includeAlaSQL){
-      databaseCode+=alasql_code+"\nalasql_code();alasql.options.casesensitive=false;\n";
-      databaseCode+=`alasql.fn.datepart=function(date_part,date){
-        if(/^\\d\\d(?:\\:\\d\\d(?:\\:\\d\\d)?)?$/.test(date)){
-          let s=date.split(':');
-          let part=date_part.toLowerCase();
-          if(part==='second' || part==='ss'){
-            if(s.length>2){
-              return s[2]*1;
-            }
-          }else if(part==='minute'||part==='mm'){
-            if(s.length>1){
-              return s[1]*1;
-            }
-          }else if(part==='hour'|| part==="hh"){
-            if(s.length>0){
-              return s[0]*1;
-            }
-          }
-          return 0;
-        } 
-        return null;
-      };
-      alasql.fn.tomillis=function(date){
-  if(/^\d\d:\d\d:\d\d$/.test(date)){
-    let s=date.split(":");
-    date=(s[0]*3600+s[1]*60+s[2]*1)*1000;
-  }
-  return (new Date(date))*1;
-};
-alasql.fn.todate=function(number){
-  let d=new Date(number);
-  let fillZero=function(s){if(s<10) return "0"+s; else return ""+s;}
-  return d.getFullYear()+"-"+fillZero(d.getMonth()+1)+"-"+fillZero(d.getDate());
-};
-alasql.fn.todatetime=function(number){
-  let d=new Date(number);
-  let fillZero=function(s){if(s<10) return "0"+s; else return ""+s;}
-  return d.getFullYear()+"-"+fillZero(d.getMonth()+1)+"-"+fillZero(d.getDate())+" "+fillZero(d.getUTCHours())+":"+fillZero(d.getUTCMinutes())+":"+fillZero(d.getUTCSeconds());
-};
-alasql.fn.totime=function(number){
-  let d=new Date(number);
-  let fillZero=function(s){if(s<10) return "0"+s; else return ""+s;}
-  return fillZero(d.getUTCHours())+":"+fillZero(d.getUTCMinutes())+":"+fillZero(d.getUTCSeconds());
-};`;
+      databaseCode+=sqljsCode+"\nwindow.sqljsWasmCode='"+sqljsWasmCode+"';\n";
+      databaseCode+=`async function $initSQL(){
+      let SQLite=await initSqlJs({
+  locateFile: (file) => {
+    let code=window.sqljsWasmCode;
+    //console.log(code);
+    const wasm_strbuffer = atob(code);
+    let wasm_codearray = new Uint8Array(wasm_strbuffer.length);
+    for (let i in wasm_strbuffer) wasm_codearray[i] = wasm_strbuffer.charCodeAt(i);
+
+    let url=URL.createObjectURL(new Blob([wasm_codearray], { type: 'application/wasm' }));
+    return url;},
+});
+
+window.SQLite = SQLite;
+}\n`;
       let dbcreate="\nwindow.$dbCreate=function(db){\n";
       dbcreate+="db.clear();\ntry{";
       let cmds=this.database.createInMemory(true);
@@ -334,7 +306,7 @@ alasql.fn.totime=function(number){
       uiclazzesString+=c.name+",";
     }
     uiclazzesString+="]";
-    let codeMainCall="(async function(){await $App.setup();\nawait $createAllUIClazzes("+uiclazzesString+");";
+    let codeMainCall="(async function(){await $App.setup();await $initSQL();\nawait $createAllUIClazzes("+uiclazzesString+");";
     let mainObjectCode; /**der Name der Klasse oder des Objekts, das die Main-Methode enthält */
     if(mainClazz){
       if(mainClazz.hasStaticMainMethod()){

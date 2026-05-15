@@ -193,6 +193,13 @@ for(let name in appjsdata.objects){
 
 window.appJScode=text;
 
+text=sqljsCode.toString();
+text=text.substring(22,text.length-2);
+window.sqljsCode=text;
+
+text=window.sqljsWasmCode.toString();
+window.sqljsWasmCode=text.substring(36,text.length-18);
+
 text=(additionalJSCode+"");
 pos=text.indexOf("{");
 pos2=text.lastIndexOf("}");

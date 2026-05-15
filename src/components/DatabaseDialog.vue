@@ -40,9 +40,9 @@
               <div v-if="sqlExecution.result.length>0">
                 <table class="database-table">
                   <tr>
-                    <th v-for="(a,j) in sqlExecution.result[0]">{{stripQuotationMarks((j+"").toUpperCase())}}</th>
+                    <th v-for="(a,j) in sqlExecution.result[0].columns">{{(a+"").toUpperCase()}}</th>
                   </tr>
-                  <tr v-for="(ds,i) in sqlExecution.result">
+                  <tr v-for="(ds,i) in sqlExecution.result[0].values">
                     <td v-for="(a,j) in ds">{{a===undefined? 'NULL' : a}}</td>
                   </tr>
                 </table>

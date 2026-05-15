@@ -1,49 +1,52 @@
 import {Table} from "./Table";
-alasql_code();
-alasql.fn.datepart=function(date_part,date){
-  if(/^\d\d(?:\:\d\d(?:\:\d\d)?)?$/.test(date)){
-    let s=date.split(':');
-    let part=date_part.toLowerCase();
-    if(part==='second' || part==='ss'){
-      if(s.length>2){
-        return s[2]*1;
-      }
-    }else if(part==='minute'||part==='mm'){
-      if(s.length>1){
-        return s[1]*1;
-      }
-    }else if(part==='hour'|| part==="hh"){
-      if(s.length>0){
-        return s[0]*1;
-      }
-    }
-    return 0;
-  } 
-  return null;
-};
-alasql.fn.tomillis=function(date){
-  if(/^\d\d:\d\d:\d\d$/.test(date)){
-    let s=date.split(":");
-    date=(s[0]*3600+s[1]*60+s[2]*1)*1000;
-  }
-  return (new Date(date))*1;
-};
-alasql.fn.todate=function(number){
-  let d=new Date(number);
-  let fillZero=function(s){if(s<10) return "0"+s; else return ""+s;}
-  return d.getFullYear()+"-"+fillZero(d.getMonth()+1)+"-"+fillZero(d.getDate());
-};
-alasql.fn.todatetime=function(number){
-  let d=new Date(number);
-  let fillZero=function(s){if(s<10) return "0"+s; else return ""+s;}
-  return d.getFullYear()+"-"+fillZero(d.getMonth()+1)+"-"+fillZero(d.getDate())+" "+fillZero(d.getUTCHours())+":"+fillZero(d.getUTCMinutes())+":"+fillZero(d.getUTCSeconds());
-};
-alasql.fn.totime=function(number){
-  let d=new Date(number);
-  let fillZero=function(s){if(s<10) return "0"+s; else return ""+s;}
-  return fillZero(d.getUTCHours())+":"+fillZero(d.getUTCMinutes())+":"+fillZero(d.getUTCSeconds());
-};
-alasql.options.casesensitive=false;
+import SQL from "../functions/sql";
+
+const database=SQL;
+// alasql_code();
+// alasql.fn.datepart=function(date_part,date){
+//   if(/^\d\d(?:\:\d\d(?:\:\d\d)?)?$/.test(date)){
+//     let s=date.split(':');
+//     let part=date_part.toLowerCase();
+//     if(part==='second' || part==='ss'){
+//       if(s.length>2){
+//         return s[2]*1;
+//       }
+//     }else if(part==='minute'||part==='mm'){
+//       if(s.length>1){
+//         return s[1]*1;
+//       }
+//     }else if(part==='hour'|| part==="hh"){
+//       if(s.length>0){
+//         return s[0]*1;
+//       }
+//     }
+//     return 0;
+//   } 
+//   return null;
+// };
+// alasql.fn.tomillis=function(date){
+//   if(/^\d\d:\d\d:\d\d$/.test(date)){
+//     let s=date.split(":");
+//     date=(s[0]*3600+s[1]*60+s[2]*1)*1000;
+//   }
+//   return (new Date(date))*1;
+// };
+// alasql.fn.todate=function(number){
+//   let d=new Date(number);
+//   let fillZero=function(s){if(s<10) return "0"+s; else return ""+s;}
+//   return d.getFullYear()+"-"+fillZero(d.getMonth()+1)+"-"+fillZero(d.getDate());
+// };
+// alasql.fn.todatetime=function(number){
+//   let d=new Date(number);
+//   let fillZero=function(s){if(s<10) return "0"+s; else return ""+s;}
+//   return d.getFullYear()+"-"+fillZero(d.getMonth()+1)+"-"+fillZero(d.getDate())+" "+fillZero(d.getUTCHours())+":"+fillZero(d.getUTCMinutes())+":"+fillZero(d.getUTCSeconds());
+// };
+// alasql.fn.totime=function(number){
+//   let d=new Date(number);
+//   let fillZero=function(s){if(s<10) return "0"+s; else return ""+s;}
+//   return fillZero(d.getUTCHours())+":"+fillZero(d.getUTCMinutes())+":"+fillZero(d.getUTCSeconds());
+// };
+// alasql.options.casesensitive=false;
 
 export const SQL_KEYWORDS=['alter','create','table','add','constraint','all','column','and','any','as','asc','backup','database','between','case','check','create','index','replace','default','delete','desc','distinct','drop','view','exec','exists','foreign','key','from','full','outer','join','group','by','having','in','inner','insert','into','select','null','not','left','right','like','limit','or','order','primary','procedure','rownum','top','set','truncate','union','all','unique','update','values','where'];
 
@@ -98,17 +101,28 @@ export class Database{
     return this.tables.length===0;
   }
   static clearFromMemory(){
-    var tables=Object.keys(alasql.tables);
-    if(tables){
-      for(var i=0;i<tables.length;i++){
-        var c="drop table "+tables[i];
+    let tables=database.exec("select name from sqlite_master where type='table'");
+    if(tables && tables[0]){
+      for(let i=0;i<tables[0].values.length;i++){
+        let c="drop table if exists "+tables[0].values[i];
         try{
-          alasql(c);
+          database.run(c);
         }catch(e){
           console.log(e);
         }
       }
     }
+    // var tables=Object.keys(alasql.tables);
+    // if(tables){
+    //   for(var i=0;i<tables.length;i++){
+    //     var c="drop table "+tables[i];
+    //     try{
+    //       alasql(c);
+    //     }catch(e){
+    //       console.log(e);
+    //     }
+    //   }
+    // }
   }
   clear(saveInitCode){
     Database.clearFromMemory();
@@ -138,84 +152,33 @@ export class Database{
   }
   prepareStatement(sqlSource){
     return sqlSource;
-    /**muss kopiert werden in additionalJScode! */
-    let ast=alasql.parse(sqlSource);
-    /**untersucht die statements darauf, ob mehr als eine Tabelle abgefragt wird
-     * falls ja, werden alle mehrfach vorkommenden Spaltennamen per 'as' in 'Tabelle.Spalte' umbenannt
-     * Sinn: doppelt vorkommende Spaltennamen kollabieren ansonsten
-     * damit StringValue erzeugt werden kann, musste in alasql.min.ja folgender Code eingefügt werden:
-     * window.alasqlX=X;
-     * an der Stelle:
-     * X=(T.Recordset=function(e){q(this,e)},y.yy=T.yy={});window.alasqlX=X;X.extend=
-     */
-    for(let i=0;i<ast.statements.length;i++){
-      let s=ast.statements[i];
-      if(!s || !s.columns || !s.from || s.from.length===0) continue;
-      let tables={};
-      for(let j=0;j<s.from.length;j++){
-        let t=s.from[j];
-        let label=t.as? t.as:t.tableid;
-        tables[label]=t.tableid;
-      }
-      /**spezialfall 'select *': * durch alle Spalten ersetzen: */
-      if(s.columns.length===1 && s.columns[0].columnid==='*'){
-        let spalten=[];
-        for(let j=0;j<s.from.length;j++){
-          let t=s.from[j];
-          let label=t.as? t.as:t.tableid;
-          let table=alasql.tables[t.tableid];
-          if(!table) continue;
-          for(let k=0;k<table.columns.length;k++){
-            let c=table.columns[k];
-            let spalte=label+"."+c.columnid;
-            spalten.push({
-              spalte, columnid: c.columnid, tableid: label
-            });
-          }
-        }
-        for(let j=0;j<spalten.length;j++){
-          let spalte=spalten[j];
-          s.columns[j]=new alasqlX.Column({columnid: spalte.columnid, tableid: spalte.tableid});
-        }
-      }
-      /**finde doppelte spalten: */
-      for(let j=0;j<s.columns.length;j++){
-        let c=s.columns[j];
-        if(c.as) continue;
-        let changeC=false;
-        for(let k=j+1;k<s.columns.length;k++){
-          let c2=s.columns[k];
-          if(c2.as) continue;
-          if(c2.columnid===c.columnid){
-            changeC=true;
-            let tableid=tables[c2.tableid];
-            c2.as=new window.alasqlX.StringValue({value: tableid+"."+c2.columnid});
-          }
-        }
-        if(changeC){
-          let tableid=tables[c.tableid];
-          c.as=new window.alasqlX.StringValue({value: tableid+"."+c.columnid});
-        }
-      }
-    }
-    return ast.toString();
   }
-  query(sqlSource){
-    if(!sqlSource) return null;
-    try{
-      let prep;
-      if(sqlSource.trim().toLowerCase().startsWith("insert")){
-        prep=sqlSource;
-      }else{
-        prep=this.prepareStatement(sqlSource);
-      }
-      var r=alasql(prep);
-      return r;
-    }catch(e){
-      console.log(e.message);
-      throw e;
-    }
+  query(cmd){
+    if(!cmd || cmd.length===0) return null;
+    
+    let res=database.exec(cmd);
+    return res;
   }
+  sqlParams(cmd,params){
+    let res=database.exec(cmd,params);
+    return res;
+  }
+  // query(sqlSource){
+  //   if(!sqlSource) return null;
+  //   try{
+  //     let prep;
+  //     if(sqlSource.trim().toLowerCase().startsWith("insert")){
+  //       prep=sqlSource;
+  //     }else{
+  //       prep=this.prepareStatement(sqlSource);
+  //     }
+  //     var r=alasql(prep);
+  //     return r;
+  //   }catch(e){
+  //     console.log(e.message);
+  //     throw e;
+  //   }
+  // }
   fromCSVString(s){
     this.clear();
     var tableData=s.split(this.separator+this.separator+"\n");
