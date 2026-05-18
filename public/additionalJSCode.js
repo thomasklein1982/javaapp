@@ -3973,16 +3973,33 @@ function additionalJSCode(){
     $constructor(name){
       
     }
+    getTableMetaData(){
+      let tableArray=this.$db.exec("select name, sql from sqlite_master where type='table'");
+      if(!tableArray) return [];
+      tableArray=tableArray[0];
+      if(!tableArray) return [];
+      tableArray=tableArray.values;
+      if(!tableArray) return [];
+      let tables=[];
+      for(let i=0;i<tableArray.length;i++){
+        let a=tableArray[i];
+        let name=a[0];
+        if(name.startsWith("sqlite_")) continue;
+        tables.push({
+          name,
+          sql: a[1]
+        });
+      }
+      return tables;
+    }
     clear(){
-      let tables=this.$db.exec("select name from sqlite_master where type='table'");
-      if(tables && tables[0]){
-        for(let i=0;i<tables[0].values.length;i++){
-          let c="drop table if exists "+tables[0].values[i];
-          try{
-            this.$db.run(c);
-          }catch(e){
-            console.log(e);
-          }
+      let tables=this.getTableMetaData();
+      for(let i=0;i<tables.length;i++){
+        let c="drop table if exists "+tables[i].name;
+        try{
+          this.$db.run(c);
+        }catch(e){
+          console.log(e);
         }
       }
     }
@@ -4008,20 +4025,74 @@ function additionalJSCode(){
     getVersion(){
       return this.version;
     }
-    saveTable(tablename,table){
-      this.$indexedDB.setItem(tablename,{cols: table.columns, data: table.data});
+    saveTable(table){
+      let tableData=this.$db.exec("select * from "+table.name)[0];
+      let values;
+      if(tableData) values=tableData.values;
+      else values=[];
+      // if(!table){
+      //   //bei leerer Tabelle: left join kombiniert alle Werte der 1-Tabelle mit NULL
+      //   table=this.$db.exec("SELECT t.* FROM (SELECT 1) LEFT JOIN "+table.name+" AS t")[0];
+      //   table.values=[];
+      //   console.log("empty table",table);
+      // }
+      this.$indexedDB.setItem(table.name,{sql: table.sql, data: values});
     }
     async save(){
       if(!this.$indexedDB) return;
       this.$indexedDB.setItem("$version$",this.version);
-      let tables=this.$db.tables;
+      let tables=this.getTableMetaData();
       await this.$indexedDB.clear();
-      for(let a in tables){
-        this.saveTable(a,tables[a]);
+      for(let i=0;i<tables.length;i++){
+        this.saveTable(tables[i]);
       }
     }
+    async load(){
+      if(!this.$indexedDB) return false;
+      let tables=await this.$indexedDB.getAllItems();
+      return this.loadFromObject(tables);
+    }
+    loadFromObject(tables){
+      this.reset();
+      if(!tables) return false;
+      //let tables=this.$db.tables;
+      let oldTables=this.getTableMetaData();
+      for(let a in tables){
+        if(a==="$version$"){
+          this.version=tables[a]*1;
+          continue;
+        }
+        let table=tables[a];
+        if(!table.sql){
+          console.log("Datenbank kann nicht geladen werden wegen Systemumstellung. Sorry");
+          return;
+        }
+        //if(tables[a].length<=0 || a.endsWith("-$cols$")) continue;
+        for(let i=0;i<oldTables.length;i++){
+          if(oldTables[i].name===a){
+            this.$db.exec("drop table "+a);
+            break;
+          }
+        }
+        this.$db.exec(table.sql);
+        if(table.data.length===0) continue;
+        let sql="insert into "+a+" values ";
+        for(let i=0;i<table.data.length;i++){
+          let rec=table.data[i];
+          sql+=(i>0? ", (":"(");
+          for(let j=0;j<rec.length;j++){
+            let d=rec[j];
+            sql+=(j>0? ", ":"")+JSON.stringify(d);
+          }
+          sql+=")";
+        }
+        this.$db.exec(sql);
+      }
+      return true;
+    }
     exportTableDataAsCSVString(tablename,separator){
-      let table=this.$db.tables[tablename.toLowerCase()];
+      let tables=this.$db.exec("select name from sqlite_master where type='table'");
+      let table=tables[tablename.toLowerCase()];
       if(!table) return null;
       if(!separator){
         separator=";";
@@ -4045,7 +4116,8 @@ function additionalJSCode(){
       return text;
     }
     importTableDataFromCSVString(tablename,s,separator){
-      let table=this.$db.tables[tablename.toLowerCase()];
+      let tables=this.$db.exec("select name from sqlite_master where type='table'");
+      let table=tables[tablename.toLowerCase()];
       if(!table) return false;
       if(!separator){
         separator=";";
@@ -4088,40 +4160,8 @@ function additionalJSCode(){
       }
       return t;
     }
-    loadFromObject(tables){
-      this.reset();
-      console.log("load",tables);
-      if(!tables) return false;
-      //let tables=this.$db.tables;
-      for(let a in tables){
-        if(a==="$version$"){
-          this.version=tables[a]*1;
-          continue;
-        }
-        let tab=tables[a];
-        //if(tables[a].length<=0 || a.endsWith("-$cols$")) continue;
-        let t=this.$db.tables[a];
-        if(t){
-          this.$db.exec("drop table "+a);
-        }
-        let cols=[];
-        for(let i=0;i<tab.cols.length;i++){
-          let c=tab.cols[i];
-          cols.push(c.columnid+" "+this.getDatatypeString(c));
-        }
-        this.$db.exec("create table "+a+" ("+cols.join(",")+")");
-        t=this.$db.tables[a];
-        t.data=tables[a].data;
-      }
-      return true;
-    }
-    async load(){
-      if(!this.$indexedDB) return false;
-      let tables=await this.$indexedDB.getAllItems();
-      return this.loadFromObject(tables);
-    }
     tableCount(){
-      let tables=this.$db.tables;
+      let tables=this.$db.exec("select name from sqlite_master where type='table'");
       let s=0;
       for(let a in tables){
         s++;
@@ -4129,7 +4169,7 @@ function additionalJSCode(){
       return s;
     }
     isEmpty(){
-      let tables=this.$db.tables;
+      let tables=this.$db.exec("select name from sqlite_master where type='table'");
       for(let a in tables){
         return false;
       }
@@ -4142,9 +4182,6 @@ function additionalJSCode(){
       try{
         if(!cmd || cmd.length===0) return null;
         let r=this.$db.exec(cmd);
-        // if(this.$indexedDB){
-        //   this.$indexedDB.reflectSQL(prep);
-        // }
         //check if multiple results from multiple statements:
         if(!r) return null;
         if(!Array.isArray(r)) return null;

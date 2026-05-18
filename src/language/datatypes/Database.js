@@ -7,23 +7,6 @@ export function defineDatabaseClazzes(Java){
   defineDatabase(Java.datatypes.Database,Java);
 }
 
-// function defineRecord(Clazz){
-//   //Clazz.superClazz=Java.clazzes.JSON;
-//   createConstructor ({
-//     args: [
-//       {type: 'String', name: 'label'}, {type: 'double', name: 'x'}, {type: 'double', name: 'y'}, {type: 'double', name: 'width'}, {type: 'double', name: 'height'}
-//     ],
-//   },Clazz);
-//   createMethod({
-//     name: "get",
-//     info: "Liefert einen bestimmten Wert des Datensatzes zurück.",
-//     returnType: 'String',
-//     args: [
-//       {name: "attribute", type: "String", info: "Der Name des abgefragten Attributs."}
-//     ],
-//   },Clazz,false,false);
-// }
-
 function defineDatabase(Clazz,Java){
   Clazz.description=`Die Database-Klasse stellt eine Schnittstelle zur SQL-Datenbank eines Projektes dar. Definiere die Relationen der Datenbank im Menü unter <em>Projekt &rarr; Datenbank</em>.
   <p>Select-Abfragen liefern Arrays von <Link href="api/JSON">JSON</Link>-Objekten zurück.</p>
@@ -48,7 +31,7 @@ System.out.println( res[0].getString("vorname") );
   },Clazz,false,false,Java);
   createMethod({
     name: "reset",
-    info: "Löscht den kompletten Inhalt der Datenbank und setzt alle Tabellen auf den Ursprung zurück.",
+    info: "Setzt alle Tabellen auf den Ursprung zurück.",
     args: [],
   },Clazz,false,false,Java);
   createMethod({
