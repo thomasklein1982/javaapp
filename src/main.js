@@ -73,7 +73,7 @@ const updateSW=registerSW({
   onNeedRefresh(){
     window.app.emitEvent("update-available");
     let a;
-    if(window.parent) a=true;
+    if(window.parent!==window) a=true;
     else a=confirm("Eine neue Version ist verfügbar. Willst du aktualisieren (empfohlen!)?");
     if(a){
       updateSW();
