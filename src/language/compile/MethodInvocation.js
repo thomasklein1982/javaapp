@@ -127,7 +127,7 @@ export function MethodInvocation(node,source,scope){
     code+=al.code;
   }
   //code+="$App.debug.incCallDepth();";
-  code="await "+code;
+  code="(await "+code+")";
   if(scope.isDebuggableContext() && !method.isBuiltIn()){
     let line=source.getLineNumber(rootNode.from);
     code="await (async (val)=>{$App.debug.decCallDepth(); await $App.debug.line("+line+","+JSON.stringify(scope.method.clazz.name)+",$scope); return val;})($App.debug.incCallDepth() || "+code+")";
