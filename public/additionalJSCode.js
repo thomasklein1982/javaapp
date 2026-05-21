@@ -804,7 +804,13 @@ function additionalJSCode(){
   $getAssetObjectURL=function(assetName){
     let asset=$App.assets[assetName];
     if(!asset) return assetName;
-    if(!asset.objectURL){
+    if(!asset.objectURL || asset.mime==="image/gif"){
+      if(asset.objectURL){
+        URL.revokeObjectURL(asset.objectURL);
+      }
+      if(asset.mime==="image/gif"){
+        console.log("load gif new");
+      }
       asset.objectURL=URL.createObjectURL($dataURLtoBlob(asset.url));
     }
     return asset.objectURL;

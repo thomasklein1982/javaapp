@@ -143,7 +143,7 @@ export class Project{
     let assetsCode="/****** ASSETS START ******/";
     for(let i=0;i<this.assets.length;i++){
       let a=this.assets[i];
-      assetsCode+="loadAsset('"+a.file.code+"','"+a.name+"');";
+      assetsCode+="loadAsset('"+a.file.code+"','"+a.name+"','"+a.file.mime+"');";
     }
     assetsCode+="\n/****** ASSETS END ******/"
     let uiclazzesString=[];
@@ -287,7 +287,7 @@ window.SQLite = SQLite;
     let assetsCode="/****** ASSETS START ******/";
     for(let i=0;i<this.assets.length;i++){
       let a=this.assets[i];
-      assetsCode+="loadAsset('"+a.file.code+"','"+a.name+"');";
+      assetsCode+="loadAsset('"+a.file.code+"','"+a.name+"','"+a.file.mime+"');";
     }
     assetsCode+="\n/****** ASSETS END ******/"
     let js=this.getJavaScriptCode();

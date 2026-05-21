@@ -284,7 +284,7 @@ export class UIClazz extends Clazz{
           names[c.array]=standardValue;
         }else{
           if(!names[c.array]) names[c.array]=[];
-          names[c.array].push(c);
+          if(names[c.array].push) names[c.array].push(c);
         }
       }
       if(c.components){

@@ -683,9 +683,10 @@ window.appJScode=function(){
       };
     };
     
-    $App.registerAsset=function(url, name){
+    $App.registerAsset=function(url, name,mime){
       this.assets[name]={
-        url: url
+        url: url,
+        mime
       }
     };
   
@@ -1682,8 +1683,8 @@ window.appJScode=function(){
     [],
     '');
   
-    $App.addFunction(async function loadAsset(url, name){
-      $App.registerAsset.call($App,url, name);
+    $App.addFunction(async function loadAsset(url, name,mime){
+      $App.registerAsset.call($App,url, name, mime);
     },null,'Laedt ein sog. "Asset" (ein Bild oder ein Sound) und speichert es unter dem angegebenen Namen im Objekt "assets". Muss vor onStart aufgerufen werden.',
     [{name: 'url', type: 'String', info: 'URL der Datei'}, {name: 'name', type: 'String', info: 'Name, unter dem das Asset gespeichert wird.'}],
     '',"topLevel");
