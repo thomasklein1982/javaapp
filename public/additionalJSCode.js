@@ -804,13 +804,7 @@ function additionalJSCode(){
   $getAssetObjectURL=function(assetName){
     let asset=$App.assets[assetName];
     if(!asset) return assetName;
-    if(!asset.objectURL || asset.mime==="image/gif"){
-      if(asset.objectURL){
-        URL.revokeObjectURL(asset.objectURL);
-      }
-      if(asset.mime==="image/gif"){
-        console.log("load gif new");
-      }
+    if(!asset.objectURL){
       asset.objectURL=URL.createObjectURL($dataURLtoBlob(asset.url));
     }
     return asset.objectURL;
@@ -1390,10 +1384,12 @@ function additionalJSCode(){
     }
     async load(key){
       let item=await this.getItem(key);
+      if(item===undefined || item===null) return null;
       return item+"";
     }
     async loadObject(key){
       let item=await this.getItem(key);
+      if(item===undefined) return null;
       return item;
     }
     async save(key, value){

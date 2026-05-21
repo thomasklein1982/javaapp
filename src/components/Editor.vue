@@ -733,6 +733,7 @@ export default {
       
       if(this.running){
         let i=this.project.getClazzIndexByName(error.name);
+        if(i<0) i=0;
         if(this.project.clazzes[i].isHidden){
           editor.setRuntimeError(error);
           return;

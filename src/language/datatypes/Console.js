@@ -38,4 +38,10 @@ export function defineConsole(clazz){
     ],
     info: "Wartet darauf, dass der User eine Taste drückt oder mit der Maus klickt."
   },clazz,true,false);
+  createMethod({
+    name: "clear",
+    args: [
+    ],
+    info: "Löscht den Inhalt der Konsole."
+  },clazz,true,false);
 }
