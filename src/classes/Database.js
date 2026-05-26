@@ -2,51 +2,6 @@ import {Table} from "./Table";
 import SQL from "../functions/sql";
 
 const database=SQL;
-// alasql_code();
-// alasql.fn.datepart=function(date_part,date){
-//   if(/^\d\d(?:\:\d\d(?:\:\d\d)?)?$/.test(date)){
-//     let s=date.split(':');
-//     let part=date_part.toLowerCase();
-//     if(part==='second' || part==='ss'){
-//       if(s.length>2){
-//         return s[2]*1;
-//       }
-//     }else if(part==='minute'||part==='mm'){
-//       if(s.length>1){
-//         return s[1]*1;
-//       }
-//     }else if(part==='hour'|| part==="hh"){
-//       if(s.length>0){
-//         return s[0]*1;
-//       }
-//     }
-//     return 0;
-//   } 
-//   return null;
-// };
-// alasql.fn.tomillis=function(date){
-//   if(/^\d\d:\d\d:\d\d$/.test(date)){
-//     let s=date.split(":");
-//     date=(s[0]*3600+s[1]*60+s[2]*1)*1000;
-//   }
-//   return (new Date(date))*1;
-// };
-// alasql.fn.todate=function(number){
-//   let d=new Date(number);
-//   let fillZero=function(s){if(s<10) return "0"+s; else return ""+s;}
-//   return d.getFullYear()+"-"+fillZero(d.getMonth()+1)+"-"+fillZero(d.getDate());
-// };
-// alasql.fn.todatetime=function(number){
-//   let d=new Date(number);
-//   let fillZero=function(s){if(s<10) return "0"+s; else return ""+s;}
-//   return d.getFullYear()+"-"+fillZero(d.getMonth()+1)+"-"+fillZero(d.getDate())+" "+fillZero(d.getUTCHours())+":"+fillZero(d.getUTCMinutes())+":"+fillZero(d.getUTCSeconds());
-// };
-// alasql.fn.totime=function(number){
-//   let d=new Date(number);
-//   let fillZero=function(s){if(s<10) return "0"+s; else return ""+s;}
-//   return fillZero(d.getUTCHours())+":"+fillZero(d.getUTCMinutes())+":"+fillZero(d.getUTCSeconds());
-// };
-// alasql.options.casesensitive=false;
 
 export const SQL_KEYWORDS=['alter','create','table','add','constraint','all','column','and','any','as','asc','backup','database','between','case','check','create','index','replace','default','delete','desc','distinct','drop','view','exec','exists','foreign','key','from','full','outer','join','group','by','having','in','inner','insert','into','select','null','not','left','right','like','limit','or','order','primary','procedure','rownum','top','set','truncate','union','all','unique','update','values','where'];
 
@@ -112,17 +67,6 @@ export class Database{
         }
       }
     }
-    // var tables=Object.keys(alasql.tables);
-    // if(tables){
-    //   for(var i=0;i<tables.length;i++){
-    //     var c="drop table "+tables[i];
-    //     try{
-    //       alasql(c);
-    //     }catch(e){
-    //       console.log(e);
-    //     }
-    //   }
-    // }
   }
   clear(saveInitCode){
     Database.clearFromMemory();
@@ -163,22 +107,6 @@ export class Database{
     let res=database.exec(cmd,params);
     return res;
   }
-  // query(sqlSource){
-  //   if(!sqlSource) return null;
-  //   try{
-  //     let prep;
-  //     if(sqlSource.trim().toLowerCase().startsWith("insert")){
-  //       prep=sqlSource;
-  //     }else{
-  //       prep=this.prepareStatement(sqlSource);
-  //     }
-  //     var r=alasql(prep);
-  //     return r;
-  //   }catch(e){
-  //     console.log(e.message);
-  //     throw e;
-  //   }
-  // }
   fromCSVString(s){
     this.clear();
     var tableData=s.split(this.separator+this.separator+"\n");

@@ -1,4 +1,5 @@
 import { Database } from "./Database";
+import SQL from "../functions/sql";
 
 export class Table{
   constructor(database,name){
@@ -26,7 +27,7 @@ export class Table{
     }
     code+=")";
     if(!commandsOnly){
-      alasql(code);
+      SQL.exec(code);
     }
     commands.push(code);
     for(var i=0;i<this.records.length;i++){
@@ -86,12 +87,12 @@ export class Table{
       if(!commandsOnly){
         if(window.$main){
           try{
-            alasql(code);
+            SQL.exec(code);
           }catch(e){
             console.log(e);
           }
         }else{
-          alasql(code);
+          SQL.exec(code);
         }
       }
       commands.push(code);

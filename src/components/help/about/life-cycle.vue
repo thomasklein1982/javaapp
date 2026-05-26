@@ -7,7 +7,7 @@
         1. Datenbank wird erzeugt
       </AccordionHeader>
       <Accordion-Content>
-        Sofern man eine Datenbank definiert hat (Projekt &rarr; Datenbank), wird der entsprechende SQL-Code ausgeführt bzw. die per UI angelegten Relationen erzeugt. Dabei wird das In-Memory-Datenbank-System <a href="https://alasql.org/" target="_blank">AlaSQL</a> verwendet.
+        Sofern man eine Datenbank definiert hat (Projekt &rarr; Datenbank), wird der entsprechende SQL-Code ausgeführt bzw. die per UI angelegten Relationen erzeugt. Dabei wird das In-Memory-Datenbank-System <a href="https://github.com/sql-js" target="_blank">SQL.JS</a> verwendet.
       </Accordion-Content>
     </AccordionPanel>
     <AccordionPanel value="1">

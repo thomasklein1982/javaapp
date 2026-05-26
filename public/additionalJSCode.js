@@ -4302,20 +4302,6 @@ function additionalJSCode(){
     }
   }
 
-  function $clearAlaSQL(){
-    var tables=Object.keys(alasql.tables);
-    if(tables){
-      for(var i=0;i<tables.length;i++){
-        var c="drop table "+tables[i];
-        try{
-          alasql(c);
-        }catch(e){
-          console.log(e);
-        }
-      }
-    }
-  }
-
   class Exception{
     $constructor(message,line){
       this.message=message;
