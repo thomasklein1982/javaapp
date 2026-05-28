@@ -54,13 +54,17 @@ export class PeggyParser extends Clazz{
     return codeParse;
   }
   getJavaScriptCode(){
-    let code=this.getParseFunctionCode()+"\n";
-    code+="class "+this.name+"{";
-    code+="\nstatic parse(input){";
-    code+="\n  return "+this.getParseFunctionName()+"(input);";
-    code+="\n}";
-    code+="\n}";
-    return code;
+    try{
+      let code=this.getParseFunctionCode()+"\n";
+      code+="class "+this.name+"{";
+      code+="\nstatic parse(input){";
+      code+="\n  return "+this.getParseFunctionName()+"(input);";
+      code+="\n}";
+      code+="\n}";
+      return code;
+    }catch(e){
+      return "class "+this.name+"{ static parse(input){ alert('Peggy-Parser funktioniert nicht'); }}";
+    }
   }
   prepareGrammar(src){
     let code=peggy.generate(src, {
