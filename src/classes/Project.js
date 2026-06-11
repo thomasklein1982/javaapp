@@ -1036,10 +1036,14 @@ window.SQLite = SQLite;
             let data=assetsCode.substring(pos+2,pos2);
             let name=assetsCode.substring(pos2+3,pos3-1);
             let pos4=name.lastIndexOf(sep);
-            let mime=name.substring(pos4+1);
-            pos4=name.indexOf(sep);
-            name=name.substring(0,pos4);
-            //let mime=getMimeFromDataURL(data);
+            let mime;
+            if(pos4>0){
+              mime=name.substring(pos4+1);
+              pos4=name.indexOf(sep);
+              name=name.substring(0,pos4);
+            }else{
+              mime=getMimeFromDataURL(data);
+            }
             o.assets.push({
               name,
               file: {

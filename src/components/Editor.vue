@@ -458,7 +458,7 @@ export default {
       return;
     }
     let timer=setInterval(()=>{
-      if(!this.project) return;
+      if(!this.project || this.running) return;
       saveLocally(STORAGE_PROJECT,this.project.toSaveString());
     },1000);
   },
