@@ -4318,6 +4318,7 @@ function additionalJSCode(){
 
   class NeuralNetwork{
     $constructor(neuronCounts){
+      this.currentCost=-1;
       this.neuronCounts=neuronCounts;
       this.setActivationFunction(NeuralNetwork.SIGMOID);
       this.setOutputActivationFunction(NeuralNetwork.SIGMOID);
@@ -4388,10 +4389,12 @@ function additionalJSCode(){
     clearTrainingData(){
       this.trainingDataX=[];
       this.trainingDataY=[];
+      this.currentCost=-1;
     }
     addTrainingData(x,y){
       this.trainingDataX.push(x);
       this.trainingDataY.push(y);
+      this.currentCost=-1;
     }
     serialize(){
       return JSON.stringify({
@@ -4417,12 +4420,14 @@ function additionalJSCode(){
       net.biasses=data.biasses;
       net.trainingDataX=data.trainingDataX;
       net.trainingDataY=data.trainingDataY;
+      this.currentCost=this.cost();
       return net;
     }
     train(learningRate, maxSteps){
-      let c=this.cost();
+      let c=this.currentCost;
+      if (c<0) c=this.cost();
       if(!maxSteps) maxSteps=-1;
-      for(let j=0;j<maxSteps || maxSteps<0;j++){
+      for(let j=0;j<maxSteps || maxSteps<=0;j++){
         let oldWeights=JSON.stringify(this.weights);
         let oldBiasses=JSON.stringify(this.biasses);
         
@@ -4436,6 +4441,7 @@ function additionalJSCode(){
         if(newCost>=c){
           this.weights=JSON.parse(oldWeights);
           this.biasses=JSON.parse(oldBiasses);
+          this.currentCost=c;
           return c;
         }
         c=newCost;
@@ -4463,7 +4469,8 @@ function additionalJSCode(){
       for(let i=0;i<this.trainingDataX.length;i++){
         sum+=this.costSingle(this.trainingDataX[i],this.trainingDataY[i]);
       }
-      return sum/this.trainingDataX.length;
+      this.currentCost=sum/this.trainingDataX.length;
+      return this.currentCost;
     }
     setInputLayer(array){
       let l=this.neurons[0];
@@ -4534,6 +4541,8 @@ function additionalJSCode(){
         NeuralNetwork.MatrixRandomize(this.weights[i],factor);
         NeuralNetwork.VectorRandomize(this.biasses[i],factor);
       }
+      this.currentCost=this.cost();
+      return this.currentCost;
     }
     static VectorRandomize(vector,factor){
       for(let i=0;i<vector.length;i++){

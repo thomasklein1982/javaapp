@@ -35,7 +35,8 @@ export function defineNeuralNetwork(Clazz,Java){
     args: [ 
       {name: 'factor', type: "double"}
     ],
-    info: "Randomisiert alle Gewichte und Biasse des Netzes mit zufälligen Kommazahlen zwischen -factor und +factor"
+    returnType: "double",
+    info: "Randomisiert alle Gewichte und Biasse des Netzes mit zufälligen Kommazahlen zwischen -factor und +factor. Liefert die Kosten des Netzes zurück."
   },Clazz,false,false);
   createMethod({
     name: 'setInputLayer',
