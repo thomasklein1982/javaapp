@@ -4316,6 +4316,275 @@ function additionalJSCode(){
     }
   }
 
+  class NeuralNetwork{
+    $constructor(neuronCounts){
+      this.neuronCounts=neuronCounts;
+      this.setActivationFunction(NeuralNetwork.SIGMOID);
+      this.weights=[];
+      this.biasses=[];
+      this.neurons=[NeuralNetwork.ZeroVector(neuronCounts[0])];
+      this.dCdA=null; //last derivative of cost by neurons
+      this.z=[];
+      for(let i=1;i<neuronCounts.length;i++){
+        let n=neuronCounts[i];
+        let m=neuronCounts[i-1]
+        this.weights.push(NeuralNetwork.ZeroMatrix(n,m));
+        this.biasses.push(NeuralNetwork.ZeroVector(n));
+        this.neurons.push(NeuralNetwork.ZeroVector(n));
+        this.z.push(NeuralNetwork.ZeroVector(n));
+      }
+      this.clearTrainingData();
+      this.currentTrainingData={x: 0, y: 0};
+    }
+    static SIGMOID = 1;
+    static RELU = 2;
+    static TANH = 3;
+    static NONE = 0;
+    setActivationFunction(index){
+      this.activationFunctionIndex=index;
+      if(index===NeuralNetwork.SIGMOID){
+        this.activation=x=>1/(1+Math.exp(-x));
+        this.activationDerivative=x=>{
+          let e = Math.exp(-x);
+          return e/((1+e)*(1+e));
+        };
+      }else if(index===NeuralNetwork.TANH){
+        this.activation=x=>Math.tanh(x);
+        this.activationDerivative=x=>{
+          let t=Math.tanh(x);
+          return 1-t*t;
+        };
+      }else if(index===NeuralNetwork.RELU){
+        this.activation=x=>{
+          return x<0? 0: x;
+        };
+        this.activationDerivative=x=>{
+          return x<0? 0: 1;
+        }
+      }else{
+        this.activation=x=>x;
+        this.activationDerivative=x=>1;
+      }
+    }
+    clearTrainingData(){
+      this.trainingDataX=[];
+      this.trainingDataY=[];
+    }
+    addTrainingData(x,y){
+      this.trainingDataX.push(x);
+      this.trainingDataY.push(y);
+    }
+    serialize(){
+      return JSON.stringify({
+        activationFunctionIndex: this.activationFunctionIndex,
+        trainingDataX: this.trainingDataX,
+        trainingDataY: this.trainingDataY,
+        weights: this.weights,
+        biasses: this.biasses
+      });
+    }
+    static async deserialize(serializedNet){
+      let data=JSON.parse(serializedNet);
+      let neuronCounts=[data.weights[0][0].length];
+      for(let i=0;i<data.biasses.length;i++){
+        neuronCounts.push(data.biasses[i].length);
+      }
+      let net=new NeuralNetwork();
+      net.$constructor(neuronCounts);
+      net.setActivationFunction(data.activationFunctionIndex);
+      net.weights=data.weights;
+      net.biasses=data.biasses;
+      net.trainingDataX=data.trainingDataX;
+      net.trainingDataY=data.trainingDataY;
+      return net;
+    }
+    train(learningRate, maxSteps){
+      let c=this.cost();
+      if(!maxSteps) maxSteps=-1;
+      for(let j=0;j<maxSteps || maxSteps<0;j++){
+        let oldWeights=JSON.stringify(this.weights);
+        let oldBiasses=JSON.stringify(this.biasses);
+        
+        for(let i=0;i<this.trainingDataX.length;i++){
+          let x=this.trainingDataX[i];
+          let y=this.trainingDataY[i];
+          this.trainSingle(learningRate,x,y);
+        }
+        let newCost=this.cost();
+        //console.log(j,"new cost",newCost);
+        if(newCost>=c){
+          this.weights=JSON.parse(oldWeights);
+          this.biasses=JSON.parse(oldBiasses);
+          return c;
+        }
+        c=newCost;
+      }
+      return c;
+    }
+    trainSingle(learningRate,x,y){
+      this.currentTrainingData.x=x;
+      this.currentTrainingData.y=y;
+      this.setInputLayer(x);
+      this.propagateForward();
+      this.propagateBackward(learningRate);
+    }
+    costSingle(x,y){
+      this.setInputLayer(x);
+      let a=this.propagateForward();
+      let c=0;
+      for(let i=0;i<a.length;i++){
+        c+=(a[i]-y[i])*(a[i]-y[i]);
+      }
+      return c;
+    }
+    cost(){
+      let sum=0;
+      for(let i=0;i<this.trainingDataX.length;i++){
+        sum+=this.costSingle(this.trainingDataX[i],this.trainingDataY[i]);
+      }
+      return sum/this.trainingDataX.length;
+    }
+    setInputLayer(array){
+      let l=this.neurons[0];
+      for(let i=0;i<l.length;i++){
+        l[i]=array[i];
+      }
+    }
+    propagateBackward(learningRate,layer){
+      if(layer===undefined){
+        for(let i=0;i<this.neurons.length-1;i++){
+          let index=this.neurons.length-1-i;
+          this.propagateBackward(learningRate,index);
+        }
+        return;
+      }
+      if(layer===0) return;
+      let a=this.neurons[layer];
+      let weights=this.weights[layer];
+      let biasses=this.biasses[layer-1];
+      if(layer===this.neurons.length-1){
+        //letzte schicht
+        let dCdA=[];
+        let M=this.trainingDataX.length;
+        for(let l=0;l<a.length;l++){
+          dCdA[l]=2*(a[l]-this.currentTrainingData.y[l])/M;
+        }
+        this.dCdA=dCdA;
+      }else{
+        let nkp1=this.neurons[layer+1].length;
+        let dCdA=[];
+        for(let j=0;j<a.length;j++){
+          let d=0;
+          for(let l=0;l<nkp1;l++){
+            d+=this.dCdA[l]*(this.activationDerivative(this.z[layer][l]))*weights[l][j];
+          }
+          dCdA.push(d);
+        }
+        this.dCdA=dCdA;
+      }
+      weights=this.weights[layer-1];
+      for(let i=0;i<weights.length;i++){
+        let wi=weights[i];
+        let dCdAi=this.dCdA[i];
+        let d=dCdAi*(this.activationDerivative(this.z[layer-1][i]));
+        biasses[i]-=learningRate*d;
+        for(let j=0;j<wi.length;j++){
+          wi[j]-=learningRate*d*this.neurons[layer-1][j];
+        }
+      }
+    }
+    propagateForward(layer){
+      if(layer===undefined){
+        let res;
+        for(let i=0;i<this.neurons.length-1;i++){
+          res=this.propagateForward(i);
+        }
+        return res;
+      }
+      let n=this.neurons[layer+1].length;
+      this.z[layer]=NeuralNetwork.VectorAddInPlace(NeuralNetwork.MatrixMul(this.weights[layer],this.neurons[layer]),this.biasses[layer]);
+      this.neurons[layer+1]=NeuralNetwork.VectorApplyFunction(this.z[layer],this.activation);
+      return this.neurons[layer+1];
+    }
+    randomizeWeightsAndBiasses(factor){
+      for(let i=0;i<this.weights.length;i++){
+        NeuralNetwork.MatrixRandomize(this.weights[i],factor);
+        NeuralNetwork.VectorRandomize(this.biasses[i],factor);
+      }
+    }
+    static VectorRandomize(vector,factor){
+      for(let i=0;i<vector.length;i++){
+        vector[i]=(Math.random()-0.5)*factor*2;
+      }
+    }
+    static MatrixRandomize(matrix,factor){
+      for(let i=0;i<matrix.length;i++){
+        NeuralNetwork.VectorRandomize(matrix[i],factor);
+      }
+    }
+    static ZeroVector(rowCount){
+      let v=[];
+      for(let i=0;i<rowCount;i++){
+        v.push(0);
+      }
+      return v;
+    }
+    static ZeroMatrix(rowCount,colCount){
+      let m=[];
+      for(let i=0;i<rowCount;i++){
+        let r=[];
+        for(let j=0;j<colCount;j++){
+          r.push(0);
+        }
+        m.push(r);
+      }
+      return m;
+    }
+    static VectorApplyFunctionInPlace(vector,func){
+      for(let i=0;i<vector.length;i++){
+        vector[i]=func(vector[i]);
+      }
+      return vector;
+    }
+    static VectorApplyFunction(vector,func){
+      let res=[];
+      for(let i=0;i<vector.length;i++){
+        res.push(func(vector[i]));
+      }
+      return res;
+    }
+    static VectorAddInPlace(vec1,vec2){
+      if(vec1.length!==vec2.length) throw "Length not equal: "+vec1.length+" vs "+vec2.length;
+      for(let i=0;i<vec1.length;i++){
+        vec1[i]=vec1[i]+vec2[i];
+      }
+      return vec1;
+    }
+    static VectorAdd(vec1,vec2){
+      if(vec1.length!==vec2.length) throw "Length not equal: "+vec1.length+" vs "+vec2.length;
+      let res=[];
+      for(let i=0;i<vec1.length;i++){
+        res.push(vec1[i]+vec2[i]);
+      }
+      return res;
+    }
+    static MatrixMul(matrix, vector){
+      let rowCount=matrix.length;
+      let colCount=matrix[0].length;
+      if(colCount!==vector.length) throw "Dimension-Mismatch: "+rowCount+"x"+colCount+" and "+vector.length;
+      let res=[];
+      for(let i=0;i<rowCount;i++){
+        let r=0;
+        for(let j=0;j<colCount;j++){
+          r+=matrix[i][j]*vector[j];
+        }
+        res.push(r);
+      }
+      return res;
+    }
+
+  }
+
   class Pattern{
     static CASE_INSENSITIVITY=1;
     static MULTI_LINE=2;

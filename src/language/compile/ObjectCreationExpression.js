@@ -26,7 +26,6 @@ export function ObjectCreationExpression(node,source,scope,infos){
       /**Seltsames Verhalten? Hier scheinen alle Ausdruecke zu landen, die mit einem . enden */
       /**TODO: Autocompletion klappt nicht bei mehr als einer Ebene: screen.bmi.=> keine Completion! */
       let node=root.firstChild;
-      console.log("ende mit .",node);
       while(node && node.nextSibling && !node.nextSibling.type.isError){
         let f=CompileFunctions.get(node,source);
         if(f){

@@ -112,7 +112,7 @@ window.appJScode=function(){
           this.updatePhysicalGamepads();
           let now=Date.now();
           let dt=now-this.startTime;
-          if(dt*this.FPS>900){
+          if(true || dt*this.FPS>900){
             this.startTime=now;
             if((window.onNextFrame||this.customHandler) && !$App.debug.paused && !$App.blocked && $App.enableOnNextFrame){
               if(this.customHandler){
