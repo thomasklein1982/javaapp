@@ -77,6 +77,13 @@ export function defineNeuralNetwork(Clazz,Java){
     info: ""
   },Clazz,false,false);
   createMethod({
+    name: 'setOutputActivationFunction',
+    args: [ 
+      {name: "functionIndex", type: "int", default: "NeuralNetwork.SIGMOID"}
+    ],
+    info: ""
+  },Clazz,false,false);
+  createMethod({
     name: 'deserialize',
     args: [ 
       {name: "serializedNet", type: "String"}

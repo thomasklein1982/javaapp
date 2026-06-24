@@ -4320,6 +4320,7 @@ function additionalJSCode(){
     $constructor(neuronCounts){
       this.neuronCounts=neuronCounts;
       this.setActivationFunction(NeuralNetwork.SIGMOID);
+      this.setOutputActivationFunction(NeuralNetwork.SIGMOID);
       this.weights=[];
       this.biasses=[];
       this.neurons=[NeuralNetwork.ZeroVector(neuronCounts[0])];
@@ -4336,35 +4337,53 @@ function additionalJSCode(){
       this.clearTrainingData();
       this.currentTrainingData={x: 0, y: 0};
     }
+    static NONE = 0;
     static SIGMOID = 1;
     static RELU = 2;
     static TANH = 3;
-    static NONE = 0;
-    setActivationFunction(index){
-      this.activationFunctionIndex=index;
-      if(index===NeuralNetwork.SIGMOID){
-        this.activation=x=>1/(1+Math.exp(-x));
-        this.activationDerivative=x=>{
+    static ACTIVATION_FUNCTIONS=[
+      {
+        func: x=>x,
+        derivative: x=>1
+      },
+      {
+        func: x=>1/(1+Math.exp(-x)),
+        derivative: x=>{
           let e = Math.exp(-x);
           return e/((1+e)*(1+e));
-        };
-      }else if(index===NeuralNetwork.TANH){
-        this.activation=x=>Math.tanh(x);
-        this.activationDerivative=x=>{
+        }
+      },
+      {
+        func: x=>x<0? 0: x,
+        derivative: x=>x<0? 0: 1
+      },
+      {
+        func: x=>Math.tanh(x),
+        derivative: x=>{
           let t=Math.tanh(x);
           return 1-t*t;
-        };
-      }else if(index===NeuralNetwork.RELU){
-        this.activation=x=>{
-          return x<0? 0: x;
-        };
-        this.activationDerivative=x=>{
-          return x<0? 0: 1;
         }
-      }else{
-        this.activation=x=>x;
-        this.activationDerivative=x=>1;
       }
+    ]
+    setOutputActivationFunction(index){
+      let a=NeuralNetwork.ACTIVATION_FUNCTIONS[index];
+      if(!a){
+        index=0;
+        a=NeuralNetwork.ACTIVATION_FUNCTIONS[index];
+      }
+      this.outputActivationFunctionIndex=index;
+      this.outputActivation=a.func;
+      this.outputActivationDerivative=a.derivative;
+    }
+    setActivationFunction(index){
+      let a=NeuralNetwork.ACTIVATION_FUNCTIONS[index];
+      if(!a){
+        index=0;
+        a=NeuralNetwork.ACTIVATION_FUNCTIONS[index];
+      }
+      this.activationFunctionIndex=index;
+      this.activation=a.func;
+      this.activationDerivative=a.derivative;
     }
     clearTrainingData(){
       this.trainingDataX=[];
@@ -4377,6 +4396,7 @@ function additionalJSCode(){
     serialize(){
       return JSON.stringify({
         activationFunctionIndex: this.activationFunctionIndex,
+        outputActivationFunctionIndex: this.outputActivationFunctionIndex,
         trainingDataX: this.trainingDataX,
         trainingDataY: this.trainingDataY,
         weights: this.weights,
@@ -4392,6 +4412,7 @@ function additionalJSCode(){
       let net=new NeuralNetwork();
       net.$constructor(neuronCounts);
       net.setActivationFunction(data.activationFunctionIndex);
+      net.setOutputActivationFunction(data.outputActivationFunctionIndex);
       net.weights=data.weights;
       net.biasses=data.biasses;
       net.trainingDataX=data.trainingDataX;
@@ -4459,6 +4480,7 @@ function additionalJSCode(){
         return;
       }
       if(layer===0) return;
+      let activationDerivative=layer===this.neurons.length-1? this.outputActivationDerivative : this.activationDerivative;
       let a=this.neurons[layer];
       let weights=this.weights[layer];
       let biasses=this.biasses[layer-1];
@@ -4476,7 +4498,7 @@ function additionalJSCode(){
         for(let j=0;j<a.length;j++){
           let d=0;
           for(let l=0;l<nkp1;l++){
-            d+=this.dCdA[l]*(this.activationDerivative(this.z[layer][l]))*weights[l][j];
+            d+=this.dCdA[l]*(activationDerivative(this.z[layer][l]))*weights[l][j];
           }
           dCdA.push(d);
         }
@@ -4486,7 +4508,7 @@ function additionalJSCode(){
       for(let i=0;i<weights.length;i++){
         let wi=weights[i];
         let dCdAi=this.dCdA[i];
-        let d=dCdAi*(this.activationDerivative(this.z[layer-1][i]));
+        let d=dCdAi*(activationDerivative(this.z[layer-1][i]));
         biasses[i]-=learningRate*d;
         for(let j=0;j<wi.length;j++){
           wi[j]-=learningRate*d*this.neurons[layer-1][j];
@@ -4501,9 +4523,10 @@ function additionalJSCode(){
         }
         return res;
       }
+      let activation=layer+1===this.neurons.length-1? this.outputActivation : this.activation;
       let n=this.neurons[layer+1].length;
       this.z[layer]=NeuralNetwork.VectorAddInPlace(NeuralNetwork.MatrixMul(this.weights[layer],this.neurons[layer]),this.biasses[layer]);
-      this.neurons[layer+1]=NeuralNetwork.VectorApplyFunction(this.z[layer],this.activation);
+      this.neurons[layer+1]=NeuralNetwork.VectorApplyFunction(this.z[layer],activation);
       return this.neurons[layer+1];
     }
     randomizeWeightsAndBiasses(factor){
