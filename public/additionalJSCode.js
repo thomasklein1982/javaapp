@@ -1959,7 +1959,7 @@ function additionalJSCode(){
       this.$wrapper=document.createElement("div");
       this.$wrapper.className="code-editor-wrapper";
       this.$el.appendChild(this.$wrapper);
-      this.$editorPane=document.createElement("pre");
+      this.$editorPane=document.createElement("div");
       this.$editorPane.className="code-editor-pane";
       this.$wrapper.appendChild(this.$editorPane);
       this.$textarea=document.createElement("textarea");
@@ -1977,22 +1977,13 @@ function additionalJSCode(){
 
       updateLineNumbers(1);
 
-      // this.$textarea.onscroll=(ev)=>{
-      //   console.log("scroll");
-      //   this.$editorPane.scrollTop=this.$textarea.scrollTop;
-      //   this.$editorPane.scrollLeft=this.$textarea.scrollLeft;
-      // }
-
       this.$wrapper.onscroll=(ev)=>{
-        console.log("scroll");
         this.$lineNumbers.scrollTop=this.$wrapper.scrollTop;
-        // this.$editorPane.scrollTop=this.$textarea.scrollTop;
-        // this.$editorPane.scrollLeft=this.$textarea.scrollLeft;
       }
 
       this.$mirror=()=>{
-        console.log("texrea grow",this.$textarea.scrollHeight)
-        this.$textarea.style.minHeight = this.$textarea.scrollHeight+"px";
+        this.$textarea.style.height="auto"; /* sonst klappt das shrinking nicht! */
+        this.$textarea.style.height = this.$textarea.scrollHeight+"px";
         let code=this.$textarea.value;
         this.$editorPane.innerHTML=code;
         //line numbers:
@@ -2002,6 +1993,10 @@ function additionalJSCode(){
       this.$textarea.oninput=(ev)=>{
         this.$mirror();
       }
+    }
+
+    setLanguage(lang){
+      
     }
 
     getValue(){

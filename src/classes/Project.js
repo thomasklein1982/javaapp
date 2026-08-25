@@ -585,10 +585,11 @@ window.SQLite = SQLite;
         .code-editor-line-numbers{
           background-color: lightgray;
           min-width: 0.5rem;
+          white-space: pre-wrap;
         }
         .code-editor-textarea{
-          background-color: rgba(255,255,0,0);
-          color: rgba(0,0,0,0);
+          background-color: rgba(255,255,0,0.5);
+          color: rgba(0,0,0,0.5);
           caret-color: black;
           resize: none;
           overscroll-behavior: auto;
@@ -614,6 +615,8 @@ window.SQLite = SQLite;
         }
         .code-editor-wrapper>*{
           white-space: pre-wrap;
+          word-break: break-all;
+			    overflow-wrap: anywhere;
           font-family: monospace;
           margin: 0;
           padding: 0;
