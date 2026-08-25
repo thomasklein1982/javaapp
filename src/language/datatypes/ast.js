@@ -21,7 +21,7 @@ export function defineAST(Clazz,Java){
   //   type: "int"
   // },Clazz,false,"public");
   createMethod({
-    name: 'name',
+    name: 'getName',
     args: [],
     returnType: "String",
     info: "Liefert den Namen des Knoten zurück.",
@@ -29,7 +29,7 @@ export function defineAST(Clazz,Java){
     isExtraFunction: true
   },Clazz,false,false);
   createMethod({
-    name: 'start',
+    name: 'getStart',
     args: [],
     returnType: "int",
     info: "Liefert den Start-Index des Knoten zurück.",
@@ -37,7 +37,7 @@ export function defineAST(Clazz,Java){
     isExtraFunction: true
   },Clazz,false,false);
   createMethod({
-    name: 'end',
+    name: 'getEnd',
     args: [],
     returnType: "int",
     info: "Liefert den End-Index des Knoten zurück.",
@@ -45,7 +45,7 @@ export function defineAST(Clazz,Java){
     isExtraFunction: true
   },Clazz,false,false);
   createMethod({
-    name: 'line',
+    name: 'getLine',
     args: [],
     returnType: "int",
     info: "Liefert den Zeilennummer des Knoten zurück.",
@@ -60,6 +60,26 @@ export function defineAST(Clazz,Java){
     returnType: "AST",
     info: "Liefert das n-te Kind zurück.",
     jsName: "$AST_getChild",
+    isExtraFunction: true
+  },Clazz,false,false);
+
+  createMethod({
+    name: 'getChildCount',
+    args: [
+    ],
+    returnType: "int",
+    info: "Liefert die Anzahl der Kinder zurück.",
+    jsName: "$AST_getChildCount",
+    isExtraFunction: true
+  },Clazz,false,false);
+
+  createMethod({
+    name: 'getText',
+    args: [
+    ],
+    returnType: "String",
+    info: "Liefert den Text zurück, der im Quellcode zu diesem Knoten gehört.",
+    jsName: "$AST_getText",
     isExtraFunction: true
   },Clazz,false,false);
   

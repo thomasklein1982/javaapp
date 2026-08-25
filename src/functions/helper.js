@@ -86,7 +86,7 @@ function uploadCallback(callback,options){
 export async function upload(options){
   var p=new Promise(function(resolve,reject){
     uploadCallback(function(fileData){
-      if(!options.multi){
+      if(!options || !options.multi){
         let code=fileData[0].code;
         let fileName=fileData[0].fileName;
         let mime=fileData[0].mime;

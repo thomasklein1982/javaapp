@@ -20,6 +20,17 @@ export function defineQueue(clazz){
     args: [{name: "element", type: typeT, info: ""}],
   },clazz,false,false);
   createMethod({
+    name: "clear",
+    info: "",
+    args: [],
+  },clazz,false,false);
+  createMethod({
+    name: "size",
+    info: "",
+    args: [],
+    returnType: "int"
+  },clazz,false,false);
+  createMethod({
     name: "remove",
     info: "",
     args: [],

@@ -15,6 +15,17 @@ export function defineStack(clazz){
   },clazz);
   let typeT=new Type(T,0);
   createMethod({
+    name: "clear",
+    info: "",
+    args: [],
+  },clazz,false,false);
+  createMethod({
+    name: "size",
+    info: "",
+    args: [],
+    returnType: "int"
+  },clazz,false,false);
+  createMethod({
     name: "push",
     info: "",
     args: [{name: "element", type: typeT, info: ""}],

@@ -44,6 +44,12 @@ export class UIClazz extends Clazz{
         value: "Der eingebene Text der TextArea."
       }
     },
+    CodeEditor: {
+      params: ["x","y","width","height"],
+      labels: {
+        value: "Der eingegebene Code."
+      }
+    },
     DataTable: {
       params: []
     },

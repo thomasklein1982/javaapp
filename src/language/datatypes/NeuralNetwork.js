@@ -25,6 +25,15 @@ export function defineNeuralNetwork(Clazz,Java){
     info: "Fügt ein Paar Trainingsdaten hinzu."
   },Clazz,false,false);
   createMethod({
+    name: 'addTrainingDataWithLearningRateFactor',
+    args: [ 
+      {name: 'x', type: {baseType: 'double', dimension: 1}},
+      {name: 'y', type: {baseType: 'double', dimension: 1}},
+      {name: 'r', type: 'double'}
+    ],
+    info: "Fügt ein Paar Trainingsdaten hinzu zusammen mit einem speziellen Lernraten-Faktor, der auf die Lernrate für dieses Trainingsdatum angewendet wird."
+  },Clazz,false,false);
+  createMethod({
     name: 'clearTrainingData',
     args: [ 
     ],

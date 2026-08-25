@@ -21,6 +21,9 @@
         <template v-if="type==='JTextArea'">
           <textarea type="text" style="min-width:0" class="component jtextarea" :value="isEditable? component.value:'JTextArea'" :placeholder="component.placeholder"/>
         </template>
+        <template v-if="type==='CodeEditor'">
+          <textarea type="text" style="min-width:0" class="component jtextarea" :value="isEditable? component.value:'CodeEditor'"/>
+        </template>
         <template v-if="type==='JComboBox'">
           <select class="component jcombobox">
             <option>{{isEditable? component.value: 'JComboBox'}}</option>

@@ -91,7 +91,7 @@ export class PeggyParser extends Clazz{
       }
       let exprFrom=expr.location.start.offset;
       let exprTo=expr.location.end.offset;
-      newCode+="\n"+rule.name+" = ALL_OF_IT:("+src.substring(exprFrom,exprTo)+") {let l=location(); let o={};o.name='"+rule.name+"'; o.start=l.start.offset; o.end=l.end.offset; o.line=l.start.line;o.children=ALL_OF_IT; return o;}";
+      newCode+="\n"+rule.name+" = ALL_OF_IT:("+src.substring(exprFrom,exprTo)+") {let l=location(); let o={};o.name='"+rule.name+"'; o.text=text(); o.start=l.start.offset; o.end=l.end.offset; o.line=l.start.line;o.children=ALL_OF_IT; return o;}";
       
     }
     return newCode;

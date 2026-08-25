@@ -1948,6 +1948,71 @@ function additionalJSCode(){
     }
   }
 
+  class CodeEditor extends JComponent{
+    $constructor(){
+      super.$constructor();
+      this.$standardCSSClasses+=" __code-editor";
+      this.$el=document.createElement("div");
+      this.$lineNumbers=document.createElement("textarea");
+      this.$lineNumbers.className="code-editor-line-numbers";
+      this.$el.appendChild(this.$lineNumbers);
+      this.$wrapper=document.createElement("div");
+      this.$wrapper.className="code-editor-wrapper";
+      this.$el.appendChild(this.$wrapper);
+      this.$editorPane=document.createElement("pre");
+      this.$editorPane.className="code-editor-pane";
+      this.$wrapper.appendChild(this.$editorPane);
+      this.$textarea=document.createElement("textarea");
+      this.$textarea.className="code-editor-textarea";
+      this.$wrapper.appendChild(this.$textarea);
+      this.setCSSClass("");
+
+      let updateLineNumbers=(count)=>{
+        let t="";
+        for(let i=0;i<count;i++){
+          t+=(i+1)+"\n";
+        }
+        this.$lineNumbers.value=t;
+      }
+
+      updateLineNumbers(1);
+
+      // this.$textarea.onscroll=(ev)=>{
+      //   console.log("scroll");
+      //   this.$editorPane.scrollTop=this.$textarea.scrollTop;
+      //   this.$editorPane.scrollLeft=this.$textarea.scrollLeft;
+      // }
+
+      this.$wrapper.onscroll=(ev)=>{
+        console.log("scroll");
+        this.$lineNumbers.scrollTop=this.$wrapper.scrollTop;
+        // this.$editorPane.scrollTop=this.$textarea.scrollTop;
+        // this.$editorPane.scrollLeft=this.$textarea.scrollLeft;
+      }
+
+      this.$mirror=()=>{
+        console.log("texrea grow",this.$textarea.scrollHeight)
+        this.$textarea.style.minHeight = this.$textarea.scrollHeight+"px";
+        let code=this.$textarea.value;
+        this.$editorPane.innerHTML=code;
+        //line numbers:
+        updateLineNumbers(this.$textarea.scrollHeight/24);
+      }
+
+      this.$textarea.oninput=(ev)=>{
+        this.$mirror();
+      }
+    }
+
+    getValue(){
+      return this.$textarea.value;
+    }
+
+    setValue(t){
+      this.$textarea.value=t;
+      this.$mirror();
+    }
+  }
 
   class JButton extends JComponent{
     $constructor(label){
@@ -4389,11 +4454,16 @@ function additionalJSCode(){
     clearTrainingData(){
       this.trainingDataX=[];
       this.trainingDataY=[];
+      this.trainingDataLearningRateFactor=[];
       this.currentCost=-1;
     }
     addTrainingData(x,y){
+      this.addTrainingDataWithLearningRateFactor(x,y,1);
+    }
+    addTrainingDataWithLearningRateFactor(x,y,r){
       this.trainingDataX.push(x);
       this.trainingDataY.push(y);
+      this.trainingDataLearningRateFactor.push(r);
       this.currentCost=-1;
     }
     serialize(){
@@ -4402,6 +4472,7 @@ function additionalJSCode(){
         outputActivationFunctionIndex: this.outputActivationFunctionIndex,
         trainingDataX: this.trainingDataX,
         trainingDataY: this.trainingDataY,
+        trainingDataLearningRateFactor: this.trainingDataLearningRateFactor,
         weights: this.weights,
         biasses: this.biasses
       });
@@ -4434,7 +4505,7 @@ function additionalJSCode(){
         for(let i=0;i<this.trainingDataX.length;i++){
           let x=this.trainingDataX[i];
           let y=this.trainingDataY[i];
-          this.trainSingle(learningRate,x,y);
+          this.trainSingle(learningRate*this.trainingDataLearningRateFactor[i],x,y);
         }
         let newCost=this.cost();
         //console.log(j,"new cost",newCost);
@@ -5294,13 +5365,16 @@ function additionalJSCode(){
 
   class Queue{
     $constructor(){
-      this.start=null;
-      this.end=null;
+      this.clear();
     }
     isEmpty(){
       return this.start===null;
     }
+    size(){
+      return this.$size;
+    }
     add(w){
+      this.$size++;
       let n={
         v: w,
         n: null
@@ -5314,6 +5388,7 @@ function additionalJSCode(){
     }
     remove(){
       if(this.start==null) return null;
+      this.$size--;
       let s=this.start;
       this.start=this.start.n;
       if(this.end===s){
@@ -5325,11 +5400,23 @@ function additionalJSCode(){
       if(this.start===null) return null;
       return this.start.v;
     }
+    clear(){
+      this.start=null;
+      this.end=null;
+      this.$size=0;
+    }
   }
 
   class Stack{
     $constructor(){
+      this.clear();
+    }
+    clear(){
       this.start=null;
+      this.$size=0;
+    }
+    size(){
+      return this.$size;
     }
     isEmpty(){
       return this.start===null;
@@ -5340,11 +5427,13 @@ function additionalJSCode(){
         n: this.start
       }
       this.start=n;
+      this.$size++;
     }
     pop(){
       if(this.start==null) return null;
       let s=this.start;
       this.start=this.start.n;
+      this.$size--;
       return s.v;
     }
     top(){
@@ -7176,13 +7265,30 @@ function additionalJSCode(){
   }
 
   function $AST_getChild(ast,index){
-    if(ast.children) return ast.children[index];
+    if(Array.isArray(ast)) return ast[index];
+    if("children" in ast){
+      if(Array.isArray(ast.children)) return ast.children[index];
+      return ast.children;
+    }
     return ast[index];
+  }
+
+  function $AST_getChildCount(ast){
+    if(Array.isArray(ast)) return ast.length;
+    if(ast.children){
+      if(Array.isArray(ast.children)) return ast.children.length;
+    }
+    return 0;
   }
 
   function $AST_getName(ast){
     if(Array.isArray(ast)) return "group";
     return ast.name;
+  }
+
+  function $AST_getText(ast){
+    if(Array.isArray(ast)) return $AST_getText(ast[0]);
+    return ast.text;
   }
 
   function $AST_getLine(ast){

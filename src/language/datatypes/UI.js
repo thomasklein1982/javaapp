@@ -20,6 +20,7 @@ export function defineUIClazzes(Java){
   defineUIClass(Java.datatypes.UIClass,Java.datatypes.JPanel,Java.datatypes.JComponent);
   defineHtmlPage(Java.datatypes.HtmlPage);
   defineCircle(Java.datatypes.Circle, Java);
+  defineCodeEditor(Java.datatypes.CodeEditor, Java);
 }
 
 function defineJComponent(Clazz,Java){
@@ -1303,4 +1304,18 @@ function defineCanvas(Clazz,Java){
     args: [{name: '"stretch"', type: "String"}],
     info: 'Legt die Größenanpassung auf "stretch" oder auf "fit" fest.'
   },Clazz,false,false,Java);
+}
+
+export function defineCodeEditor(Clazz, Java){
+  createConstructor ({
+    args: [
+    ]
+  },Clazz, Java);
+  Clazz.superClazz=Java.datatypes.JComponent;
+  createMethod({
+    name: 'save',
+    args: [
+    ],
+    info: "Speichert den aktuellen Zustand des Canvas auf einem Stack."
+  },Clazz,false,false);
 }

@@ -387,6 +387,7 @@ window.SQLite = SQLite;
           }
           .__jframe{
             background-color: white;
+            container-type: size;
           }
           *{overscroll-behavior: none;}
           .__datatable_inner{background-color: white; text-align: center; border-collapse: collapse}
@@ -576,7 +577,62 @@ window.SQLite = SQLite;
               box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
           }
         }
-        
+
+        .__code-editor{
+          display: flex;
+          flex-direction: row;
+        }
+        .code-editor-line-numbers{
+          background-color: lightgray;
+          min-width: 0.5rem;
+        }
+        .code-editor-textarea{
+          background-color: rgba(255,255,0,0);
+          color: rgba(0,0,0,0);
+          caret-color: black;
+          resize: none;
+          overscroll-behavior: auto;
+          outline: none;
+          border: none;
+        }
+        .code-editor-pane{
+          color: black;
+        }
+        .code-editor-line-numbers{
+          font-family: monospace;
+          margin: 0;
+          padding: 0;
+          font-size: 16px;
+          box-sizing: border-box;
+          overflow: hidden;
+          line-height: 24px;
+          resize: none;
+          overscroll-behavior: auto;
+          width: 2em;
+          text-align: right;
+          padding-right: 0.2rem;
+        }
+        .code-editor-wrapper>*{
+          white-space: pre-wrap;
+          font-family: monospace;
+          margin: 0;
+          padding: 0;
+          font-size: 16px;
+          grid-row: 1;
+          grid-column: 1;
+          box-sizing: border-box;
+          overflow: hidden;
+          line-height: 24px;
+          
+        }
+        .code-editor-wrapper{
+          flex: 1;
+          display: grid;
+          overflow: auto;
+          background-color: white;
+          grid-template: 1fr/1fr;
+        }
+
         ${css}
       </style>
     </head>
