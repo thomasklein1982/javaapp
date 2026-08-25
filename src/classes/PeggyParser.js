@@ -60,10 +60,13 @@ export class PeggyParser extends Clazz{
       code+="\nstatic parse(input){";
       code+="\n  return "+this.getParseFunctionName()+"(input);";
       code+="\n}";
+      code+="\nstatic getParser(){";
+      code+="\n return this;";
+      code+="\n}";
       code+="\n}";
       return code;
     }catch(e){
-      return "class "+this.name+"{ static parse(input){ alert('Peggy-Parser funktioniert nicht'); }}";
+      return "class "+this.name+"{ static parse(input){ alert('Peggy-Parser funktioniert nicht'); }\nstatic getParser(){ return this; }}";
     }
   }
   prepareGrammar(src){
@@ -114,6 +117,15 @@ export class PeggyParser extends Clazz{
       info: "Parst den Text und gibt ihn als AST (Abstract Syntax Tree) zurück"
     },this,true,false);
     this.methods.parse=m;
+    m=createMethod({
+      name: "getParser",
+      args: [
+        
+      ],
+      returnType: "Object",
+      info: ""
+    },this,true,false);
+    this.methods.getParser=m;
   }
   compileMethods(){}
   resolveSuperClazz(){}

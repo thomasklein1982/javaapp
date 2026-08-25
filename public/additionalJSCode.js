@@ -1953,8 +1953,9 @@ function additionalJSCode(){
       super.$constructor();
       this.$standardCSSClasses+=" __code-editor";
       this.$el=document.createElement("div");
-      this.$lineNumbers=document.createElement("textarea");
+      this.$lineNumbers=document.createElement("div");
       this.$lineNumbers.className="code-editor-line-numbers";
+      this.$lineNumbers.disabled=true;
       this.$el.appendChild(this.$lineNumbers);
       this.$wrapper=document.createElement("div");
       this.$wrapper.className="code-editor-wrapper";
@@ -1966,13 +1967,14 @@ function additionalJSCode(){
       this.$textarea.className="code-editor-textarea";
       this.$wrapper.appendChild(this.$textarea);
       this.setCSSClass("");
+      this.language=null;
 
       let updateLineNumbers=(count)=>{
         let t="";
         for(let i=0;i<count;i++){
           t+=(i+1)+"\n";
         }
-        this.$lineNumbers.value=t;
+        this.$lineNumbers.textContent=t;
       }
 
       updateLineNumbers(1);
@@ -1985,9 +1987,19 @@ function additionalJSCode(){
         this.$textarea.style.height="auto"; /* sonst klappt das shrinking nicht! */
         this.$textarea.style.height = this.$textarea.scrollHeight+"px";
         let code=this.$textarea.value;
-        this.$editorPane.innerHTML=code;
+        if(this.language){
+          try{
+            let ast=this.language.parse(code);
+            code=$AST_toHtml(ast);
+          }catch(e){
+
+          }
+        }
+        this.$editorPane.innerHTML=code+" ";
+        let lineHeight=getComputedStyle(this.$textarea).lineHeight;
+        lineHeight=Number.parseFloat(lineHeight);
         //line numbers:
-        updateLineNumbers(this.$textarea.scrollHeight/24);
+        updateLineNumbers(this.$textarea.scrollHeight/lineHeight);
       }
 
       this.$textarea.oninput=(ev)=>{
@@ -1996,7 +2008,8 @@ function additionalJSCode(){
     }
 
     setLanguage(lang){
-      
+      this.language=lang;
+      this.$mirror();
     }
 
     getValue(){
@@ -7259,19 +7272,53 @@ function additionalJSCode(){
     }
   }
 
+  function $AST_toHtml(ast){
+    let name=$AST_getName(ast);
+    let n=$AST_getChildCount(ast);
+    let code="<span class='ce-"+name+"'>";
+    if(n>0){
+      for(let i=0;i<n;i++){
+        let c=$AST_getChild(ast,i);
+        let name=$AST_getName(c);
+        if(name==null){
+          code+=$AST_getText(c);
+        }else{
+          code+=$AST_toHtml(c);
+        }
+      }
+    }else{
+
+    }
+    code+="</span>";
+    return code;
+  }
+
   function $AST_getChild(ast,index){
+    let r=$AST_getChildInternal(ast,index);
+    if(!r) return null;
+    if(typeof r==="string"){
+      return {
+        name: null,
+        text: r
+      };
+    }
+    return r;
+  }
+
+  function $AST_getChildInternal(ast,index){
     if(Array.isArray(ast)) return ast[index];
     if("children" in ast){
       if(Array.isArray(ast.children)) return ast.children[index];
       return ast.children;
     }
-    return ast[index];
+    return null;
   }
 
   function $AST_getChildCount(ast){
     if(Array.isArray(ast)) return ast.length;
     if(ast.children){
       if(Array.isArray(ast.children)) return ast.children.length;
+      else return 1;
     }
     return 0;
   }

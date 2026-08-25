@@ -581,58 +581,61 @@ window.SQLite = SQLite;
         .__code-editor{
           display: flex;
           flex-direction: row;
-        }
-        .code-editor-line-numbers{
-          background-color: lightgray;
-          min-width: 0.5rem;
-          white-space: pre-wrap;
+          background-color: white;
+          color: black;
+          font-size: 16px;
+          line-height: 24px;
+          font-family: monospace;
+          caret-color: black;
         }
         .code-editor-textarea{
-          background-color: rgba(255,255,0,0.5);
-          color: rgba(0,0,0,0.5);
-          caret-color: black;
+          background-color: rgba(255,255,0,0);
+          color: rgba(0,0,0,0);
+          caret-color: inherit;
           resize: none;
           overscroll-behavior: auto;
           outline: none;
           border: none;
         }
         .code-editor-pane{
-          color: black;
+          color: inherit;
         }
         .code-editor-line-numbers{
-          font-family: monospace;
+          white-space: pre;
+          background-color: lightgray;
+          color: black;
+          font-family: inherit;
           margin: 0;
           padding: 0;
-          font-size: 16px;
+          font-size: inherit;
           box-sizing: border-box;
           overflow: hidden;
-          line-height: 24px;
+          line-height: inherit;
           resize: none;
           overscroll-behavior: auto;
-          width: 2em;
+          width: 3em;
           text-align: right;
-          padding-right: 0.2rem;
+          padding-right: 0.2em;
         }
         .code-editor-wrapper>*{
           white-space: pre-wrap;
           word-break: break-all;
 			    overflow-wrap: anywhere;
-          font-family: monospace;
+          font-family: inherit;
           margin: 0;
           padding: 0;
-          font-size: 16px;
+          font-size: inherit;
           grid-row: 1;
           grid-column: 1;
           box-sizing: border-box;
           overflow: hidden;
-          line-height: 24px;
+          line-height: inherit;
           
         }
         .code-editor-wrapper{
           flex: 1;
           display: grid;
           overflow: auto;
-          background-color: white;
           grid-template: 1fr/1fr;
         }
 

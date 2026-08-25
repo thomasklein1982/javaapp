@@ -1313,9 +1313,10 @@ export function defineCodeEditor(Clazz, Java){
   },Clazz, Java);
   Clazz.superClazz=Java.datatypes.JComponent;
   createMethod({
-    name: 'save',
+    name: 'setLanguage',
     args: [
+      {name: "language", type: "Object"}
     ],
-    info: "Speichert den aktuellen Zustand des Canvas auf einem Stack."
+    info: "Legt die Sprache des CodeEditors fest."
   },Clazz,false,false);
 }
