@@ -240,7 +240,7 @@
       <span v-if="!webMode" style="position: fixed; bottom: 0.5rem; right: 0.5rem; z-index: 101">
         <span  v-if="!running">
           <Button style="margin-right: 0.2rem" v-if="project.exerciseData?.seed && (!running || paused)" label="Neuer Testfall" @click="createNewDemoCase()" icon="pi pi-refresh" />
-          <Button style="margin-right: 0.2rem" v-if="$root.exerciseCheckerCode && (!running || paused)" label="Testen" @click="resume()" icon="pi pi-play" />
+          <Button style="margin-right: 0.2rem" v-if="$root.exerciseCheckerCode && (!running || paused)" label="Ausführen" @click="resume()" icon="pi pi-play" />
           <Button style="margin-right: 0.2rem" v-if="$root.exerciseCheckerCode && (!running || paused)" label="Prüfen" @click="runExerciseChecker()" icon="pi pi-list-check" />
           
         </span>
