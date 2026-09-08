@@ -1967,6 +1967,7 @@ function additionalJSCode(){
       this.$textarea.className="code-editor-textarea";
       this.$wrapper.appendChild(this.$textarea);
       this.setCSSClass("");
+      this.indent="  ";
       this.language=null;
 
       let updateLineNumbers=(count)=>{
@@ -2004,6 +2005,19 @@ function additionalJSCode(){
 
       this.$textarea.oninput=(ev)=>{
         this.$mirror();
+      }
+
+      this.$textarea.onkeydown=(ev)=>{/**TODO: Multiline indentation, un-indent */
+        console.log("keydown")
+        if(ev.code==="Tab"){
+          ev.preventDefault();
+          if(ev.shiftKey){
+
+          }else{
+            this.$textarea.setRangeText("  ", this.$textarea.selectionStart, this.$textarea.selectionStart, "end");
+          }
+          this.$mirror();
+        }
       }
     }
 
