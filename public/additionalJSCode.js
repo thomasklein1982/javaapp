@@ -2011,14 +2011,54 @@ function additionalJSCode(){
         console.log("keydown")
         if(ev.code==="Tab"){
           ev.preventDefault();
+          let shift=true;
           if(ev.shiftKey){
-
+            shift=false;
+          }
+          let code=this.$textarea.value;
+          let p1=this.$textarea.selectionStart;
+          let p2=this.$textarea.selectionEnd;
+          let selected=code.substring(p1,p2);
+          if(!shift || selected.indexOf("\n")>=0){
+            //(un-)shift all lines:
+            let p0=code.lastIndexOf("\n",p1)+1;
+            let text=code.substring(p0,p2);
+            text=text.split("\n");
+            for(let i=0;i<text.length;i++){
+              if(shift){
+                text[i]=this.indent+text[i];
+              }else if(text[i].startsWith(this.indent)){
+                text[i]=text[i].substring(this.indent.length);
+              }
+            }
+            this.$textarea.setRangeText(text.join("\n"),p0,p2, "select");
           }else{
-            this.$textarea.setRangeText("  ", this.$textarea.selectionStart, this.$textarea.selectionStart, "end");
+            this.$textarea.setRangeText(this.indent, p1,p2, "end");
           }
           this.$mirror();
         }
       }
+    }
+
+    setSelection(from,to){
+      this.$textarea.selectionStart=from;
+      this.$textarea.selectionEnd=to;
+    }
+
+    getSelectionStart(){
+      return this.$textarea.selectionStart;
+    }
+
+    getSelectionEnd(){
+      return this.$textarea.selectionEnd;
+    }
+
+    setTab(text){
+      this.indent=text;
+    }
+
+    getTab(){
+      return this.indent;
     }
 
     setLanguage(lang){

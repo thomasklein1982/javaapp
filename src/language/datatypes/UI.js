@@ -1319,4 +1319,45 @@ export function defineCodeEditor(Clazz, Java){
     ],
     info: "Legt die Sprache des CodeEditors fest."
   },Clazz,false,false);
+
+  createMethod({
+    name: 'setSelection',
+    args: [
+      {name: "start", type: "int"},
+      {name: "end", type: "int"},
+    ],
+    info: "Legt den ausgewählten Text fest."
+  },Clazz,false,false);
+
+  createMethod({
+    name: 'getSelectionStart',
+    args: [
+    ],
+    returnType: "int",
+    info: "Liefert die Startposition der aktuellen Auswahl zurück."
+  },Clazz,false,false);
+
+  createMethod({
+    name: 'getSelectionEnd',
+    args: [
+    ],
+    returnType: "int",
+    info: "Liefert die Endposition der aktuellen Auswahl zurück."
+  },Clazz,false,false);
+
+  createMethod({
+    name: 'setTab',
+    args: [
+      {name: "characters", type: "String"}
+    ],
+    info: "Legt fest, welche Zeichen für einen Tab eingefügt werden."
+  },Clazz,false,false);
+
+  createMethod({
+    name: 'getTab',
+    args: [
+    ],
+    returnType: "String",
+    info: "Liefert zurück, welche Zeichen für einen Tab eingefügt werden."
+  },Clazz,false,false);
 }
