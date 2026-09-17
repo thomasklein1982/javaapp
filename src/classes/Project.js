@@ -475,6 +475,21 @@ window.SQLite = SQLite;
             height: 100%;
             resize: none;
           }
+          .__jbutton{
+            display: inline-grid;
+            text-align: center;
+            place-content: center;
+            background-color: lightgray;
+            border: 1pt solid #222222;
+            border-radius: 0.2rem;
+            -moz-user-select: none;
+            user-select: none;
+            text-decoration: none;
+            padding: 0.2rem 0.7rem;
+          }
+          .__jbutton:hover{
+            filter: brightness(80%);
+          }
           .__canvas>.__jcomponent,.__canvas>.__canvas-wrapper{
             position: absolute;
             left: 0;

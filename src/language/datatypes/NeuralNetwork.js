@@ -10,6 +10,13 @@ export function defineNeuralNetwork(Clazz,Java){
     ]
   },Clazz);
   createMethod({
+    name: 'changeNeuronCounts',
+    args: [ 
+      {name: 'neuronCounts', type: {dimension: 1, baseType: "int"}}
+    ],
+    info: ""
+  },Clazz,false,false);
+  createMethod({
     name: 'propagateForward',
     args: [ 
     ],
@@ -38,6 +45,21 @@ export function defineNeuralNetwork(Clazz,Java){
     args: [ 
     ],
     info: "Entfernt alle Trainingsdaten."
+  },Clazz,false,false);
+  createMethod({
+    name: 'getLayerCount',
+    args: [ 
+    ],
+    returnType: "int",
+    info: "Liefert die Anzahl der Schichten des Netzes zurück (einschließlich In- und Output)"
+  },Clazz,false,false);
+  createMethod({
+    name: 'getNeuronCountInLayer',
+    args: [ 
+      {name: "layerIndex", type: "int"}
+    ],
+    returnType: "int",
+    info: "Liefert die Anzahl der Neuronen in der Schicht mit dem angegeben Index (0 für Input-Layer) zurück."
   },Clazz,false,false);
   createMethod({
     name: 'randomizeWeightsAndBiasses',

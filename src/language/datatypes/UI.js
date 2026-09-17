@@ -1304,6 +1304,28 @@ function defineCanvas(Clazz,Java){
     args: [{name: '"stretch"', type: "String"}],
     info: 'Legt die Größenanpassung auf "stretch" oder auf "fit" fest.'
   },Clazz,false,false,Java);
+
+  createMethod({
+    name: 'getPixelData',
+    args: [
+      {name: 'x',  type: 'double', info: 'Abstand von links.'},
+      {name: 'y',  type: 'double', info: 'Abstand von unten.'},
+    ],
+    returnType: {
+      baseType: "int",
+      dimension: 1
+    },
+    info: 'Liefert ein Array mit den RGBA-Werten an der gegebenen Stelle zurück.'
+  },Clazz,false,false,Java);
+  createMethod({
+    name: 'getPixelColor',
+    args: [
+      {name: 'x',  type: 'double', info: 'Abstand von links.'},
+      {name: 'y',  type: 'double', info: 'Abstand von unten.'},
+    ],
+    returnType: "String",
+    info: 'Liefert die Farbe des Pixels in der Form #rrggbb zurück.'
+  },Clazz,false,false,Java);
 }
 
 export function defineCodeEditor(Clazz, Java){

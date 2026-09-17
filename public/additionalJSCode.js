@@ -2081,7 +2081,7 @@ function additionalJSCode(){
       super.$constructor();
       this.$standardCSSClasses+=" __jbutton";
       if(!label) label="";
-      this.$el=document.createElement("button");
+      this.$el=document.createElement("div");
       this.$el.component=this;
       this.$triggerOnAction=true;
       this.$el.onclick = $handleOnAction;
@@ -3266,6 +3266,44 @@ function additionalJSCode(){
     drawImagePart(image,cx,cy,width,height,scx,scy,swidth,sheight,rotation,mirrored){
       this.$el.canvas.drawImage(image,cx,cy,width,height,rotation,mirrored,{cx: scx, cy: scy, w: swidth, h: sheight});
     }
+    setPixelColor(x,y,color){
+      //this.ctx.putImageData();
+    }
+    getPixelColor(x,y){
+      let c=this.getPixelData(x,y);
+      if(!c) return null;
+      let r=c[0].toString(16);
+      if(r.length==1) r="0"+r;
+      let g=c[1].toString(16);
+      if(g.length==1) g="0"+g;
+      let b=c[2].toString(16);
+      if(b.length==1) b="0"+b;
+      return "#"+r+g+b;
+    }
+    getPixelData(x,y){
+      let minX=this.getMinX();
+      let minY=this.getMinY();
+      let w=this.getMaxX()-minX;
+      let h=this.getMaxY()-minY;
+      let W=this.canvas.width;
+      let H=this.canvas.height;
+      let left=Math.round((x-minX)*W/w);
+      let top=Math.round(H-(y-minY)*H/h);
+      return this.$getPixelData(left,top);
+    }
+    $getPixelData(left,top){
+      let w=this.canvas.width;
+      let h=this.canvas.height;
+      if(left>=w || left<0) return null;
+      if(top>=h || top<0) return null;
+      
+      let $imageData=this.ctx.getImageData(0,0,w,h);
+      let index=top*w+left;
+      let intsPerPixel=4;
+      let array=$createArray("int",1,[$imageData.data[index*intsPerPixel],$imageData.data[index*intsPerPixel+1], $imageData.data[index*intsPerPixel+2], $imageData.data[index*intsPerPixel+3] ]);
+      return array;
+
+    }
   }
 
   class JComboBox extends JComponent{
@@ -4445,23 +4483,9 @@ function additionalJSCode(){
 
   class NeuralNetwork{
     $constructor(neuronCounts){
-      this.currentCost=-1;
-      this.neuronCounts=neuronCounts;
       this.setActivationFunction(NeuralNetwork.SIGMOID);
       this.setOutputActivationFunction(NeuralNetwork.SIGMOID);
-      this.weights=[];
-      this.biasses=[];
-      this.neurons=[NeuralNetwork.ZeroVector(neuronCounts[0])];
-      this.dCdA=null; //last derivative of cost by neurons
-      this.z=[];
-      for(let i=1;i<neuronCounts.length;i++){
-        let n=neuronCounts[i];
-        let m=neuronCounts[i-1]
-        this.weights.push(NeuralNetwork.ZeroMatrix(n,m));
-        this.biasses.push(NeuralNetwork.ZeroVector(n));
-        this.neurons.push(NeuralNetwork.ZeroVector(n));
-        this.z.push(NeuralNetwork.ZeroVector(n));
-      }
+      this.changeNeuronCounts(neuronCounts);
       this.clearTrainingData();
       this.currentTrainingData={x: 0, y: 0};
     }
@@ -4493,6 +4517,30 @@ function additionalJSCode(){
         }
       }
     ]
+    changeNeuronCounts(neuronCounts){
+      this.currentCost=-1;
+      this.neuronCounts=neuronCounts;
+      this.weights=[];
+      this.biasses=[];
+      this.neurons=[NeuralNetwork.ZeroVector(neuronCounts[0])];
+      this.dCdA=null; //last derivative of cost by neurons
+      this.z=[];
+      for(let i=1;i<neuronCounts.length;i++){
+        let n=neuronCounts[i];
+        let m=neuronCounts[i-1]
+        this.weights.push(NeuralNetwork.ZeroMatrix(n,m));
+        this.biasses.push(NeuralNetwork.ZeroVector(n));
+        this.neurons.push(NeuralNetwork.ZeroVector(n));
+        this.z.push(NeuralNetwork.ZeroVector(n));
+      }
+    }
+    getLayerCount(){
+      return this.neuronCounts.length;
+    }
+    getNeuronCountInLayer(layerIndex){
+      if(layerIndex<0 || layerIndex>=this.neuronCounts.length) return -1;
+      return this.neuronCounts[layerIndex];
+    }
     setOutputActivationFunction(index){
       let a=NeuralNetwork.ACTIVATION_FUNCTIONS[index];
       if(!a){
