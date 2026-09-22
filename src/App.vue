@@ -306,10 +306,21 @@ export default{
       this.$refs.editor.resume();
     },
     resetCurrent(line,name){
+      if(line<0){
+        let f=this.$refs.editor.currentClazz;
+        if(!f) return;
+        name=f.name;
+        line=1;
+      }
       if(!line) line=this.current.line;
       if(!name) name=this.current.name;
       let step=(this.current.step+1)%2;
-      this.current={line, name, step, $scope: this.current.$scope};
+      if(name!==this.current.name){
+        this.current.name=name;
+      }
+      if(line!==this.current.line){
+        this.current.line=line;
+      }
     },
     showScreen: function(name){
       this.screen=name;

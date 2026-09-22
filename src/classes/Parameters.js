@@ -78,6 +78,9 @@ export class ParameterList{
   compile(node,source){
     let errors=[];
     node=node.firstChild;
+    if(!node || node.type.isError || node.name!=="("){
+      errors.push(source.createError("'(' erwartet",node));
+    }
     node=node.nextSibling;
     let names={};
     while(node.name==="FormalParameter"){
