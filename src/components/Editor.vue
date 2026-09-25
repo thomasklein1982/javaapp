@@ -397,9 +397,10 @@ export default {
       this.handleTabChange(nv);
       
     },
-    current(nv,ov){
-      if(nv!==null){
-        let name=nv.name;
+    "current.name": function(nv,ov){
+      //if(nv!==null){
+        let name=nv;
+        if(name===this.currentClazz.name) return;
         for(let i=0;i<this.project.clazzes.length;i++){
           let c=this.project.clazzes[i];
           if(c.name===name){
@@ -407,7 +408,6 @@ export default {
             return;
           }
         }
-      }
     }
 
   },
