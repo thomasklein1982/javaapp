@@ -2777,7 +2777,7 @@ function additionalJSCode(){
       let canvas=document.createElement("canvas");
       canvas.style.position="absolute";
       this.canvas=canvas;
-      this.ctx=canvas.getContext("2d");
+      this.ctx=canvas.getContext("2d", {willReadFrequently: true});
       wrapper.appendChild(this.canvas);
       let container=document.createElement("div");
       wrapper.appendChild(container);
@@ -3287,20 +3287,21 @@ function additionalJSCode(){
       let h=this.getMaxY()-minY;
       let W=this.canvas.width;
       let H=this.canvas.height;
-      let left=Math.round((x-minX)*W/w);
-      let top=Math.round(H-(y-minY)*H/h);
+      let left=Math.floor((x-minX)*W/w);
+      let top=Math.floor(H-(y-minY)*H/h);
       return this.$getPixelData(left,top);
     }
     $getPixelData(left,top){
-      let w=this.canvas.width;
-      let h=this.canvas.height;
-      if(left>=w || left<0) return null;
-      if(top>=h || top<0) return null;
+      // let w=this.canvas.width;
+      // let h=this.canvas.height;
+      // if(left>=w || left<0) return null;
+      // if(top>=h || top<0) return null;
       
-      let $imageData=this.ctx.getImageData(0,0,w,h);
-      let index=top*w+left;
-      let intsPerPixel=4;
-      let array=$createArray("int",1,[$imageData.data[index*intsPerPixel],$imageData.data[index*intsPerPixel+1], $imageData.data[index*intsPerPixel+2], $imageData.data[index*intsPerPixel+3] ]);
+      let $imageData=this.ctx.getImageData(left,top,1,1);
+      // let index=top*w+left;
+      // let intsPerPixel=4;
+      // let array=$createArray("int",1,[$imageData.data[index*intsPerPixel],$imageData.data[index*intsPerPixel+1], $imageData.data[index*intsPerPixel+2], $imageData.data[index*intsPerPixel+3] ]);
+      let array=$createArray("int",1,[$imageData.data[0],$imageData.data[1], $imageData.data[2], $imageData.data[3] ]);
       return array;
 
     }

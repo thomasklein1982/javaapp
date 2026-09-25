@@ -486,6 +486,7 @@ window.SQLite = SQLite;
             user-select: none;
             text-decoration: none;
             padding: 0.2rem 0.7rem;
+            overflow: hidden;
           }
           .__jbutton:hover{
             filter: brightness(80%);
