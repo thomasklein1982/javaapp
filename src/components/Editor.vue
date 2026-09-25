@@ -253,7 +253,7 @@
       @hide="updateActiveTab"
       @add-file="showNewClazzDialog=true"
     />
-    <Dialog header="Neue Datei" v-model:visible="showNewClazzDialog" style="width: 70%">
+    <Dialog header="Neue Datei" v-model:visible="showNewClazzDialog" style="width: 30rem; max-width: 90%">
       <NewClazzWizard :project="project" @confirm="addNewClazz"/>
     </Dialog>
     <Dialog :header="dialog.header" v-model:visible="dialog.show">{{ dialog.content }}</Dialog>

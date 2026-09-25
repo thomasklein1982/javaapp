@@ -1,9 +1,9 @@
 <template>
   <Drawer v-model:visible="show" header="Dateien" @hide="$emit('close',activeTabInEditor)">
     <div>
-      <Button @click="clickAddNewFile()" icon="pi pi-plus" label="Neu"/>
-      <Button label="Hochladen" icon="pi pi-upload" @click="uploadFile()"/>
-      <Button label="ZIP" icon="pi pi-download" @click="downloadAllFiles()"/>
+      <Button text @click="clickAddNewFile()" icon="pi pi-plus" label="Neu"/>
+      <Button text label="Hochladen" icon="pi pi-upload" @click="uploadFile()"/>
+      <Button text label="ZIP" icon="pi pi-download" @click="downloadAllFiles()"/>
       <Sortable
         :list="files"
         item-key="id"
@@ -21,6 +21,7 @@
         </template>
       </Sortable>
     </div>
+    <p>Doppelklick zum Bearbeiten</p>
   </Drawer>
 </template>
 
@@ -189,6 +190,9 @@ export default{
 }
 .file-name{
   font-family: monospace, monospace;
+  -moz-user-select: none;
+  user-select: none;
+  cursor: pointer;
 }
 .handle{
   margin-right: 0.3rem;
