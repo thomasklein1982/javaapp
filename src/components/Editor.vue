@@ -478,6 +478,7 @@ export default {
         window.testString=this.peggy.testString;
         function rep(key,value){
           console.log(this,key,value);
+          if(value===null) return "null"; //nicht sicher, was null bedeutet
           if(Array.isArray(value)) return value;
           if(value.name!==undefined) return {
             i: "L"+value.line+": "+value.name+" ["+value.start+":"+value.end+"]",

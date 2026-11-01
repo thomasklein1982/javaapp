@@ -70,6 +70,28 @@ export function defineNeuralNetwork(Clazz,Java){
     info: "Randomisiert alle Gewichte und Biasse des Netzes mit zufälligen Kommazahlen zwischen -factor und +factor. Liefert die Kosten des Netzes zurück."
   },Clazz,false,false);
   createMethod({
+    name: 'randomizeWeights',
+    args: [ 
+      {name: 'factor', type: "double"}
+    ],
+    returnType: "double",
+    info: "Randomisiert alle Gewichte des Netzes mit zufälligen Kommazahlen zwischen -factor und +factor. Liefert die Kosten des Netzes zurück."
+  },Clazz,false,false);
+  createMethod({
+    name: 'setSampleSize',
+    args: [ 
+      {name: 'count', type: "int"}
+    ],
+    info: "Legt fest, wie viele Trainingsdaten für jedes Training zufällig ausgewählt werden. -1 für alle Trainingsdaten."
+  },Clazz,false,false);
+  createMethod({
+    name: 'getSampleSize',
+    args: [ 
+    ],
+    returnType: "int",
+    info: "Liefert zurück, wie viele Trainingsdaten für jedes Training zufällig ausgewählt werden. -1 für alle Trainingsdaten."
+  },Clazz,false,false);
+  createMethod({
     name: 'setInputLayer',
     args: [ 
       {name: 'x', type: {baseType: 'double', dimension: 1}}

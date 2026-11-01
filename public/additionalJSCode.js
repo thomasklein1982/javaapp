@@ -4488,6 +4488,7 @@ function additionalJSCode(){
       this.setOutputActivationFunction(NeuralNetwork.SIGMOID);
       this.changeNeuronCounts(neuronCounts);
       this.clearTrainingData();
+      this.sampleSize=-1;
       this.currentTrainingData={x: 0, y: 0};
     }
     static NONE = 0;
@@ -4535,6 +4536,12 @@ function additionalJSCode(){
         this.z.push(NeuralNetwork.ZeroVector(n));
       }
     }
+    setSampleSize(s){
+      this.sampleSize=s;
+    }
+    getSampleSize(){
+      return this.sampleSize;
+    }
     getLayerCount(){
       return this.neuronCounts.length;
     }
@@ -4565,16 +4572,11 @@ function additionalJSCode(){
     clearTrainingData(){
       this.trainingDataX=[];
       this.trainingDataY=[];
-      this.trainingDataLearningRateFactor=[];
       this.currentCost=-1;
     }
     addTrainingData(x,y){
-      this.addTrainingDataWithLearningRateFactor(x,y,1);
-    }
-    addTrainingDataWithLearningRateFactor(x,y,r){
       this.trainingDataX.push(x);
       this.trainingDataY.push(y);
-      this.trainingDataLearningRateFactor.push(r);
       this.currentCost=-1;
     }
     serialize(){
@@ -4583,9 +4585,9 @@ function additionalJSCode(){
         outputActivationFunctionIndex: this.outputActivationFunctionIndex,
         trainingDataX: this.trainingDataX,
         trainingDataY: this.trainingDataY,
-        trainingDataLearningRateFactor: this.trainingDataLearningRateFactor,
         weights: this.weights,
-        biasses: this.biasses
+        biasses: this.biasses,
+        sampleSize: this.sampleSize
       });
     }
     static async deserialize(serializedNet){
@@ -4602,21 +4604,36 @@ function additionalJSCode(){
       net.biasses=data.biasses;
       net.trainingDataX=data.trainingDataX;
       net.trainingDataY=data.trainingDataY;
-      this.currentCost=this.cost();
+      net.sampleSize=data.sampleSize;
+      if(!net.sampleSize) net.sampleSize=-1;
+      net.currentCost=net.cost();
       return net;
     }
     train(learningRate, maxSteps){
       let c=this.currentCost;
       if (c<0) c=this.cost();
       if(!maxSteps) maxSteps=-1;
+      let trainingX, trainingY;
+      if(this.sampleSize<=0){
+        trainingX=this.trainingDataX;
+        trainingY=this.trainingDataY;
+      }else{
+        trainingX=[];
+        trainingY=[];
+        for(let i=0;i<this.sampleSize;i++){
+          let index=$Exercise.random(0,this.trainingDataX.length-1);
+          trainingX.push(this.trainingDataX[index]);
+          trainingY.push(this.trainingDataY[index]);
+        }
+      }
       for(let j=0;j<maxSteps || maxSteps<=0;j++){
         let oldWeights=JSON.stringify(this.weights);
         let oldBiasses=JSON.stringify(this.biasses);
         
-        for(let i=0;i<this.trainingDataX.length;i++){
-          let x=this.trainingDataX[i];
-          let y=this.trainingDataY[i];
-          this.trainSingle(learningRate*this.trainingDataLearningRateFactor[i],x,y);
+        for(let i=0;i<trainingX.length;i++){
+          let x=trainingX[i];
+          let y=trainingY[i];
+          this.trainSingle(learningRate,x,y);
         }
         let newCost=this.cost();
         //console.log(j,"new cost",newCost);
@@ -4717,6 +4734,13 @@ function additionalJSCode(){
       this.z[layer]=NeuralNetwork.VectorAddInPlace(NeuralNetwork.MatrixMul(this.weights[layer],this.neurons[layer]),this.biasses[layer]);
       this.neurons[layer+1]=NeuralNetwork.VectorApplyFunction(this.z[layer],activation);
       return this.neurons[layer+1];
+    }
+    randomizeWeights(factor){
+      for(let i=0;i<this.weights.length;i++){
+        NeuralNetwork.MatrixRandomize(this.weights[i],factor);
+      }
+      this.currentCost=this.cost();
+      return this.currentCost;
     }
     randomizeWeightsAndBiasses(factor){
       for(let i=0;i<this.weights.length;i++){
