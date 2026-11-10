@@ -398,7 +398,7 @@ window.SQLite = SQLite;
           .__datatable_inner>tr>td:nth-child(1),.__datatable_inner>tr>th:nth-child(1){display: none}
           .__jbutton:active{border-radius: 0;background-color:#e0e0e0}
           .__jbutton{border-radius: 0;background-color:#d0d0d0}
-          .__jbutton:enabled:hover{border-radius: 0;background-color:#dadada}
+          .__jbutton:enabled:hover{background-color:#dadada}
           html{font-family: sans-serif;width:100%;height:100%;}
           .animation-pulse{
             animation: pulse 1s infinite; 
@@ -466,14 +466,19 @@ window.SQLite = SQLite;
           .__jlabel{
             display: grid;
           }
+          .__jcombobox,.__jbutton{
+            font-size: inherit;
+          }
           .__jtextfield{
             min-width: 0;
             width: 100%;
+            font-size: inherit;
           }
           .__jtextarea{
             width: 100%;
             height: 100%;
             resize: none;
+            font-size: inherit;
           }
           .__jbutton{
             display: inline-grid;
@@ -487,9 +492,11 @@ window.SQLite = SQLite;
             text-decoration: none;
             padding: 0.2rem 0.7rem;
             overflow: hidden;
+            color: black;
           }
           .__jbutton:hover{
             filter: brightness(80%);
+            border-radius: 0.2rem;
           }
           .__canvas>.__jcomponent,.__canvas>.__canvas-wrapper{
             position: absolute;

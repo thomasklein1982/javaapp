@@ -1656,7 +1656,7 @@ function additionalJSCode(){
       this.$el.disabled=!v;
     }
     isEnabled(){
-      return this.$el.disabled;
+      return this.$el.disabled!==false;
     }
     setValue(v){
       this.value=v;
@@ -1888,8 +1888,18 @@ function additionalJSCode(){
     }
     addEventListener(type, listener){
       if(!this.$eventListeners) this.$eventListeners=[];
-      this.$eventListeners.push(listener);
+      this.$eventListeners.push({type, listener});
       this.$el.addEventListener(type,listener.actionPerformed,false);
+    }
+    removeAllEventListenersOfType(type){
+      for(let i=0;i<this.$eventListeners.length;i++){
+        let l=this.$eventListeners[i];
+        if(l.type===type){
+          this.$el.removeEventListener(l);
+          this.$eventListeners.splice(i,1);
+          i--;
+        }
+      }
     }
     addActionListener(al){
       this.$actionListeners.push(al);
@@ -2081,12 +2091,18 @@ function additionalJSCode(){
       super.$constructor();
       this.$standardCSSClasses+=" __jbutton";
       if(!label) label="";
-      this.$el=document.createElement("div");
+      this.enabled=true;
+      this.$el=document.createElement("button");
+      //this.$el.style.position="relative";
       this.$el.component=this;
       this.$triggerOnAction=true;
       this.$el.onclick = $handleOnAction;
+      // this.$inner.onclick=(ev)=>{
+      //   ev.stopPropagation();
+      //   ev.preventDefault();
+      // };
       this.setCSSClass("");
-      this.setValue(label)
+      this.setValue(label);
     }
     setValue(text){
       this.value=text;
@@ -2094,6 +2110,7 @@ function additionalJSCode(){
       this.$el.innerHTML=v;
     }
   }
+
 
   class JImage extends JComponent{
     async $constructor(url){
@@ -3243,7 +3260,7 @@ function additionalJSCode(){
       this.ctx.lineTo(x,y);
     }
     closePath(){
-      this.context.closePath();
+      this.ctx.closePath();
     }
     drawPath(){
       this.ctx.stroke();

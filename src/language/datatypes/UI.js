@@ -44,6 +44,13 @@ function defineJComponent(Clazz,Java){
     ],
     info: "Fügt einen EventListener hinzu, der aufgerufen wird, wenn man mit der Komponente interagiert."
   },Clazz,false,false);
+  createMethod({
+    name: 'removeAllEventListenersOfType',
+    args: [
+      {name: 'event', type: 'String', info: 'Art des Events, z. B. "click" oder "change".'}
+    ],
+    info: "Entfernt alle Event-Listener des angegebenen Typs."
+  },Clazz,false,false);
   // setCSSClass(className){
   //   this.$el.className=className;
   // }
